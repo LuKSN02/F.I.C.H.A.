@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F.I.C.H.A. – Criar Agente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --purple: #8a2be2;
+            --purple-neon: #bc6ff1;
+            --purple-dark: #3a0063;
+            --purple-glow: rgba(138, 43, 226, 0.5);
+            --bg-dark: #0d0010;
+            --card-bg: #161616;
+            --danger: #ff2244;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Oswald', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #000000 100%);
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .custom-nav { background-color: black; border-bottom: 2px solid #333; }
+        .navbar-brand { font-weight: 700; }
+        .nav-link { font-weight: 700; }
+        .nav-link:hover { color: #ff0000 !important; }
+
+        .form-hero {
+            border-bottom: 2px solid #1e0040;
+            padding: 48px 0 32px;
+            text-align: center;
+        }
+        .form-hero h1 { font-size: 3rem; letter-spacing: 4px; text-transform: uppercase; }
+        .form-hero h1 span { color: var(--purple-neon); text-shadow: 0 0 20px var(--purple-glow); }
+        .form-hero p { color: #888; font-size: 1rem; font-family: 'Share Tech Mono', monospace; letter-spacing: 2px; }
+
+        .stepper {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin: 40px auto;
+            max-width: 700px;
+            position: relative;
+        }
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 22px; left: 10%;
+            width: 80%; height: 2px;
+            background: #2a0050;
+            z-index: 0;
+        }
+        .step-item {
+            display: flex; flex-direction: column; align-items: center;
+            flex: 1; position: relative; z-index: 1; cursor: pointer;
+        }
+        .step-circle {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: #1a0033; border: 2px solid #3a0063;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; font-weight: 700; color: #555; transition: 0.3s;
+        }
+        .step-label {
+            font-size: 0.65rem; letter-spacing: 1px; color: #555;
+            margin-top: 8px; text-transform: uppercase; text-align: center;
+        }
+        .step-item.active .step-circle {
+            background: var(--purple); border-color: var(--purple-neon);
+            color: white; box-shadow: 0 0 15px var(--purple-glow);
+        }
+        .step-item.active .step-label { color: var(--purple-neon); }
+        .step-item.done .step-circle { background: #2a0050; border-color: var(--purple); color: var(--purple-neon); }
+        .step-item.done .step-label { color: var(--purple); }
+
+        .etapa-panel { display: none; animation: fadeIn 0.4s ease; }
+        .etapa-panel.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.4rem; letter-spacing: 3px; text-transform: uppercase;
+            border-left: 4px solid var(--purple); padding-left: 14px;
+            margin-bottom: 28px; color: white;
+        }
+        .section-title span { color: var(--purple-neon); }
+
+        .form-label {
+            font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
+            color: #aaa; margin-bottom: 6px;
+        }
+        .form-control, .form-select, textarea {
+            background: #0d0010 !important; border: 1px solid #3a0063 !important;
+            color: white !important; font-family: 'Oswald', sans-serif;
+            border-radius: 4px; transition: 0.2s;
+        }
+        .form-control:focus, .form-select:focus, textarea:focus {
+            border-color: var(--purple) !important;
+            box-shadow: 0 0 10px var(--purple-glow) !important; outline: none;
+        }
+        .form-control::placeholder, textarea::placeholder { color: #444 !important; }
+        .form-select option { background: #1a0033; }
+
+        .classe-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 200px);
+            gap: 16px;
+            justify-content: center;
+        }
+        .classe-card {
+            background: #0d0010; border: 2px solid #2a0050; border-radius: 8px;
+            padding: 24px 10px; text-align: center; cursor: pointer;
+            transition: 0.25s; user-select: none;
+        }
+        .classe-card:hover { border-color: var(--purple); background: #1a0033; }
+        .classe-card.selected {
+            border-color: var(--purple-neon); background: #1a0033;
+            box-shadow: 0 0 16px var(--purple-glow);
+        }
+        .classe-card .classe-icon { font-size: 2.2rem; margin-bottom: 8px; }
+        .classe-card .classe-nome {
+            font-size: 1rem; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; color: #ccc;
+        }
+        .classe-card .classe-desc {
+            font-size: 0.7rem; color: #666; font-family: 'Share Tech Mono', monospace;
+            margin-top: 6px; letter-spacing: 1px; line-height: 1.4;
+        }
+        .classe-card.selected .classe-nome { color: var(--purple-neon); }
+        .classe-card.selected .classe-desc { color: #999; }
+
+        .atributos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 16px; }
+        .atributo-box {
+            background: #0d0010; border: 1px solid #2a0050; border-radius: 8px;
+            padding: 16px 10px; text-align: center; transition: 0.2s;
+        }
+        .atributo-box:hover { border-color: var(--purple); }
+        .atributo-nome { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #888; margin-bottom: 8px; }
+        .atributo-controles { display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .atributo-btn {
+            width: 28px; height: 28px; border-radius: 50%;
+            border: 1px solid var(--purple-dark); background: #1a0033;
+            color: var(--purple-neon); font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; line-height: 1;
+        }
+        .atributo-btn:hover { background: var(--purple); border-color: var(--purple-neon); }
+        .atributo-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .atributo-valor { font-size: 1.5rem; font-weight: 700; color: white; min-width: 30px; }
+        .pontos-display {
+            background: #0d0010; border: 1px solid #2a0050; border-radius: 6px;
+            padding: 10px 20px; display: inline-block;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.9rem;
+            color: var(--purple-neon); letter-spacing: 2px; margin-bottom: 20px;
+        }
+        .pontos-display span { color: white; font-size: 1.2rem; font-weight: 700; }
+
+        .pericias-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        .pericia-item {
+            background: #0d0010; border: 1px solid #2a0050; border-radius: 6px;
+            padding: 12px 14px; display: flex; align-items: center; gap: 10px;
+            cursor: pointer; transition: 0.2s; user-select: none;
+        }
+        .pericia-item:hover { border-color: var(--purple); }
+        .pericia-item.selected { border-color: var(--purple-neon); background: #1a0033; }
+        .pericia-item.disabled { opacity: 0.4; cursor: not-allowed; }
+        .pericia-check {
+            width: 18px; height: 18px; border: 2px solid #3a0063; border-radius: 3px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: 0.2s;
+        }
+        .pericia-item.selected .pericia-check { background: var(--purple); border-color: var(--purple-neon); }
+        .pericia-check::after { content: '✓'; font-size: 0.7rem; color: white; display: none; }
+        .pericia-item.selected .pericia-check::after { display: block; }
+        .pericia-nome { font-size: 0.85rem; letter-spacing: 1px; color: #ccc; flex: 1; }
+        .pericia-atrib {
+            font-size: 0.65rem; font-family: 'Share Tech Mono', monospace;
+            color: var(--purple-neon); background: #2a0050; padding: 2px 6px; border-radius: 3px;
+        }
+        .habilidades-list { list-style: none; padding: 0; }
+        .habilidade-item {
+            background: #0d0010; border: 1px solid #2a0050; border-left: 4px solid var(--purple);
+            border-radius: 6px; padding: 14px 16px; margin-bottom: 10px;
+        }
+        .habilidade-nome { font-weight: 700; color: var(--purple-neon); letter-spacing: 1px; font-size: 0.9rem; }
+        .habilidade-desc { color: #888; font-size: 0.8rem; margin-top: 4px; font-family: 'Share Tech Mono', monospace; }
+
+        textarea.form-control { min-height: 100px; resize: vertical; font-size: 0.9rem; line-height: 1.6; }
+
+        .btn-nav {
+            background: transparent; border: 2px solid var(--purple);
+            color: white; font-family: 'Oswald', sans-serif;
+            font-size: 1rem; font-weight: 700; letter-spacing: 2px;
+            padding: 10px 30px; border-radius: 4px; cursor: pointer; transition: 0.3s;
+        }
+        .btn-nav:hover { background: var(--purple); box-shadow: 0 0 15px var(--purple-glow); }
+        .btn-nav.btn-finalizar { border-color: var(--purple-neon); color: var(--purple-neon); }
+        .btn-nav.btn-finalizar:hover {
+            background: var(--purple-neon); color: black;
+            box-shadow: 0 0 20px rgba(188,111,241,0.7);
+        }
+
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85); z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: #0d0010; border: 2px solid var(--purple); border-radius: 12px;
+            padding: 48px 40px; text-align: center; max-width: 480px; width: 90%;
+            box-shadow: 0 0 40px var(--purple-glow); animation: fadeIn 0.4s ease;
+        }
+        .modal-icon { font-size: 3.5rem; margin-bottom: 16px; }
+        .modal-title {
+            font-size: 2rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--purple-neon); text-shadow: 0 0 20px var(--purple-glow);
+        }
+        .modal-agente-nome { font-size: 1.5rem; font-weight: 700; color: white; margin: 12px 0 4px; }
+        .modal-agente-classe { color: #888; font-family: 'Share Tech Mono', monospace; letter-spacing: 2px; margin-bottom: 24px; }
+        .btn-modal {
+            background: var(--purple); border: none; color: white;
+            font-family: 'Oswald', sans-serif; font-size: 1rem; font-weight: 700;
+            letter-spacing: 2px; padding: 12px 32px; border-radius: 4px;
+            cursor: pointer; transition: 0.3s; margin: 6px;
+        }
+        .btn-modal:hover { background: var(--purple-neon); color: black; }
+        .btn-modal.secondary {
+            background: transparent; border: 1px solid #3a0063; color: #888;
+        }
+        .btn-modal.secondary:hover { border-color: var(--purple); color: white; background: transparent; }
+
+        .text-purple-neon { color: var(--purple-neon); text-shadow: 0 0 10px rgba(188,111,241,0.8); }
+        .custom-footer { background: black; border-top: 2px solid #333; }
+        .footer-link { color: #888; text-decoration: none; display: block; margin-bottom: 4px; }
+        .footer-link:hover { color: var(--purple-neon); }
+        hr.purple { border-color: var(--purple-dark); }
+        .alerta-campo {
+            font-size: 0.75rem; color: var(--danger); font-family: 'Share Tech Mono', monospace;
+            margin-top: 4px; display: none;
+        }
+        .campo-invalido .form-control,
+        .campo-invalido .form-select,
+        .campo-invalido textarea { border-color: var(--danger) !important; }
+        .campo-invalido .alerta-campo { display: block; }
+
+        .sem-pontos { color: #ff6644; font-size: 0.7rem; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; margin-top: 6px; display: none; }
+        .sem-pontos.show { display: block; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg custom-nav navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand fs-2" href="index.html">
+      <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="56" height="56" class="d-inline-block align-text-center">
+      F.I.C.H.A.
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <div class="navbar-nav">
+        <a class="nav-link px-3" href="index.html?view=agentes">Agentes</a>
+        <a class="nav-link px-3" href="#">Campanhas</a>
+        <a class="nav-link px-3" href="#">Homebrew</a>
+      </div>
+    </div>
+    <div class="d-none d-lg-flex" style="width:200px"></div>
+  </div>
+</nav>
+
+<div class="form-hero">
+    <p style="font-family:'Share Tech Mono',monospace;letter-spacing:4px;color:var(--purple-neon);font-size:0.8rem;margin-bottom:8px;">// PROTOCOLO DE REGISTRO //</p>
+    <h1>Criar <span>Agente</span></h1>
+    <p>PREENCHA AS INFORMAÇÕES DO NOVO AGENTE COM CUIDADO. O MEDO É REAL.</p>
+</div>
+
+<div class="stepper" id="stepper">
+    <div class="step-item active" onclick="irParaEtapa(0)">
+        <div class="step-circle">1</div>
+        <div class="step-label">Identidade</div>
+    </div>
+    <div class="step-item" onclick="irParaEtapa(1)">
+        <div class="step-circle">2</div>
+        <div class="step-label">Atributos</div>
+    </div>
+    <div class="step-item" onclick="irParaEtapa(2)">
+        <div class="step-circle">3</div>
+        <div class="step-label">Perícias</div>
+    </div>
+    <div class="step-item" onclick="irParaEtapa(3)">
+        <div class="step-circle">4</div>
+        <div class="step-label">Antecedente</div>
+    </div>
+</div>
+
+<div class="container" style="max-width:860px;padding-bottom:80px;">
+
+<!-- ETAPA 1: IDENTIDADE -->
+<div class="etapa-panel active" id="etapa-0">
+    <h2 class="section-title">Dados <span>Básicos</span></h2>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6" id="campo-nome">
+            <label class="form-label">Nome do Agente</label>
+            <input type="text" class="form-control" id="input-nome" placeholder="Ex.: Isadora Luz">
+            <div class="alerta-campo">⚠ Campo obrigatório</div>
+        </div>
+        <div class="col-md-6" id="campo-codinome">
+            <label class="form-label">Codinome</label>
+            <input type="text" class="form-control" id="input-codinome" placeholder="Ex.: Sombra">
+        </div>
+        <div class="col-md-4" id="campo-idade">
+            <label class="form-label">Idade</label>
+            <input type="number" class="form-control" id="input-idade" placeholder="Ex.: 28" min="1" max="120">
+            <div class="alerta-campo">⚠ Insira uma idade válida</div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Nível</label>
+            <select class="form-select" id="input-nivel">
+                <option value="1">Nível 1 – Recruta</option>
+                <option value="2">Nível 2</option>
+                <option value="3">Nível 3</option>
+                <option value="4">Nível 4</option>
+                <option value="5">Nível 5 – Veterano</option>
+            </select>
+        </div>
+        <div class="col-md-4" id="campo-origem">
+            <label class="form-label">Origem</label>
+            <select class="form-select" id="input-origem">
+                <option value="">Selecione...</option>
+                <optgroup label="── Livro Base ──">
+                    <option>Acadêmica</option><option>Amnésia</option><option>Artificial</option>
+                    <option>Celebridade</option><option>Chefão do Crime</option><option>Científica</option>
+                    <option>Construto</option><option>Criminosa</option><option>Executivo</option>
+                    <option>Imigrante</option><option>Indígena</option><option>Investigador</option>
+                    <option>Lutador</option><option>Médica</option><option>Militar</option>
+                    <option>Nobre</option><option>Ocultista</option><option>Periférica</option>
+                    <option>Policial</option><option>Riqueza</option><option>Religiosa</option>
+                    <option>Sem-Teto</option><option>Showbusiness</option><option>Supersticiosa</option>
+                </optgroup>
+                <optgroup label="── Suplementos ──">
+                    <option>Agente de Campo</option><option>Artista Marcial</option><option>Caçador</option>
+                    <option>Contrabandista</option><option>Cultista Arrependido</option><option>Espiã</option>
+                    <option>Ex-Cultista</option><option>Especialista em TI</option><option>Fazendeiro</option>
+                    <option>Filho da Rua</option><option>Hacker</option><option>Jornalista</option>
+                    <option>Médico de Guerra</option><option>Mercenária</option><option>Nerd</option>
+                    <option>Operário</option><option>Parapsicóloga</option><option>Pescador</option>
+                    <option>Piloto</option><option>Protetor</option><option>Técnico</option>
+                    <option>Veterinário</option><option>Viajante</option>
+                </optgroup>
+            </select>
+            <div class="alerta-campo">⚠ Selecione uma origem</div>
+        </div>
+    </div>
+
+    <hr class="purple my-4">
+    <h2 class="section-title">Classe <span>do Agente</span></h2>
+    <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:20px;letter-spacing:1px;">
+        ▸ ESCOLHA A CLASSE QUE DEFINE O PERFIL DO SEU AGENTE.
+    </p>
+
+    <div class="classe-grid" id="classe-grid">
+        <div class="classe-card" data-classe="Combatente" onclick="selecionarClasse(this)">
+            <div class="classe-icon">⚔️</div>
+            <div class="classe-nome">Combatente</div>
+            <div class="classe-desc">Especialista em conflitos físicos e sobrevivência.</div>
+        </div>
+        <div class="classe-card" data-classe="Especialista" onclick="selecionarClasse(this)">
+            <div class="classe-icon">🔍</div>
+            <div class="classe-nome">Especialista</div>
+            <div class="classe-desc">Mestre em habilidades técnicas e perícias específicas.</div>
+        </div>
+        <div class="classe-card" data-classe="Ocultista" onclick="selecionarClasse(this)">
+            <div class="classe-icon">🔮</div>
+            <div class="classe-nome">Ocultista</div>
+            <div class="classe-desc">Conhecedor do Outro Lado e de rituais paranormais.</div>
+        </div>
+        <div class="classe-card" data-classe="Mundano" onclick="selecionarClasse(this)">
+            <div class="classe-icon">🧍</div>
+            <div class="classe-nome">Mundano</div>
+            <div class="classe-desc">Cidadão comum com sorte e conexões incomuns.</div>
+        </div>
+    </div>
+    <div id="alerta-classe" style="color:var(--danger);font-family:'Share Tech Mono',monospace;font-size:0.75rem;margin-top:10px;display:none;">⚠ Selecione uma classe</div>
+</div>
+
+<!-- ETAPA 2: ATRIBUTOS -->
+<div class="etapa-panel" id="etapa-1">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+        <h2 class="section-title mb-0">Atributos <span>Base</span></h2>
+        <div class="pontos-display">PONTOS RESTANTES: <span id="pontos-restantes">5</span></div>
+    </div>
+    <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:8px;letter-spacing:1px;">
+        ▸ CADA ATRIBUTO COMEÇA EM 0. VOCÊ TEM 5 PONTOS PARA DISTRIBUIR.<br>
+        ▸ CADA PONTO AUMENTA UM ATRIBUTO EM 1. MÁXIMO DE 5 POR ATRIBUTO.
+    </p>
+    <div class="sem-pontos" id="aviso-pontos">⚠ PONTOS INSUFICIENTES</div>
+    <br>
+    <div class="atributos-grid" id="atributos-grid"></div>
+</div>
+
+<!-- ETAPA 3: PERÍCIAS -->
+<div class="etapa-panel" id="etapa-2">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+        <h2 class="section-title mb-0">Perícias <span>Treinadas</span></h2>
+        <div class="pontos-display">SELECIONADAS: <span id="pericias-count">0</span> / <span id="pericias-max">4</span></div>
+    </div>
+    <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:20px;letter-spacing:1px;">
+        ▸ SELECIONE AS PERÍCIAS QUE SEU AGENTE DOMINA. PERÍCIAS TREINADAS ADICIONAM +5 AO RESULTADO.
+    </p>
+    <div class="pericias-grid" id="pericias-grid"></div>
+
+    <hr class="purple my-4">
+    <h2 class="section-title">Habilidades <span>da Classe</span></h2>
+    <ul class="habilidades-list" id="habilidades-list">
+        <p style="color:#555;font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ SELECIONE UMA CLASSE NA ETAPA 1 PARA VER AS HABILIDADES.</p>
+    </ul>
+</div>
+
+<!-- ETAPA 4: ANTECEDENTE -->
+<div class="etapa-panel" id="etapa-3">
+    <h2 class="section-title">Antecedente <span>& História</span></h2>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <label class="form-label">Personalidade</label>
+            <textarea class="form-control" id="input-personalidade" placeholder="Como seu agente age e pensa..."></textarea>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Ideal</label>
+            <textarea class="form-control" id="input-ideal" placeholder="O que motiva seu agente..."></textarea>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Vínculo</label>
+            <textarea class="form-control" id="input-vinculo" placeholder="Com quem ou o quê seu agente se importa..."></textarea>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Fraqueza / Segredo</label>
+            <textarea class="form-control" id="input-fraqueza" placeholder="O que assombra seu agente..."></textarea>
+        </div>
+        <div class="col-12">
+            <label class="form-label">História Completa</label>
+            <textarea class="form-control" id="input-historia" style="min-height:160px;" placeholder="Descreva a origem e os eventos que moldaram seu agente..."></textarea>
+        </div>
+    </div>
+
+    <hr class="purple my-4">
+    <h2 class="section-title">Resumo <span>do Agente</span></h2>
+    <div id="resumo-final" style="background:#0d0010;border:1px solid #2a0050;border-radius:8px;padding:24px;">
+        <p style="color:#555;font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ PREENCHA AS ETAPAS ANTERIORES PARA VER O RESUMO.</p>
+    </div>
+</div>
+
+<!-- NAVEGAÇÃO -->
+<div class="d-flex justify-content-between mt-5">
+    <button class="btn-nav" id="btn-anterior" onclick="etapaAnterior()" style="display:none">← ANTERIOR</button>
+    <div></div>
+    <button class="btn-nav" id="btn-proximo" onclick="proximaEtapa()">PRÓXIMO →</button>
+    <button class="btn-nav btn-finalizar" id="btn-finalizar" onclick="finalizarFicha()" style="display:none">✦ REGISTRAR AGENTE</button>
+</div>
+
+</div>
+
+<!-- MODAL SUCESSO -->
+<div class="modal-overlay" id="modal-sucesso">
+    <div class="modal-box">
+        <div class="modal-icon">👁️</div>
+        <div class="modal-title">Agente Registrado</div>
+        <div class="modal-agente-nome" id="modal-nome">—</div>
+        <div class="modal-agente-classe" id="modal-classe">—</div>
+        <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:24px;">
+            FICHA SALVA COM SUCESSO NO SISTEMA F.I.C.H.A.
+        </p>
+        <div>
+            <button class="btn-modal" id="btn-ver-ficha" onclick="irParaFicha()">VER FICHA</button>
+            <button class="btn-modal" onclick="irParaAgentes()" style="background:#2a0050;">VER AGENTES</button>
+            <button class="btn-modal secondary" onclick="criarNovo()">CRIAR OUTRO</button>
+        </div>
+    </div>
+</div>
+
+<footer class="custom-footer mt-5 py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-4 text-center text-md-start">
+                <a class="navbar-brand fs-3 text-white fw-bold" href="index.html">
+                    <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="50" height="50" class="d-inline-block align-text-center me-2">
+                    F.I.C.H.A.
+                </a>
+                <p class="text-secondary mt-3">Sistema de auxílio para agentes de elite em missões paranormais.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <h5 style="color:var(--purple-neon)" class="mb-3">Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="index.html?view=agentes" class="footer-link">Agentes</a></li>
+                    <li><a href="index.html" class="footer-link">Início</a></li>
+                    <li><a href="#" class="footer-link">Sobre o Sistema</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 text-center text-md-end">
+                <p class="text-secondary small">© 2026 F.I.C.H.A. – Inspirado no universo de Ordem Paranormal.</p>
+                <div class="mt-2"><span style="color:var(--purple-neon)" class="fw-bold">O MEDO É REAL.</span></div>
+            </div>
+        </div>
+        <hr class="border-secondary mt-4">
+        <p class="text-center text-secondary small mb-0">Desenvolvido por luka_00000.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ══════════════════════════════════════════════
+// DADOS
+// ══════════════════════════════════════════════
+const ATRIBUTOS = [
+    { id:'FOR', nome:'Força',     abrev:'FOR' },
+    { id:'AGI', nome:'Agilidade', abrev:'AGI' },
+    { id:'INT', nome:'Intelecto', abrev:'INT' },
+    { id:'PRE', nome:'Presença',  abrev:'PRE' },
+    { id:'VIG', nome:'Vigor',     abrev:'VIG' },
+];
+
+const BASE_ATRIB  = 0;  // atributos começam em 0
+const MAX_ATRIB   = 5;  // máximo de atributo na criação
+const TOTAL_PONTOS = 5; // pontos totais para distribuir
+
+const PERICIAS = [
+    { nome:'Acrobacia',     atrib:'AGI' }, { nome:'Adestramento',  atrib:'PRE' },
+    { nome:'Artes',         atrib:'PRE' }, { nome:'Atletismo',     atrib:'FOR' },
+    { nome:'Ciências',      atrib:'INT' }, { nome:'Crime',         atrib:'AGI' },
+    { nome:'Diplomacia',    atrib:'PRE' }, { nome:'Enganação',     atrib:'PRE' },
+    { nome:'Fortitude',     atrib:'VIG' }, { nome:'Furtividade',   atrib:'AGI' },
+    { nome:'Iniciativa',    atrib:'AGI' }, { nome:'Intimidação',   atrib:'PRE' },
+    { nome:'Intuição',      atrib:'PRE' }, { nome:'Investigação',  atrib:'INT' },
+    { nome:'Luta',          atrib:'FOR' }, { nome:'Medicina',      atrib:'INT' },
+    { nome:'Ocultismo',     atrib:'INT' }, { nome:'Percepção',     atrib:'PRE' },
+    { nome:'Pilotagem',     atrib:'AGI' }, { nome:'Pontaria',      atrib:'AGI' },
+    { nome:'Profissão',     atrib:'INT' }, { nome:'Reflexos',      atrib:'AGI' },
+    { nome:'Religião',      atrib:'INT' }, { nome:'Resistência',   atrib:'VIG' },
+    { nome:'Sobrevivência', atrib:'INT' }, { nome:'Tecnologia',    atrib:'INT' },
+    { nome:'Vontade',       atrib:'PRE' },
+];
+
+const HABILIDADES_CLASSE = {
+    'Combatente': [
+        { nome:'Ataque Especial', desc:'Uma vez por rodada pode realizar um ataque adicional com -5 no rolamento.' },
+        { nome:'Resistência de Combate', desc:'+2 de Defesa enquanto estiver usando armadura.' },
+    ],
+    'Especialista': [
+        { nome:'Foco Profissional', desc:'Pode rolar duas vezes em qualquer perícia de sua especialidade e usar o maior resultado.' },
+        { nome:'Improviso', desc:'Uma vez por cena pode usar um objeto como arma ou ferramenta improvisada sem penalidade.' },
+    ],
+    'Ocultista': [
+        { nome:'Sentido Paranormal', desc:'Pode detectar a presença de entidades em até 30 metros automaticamente.' },
+        { nome:'Ritual Menor', desc:'Conhece um ritual de nível 1 que pode executar sem custo de PE.' },
+    ],
+    'Mundano': [
+        { nome:'Sortudo', desc:'Uma vez por sessão pode rerrolar qualquer dado e ficar com o melhor resultado.' },
+        { nome:'Conexões', desc:'Possui contatos em 3 áreas distintas que podem fornecer informações ou ajuda.' },
+    ],
+};
+
+// ══════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════
+let etapaAtual = 0;
+const totalEtapas = 4;
+
+let atributosValores = { FOR: BASE_ATRIB, AGI: BASE_ATRIB, INT: BASE_ATRIB, PRE: BASE_ATRIB, VIG: BASE_ATRIB };
+let pontosRestantes  = TOTAL_PONTOS;
+let periciasSelected = new Set();
+let fichaIdCriada    = null;
+
+// ══════════════════════════════════════════════
+// INICIALIZAÇÃO
+// ══════════════════════════════════════════════
+window.onload = function() {
+    renderAtributos();
+    renderPericias();
+};
+
+// ══════════════════════════════════════════════
+// STEPPER
+// ══════════════════════════════════════════════
+function atualizarStepper() {
+    document.querySelectorAll('.step-item').forEach((s, i) => {
+        s.classList.remove('active', 'done');
+        if (i < etapaAtual)  s.classList.add('done');
+        if (i === etapaAtual) s.classList.add('active');
+    });
+}
+
+function irParaEtapa(n) {
+    if (n >= etapaAtual) return;
+    document.getElementById(`etapa-${etapaAtual}`).classList.remove('active');
+    etapaAtual = n;
+    document.getElementById(`etapa-${etapaAtual}`).classList.add('active');
+    atualizarStepper();
+    atualizarBotoes();
+}
+
+function proximaEtapa() {
+    if (!validarEtapa(etapaAtual)) return;
+    if (etapaAtual >= totalEtapas - 1) return;
+
+    document.getElementById(`etapa-${etapaAtual}`).classList.remove('active');
+    etapaAtual++;
+    document.getElementById(`etapa-${etapaAtual}`).classList.add('active');
+    atualizarStepper();
+    atualizarBotoes();
+
+    if (etapaAtual === 2) atualizarHabilidades();
+    if (etapaAtual === 3) renderResumo();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function etapaAnterior() {
+    if (etapaAtual <= 0) return;
+    document.getElementById(`etapa-${etapaAtual}`).classList.remove('active');
+    etapaAtual--;
+    document.getElementById(`etapa-${etapaAtual}`).classList.add('active');
+    atualizarStepper();
+    atualizarBotoes();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function atualizarBotoes() {
+    document.getElementById('btn-anterior').style.display = etapaAtual > 0 ? 'inline-block' : 'none';
+    document.getElementById('btn-proximo').style.display  = etapaAtual < totalEtapas - 1 ? 'inline-block' : 'none';
+    document.getElementById('btn-finalizar').style.display = etapaAtual === totalEtapas - 1 ? 'inline-block' : 'none';
+}
+
+// ══════════════════════════════════════════════
+// VALIDAÇÃO
+// ══════════════════════════════════════════════
+function validarEtapa(n) {
+    if (n === 0) {
+        let ok = true;
+        const nome   = document.getElementById('input-nome').value.trim();
+        const origem = document.getElementById('input-origem').value;
+        const idade  = document.getElementById('input-idade').value;
+        const classe = document.querySelector('.classe-card.selected');
+
+        setInvalido('campo-nome',   !nome);
+        setInvalido('campo-origem', !origem);
+        const idadeInvalida = idade && (parseInt(idade) < 1 || parseInt(idade) > 120);
+        setInvalido('campo-idade', idadeInvalida);
+
+        if (!nome || !origem || idadeInvalida) ok = false;
+
+        const alertaClasse = document.getElementById('alerta-classe');
+        if (!classe) { alertaClasse.style.display = 'block'; ok = false; }
+        else          { alertaClasse.style.display = 'none'; }
+        return ok;
+    }
+    return true;
+}
+
+function setInvalido(id, invalido) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    invalido ? el.classList.add('campo-invalido') : el.classList.remove('campo-invalido');
+}
+
+// ══════════════════════════════════════════════
+// CLASSE
+// ══════════════════════════════════════════════
+function selecionarClasse(card) {
+    document.querySelectorAll('.classe-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    document.getElementById('alerta-classe').style.display = 'none';
+}
+
+// ══════════════════════════════════════════════
+// ATRIBUTOS — base 0, sem modificador exibido
+// Cada ponto aumenta 1, máximo 5, custo sempre 1
+// ══════════════════════════════════════════════
+function renderAtributos() {
+    const grid = document.getElementById('atributos-grid');
+    grid.innerHTML = '';
+    ATRIBUTOS.forEach(a => {
+        const v          = atributosValores[a.id];
+        const podeSubir  = pontosRestantes >= 1 && v < MAX_ATRIB;
+        const podeDescer = v > BASE_ATRIB;
+        grid.innerHTML += `
+        <div class="atributo-box">
+            <div class="atributo-nome">${a.nome}</div>
+            <div class="atributo-controles">
+                <button class="atributo-btn" onclick="ajustarAtributo('${a.id}', -1)" ${podeDescer ? '' : 'disabled'}>−</button>
+                <div class="atributo-valor" id="val-${a.id}">${v}</div>
+                <button class="atributo-btn" onclick="ajustarAtributo('${a.id}', 1)" ${podeSubir ? '' : 'disabled'}>+</button>
+            </div>
+        </div>`;
+    });
+}
+
+function ajustarAtributo(id, delta) {
+    const atual = atributosValores[id];
+    const novo  = atual + delta;
+
+    if (novo < BASE_ATRIB || novo > MAX_ATRIB) return;
+
+    if (delta > 0) {
+        if (pontosRestantes < 1) {
+            const av = document.getElementById('aviso-pontos');
+            av.classList.add('show');
+            setTimeout(() => av.classList.remove('show'), 2000);
+            return;
+        }
+        pontosRestantes--;
+    } else {
+        pontosRestantes++;
+    }
+
+    atributosValores[id] = novo;
+    document.getElementById('pontos-restantes').textContent = pontosRestantes;
+    renderAtributos();
+}
+
+// ══════════════════════════════════════════════
+// PERÍCIAS
+// ══════════════════════════════════════════════
+const MAX_PERICIAS = 4;
+
+function renderPericias() {
+    const grid = document.getElementById('pericias-grid');
+    grid.innerHTML = '';
+    PERICIAS.forEach(p => {
+        const sel = periciasSelected.has(p.nome) ? 'selected' : '';
+        const disabled = !sel && periciasSelected.size >= MAX_PERICIAS ? 'disabled' : '';
+        grid.innerHTML += `
+        <div class="pericia-item ${sel} ${disabled}" onclick="togglePericia(this, '${p.nome}')">
+            <div class="pericia-check"></div>
+            <div class="pericia-nome">${p.nome}</div>
+            <div class="pericia-atrib">${p.atrib}</div>
+        </div>`;
+    });
+    document.getElementById('pericias-max').textContent = MAX_PERICIAS;
+}
+
+function togglePericia(el, nome) {
+    if (el.classList.contains('disabled')) return;
+    if (periciasSelected.has(nome)) {
+        periciasSelected.delete(nome);
+        el.classList.remove('selected');
+    } else {
+        if (periciasSelected.size >= MAX_PERICIAS) return;
+        periciasSelected.add(nome);
+        el.classList.add('selected');
+    }
+    document.getElementById('pericias-count').textContent = periciasSelected.size;
+    renderPericias();
+}
+
+// ══════════════════════════════════════════════
+// HABILIDADES
+// ══════════════════════════════════════════════
+function atualizarHabilidades() {
+    const classeCard = document.querySelector('.classe-card.selected');
+    const list = document.getElementById('habilidades-list');
+    if (!classeCard) return;
+    const classe = classeCard.dataset.classe;
+    const habs = HABILIDADES_CLASSE[classe] || [];
+    list.innerHTML = habs.map(h => `
+        <li class="habilidade-item">
+            <div class="habilidade-nome">✦ ${h.nome}</div>
+            <div class="habilidade-desc">${h.desc}</div>
+        </li>`).join('');
+}
+
+// ══════════════════════════════════════════════
+// RESUMO
+// ══════════════════════════════════════════════
+function renderResumo() {
+    const nome       = document.getElementById('input-nome').value.trim();
+    const codinome   = document.getElementById('input-codinome').value.trim();
+    const nivel      = document.getElementById('input-nivel').value;
+    const origem     = document.getElementById('input-origem').value;
+    const classeCard = document.querySelector('.classe-card.selected');
+    const classe     = classeCard ? classeCard.dataset.classe : '—';
+    const classeIcon = classeCard ? classeCard.querySelector('.classe-icon').textContent : '';
+
+    const atribHtml = ATRIBUTOS.map(a => {
+        const v = atributosValores[a.id];
+        return `<div style="text-align:center">
+            <div style="font-size:0.7rem;letter-spacing:2px;color:#666;text-transform:uppercase">${a.abrev}</div>
+            <div style="font-size:1.4rem;font-weight:700">${v}</div>
+        </div>`;
+    }).join('');
+
+    const periciasHtml = [...periciasSelected].map(p =>
+        `<span style="background:#2a0050;color:var(--purple-neon);border-radius:4px;padding:3px 10px;font-size:0.8rem;font-family:'Share Tech Mono',monospace;letter-spacing:1px;">${p}</span>`
+    ).join(' ');
+
+    document.getElementById('resumo-final').innerHTML = `
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+            <div style="font-size:3rem">${classeIcon}</div>
+            <div>
+                <div style="font-size:1.8rem;font-weight:700">${nome}${codinome ? ` <span style="color:#555;font-size:1rem">"${codinome}"</span>` : ''}</div>
+                <div style="color:var(--purple-neon);font-family:'Share Tech Mono',monospace;letter-spacing:2px;font-size:0.85rem">${classe} ▸ NÍVEL ${nivel} ▸ ${origem}</div>
+            </div>
+        </div>
+        <hr style="border-color:#2a0050;margin:16px 0;">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;">${atribHtml}</div>
+        <hr style="border-color:#2a0050;margin:16px 0;">
+        <div style="font-size:0.75rem;letter-spacing:2px;color:#666;text-transform:uppercase;margin-bottom:10px;">Perícias Treinadas</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">${periciasHtml || '<span style="color:#444;font-size:0.8rem;font-family:monospace">Nenhuma selecionada</span>'}</div>
+    `;
+}
+
+// ══════════════════════════════════════════════
+// SALVAR
+// ══════════════════════════════════════════════
+function finalizarFicha() {
+    const nome       = document.getElementById('input-nome').value.trim();
+    const codinome   = document.getElementById('input-codinome').value.trim();
+    const idade      = document.getElementById('input-idade').value;
+    const nivel      = document.getElementById('input-nivel').value;
+    const origem     = document.getElementById('input-origem').value;
+    const classeCard = document.querySelector('.classe-card.selected');
+    const classe     = classeCard ? classeCard.dataset.classe : '';
+
+    const id = Date.now();
+    fichaIdCriada = id;
+
+    const ficha = {
+        id, nome, codinome, idade, nivel, origem, classe,
+        atributos:    { ...atributosValores },
+        pericias:     [...periciasSelected],
+        personalidade: document.getElementById('input-personalidade').value,
+        ideal:         document.getElementById('input-ideal').value,
+        vinculo:       document.getElementById('input-vinculo').value,
+        fraqueza:      document.getElementById('input-fraqueza').value,
+        historia:      document.getElementById('input-historia').value,
+        criadoEm:      new Date().toLocaleDateString('pt-BR'),
+    };
+
+    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    agentes.push(ficha);
+    localStorage.setItem('lista_agentes', JSON.stringify(agentes));
+
+    document.getElementById('modal-nome').textContent   = nome + (codinome ? ` "${codinome}"` : '');
+    document.getElementById('modal-classe').textContent = `${classe} • Nível ${nivel} • ${origem}`;
+    document.getElementById('modal-sucesso').classList.add('show');
+}
+
+function irParaFicha()    { window.location.href = `ficha.html?id=${fichaIdCriada}`; }
+function irParaAgentes()  { window.location.href = 'index.html?view=agentes'; }
+function criarNovo()      { window.location.reload(); }
+</script>
+</body>
+</html>

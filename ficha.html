@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F.I.C.H.A. – Ficha do Agente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --purple:      #8a2be2;
+            --purple-neon: #bc6ff1;
+            --purple-dark: #3a0063;
+            --purple-glow: rgba(138,43,226,0.45);
+            --red:         #e84040;
+            --red-dark:    #8b0000;
+            --blue:        #4a9eff;
+            --orange:      #ff8c00;
+            --green:       #39d353;
+            --yellow:      #ffd700;
+            --bg:          #0a000f;
+            --card:        #110018;
+            --border:      #2a0050;
+            --text-dim:    #888;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Oswald', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #000000 100%);
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .custom-nav { background: black; border-bottom: 2px solid #222; }
+        .nav-link { font-weight: 700; }
+        .nav-link:hover { color: #ff0000 !important; }
+
+        .ficha-wrapper {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 16px;
+            max-width: 1300px;
+            margin: 24px auto;
+            padding: 0 16px 60px;
+        }
+
+        .col-esquerda { display: flex; flex-direction: column; gap: 12px; }
+
+        .card-personagem { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+
+        .foto-wrapper {
+            width: 72px; height: 72px; border-radius: 8px; border: 2px solid var(--purple);
+            overflow: hidden; flex-shrink: 0; position: relative; cursor: pointer;
+        }
+        .foto-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .foto-overlay {
+            position: absolute; inset: 0; background: rgba(138,43,226,0.75);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s; font-size: 1.3rem;
+        }
+        .foto-wrapper:hover .foto-overlay { opacity: 1; }
+        #foto-input { display: none; }
+
+        .label-field { font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 2px; }
+        .value-field { font-size: 0.95rem; font-weight: 600; color: white; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px; }
+
+        .card-atributos {
+            background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+            padding: 16px; display: flex; flex-direction: column; align-items: center;
+        }
+        .radar-container { position: relative; width: 220px; height: 220px; margin: 8px auto; }
+        #radar-svg { width: 100%; height: 100%; }
+        .atrib-bubble { position: absolute; display: flex; flex-direction: column; align-items: center; cursor: default; }
+        .atrib-label { font-size: 0.5rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+        .atrib-val { font-size: 1.3rem; font-weight: 700; color: white; line-height: 1; }
+        .bubble-FOR { top: 44%; left: -2%; transform: translate(-50%,-50%); }
+        .bubble-AGI { top: 13%; left: 50%; transform: translate(-50%,-50%); }
+        .bubble-INT { top: 44%; right: -2%; transform: translate(50%,-50%); }
+        .bubble-PRE { bottom: 5%; left: 30%; transform: translate(-50%, 50%); }
+        .bubble-VIG { bottom: 5%; right: 30%; transform: translate(50%, 50%); }
+        .bubble-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 0.55rem; letter-spacing: 2px; color: var(--text-dim); text-align: center; text-transform: uppercase; }
+
+        .atrib-dados-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; width: 100%; margin-top: 10px; }
+        .atrib-dado-btn {
+            background: #0d0010; border: 1px solid var(--border); border-radius: 6px;
+            padding: 6px 4px; text-align: center; cursor: pointer; transition: 0.2s;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+        }
+        .atrib-dado-btn:hover { border-color: var(--purple); background: #1a0033; box-shadow: 0 0 8px var(--purple-glow); }
+        .atrib-dado-btn:active { transform: scale(0.95); }
+        .atrib-dado-btn .btn-label { font-size: 0.5rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+        .atrib-dado-btn .btn-val   { font-size: 1rem; font-weight: 700; color: white; line-height: 1; }
+        .atrib-dado-btn .btn-dado  { font-size: 0.6rem; color: var(--purple-neon); font-family: 'Share Tech Mono', monospace; }
+        .atrib-dado-btn .dice-icon { font-size: 0.8rem; opacity: 0.5; }
+
+        .atrib-resultado {
+            width: 100%; background: #0d0010; border: 1px solid var(--border);
+            border-radius: 6px; padding: 8px 12px; margin-top: 6px;
+            display: none; animation: fadeIn 0.3s ease; font-family: 'Share Tech Mono', monospace;
+        }
+        .atrib-resultado.show { display: block; }
+        .atrib-res-num { font-size: 1.6rem; font-weight: 700; color: var(--purple-neon); line-height: 1; }
+        .atrib-res-det { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+
+        .nex-row { display: flex; gap: 8px; width: 100%; margin-top: 8px; }
+        .nex-box { flex: 1; background: #0d0010; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; text-align: center; }
+        .nex-box .val { font-size: 1rem; font-weight: 700; color: white; }
+        .nex-box .lbl { font-size: 0.55rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; }
+
+        .card-recursos { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+        .recurso-row { display: flex; flex-direction: column; gap: 4px; }
+        .recurso-header { display: flex; justify-content: space-between; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; }
+        .recurso-val { font-family: 'Share Tech Mono', monospace; }
+        .barra-track { height: 18px; background: #1a0033; border-radius: 4px; overflow: hidden; }
+        .barra-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+        .barra-vida    { background: linear-gradient(90deg, var(--red-dark), var(--red)); }
+        .barra-san     { background: linear-gradient(90deg, #3a0080, var(--purple)); }
+        .barra-esforco { background: linear-gradient(90deg, #804000, var(--orange)); }
+        .recurso-controles { display: flex; gap: 4px; }
+        .btn-recurso {
+            background: #1a0033; border: 1px solid var(--border); color: var(--text-dim);
+            border-radius: 3px; width: 22px; height: 22px; font-size: 0.8rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0;
+        }
+        .btn-recurso:hover { background: var(--purple); color: white; border-color: var(--purple); }
+        .btn-recurso.big { padding: 0 6px; width: auto; font-size: 0.6rem; letter-spacing: 1px; }
+
+        .card-defesa { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+        .defesa-grid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; align-items: center; }
+        .defesa-escudo { width: 54px; height: 62px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .defesa-escudo svg { position: absolute; top:0; left:0; }
+        .defesa-num { position: relative; font-size: 1.4rem; font-weight: 700; z-index: 1; }
+        .defesa-col { text-align: center; }
+        .defesa-col .val { font-size: 1.1rem; font-weight: 700; }
+        .defesa-col .lbl { font-size: 0.55rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; }
+        .defesa-detalhe { grid-column: 1/-1; font-size: 0.65rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; margin-top: 4px; }
+
+        .col-direita { display: flex; flex-direction: column; gap: 12px; }
+
+        .abas { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 6px; flex-wrap: wrap; }
+        .aba-btn {
+            flex: 1; background: transparent; border: 1px solid transparent; color: var(--text-dim);
+            font-family: 'Oswald', sans-serif; font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase; padding: 8px 4px;
+            border-radius: 6px; cursor: pointer; transition: 0.2s; min-width: 60px;
+        }
+        .aba-btn:hover { color: white; background: #1a0033; }
+        .aba-btn.active { background: var(--purple-dark); border-color: var(--purple); color: var(--purple-neon); }
+        .aba-panel { display: none; }
+        .aba-panel.active { display: block; }
+
+        .card-pericias { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        .pericias-header {
+            display: grid; grid-template-columns: 1fr 50px 55px 55px 55px 70px;
+            padding: 8px 16px; background: #0d0010; border-bottom: 1px solid var(--border);
+            font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; text-align: center;
+        }
+        .pericias-header div:first-child { text-align: left; }
+        .pericia-row {
+            display: grid; grid-template-columns: 1fr 50px 55px 55px 55px 70px;
+            padding: 5px 16px; border-bottom: 1px solid #150025; align-items: center; transition: 0.15s;
+        }
+        .pericia-row:hover { background: #150025; }
+        .pericia-nome-col { display: flex; align-items: center; gap: 8px; }
+        .pericia-nome-txt { font-size: 0.8rem; font-weight: 600; }
+        .pericia-atrib-badge { font-size: 0.6rem; font-family: 'Share Tech Mono', monospace; background: #1a0033; color: var(--purple-neon); padding: 1px 5px; border-radius: 3px; }
+        .pericia-cell { text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; }
+        .pericia-input { background: #0d0010; border: 1px solid var(--border); color: white; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; width: 44px; padding: 2px 4px; border-radius: 3px; text-align: center; }
+        .pericia-input:focus { border-color: var(--purple); outline: none; }
+        .pericia-treinada { color: var(--green); font-weight: 700; }
+        .treinada-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--purple); flex-shrink: 0; }
+
+        .btn-rolar-pericia {
+            background: #1a0033; border: 1px solid var(--border); color: var(--purple-neon);
+            font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 1px;
+            padding: 3px 6px; border-radius: 4px; cursor: pointer; transition: 0.15s;
+            white-space: nowrap; width: 62px; text-align: center;
+        }
+        .btn-rolar-pericia:hover { background: var(--purple); color: white; border-color: var(--purple); box-shadow: 0 0 6px var(--purple-glow); }
+        .btn-rolar-pericia:active { transform: scale(0.94); }
+
+        .log-rolagens {
+            background: #080010; border: 1px solid var(--border); border-radius: 8px;
+            max-height: 220px; overflow-y: auto; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem; margin-bottom: 12px;
+        }
+        .log-rolagens::-webkit-scrollbar { width: 4px; }
+        .log-rolagens::-webkit-scrollbar-track { background: #0d0010; }
+        .log-rolagens::-webkit-scrollbar-thumb { background: var(--purple-dark); border-radius: 2px; }
+        .log-entrada {
+            padding: 8px 14px; border-bottom: 1px solid #150025;
+            display: flex; justify-content: space-between; align-items: center;
+            animation: slideIn 0.25s ease;
+        }
+        @keyframes slideIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+        .log-nome  { color: #aaa; font-size: 0.7rem; }
+        .log-expr  { color: var(--text-dim); font-size: 0.65rem; }
+        .log-total { font-size: 1.1rem; font-weight: 700; }
+        .log-total.critico { color: var(--green); text-shadow: 0 0 6px var(--green); }
+        .log-total.falha   { color: var(--red);   text-shadow: 0 0 6px var(--red); }
+        .log-total.normal  { color: var(--purple-neon); }
+        .log-tag { font-size: 0.65rem; padding: 2px 7px; border-radius: 3px; letter-spacing: 1px; margin-left: 6px; }
+        .log-tag.critico { background: #003300; color: var(--green); }
+        .log-tag.falha   { background: #330000; color: var(--red); }
+        .log-vazio { color: #333; font-size: 0.75rem; padding: 14px; text-align: center; letter-spacing: 1px; }
+
+        .card-combate { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+        .btn-novo-ataque {
+            background: var(--purple-dark); border: 1px solid var(--purple); color: white;
+            font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 2px;
+            font-size: 0.85rem; padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-novo-ataque:hover { background: var(--purple); box-shadow: 0 0 12px var(--purple-glow); }
+        .ataque-row {
+            background: #0d0010; border: 1px solid var(--border); border-radius: 6px;
+            padding: 10px 14px; margin-bottom: 8px; display: grid;
+            grid-template-columns: 1fr auto auto auto auto; gap: 8px; align-items: center;
+        }
+        .ataque-nome { font-size: 0.9rem; font-weight: 700; }
+        .ataque-dado { font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--red); }
+        .ataque-tipo { font-size: 0.65rem; background: #2a0050; color: var(--purple-neon); padding: 2px 8px; border-radius: 3px; letter-spacing: 1px; }
+        .btn-rolar { background: var(--red-dark); border: none; color: white; font-family: 'Oswald', sans-serif; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        .btn-rolar:hover { background: var(--red); }
+
+        .rolar-dados-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .dado-select { background: #0d0010; border: 1px solid var(--border); color: white; font-family: 'Oswald', sans-serif; font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+        .dado-expr-input { background: #0d0010; border: 1px solid var(--border); color: white; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; width: 120px; }
+        .dado-expr-input:focus { border-color: var(--purple); outline: none; }
+        .btn-rolar-livre { background: #1a0033; border: 1px solid var(--border); color: var(--purple-neon); font-family: 'Oswald', sans-serif; font-size: 0.8rem; font-weight: 700; padding: 6px 16px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-rolar-livre:hover { background: var(--purple); border-color: var(--purple); color: white; }
+        .btn-limpar-log { background: transparent; border: 1px solid #2a0040; color: #444; font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        .btn-limpar-log:hover { border-color: var(--red-dark); color: var(--red); }
+
+        .habilidade-card { background: #0d0010; border: 1px solid var(--border); border-left: 4px solid var(--purple); border-radius: 6px; padding: 12px 16px; margin-bottom: 8px; }
+        .hab-nome { color: var(--purple-neon); font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; }
+        .hab-desc { color: #888; font-size: 0.8rem; margin-top: 4px; font-family: 'Share Tech Mono', monospace; line-height: 1.5; }
+
+        .descricao-field { margin-bottom: 14px; }
+        .descricao-field label { font-size: 0.65rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 6px; }
+        .descricao-field textarea { background: #0d0010; border: 1px solid var(--border); color: white; font-family: 'Oswald', sans-serif; font-size: 0.9rem; width: 100%; padding: 8px 12px; border-radius: 6px; resize: vertical; }
+        .descricao-field textarea:focus { border-color: var(--purple); outline: none; }
+
+        .inventario-item { background: #0d0010; border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+        .inv-nome { font-size: 0.85rem; font-weight: 600; }
+        .inv-qtd  { font-size: 0.75rem; font-family: 'Share Tech Mono', monospace; color: var(--text-dim); }
+        .btn-del-item { background: none; border: none; color: #444; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+        .btn-del-item:hover { color: var(--red); }
+        .add-item-row { display: flex; gap: 8px; margin-top: 10px; }
+        .inv-input { flex: 1; background: #0d0010; border: 1px solid var(--border); color: white; font-family: 'Oswald', sans-serif; font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; }
+        .inv-input:focus { border-color: var(--purple); outline: none; }
+        .btn-add-item { background: var(--purple-dark); border: 1px solid var(--purple); color: white; font-family: 'Oswald', sans-serif; font-size: 0.8rem; font-weight: 700; padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-add-item:hover { background: var(--purple); }
+
+        .sec-title { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; }
+
+        .toast-msg { position: fixed; bottom: 24px; right: 24px; background: #1a0033; border: 1px solid var(--purple); color: var(--purple-neon); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; padding: 10px 20px; border-radius: 6px; box-shadow: 0 0 20px var(--purple-glow); z-index: 9999; display: none; animation: fadeIn 0.3s ease; }
+        .toast-msg.show { display: block; }
+
+        @keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+
+        @media (max-width: 768px) { .ficha-wrapper { grid-template-columns: 1fr; } }
+        .footer-link { color: #888; text-decoration: none; }
+        .footer-link:hover { color: var(--purple-neon); }
+
+        .btn-voltar {
+            background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+            font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 2px;
+            padding: 6px 16px; border-radius: 4px; cursor: pointer; transition: 0.2s;
+            text-decoration: none; display: inline-block;
+        }
+        .btn-voltar:hover { border-color: var(--purple); color: var(--purple-neon); }
+
+        @keyframes diceSpin { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.15); } 100% { transform: rotate(360deg) scale(1); } }
+        .dice-spinning { animation: diceSpin 0.4s ease; }
+        @keyframes flashCrit { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 14px var(--green); } }
+        @keyframes flashFail { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 14px var(--red); } }
+        .row-critico { animation: flashCrit 0.6s ease; }
+        .row-falha   { animation: flashFail 0.6s ease; }
+
+        /* RITUAIS */
+        .rituais-topo { margin-bottom: 14px; }
+        .rituais-busca-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+        .rituais-search-wrap { flex: 1; min-width: 140px; position: relative; display: flex; align-items: center; }
+        .rituais-search-wrap .search-icon { position: absolute; left: 10px; color: var(--text-dim); font-size: 1rem; pointer-events: none; font-family: 'Share Tech Mono', monospace; }
+        .rituais-input-busca { width: 100%; padding: 7px 10px 7px 30px; background: #0d0010; border: 1px solid var(--border); color: white; font-family: 'Oswald', sans-serif; font-size: 0.85rem; border-radius: 6px; transition: border-color 0.2s; }
+        .rituais-input-busca:focus { border-color: var(--purple); outline: none; }
+        .rituais-input-busca::placeholder { color: #444; }
+        .rituais-count { font-size: 0.6rem; letter-spacing: 2px; color: #444; text-transform: uppercase; font-family: 'Share Tech Mono', monospace; margin-bottom: 6px; }
+        .rituais-lista { display: flex; flex-direction: column; gap: 6px; }
+        .ritual-card-f { background: #0d0010; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: border-color 0.15s; }
+        .ritual-card-f:hover { border-color: #3a0070; }
+        .ritual-card-hdr { display: flex; align-items: flex-start; justify-content: space-between; padding: 10px 14px; cursor: pointer; gap: 10px; transition: background 0.15s; }
+        .ritual-card-hdr:hover { background: #130020; }
+        .ritual-hdr-esq { flex: 1; }
+        .ritual-card-nome { font-size: 0.9rem; font-weight: 700; color: white; margin-bottom: 5px; }
+        .ritual-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+        .rbadge { font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; font-family: 'Oswald', sans-serif; font-weight: 700; }
+        .rbadge-MORTE        { background: #1a0010; color: #e84040; border: 1px solid #3a0020; }
+        .rbadge-SANGUE       { background: #200000; color: #ff5555; border: 1px solid #440000; }
+        .rbadge-ENERGIA      { background: #00101a; color: #4a9eff; border: 1px solid #003366; }
+        .rbadge-CONHECIMENTO { background: #1a0033; color: var(--purple-neon); border: 1px solid #3a0063; }
+        .rbadge-MEDO         { background: #0d0800; color: var(--orange); border: 1px solid #3a2000; }
+        .rbadge-DESCONHECIDO { background: #0d0d0d; color: #555; border: 1px solid #222; }
+        .rbadge-src          { background: #0d0010; color: #555; border: 1px solid #2a0040; }
+        .ritual-toggle { font-size: 0.7rem; color: #444; flex-shrink: 0; padding-top: 2px; transition: color 0.15s; }
+        .ritual-card-hdr:hover .ritual-toggle { color: var(--purple-neon); }
+        .ritual-card-body { padding: 0 14px 14px; border-top: 1px solid #150025; animation: fadeIn 0.2s ease; }
+        .ritual-desc-txt { font-size: 0.8rem; color: #999; font-family: 'Share Tech Mono', monospace; line-height: 1.6; margin: 10px 0; }
+        .ritual-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 12px; margin-bottom: 12px; }
+        .ritual-meta-item { font-size: 0.65rem; color: #555; font-family: 'Share Tech Mono', monospace; }
+        .ritual-meta-item span { color: #888; }
+        .ritual-rolar-section { background: #080010; border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 8px; }
+        .ritual-rolar-title { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+        .ritual-rolar-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .ritual-dado-input { background: #0d0010; border: 1px solid var(--border); color: white; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; padding: 5px 9px; border-radius: 5px; width: 110px; }
+        .ritual-dado-input:focus { border-color: var(--purple); outline: none; }
+        .ritual-dado-presets { display: flex; gap: 4px; flex-wrap: wrap; }
+        .ritual-preset-btn { background: #1a0033; border: 1px solid var(--border); color: var(--purple-neon); font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: 0.15s; }
+        .ritual-preset-btn:hover { background: var(--purple); border-color: var(--purple); color: white; }
+        .ritual-btn-rolar { background: var(--purple-dark); border: 1px solid var(--purple); color: white; font-family: 'Oswald', sans-serif; font-size: 0.75rem; font-weight: 700; padding: 5px 14px; border-radius: 5px; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        .ritual-btn-rolar:hover { background: var(--purple); box-shadow: 0 0 8px var(--purple-glow); }
+        .ritual-btn-rolar:active { transform: scale(0.95); }
+        .ritual-resultado { background: #080010; border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; margin-top: 8px; animation: fadeIn 0.25s ease; display: flex; justify-content: space-between; align-items: center; }
+        .res-tipo  { font-size: 0.55rem; letter-spacing: 2px; color: #555; text-transform: uppercase; font-family: 'Share Tech Mono', monospace; }
+        .res-num   { font-size: 1.8rem; font-weight: 700; line-height: 1; color: var(--purple-neon); }
+        .res-det   { font-size: 0.65rem; color: #555; font-family: 'Share Tech Mono', monospace; margin-top: 2px; }
+        .res-num.r-critico { color: var(--green); text-shadow: 0 0 8px rgba(57,211,83,0.4); }
+        .res-num.r-falha   { color: var(--red);   text-shadow: 0 0 8px rgba(232,64,64,0.4); }
+        .res-tag { font-size: 0.65rem; padding: 4px 10px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
+        .res-tag.r-critico { background: #003300; color: var(--green); }
+        .res-tag.r-falha   { background: #330000; color: var(--red); }
+        .res-tag.r-normal  { background: #1a0033; color: var(--purple-neon); }
+        .rituais-vazio { text-align: center; padding: 24px; color: #333; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg custom-nav navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand fs-2" href="index.html">
+      <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="52" height="52" class="d-inline-block align-text-center">
+      F.I.C.H.A.
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <div class="navbar-nav">
+        <a class="nav-link px-3" href="index.html?view=agentes">Agentes</a>
+        <a class="nav-link px-3" href="#">Campanhas</a>
+        <a class="nav-link px-3" href="#">Homebrew</a>
+      </div>
+    </div>
+    <div class="d-none d-lg-flex pe-3">
+      <a href="index.html?view=agentes" class="btn-voltar">← Voltar</a>
+    </div>
+  </div>
+</nav>
+
+<input type="file" id="foto-input" accept="image/*">
+
+<div class="ficha-wrapper">
+  <!-- COLUNA ESQUERDA -->
+  <div class="col-esquerda">
+    <div class="card-personagem">
+      <div class="d-flex gap-3 mb-3">
+        <div class="foto-wrapper" onclick="document.getElementById('foto-input').click()" title="Clique para trocar a foto">
+          <img id="foto-agente" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Foto">
+          <div class="foto-overlay">📷</div>
+        </div>
+        <div style="flex:1">
+          <div class="label-field">Personagem</div>
+          <div class="value-field" id="display-nome">—</div>
+          <div class="label-field">Criado em</div>
+          <div style="color:var(--text-dim);font-size:0.85rem" id="display-criado">—</div>
+        </div>
+      </div>
+      <div class="label-field">Origem</div>
+      <div class="value-field" id="display-origem">—</div>
+      <div class="label-field">Classe</div>
+      <div style="color:var(--purple-neon);font-size:0.95rem;font-weight:700;" id="display-classe">—</div>
+      <div style="margin-top:8px;font-size:0.6rem;color:#444;letter-spacing:1px;font-family:'Share Tech Mono',monospace;">▸ Clique na foto para alterar</div>
+    </div>
+
+    <div class="card-atributos">
+      <div style="font-size:0.65rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;">Atributos</div>
+      <div class="radar-container">
+        <svg id="radar-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+          <polygon id="radar-bg"  points="" fill="rgba(58,0,99,0.15)" stroke="#2a0050" stroke-width="1"/>
+          <polygon id="radar-val" points="" fill="rgba(138,43,226,0.25)" stroke="#8a2be2" stroke-width="1.5"/>
+          <g id="radar-axes" stroke="#2a0050" stroke-width="1" opacity="0.6"></g>
+          <circle cx="110" cy="110" r="25"  fill="none" stroke="#2a0050" stroke-width="0.5" opacity="0.4"/>
+          <circle cx="110" cy="110" r="50"  fill="none" stroke="#2a0050" stroke-width="0.5" opacity="0.4"/>
+          <circle cx="110" cy="110" r="75"  fill="none" stroke="#2a0050" stroke-width="0.5" opacity="0.4"/>
+          <circle cx="110" cy="110" r="90"  fill="none" stroke="#2a0050" stroke-width="0.5" opacity="0.3"/>
+          <circle cx="110" cy="110" r="3" fill="#8a2be2" opacity="0.6"/>
+        </svg>
+        <div class="atrib-bubble bubble-FOR"><div class="atrib-label">FOR</div><div class="atrib-val" id="b-FOR">0</div></div>
+        <div class="atrib-bubble bubble-AGI"><div class="atrib-label">AGI</div><div class="atrib-val" id="b-AGI">0</div></div>
+        <div class="atrib-bubble bubble-INT"><div class="atrib-label">INT</div><div class="atrib-val" id="b-INT">0</div></div>
+        <div class="atrib-bubble bubble-PRE"><div class="atrib-label">PRE</div><div class="atrib-val" id="b-PRE">0</div></div>
+        <div class="atrib-bubble bubble-VIG"><div class="atrib-label">VIG</div><div class="atrib-val" id="b-VIG">0</div></div>
+        <div class="bubble-center">ATRIBUTOS</div>
+      </div>
+
+      <div style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;align-self:flex-start;">Testar Atributo</div>
+      <div class="atrib-dados-grid">
+        <div class="atrib-dado-btn" onclick="rolarAtributo('FOR')" id="btn-FOR">
+          <div class="btn-label">FOR</div><div class="btn-val" id="bv-FOR">0</div>
+          <div class="btn-dado" id="bd-FOR">d20+0</div><div class="dice-icon">🎲</div>
+        </div>
+        <div class="atrib-dado-btn" onclick="rolarAtributo('AGI')" id="btn-AGI">
+          <div class="btn-label">AGI</div><div class="btn-val" id="bv-AGI">0</div>
+          <div class="btn-dado" id="bd-AGI">d20+0</div><div class="dice-icon">🎲</div>
+        </div>
+        <div class="atrib-dado-btn" onclick="rolarAtributo('INT')" id="btn-INT">
+          <div class="btn-label">INT</div><div class="btn-val" id="bv-INT">0</div>
+          <div class="btn-dado" id="bd-INT">d20+0</div><div class="dice-icon">🎲</div>
+        </div>
+        <div class="atrib-dado-btn" onclick="rolarAtributo('PRE')" id="btn-PRE">
+          <div class="btn-label">PRE</div><div class="btn-val" id="bv-PRE">0</div>
+          <div class="btn-dado" id="bd-PRE">d20+0</div><div class="dice-icon">🎲</div>
+        </div>
+        <div class="atrib-dado-btn" onclick="rolarAtributo('VIG')" id="btn-VIG">
+          <div class="btn-label">VIG</div><div class="btn-val" id="bv-VIG">0</div>
+          <div class="btn-dado" id="bd-VIG">d20+0</div><div class="dice-icon">🎲</div>
+        </div>
+      </div>
+
+      <div class="atrib-resultado" id="atrib-resultado">
+        <div style="display:flex;align-items:baseline;gap:10px;justify-content:space-between;">
+          <div>
+            <div style="font-size:0.55rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;" id="atrib-res-nome">—</div>
+            <div class="atrib-res-num" id="atrib-res-num">—</div>
+            <div class="atrib-res-det" id="atrib-res-det">—</div>
+          </div>
+          <div id="atrib-res-tag" style="font-size:0.7rem;padding:3px 8px;border-radius:4px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;"></div>
+        </div>
+      </div>
+
+      <div class="nex-row">
+        <div class="nex-box"><div class="val" id="nex-val">5%</div><div class="lbl">NEX</div></div>
+        <div class="nex-box"><div class="val" id="pe-val">3</div><div class="lbl">PE/turno</div></div>
+        <div class="nex-box"><div class="val" id="desl-val">9m</div><div class="lbl">Deslocamento</div></div>
+      </div>
+    </div>
+
+    <div class="card-recursos">
+      <div class="recurso-row">
+        <div class="recurso-header">
+          <span style="color:#e84040;letter-spacing:2px;">VIDA</span>
+          <span class="recurso-val"><span id="vida-atual">20</span> / <span id="vida-max">20</span></span>
+        </div>
+        <div class="barra-track"><div class="barra-fill barra-vida" id="barra-vida" style="width:100%"></div></div>
+        <div class="recurso-controles">
+          <button class="btn-recurso big" onclick="ajustarRecurso('vida',-5)">«</button>
+          <button class="btn-recurso"     onclick="ajustarRecurso('vida',-1)">‹</button>
+          <button class="btn-recurso"     onclick="ajustarRecurso('vida',1)">›</button>
+          <button class="btn-recurso big" onclick="ajustarRecurso('vida',5)">»</button>
+        </div>
+      </div>
+      <div class="recurso-row">
+        <div class="recurso-header">
+          <span style="color:var(--purple-neon);letter-spacing:2px;">SANIDADE</span>
+          <span class="recurso-val"><span id="san-atual">20</span> / <span id="san-max">20</span></span>
+        </div>
+        <div class="barra-track"><div class="barra-fill barra-san" id="barra-san" style="width:100%"></div></div>
+        <div class="recurso-controles">
+          <button class="btn-recurso big" onclick="ajustarRecurso('san',-5)">«</button>
+          <button class="btn-recurso"     onclick="ajustarRecurso('san',-1)">‹</button>
+          <button class="btn-recurso"     onclick="ajustarRecurso('san',1)">›</button>
+          <button class="btn-recurso big" onclick="ajustarRecurso('san',5)">»</button>
+        </div>
+      </div>
+      <div class="recurso-row">
+        <div class="recurso-header">
+          <span style="color:var(--orange);letter-spacing:2px;">ESFORÇO</span>
+          <span class="recurso-val"><span id="esf-atual">10</span> / <span id="esf-max">10</span></span>
+        </div>
+        <div class="barra-track"><div class="barra-fill barra-esforco" id="barra-esforco" style="width:100%"></div></div>
+        <div class="recurso-controles">
+          <button class="btn-recurso big" onclick="ajustarRecurso('esf',-5)">«</button>
+          <button class="btn-recurso"     onclick="ajustarRecurso('esf',-1)">‹</button>
+          <button class="btn-recurso"     onclick="ajustarRecurso('esf',1)">›</button>
+          <button class="btn-recurso big" onclick="ajustarRecurso('esf',5)">»</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-defesa">
+      <div class="sec-title">Combate</div>
+      <div class="defesa-grid">
+        <div class="defesa-escudo">
+          <svg width="54" height="62" viewBox="0 0 54 62" fill="none">
+            <path d="M27 2L52 12V32C52 46 38 58 27 61C16 58 2 46 2 32V12L27 2Z" fill="#0d0010" stroke="#8a2be2" stroke-width="1.5"/>
+          </svg>
+          <div class="defesa-num" id="defesa-val">10</div>
+        </div>
+        <div class="defesa-col"><div class="val" id="bloqueio-val">0</div><div class="lbl">Bloqueio</div></div>
+        <div class="defesa-col"><div class="val" id="esquiva-val">10</div><div class="lbl">Esquiva</div></div>
+        <div class="defesa-detalhe" id="defesa-detalhe">= 10 + AGI</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLUNA DIREITA -->
+  <div class="col-direita">
+    <div class="abas" id="abas-container">
+      <button class="aba-btn active" data-aba="combate"     onclick="trocarAba('combate',this)">Combate</button>
+      <button class="aba-btn"        data-aba="pericias"    onclick="trocarAba('pericias',this)">Perícias</button>
+      <button class="aba-btn"        data-aba="habilidades" onclick="trocarAba('habilidades',this)">Habilidades</button>
+      <button class="aba-btn"        data-aba="rituais"     onclick="trocarAba('rituais',this)">Rituais</button>
+      <button class="aba-btn"        data-aba="inventario"  onclick="trocarAba('inventario',this)">Inventário</button>
+      <button class="aba-btn"        data-aba="descricao"   onclick="trocarAba('descricao',this)">Descrição</button>
+    </div>
+
+    <!-- ABA COMBATE -->
+    <div class="aba-panel active card-combate" id="aba-combate">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="sec-title" style="margin-bottom:0;">Log de Rolagens</div>
+        <button class="btn-limpar-log" onclick="limparLog()">🗑 Limpar</button>
+      </div>
+      <div class="log-rolagens" id="log-rolagens">
+        <div class="log-vazio" id="log-vazio">▸ Nenhuma rolagem ainda. Clique em 🎲 para rolar!</div>
+      </div>
+      <div class="sec-title mt-2">Rolar Dado Livre</div>
+      <div class="rolar-dados-row">
+        <select class="dado-select" id="dado-tipo">
+          <option>d4</option><option>d6</option><option>d8</option>
+          <option selected>d20</option><option>d100</option>
+        </select>
+        <input type="number" class="dado-select" id="dado-qtd" value="1" min="1" max="10" style="width:60px;" title="Quantidade">
+        <span style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">OU</span>
+        <input type="text" class="dado-expr-input" id="dado-expr" placeholder="ex: 2d6+3" title="Expressão personalizada">
+        <button class="btn-rolar-livre" onclick="rolarDado()">🎲 ROLAR</button>
+      </div>
+      <div class="sec-title mt-3">Ataques</div>
+      <button class="btn-novo-ataque mb-3" onclick="abrirModalAtaque()">+ Novo Ataque</button>
+      <div id="lista-ataques">
+        <p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Você ainda não possui ataques.</p>
+      </div>
+    </div>
+
+    <!-- ABA PERÍCIAS -->
+    <div class="aba-panel card-pericias" id="aba-pericias">
+      <div class="pericias-header">
+        <div>Perícia</div><div>Atrib</div><div>Bônus</div><div>Treino</div><div>Outros</div><div>Rolar</div>
+      </div>
+      <div id="lista-pericias"></div>
+    </div>
+
+    <!-- ABA HABILIDADES -->
+    <div class="aba-panel card-combate" id="aba-habilidades">
+      <div class="sec-title">Habilidades da Classe</div>
+      <div id="lista-habilidades"><p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Carregando...</p></div>
+    </div>
+
+    <!-- ABA RITUAIS -->
+    <div class="aba-panel card-combate" id="aba-rituais">
+      <div class="rituais-topo">
+        <div class="rituais-busca-row">
+          <div class="rituais-search-wrap">
+            <span class="search-icon">⌕</span>
+            <input type="text" id="rituais-busca" class="rituais-input-busca" placeholder="Filtrar rituais...">
+          </div>
+          <button class="btn-add-item" onclick="abrirModalRitual()" style="white-space:nowrap;">+ Adicionar</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;font-family:'Share Tech Mono',monospace;">
+            DT DE RITUAIS &nbsp;<span id="dt-rituais" style="color:white;font-size:1rem;font-weight:700;">—</span>
+          </div>
+          <button class="btn-novo-ataque" onclick="abrirModalRitualCustom()" style="font-size:0.75rem;padding:6px 14px;">+ Novo Ritual</button>
+        </div>
+        <div class="rituais-count" id="rituais-count">— rituais</div>
+      </div>
+      <div class="rituais-lista" id="rituais-lista"></div>
+    </div>
+
+    <!-- ABA INVENTÁRIO -->
+    <div class="aba-panel card-combate" id="aba-inventario">
+      <div class="sec-title">Inventário</div>
+      <div id="lista-inventario"></div>
+      <div class="add-item-row">
+        <input class="inv-input" id="inv-nome-input" placeholder="Nome do item...">
+        <input class="inv-input" id="inv-qtd-input" type="number" value="1" min="1" style="width:70px;">
+        <button class="btn-add-item" onclick="adicionarItem()">+ Adicionar</button>
+      </div>
+    </div>
+
+    <!-- ABA DESCRIÇÃO -->
+    <div class="aba-panel card-combate" id="aba-descricao">
+      <div class="sec-title">Antecedente & Descrição</div>
+      <div class="descricao-field"><label>Personalidade</label><textarea rows="3" id="desc-personalidade" placeholder="Como o agente age e pensa..."></textarea></div>
+      <div class="descricao-field"><label>Ideal</label><textarea rows="2" id="desc-ideal" placeholder="O que motiva o agente..."></textarea></div>
+      <div class="descricao-field"><label>Vínculo</label><textarea rows="2" id="desc-vinculo" placeholder="Com quem ou o quê o agente se importa..."></textarea></div>
+      <div class="descricao-field"><label>Fraqueza / Segredo</label><textarea rows="2" id="desc-fraqueza" placeholder="O que assombra o agente..."></textarea></div>
+      <div class="descricao-field"><label>História</label><textarea rows="5" id="desc-historia" placeholder="A história completa do agente..."></textarea></div>
+      <button class="btn-novo-ataque" onclick="salvarDescricao()">💾 Salvar Descrição</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Adicionar Ritual -->
+<div id="modal-ritual" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#0d0010;border:1px solid var(--purple);border-radius:10px;padding:28px;max-width:500px;width:90%;box-shadow:0 0 30px var(--purple-glow);max-height:80vh;overflow-y:auto;">
+    <div style="font-size:1.1rem;letter-spacing:3px;font-weight:700;margin-bottom:16px;">ADICIONAR RITUAL</div>
+    <div style="margin-bottom:12px;">
+      <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">BUSCAR RITUAL</label>
+      <input id="modal-ritual-busca" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;" placeholder="Digite o nome..." oninput="renderModalRituais()">
+    </div>
+    <div id="modal-rituais-lista" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+      <button onclick="fecharModalRitual()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Novo Ritual (homebrew) -->
+<div id="modal-ritual-custom" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#0d0010;border:1px solid var(--purple);border-radius:10px;padding:28px;max-width:460px;width:90%;box-shadow:0 0 30px var(--purple-glow);">
+    <div style="font-size:1.1rem;letter-spacing:3px;font-weight:700;margin-bottom:16px;">NOVO RITUAL</div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">NOME</label>
+      <input id="rc-nome" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;" placeholder="Nome do ritual...">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div>
+        <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">ELEMENTO</label>
+        <select id="rc-elem" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;">
+          <option value="MORTE">Morte</option><option value="SANGUE">Sangue</option>
+          <option value="ENERGIA">Energia</option><option value="CONHECIMENTO">Conhecimento</option>
+          <option value="MEDO">Medo</option><option value="DESCONHECIDO">Desconhecido</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">DADO PADRÃO</label>
+        <input id="rc-dado" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;" placeholder="ex: 2d8+2" value="1d20">
+      </div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">DESCRIÇÃO</label>
+      <textarea id="rc-desc" rows="3" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;resize:vertical;" placeholder="Descrição do efeito..."></textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="fecharModalRitualCustom()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Cancelar</button>
+      <button onclick="salvarRitualCustom()" style="background:var(--purple);border:none;color:white;font-family:'Oswald',sans-serif;font-weight:700;padding:8px 18px;border-radius:4px;cursor:pointer;">Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Novo Ataque -->
+<div id="modal-ataque" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#0d0010;border:1px solid var(--purple);border-radius:10px;padding:28px;max-width:400px;width:90%;box-shadow:0 0 30px var(--purple-glow);">
+    <div style="font-size:1.1rem;letter-spacing:3px;font-weight:700;margin-bottom:16px;">NOVO ATAQUE</div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">NOME</label>
+      <input id="atq-nome" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;" placeholder="Ex.: Pistola .38">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div>
+        <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">DANO</label>
+        <input id="atq-dano" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;" placeholder="Ex.: 2d6">
+      </div>
+      <div>
+        <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">TIPO</label>
+        <select id="atq-tipo" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;">
+          <option>Balístico</option><option>Cortante</option><option>Contundente</option>
+          <option>Perfurante</option><option>Fogo</option><option>Elétrico</option><option>Paranormal</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="fecharModalAtaque()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Cancelar</button>
+      <button onclick="adicionarAtaque()" style="background:var(--purple);border:none;color:white;font-family:'Oswald',sans-serif;font-weight:700;padding:8px 18px;border-radius:4px;cursor:pointer;">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-msg" id="toast">✦ SALVO</div>
+
+<footer style="background:black;border-top:2px solid #222;padding:32px 0;margin-top:40px;">
+  <div class="container text-center">
+    <p class="text-secondary small mb-0">© 2026 F.I.C.H.A. – <span style="color:var(--purple-neon);">O MEDO É REAL.</span> &nbsp;|&nbsp; Desenvolvido por luka_00000.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const PERICIAS = [
+    { nome:'Acrobacia',atrib:'AGI' },{ nome:'Adestramento',atrib:'PRE' },
+    { nome:'Artes',atrib:'PRE' },{ nome:'Atletismo',atrib:'FOR' },
+    { nome:'Atualidades',atrib:'INT' },{ nome:'Ciências',atrib:'INT' },
+    { nome:'Crime',atrib:'AGI' },{ nome:'Diplomacia',atrib:'PRE' },
+    { nome:'Enganação',atrib:'PRE' },{ nome:'Fortitude',atrib:'VIG' },
+    { nome:'Furtividade',atrib:'AGI' },{ nome:'Iniciativa',atrib:'AGI' },
+    { nome:'Intimidação',atrib:'PRE' },{ nome:'Intuição',atrib:'PRE' },
+    { nome:'Investigação',atrib:'INT' },{ nome:'Luta',atrib:'FOR' },
+    { nome:'Medicina',atrib:'INT' },{ nome:'Ocultismo',atrib:'INT' },
+    { nome:'Percepção',atrib:'PRE' },{ nome:'Pilotagem',atrib:'AGI' },
+    { nome:'Pontaria',atrib:'AGI' },{ nome:'Profissão',atrib:'INT' },
+    { nome:'Reflexos',atrib:'AGI' },{ nome:'Religião',atrib:'PRE' },
+    { nome:'Sobrevivência',atrib:'INT' },{ nome:'Tática',atrib:'INT' },
+    { nome:'Tecnologia',atrib:'INT' },{ nome:'Vontade',atrib:'PRE' },
+];
+
+const HABILIDADES_CLASSE = {
+    'Combatente':[
+        { nome:'Ataque Especial', desc:'Uma vez por rodada pode realizar um ataque adicional com -5 no rolamento.' },
+        { nome:'Resistência de Combate', desc:'+2 de Defesa enquanto estiver usando armadura.' },
+    ],
+    'Especialista':[
+        { nome:'Foco Profissional', desc:'Pode rolar duas vezes em qualquer perícia de sua especialidade e usar o maior resultado.' },
+        { nome:'Improviso', desc:'Uma vez por cena pode usar um objeto como arma ou ferramenta improvisada sem penalidade.' },
+    ],
+    'Ocultista':[
+        { nome:'Sentido Paranormal', desc:'Pode detectar a presença de entidades em até 30 metros automaticamente.' },
+        { nome:'Ritual Menor', desc:'Conhece um ritual de nível 1 que pode executar sem custo de PE.' },
+    ],
+    'Mundano':[
+        { nome:'Sortudo', desc:'Uma vez por sessão pode rerrolar qualquer dado e ficar com o melhor resultado.' },
+        { nome:'Conexões', desc:'Possui contatos em 3 áreas distintas que podem fornecer informações ou ajuda.' },
+    ],
+};
+
+const RITUAIS_DATA = [
+  { nome:"Transcender", elem:"CONHECIMENTO", src:"A Ordem Paranormal", exec:"Concentrar-se no símbolo", alcance:"Pessoal", dur:"Instantânea", conjuracao:"Ficar sobre o símbolo e se concentrar nele.", desc:"Conecta o usuário ao Outro Lado, fortalecendo-o e permitindo aprender um ritual. Se carregar um objeto amaldiçoado, o Outro Lado faz uma pergunta em troca de um ritual relacionado ao objeto." },
+  { nome:"Ritual de Passagem de Sangue", elem:"SANGUE", src:"A Ordem Paranormal", exec:"Desconhecida", alcance:"Toque", dur:"Permanente", conjuracao:"Desconhecida", desc:"Funde a mente de dois seres em uma, mesclando suas consciências. Utilizado por Álvaro Augusto." },
+  { nome:"Ritual de Passagem de Conhecimento", elem:"SANGUE", src:"A Ordem Paranormal / Desconjuração", exec:"Desconhecida", alcance:"Toque", dur:"Permanente", conjuracao:"Desconhecida", desc:"Permite troca, substituição ou compartilhamento de mentes entre dois ou mais corpos." },
+  { nome:"Ritual de Alterar Memória", elem:"CONHECIMENTO", src:"A Ordem Paranormal", exec:"Desconhecida", alcance:"Toque", dur:"Permanente", conjuracao:"Desconhecida", desc:"Apaga todas ou apenas algumas memórias específicas da vítima." },
+  { nome:"Ritual de Descarnar", elem:"SANGUE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"10m", dur:"Instantânea", conjuracao:"Derramar sangue humano sob o Símbolo, se concentrar e apontar o alvo.", desc:"A pele do alvo é dilacerada, deixando a carne à mostra. Não funciona em criaturas de Sangue. Indouto: 1d10 dano de Sangue. Discente: 2d10+2 dano de Sangue.", dadosSugeridos:["1d10","2d10+2"] },
+  { nome:"Ritual de Gritos", elem:"DESCONHECIDO", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Visual", dur:"Duração do ritual", conjuracao:"Enrolar o braço em arame farpado até sangrar, focar no símbolo e no alvo.", desc:"O alvo começa a escutar gritos ensurdecedores, tendo desvantagem em qualquer ação efetuada durante o tempo do ritual." },
+  { nome:"Ritual de Terceiro Olho", elem:"CONHECIMENTO", src:"A Ordem Paranormal", exec:"Ação livre", alcance:"Campo de visão", dur:"Cena", conjuracao:"Segurar um celular e focar no símbolo.", desc:"Localiza concentrações paranormais no campo de visão do usuário." },
+  { nome:"Ritual de Poluição Mental", elem:"DESCONHECIDO", src:"A Ordem Paranormal", exec:"Desconhecida", alcance:"Desconhecido", dur:"Desconhecida", conjuracao:"Desconhecida", desc:"A mente do alvo começa a ser preenchida por pensamentos horríveis e violentos, tentando fazer o alvo enlouquecer." },
+  { nome:"Ritual de Infligir Doença", elem:"MORTE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Curto", dur:"Concentração", conjuracao:"Ter em mãos cinzas animais e um órgão humano, focar no símbolo.", desc:"A vítima contrai ou acelera os efeitos de algum tipo de doença, dando 1d8 de dano de Morte por rodada no alvo.", dadosSugeridos:["1d8"] },
+  { nome:"Ritual de Cicatrização Acelerada", elem:"MORTE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Toque", dur:"Instantânea", conjuracao:"Ter em mãos cinzas humanas e assoprá-las sobre uma ferida.", desc:"Acelera o tempo de cicatrização de feridas. Não cura doenças. Indouto: cura 1d6 de vida. Discente: cura 2d6+2, cura lesão grave.", dadosSugeridos:["1d6","2d6+2"] },
+  { nome:"Ritual de Teletransporte", elem:"ENERGIA", src:"A Ordem Paranormal", exec:"Desconhecida", alcance:"Desconhecido", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Desaparecer e reaparecer em outro local a uma distância incerta." },
+  { nome:"Ritual de Destruição Temporal", elem:"MORTE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Curto", dur:"Instantânea", conjuracao:"Consumir meia porção de cinzas humanas e se concentrar no Símbolo.", desc:"Destrói temporalmente o alvo. Gasta 5 PO. Causa 2d8 de dano direto de Morte.", dadosSugeridos:["2d8"] },
+  { nome:"Ritual de Controle Mental", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Limitada", conjuracao:"Desconhecida", desc:"Faz com que a mente da vítima seja completamente controlada por outra pessoa." },
+  { nome:"Ritual de Paralisia", elem:"ENERGIA", src:"Desconjuração", exec:"Desconhecida", alcance:"Área", dur:"Duração do ritual", conjuracao:"Desconhecida", desc:"A vítima fica em estado de paralisia, podendo apenas se comunicar." },
+  { nome:"Ritual de Forma Fantasmagórica", elem:"ENERGIA", src:"Desconjuração", exec:"Desconhecida", alcance:"Pessoal", dur:"Cena", conjuracao:"Desconhecida", desc:"Os braços tornam-se inconsistentes e as mãos se transformam em garras alongadas." },
+  { nome:"Ritual de Bênção Maldita", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Pessoal", dur:"Próximos 5 testes", conjuracao:"Ter em mãos um objeto tecnológico, estar próximo de uma fonte de energia e se concentrar no símbolo.", desc:"O usuário rola um d20 cinco vezes; esses serão os próximos 5 resultados de uma perícia escolhida.", dadosSugeridos:["1d20"] },
+  { nome:"Ritual de Eletrocussão", elem:"ENERGIA", src:"Desconjuração / O Segredo na Ilha", exec:"Desconhecida", alcance:"Curto", dur:"Instantânea", conjuracao:"Desconhecida", desc:"O alvo é eletrocutado de dentro para fora. Versão de Amelie Florence: 3d6 de dano de Energia usando 1 PE.", dadosSugeridos:["3d6"] },
+  { nome:"Ritual de Onda de Choque", elem:"ENERGIA", src:"Desconjuração", exec:"Desconhecida", alcance:"Área ao redor", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Raios saem do corpo do usuário eletrocutando todos ao seu redor." },
+  { nome:"Ritual de Dissipar Espíritos", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Curto", dur:"Instantânea", conjuracao:"Focar no símbolo segurando um dispositivo eletrônico funcional com correntes nos braços.", desc:"Gasta 3 PO. Causa 2d10 de dano em entidades de Energia, e metade deste dano em seres de outro elemento.", dadosSugeridos:["2d10"] },
+  { nome:"Ritual de Cinerária", elem:"MEDO", src:"Desconjuração / Sinais do Outro Lado", exec:"1 ação", alcance:"Raio de 5-6m", dur:"Cena", conjuracao:"Focar no símbolo.", desc:"Invoca a névoa do Outro Lado em raio de 5-6 metros. Gasta 6 PO. Concede vantagem em esquiva e furtividade." },
+  { nome:"Ritual de Reação", elem:"ENERGIA", src:"Desconjuração", exec:"Reação", alcance:"Pessoal", dur:"Instantânea", conjuracao:"Segurar um aparelho eletrônico enquanto sofre um ataque e focar no símbolo.", desc:"Gasta 5 PO e uma reação. Metade do dano de um golpe físico é refletido em dano de Energia no agressor." },
+  { nome:"Ritual de Esconder dos Olhos", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Pessoal", dur:"Limitada", conjuracao:"Desconhecida", desc:"Torna o usuário invisível aos olhos comuns por determinado tempo." },
+  { nome:"Ritual de Censura Escripta", elem:"DESCONHECIDO", src:"Desconjuração", exec:"Desconhecida", alcance:"Documentos", dur:"Permanente", conjuracao:"Desconhecida", desc:"Censura completamente informações sobre atividades escriptas em documentos." },
+  { nome:"Ritual de Ouvir os Sussurros", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Local ou objeto específico", dur:"Cena", conjuracao:"Segurar um objeto conectado ao espírito ou estar em local/horário específico.", desc:"Permite comunicar-se com os mortos. O usuário ouve sussurros do Outro Lado." },
+  { nome:"Ritual de Leitura Psíquica", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Raio de 5m", dur:"Concentração", conjuracao:"Se concentrar no símbolo e ter um alvo num raio de 5 metros.", desc:"Gasta 6 PO. Permite ler a mente do alvo para prever seus próximos movimentos, pensamentos e intenções." },
+  { nome:"Ritual de Ligação Telepática", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Marcados", dur:"1 hora", conjuracao:"Marcar o símbolo em quem o usuário quer afetar.", desc:"Cria uma linha telepática entre todos os marcados com o símbolo, permitindo comunicação telepática livre por uma hora." },
+  { nome:"Ritual de Amaldiçoar Tecnologia", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Curto", dur:"1d6 rodadas", conjuracao:"Possuir uma fonte de energia próxima e se concentrar no símbolo.", desc:"Amaldiçoa temporariamente uma arma de fogo próxima, fazendo ela dar +1d6 de dano caótico.", dadosSugeridos:["1d6"] },
+  { nome:"Ritual de Coincidência Forçada", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Pessoal", dur:"1d6 rodadas", conjuracao:"Se concentrar no símbolo, segurar objeto tecnológico e ter fonte de energia próxima.", desc:"Gasta 5 PO. Concede um dado de vantagem em bloquear e contra-atacar por 1d6 rodadas." },
+  { nome:"Ritual de Sentir Através", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Ilimitado (via símbolo)", dur:"5 minutos", conjuracao:"Marcar o símbolo de Emissão no alvo e o de Absorção no usuário.", desc:"Gasta 6 PO. É possível observar e escutar tudo que o marcado pelo Símbolo de Emissão ver e ouvir por até 5 minutos." },
+  { nome:"Ritual de Assombração Forçada", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Local", dur:"Permanente", conjuracao:"Desconhecida", desc:"Aprisiona espíritos dos mortos em um local por tempo indeterminado." },
+  { nome:"Ritual de Derreter Criaturas de Sangue", elem:"SANGUE", src:"Desconjuração", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Segurar uma corrente com sangue escorrendo e focar no símbolo.", desc:"Causa 4d10+5 em criaturas de Sangue ou 2d10 em outras criaturas. Funciona apenas em criaturas, não em humanos.", dadosSugeridos:["4d10+5","2d10"] },
+  { nome:"Ritual de Espelho", elem:"SANGUE", src:"Desconjuração / Hexatombe", exec:"Desconhecida", alcance:"Curto", dur:"Permanente", conjuracao:"Desconhecida", desc:"Cria um clone de carne e sangue idêntico ao afetado." },
+  { nome:"Ritual de Pavor Anormal", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Campo de visão", dur:"1d6 rodadas", conjuracao:"Desenhar o símbolo no chão, subir em cima e definir o alvo em campo de visão.", desc:"Gasta 5 PO. Paralisa o alvo por 1d6 rodadas e faz ele ter vantagens em escutar e encontrar." },
+  { nome:"Ritual de Ódio Incontrolável", elem:"SANGUE", src:"Desconjuração / Calamidade", exec:"1 ação", alcance:"Pessoal / Curto", dur:"1d4+2 rodadas", conjuracao:"Cortar a mão, botá-la no olho enquanto se concentra no símbolo.", desc:"Gasta 8 PO. Por 1d4+2 rodadas, +2d6 de dano corpo-a-corpo e vantagem em força/ataques.", dadosSugeridos:["2d6","1d4+2"] },
+  { nome:"Ritual de Compreensão Paranormal", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Pessoal", dur:"5 minutos", conjuracao:"Se concentrar no símbolo e estar próximo a uma vela acesa.", desc:"Permite compreender toda linguagem da Realidade escrita por 5 minutos." },
+  { nome:"Ritual de Vínculo de Sangue", elem:"SANGUE", src:"Desconjuração / Hexatombe", exec:"1 ação", alcance:"Marcados", dur:"Cena", conjuracao:"Marcar o símbolo de enviar dano em um alvo e receber dano em outro.", desc:"Espalha parte da dor causada nos marcados por enviar dano para os marcados por receber dano." },
+  { nome:"Ritual de Armadura de Sangue", elem:"SANGUE", src:"Desconjuração / Calamidade / Sinais / Hexatombe", exec:"1 ação", alcance:"Pessoal / Aliado próximo", dur:"Cena", conjuracao:"Se concentrar no símbolo.", desc:"Cria uma armadura de sangue. Gasta 1 PE: +5 de armadura." },
+  { nome:"Ritual de Paralisia de Sangue", elem:"SANGUE", src:"Desconjuração", exec:"1 ação", alcance:"Toque / Marcado", dur:"1d4 rodadas", conjuracao:"Marcar o símbolo no alvo, enrolar arame farpado no braço até sangrar e focar no símbolo.", desc:"Paralisa o alvo por 1d4 rodadas. O alvo faz um teste de Poder a cada rodada para tentar se libertar." },
+  { nome:"Ritual de Transfusão Vital", elem:"SANGUE", src:"Desconjuração", exec:"Desconhecida", alcance:"Múltiplos alvos", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Transfere vida do usuário para vários alvos, curando-os instantaneamente." },
+  { nome:"Ritual de Distorcer o Tempo", elem:"MORTE", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Rodadas", conjuracao:"Desconhecida", desc:"Desacelera temporalmente os alvos, fazendo-os perder um número desconhecido de rodadas." },
+  { nome:"Ritual de Chamas do Caos", elem:"ENERGIA", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Aquece uma arma ao ponto em que o portador é obrigado a soltá-la." },
+  { nome:"Ritual de Graduação", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Via objeto amaldiçoado", dur:"Temporária", conjuracao:"Desconhecida", desc:"Temporariamente apaga o alvo, fazendo-o se transformar em um porta-voz do usuário." },
+  { nome:"Ritual de Definhar", elem:"MORTE", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Concentração", conjuracao:"Desconhecida", desc:"O alvo deve fazer um teste de Constituição; se falhar, começa a definhar aos poucos até sua pele enrugar." },
+  { nome:"Ritual de Inexistir", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Instantânea", conjuracao:"Desconhecida", desc:"O alvo realiza um teste de Poder. Se falhar, deixa de existir completamente." },
+  { nome:"Ritual de Toque da Morte", elem:"MORTE", src:"Desconjuração", exec:"Toque", alcance:"Toque", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Faz o corpo do alvo envelhecer até definhar completamente, causando 4d10 de dano.", dadosSugeridos:["4d10"] },
+  { nome:"Ritual de Rejeitar Névoa", elem:"MEDO", src:"Desconjuração", exec:"Desconhecida", alcance:"Raio de 20m", dur:"Cena", conjuracao:"Desconhecida", desc:"Em um raio de 20 metros, a névoa é dissipada. Todos os rituais na área demoram muito mais para ser conjurados." },
+  { nome:"Ritual de Levitação", elem:"DESCONHECIDO", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Concentração", conjuracao:"Desconhecida", desc:"Levita qualquer objeto à distância." },
+  { nome:"Ritual de Sugada Mortal", elem:"MORTE", src:"Desconjuração", exec:"Desconhecida", alcance:"Desconhecido", dur:"Permanente", conjuracao:"Desconhecida", desc:"Remove permanentemente 2 pontos de Constituição do alvo." },
+  { nome:"Ritual de Flashback", elem:"MEDO", src:"Desconjuração", exec:"Desconhecida", alcance:"Via objeto amaldiçoado", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Permite que o alvo tenha uma visão do passado ao interagir com o objeto amaldiçoado." },
+  { nome:"Ritual de Fortalecimento Sensorial", elem:"SANGUE", src:"Calamidade", exec:"1 ação", alcance:"Pessoal", dur:"Cena", conjuracao:"Cortar a palma da mão.", desc:"Gasta 1 PE. Ganha um dado extra em testes de Percepção, Investigação, Luta e Pontaria." },
+  { nome:"Ritual de Embaralhar", elem:"ENERGIA", src:"Calamidade / Sinais do Outro Lado / Enigma do Medo", exec:"1 ação", alcance:"Pessoal", dur:"Cena", conjuracao:"Apertar duas baterias.", desc:"Cria cópias ilusórias do usuário. A primeira cópia gasta 2 PE; cada adicional gasta 1 PE." },
+  { nome:"Ritual de Eco Espiral", elem:"MORTE", src:"Calamidade", exec:"1 ação", alcance:"Campo de visão", dur:"1 rodada + turno seguinte", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Cada dado de dano que o alvo sofre é repetido no turno seguinte como dano de Morte." },
+  { nome:"Ritual de Cicatrização", elem:"MORTE", src:"Calamidade / O Segredo na Ilha / Sinais do Outro Lado", exec:"1 ação", alcance:"Toque / Aliado", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Cura 2d8+2 PV. Pode ser aprimorado (+2 PE) para adicionar +2d8+2.", dadosSugeridos:["2d8+2","3d8+3"] },
+  { nome:"Ritual de Salto Fantasma", elem:"ENERGIA", src:"Calamidade", exec:"1 ação / Reação", alcance:"9m (base)", dur:"Instantânea", conjuracao:"Pensar ou ver o ponto onde quer se teletransportar.", desc:"Gasta 3 PE. Teleporta o usuário em área de 9 metros." },
+  { nome:"Ritual de Mergulho Mental", elem:"CONHECIMENTO", src:"Calamidade", exec:"1 ação", alcance:"Toque", dur:"Concentração", conjuracao:"Furar os 5 dedos de uma mão com agulhas e colocá-la sobre a testa do alvo.", desc:"Gasta 2 PE. Leva o conjurador e o alvo a um lugar mental vazio, onde o alvo é obrigado a responder sim ou não." },
+  { nome:"Ritual de Decadência", elem:"MORTE", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Acelera o envelhecimento dos órgãos internos, causando 2d8+2 de dano de Morte.", dadosSugeridos:["2d8+2"] },
+  { nome:"Ritual de Distorcer Aparência", elem:"SANGUE", src:"Calamidade / Sinais do Outro Lado", exec:"Desconhecida", alcance:"Pessoal / Aliado", dur:"Cena", conjuracao:"Desconhecida", desc:"Transforma o usuário ou aliado fisicamente em outra pessoa." },
+  { nome:"Ritual de Amaldiçoar Arma com Conhecimento", elem:"CONHECIMENTO", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Arma próxima", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Adiciona +1d6 de dano de Conhecimento. Aprimoramento (+2 PE): +1d6 adicional, máximo 3d6.", dadosSugeridos:["1d6","2d6","3d6"] },
+  { nome:"Ritual de Vomitar Pestes", elem:"SANGUE", src:"Calamidade", exec:"1 ação", alcance:"Área (formato à escolha)", dur:"Cena", conjuracao:"Desconhecida", desc:"O usuário vomita criaturas paranormais minúsculas que causam 2d12 de dano de Sangue.", dadosSugeridos:["2d12"] },
+  { nome:"Ritual de Blackout", elem:"CONHECIMENTO", src:"Calamidade", exec:"1 ação", alcance:"Visual", dur:"Cena", conjuracao:"Se concentrar no símbolo.", desc:"Gasta 3 PE. O alvo faz teste de Vontade: se passar, fica frustrado; se falhar, fica confuso." },
+  { nome:"Ritual de Perturbação", elem:"CONHECIMENTO", src:"Calamidade / Sinais do Outro Lado / Hexatombe", exec:"1 ação", alcance:"Audível", dur:"1 rodada", conjuracao:"Desconhecida", desc:"Gasta 1 PE (Calamidade) ou 3 PE (Hexatombe). O alvo ouve um comando e, se falhar no teste de Vontade, obedece." },
+  { nome:"Ritual de Enfeitiçar", elem:"CONHECIMENTO", src:"Calamidade", exec:"1 ação", alcance:"Visual", dur:"Cena", conjuracao:"Desconhecida", desc:"Muda a atitude do alvo (se falhar no teste de Vontade). O conjurador recebe +10 em diplomacia, intimidação e enganação." },
+  { nome:"Ritual de Velocidade Mortal", elem:"MORTE", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Pessoal / Alvo", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 3 PE. A quantidade de ações do usuário em um turno dobra." },
+  { nome:"Ritual de Amaldiçoar Arma com Energia", elem:"ENERGIA", src:"Calamidade / O Segredo na Ilha / Sinais do Outro Lado", exec:"1 ação", alcance:"Arma próxima", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Adiciona +1d6 de dano de Energia. Aprimoramento (+2 PE): +1d6 adicional, máximo 3d6.", dadosSugeridos:["1d6","2d6","3d6"] },
+  { nome:"Ritual de Cicatrização em Área", elem:"DESCONHECIDO", src:"Calamidade", exec:"Desconhecida", alcance:"Área ao redor", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Cura simultaneamente várias pessoas ao redor, reinstaurando o vigor de todos." },
+  { nome:"Ritual de Portal", elem:"DESCONHECIDO", src:"Calamidade", exec:"Minutos", alcance:"Desconhecido", dur:"Limitada", conjuracao:"Desconhecida", desc:"Abre um portal que pode teletransportar somente os indivíduos permitidos pelo conjurador." },
+  { nome:"Ritual de Paradoxo", elem:"MORTE", src:"Calamidade", exec:"1 ação", alcance:"Área", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 3 PE. Causa 6d6 de dano de Morte em todos os alvos na área.", dadosSugeridos:["6d6"] },
+  { nome:"Ritual de Polarização Caótica", elem:"ENERGIA", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Visual", dur:"Cena", conjuracao:"Desconhecida", desc:"Faz objetos metálicos se atraírem mutuamente." },
+  { nome:"Ritual de Impulso de Eletricidade", elem:"ENERGIA", src:"Calamidade", exec:"Reação / Automático", alcance:"Área", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Solta raios elétricos que causam dano de Energia. Ao acertar um alvo, os raios se propagam aleatoriamente." },
+  { nome:"Ritual de Proteção de Energia", elem:"ENERGIA", src:"Calamidade", exec:"Ritual (preparação)", alcance:"Local", dur:"Permanente (até ser ativado)", conjuracao:"Desconhecida", desc:"Cria uma armadilha que eletrocuta e causa dano de sanidade em pessoas que aproximem objetos amaldiçoados de locais específicos." },
+  { nome:"Ritual de Lâmina do Medo", elem:"MEDO", src:"Calamidade", exec:"1 ação", alcance:"Toque", dur:"Instantânea", conjuracao:"Desconhecida", desc:"O usuário cria uma lâmina translúcida em sua mão que emana um som melodioso. Ao perfurar um alvo, o deixa morrendo instantaneamente." },
+  { nome:"Ritual de Amaldiçoar Arma com Sangue", elem:"SANGUE", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Arma próxima", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Adiciona +1d6 de dano de Sangue. Aprimoramento (+2 PE): +1d6 adicional, máximo 3d6.", dadosSugeridos:["1d6","2d6","3d6"] },
+  { nome:"Ritual de Desacelerar Impacto", elem:"MORTE", src:"Calamidade", exec:"Reação", alcance:"Pessoal", dur:"Até o fim da cena", conjuracao:"Desconhecida", desc:"Gasta 2 PE. Recebe 10 PV temporários contra ataques físicos e balísticos." },
+  { nome:"Ritual de Cartas do Destino", elem:"CONHECIMENTO", src:"Calamidade", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 2 PE. Causa 2d6 de dano de Conhecimento. Alvo: teste de Vontade.", dadosSugeridos:["2d6"] },
+  { nome:"Ritual de Cura de Conhecimento", elem:"CONHECIMENTO", src:"Calamidade", exec:"Desconhecida", alcance:"Aliados", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Conjura sigilos de Conhecimento nas feridas dos alvos, curando toda vida, sanidade e pontos de esforço." },
+  { nome:"Ritual de Tentáculos de Lodo", elem:"MORTE", src:"Calamidade", exec:"1 ação", alcance:"Área de 3m", dur:"Cena", conjuracao:"Desconhecida", desc:"Manifesta uma área de lodo (terreno difícil) de 3m. Após uma rodada completa, alvos presos tomam 4d6 de dano de Morte.", dadosSugeridos:["4d6"] },
+  { nome:"Ritual de Disparo de Energia Concentrado", elem:"ENERGIA", src:"Calamidade", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Se concentrar no símbolo (via celular).", desc:"Gasta 3 PE. Dispara um projétil causando 6d6 de Dano Caótico. Aprimoramento (+2 PE por nível): até 14d6.", dadosSugeridos:["6d6","8d6","10d6","14d6"] },
+  { nome:"Ritual de Consumir Manancial", elem:"MORTE", src:"O Segredo na Ilha", exec:"1 ação", alcance:"Área ao redor", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Absorve a Energia Potencial de plantas, insetos e solo ao redor, fornecendo 3d6 PV temporários.", dadosSugeridos:["3d6"] },
+  { nome:"Ritual de Tela de Ruído", elem:"ENERGIA", src:"Sinais do Outro Lado", exec:"1 ação / Reação", alcance:"Pessoal", dur:"Cena / Instantânea", conjuracao:"Desconhecida", desc:"Cria uma película de Energia que recobre o corpo. Concede 30 PV temporários contra dano físico/balístico." },
+  { nome:"Ritual de Tecer Ilusão", elem:"CONHECIMENTO", src:"Sinais do Outro Lado", exec:"Desconhecida", alcance:"Visual / Auditivo", dur:"Concentração", conjuracao:"Desconhecida", desc:"Cria uma ilusão visual ou sonora simples." },
+  { nome:"Ritual de Invadir Mente", elem:"CONHECIMENTO", src:"Sinais do Outro Lado", exec:"Desconhecida", alcance:"Visual / Telepático", dur:"Cena", conjuracao:"Desconhecida", desc:"Gera uma Rajada Mental que causa dano de Conhecimento, ou cria uma Ligação Telepática." },
+  { nome:"Ritual de Espirais da Perdição", elem:"MORTE", src:"Sinais do Outro Lado", exec:"Desconhecida", alcance:"Visual", dur:"Cena", conjuracao:"Desconhecida", desc:"Espirais surgem no corpo do alvo, tornando seus movimentos lentos. O alvo sofre -1d20 em testes de ataque." },
+  { nome:"Ritual de Luz", elem:"ENERGIA", src:"Sinais do Outro Lado", exec:"Desconhecida", alcance:"Raio de 9m", dur:"Cena", conjuracao:"Desconhecida", desc:"Faz um objeto emitir luz de cores alternadas e brilhantes em uma área com 9m de raio." },
+  { nome:"Ritual de Passagem de Conhecimento Expandido", elem:"SANGUE", src:"Hexatombe", exec:"Desconhecida", alcance:"10 pessoas", dur:"Cena", conjuracao:"Desconhecida", desc:"Versão modificada do Ritual de Passagem de Conhecimento. Realiza troca de consciências simultânea entre 10 pessoas." },
+  { nome:"Ritual de Rajada Caótica", elem:"ENERGIA", src:"Hexatombe", exec:"1 ação", alcance:"Médio", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Dispara um raio que causa 8d8 pontos de dano de Energia em um ser em alcance médio.", dadosSugeridos:["8d8"] },
+  { nome:"Ritual de Tempestade Caótica", elem:"ENERGIA", src:"Hexatombe", exec:"1 ação", alcance:"Médio", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Versão aprimorada da Rajada Caótica. Dispara um raio que causa 8d10 pontos de dano de Energia.", dadosSugeridos:["8d10"] },
+  { nome:"Ritual de Labirinto Mental", elem:"CONHECIMENTO", src:"Hexatombe", exec:"1 ação", alcance:"Visual", dur:"1d4 rodadas", conjuracao:"Desconhecida", desc:"Obriga o alvo a gastar suas ações para se mover em uma direção aleatória por 1d4 rodadas." },
+  { nome:"Ritual de Labirinto Abissal", elem:"CONHECIMENTO", src:"Hexatombe", exec:"1 ação", alcance:"Visual", dur:"1d4 rodadas", conjuracao:"Desconhecida", desc:"Versão aprimorada do Labirinto Mental. Obriga o alvo a se mover em uma direção à escolha do usuário." },
+  { nome:"Ritual de Mapa Sanguíneo", elem:"SANGUE", src:"Hexatombe", exec:"1 ação", alcance:"Raio de 1km", dur:"Cena", conjuracao:"Desconhecida", desc:"Desenha um mapa que sinaliza a localização em tempo real de todos os seres em um raio de um quilômetro." },
+  { nome:"Ritual de Revelação Sanguínea", elem:"SANGUE", src:"Hexatombe", exec:"Desconhecida", alcance:"Raio de 1km", dur:"Cena", conjuracao:"Desconhecida", desc:"Versão aprimorada do Mapa Sanguíneo. Sinaliza localização, intenção geral e condições de saúde de todos os seres em 1km." },
+  { nome:"Ritual de Armadura de Sangue Diabólica", elem:"SANGUE", src:"Hexatombe", exec:"1 ação", alcance:"Pessoal / Aliado", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Conjura armadura de sangue para si ou aliado próximo (+5 de armadura)." },
+  { nome:"Ritual de Capturar Momento", elem:"MORTE", src:"Hexatombe", exec:"Desconhecida", alcance:"Local marcado", dur:"Cena", conjuracao:"Desconhecida", desc:"O usuário pode ver imagens e captar sons próximos de onde o símbolo foi marcado." },
+  { nome:"Ritual de Consumir Momento", elem:"MORTE", src:"Hexatombe", exec:"Desconhecida", alcance:"Local marcado", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Versão aprimorada de Capturar Momento. Gera uma explosão de Morte em área a partir do símbolo marcado." },
+  { nome:"Ritual de Esfolar", elem:"SANGUE", src:"Hexatombe", exec:"Armadilha (ao ser tocado)", alcance:"Área de 3m", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Quando o objeto ou pessoa marcada é tocado, explode lançando lâminas que causam dano de corte e sangramento em área de 3 metros." },
+  { nome:"Ritual de Olhar da Curiosidade Mórbida", elem:"CONHECIMENTO", src:"Hexatombe", exec:"1 ação", alcance:"Visual", dur:"Cena", conjuracao:"Desconhecida", desc:"Se o alvo olhar: teste de Vontade ou sofre penalidades graves. Se evitar olhar: desvantagem de 2d20 em todos os testes e fica cego." },
+  { nome:"Ritual de Bolsa do Sangue", elem:"SANGUE", src:"Hexatombe", exec:"1 ação", alcance:"Toque", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Recupera pontos de vida de um alvo usando o próprio sangue do conjurador." },
+  { nome:"Ritual de Maldição Sanguínea", elem:"SANGUE", src:"Hexatombe", exec:"1 ação", alcance:"Visual", dur:"Cena", conjuracao:"Desconhecida", desc:"Pode ser resistido com teste de Fortitude. Se falhar, o alvo fica abalado e recebe desvantagem de 1d20." },
+  { nome:"Ritual de Explosão", elem:"ENERGIA", src:"Enigma do Medo", exec:"Desconhecida", alcance:"Área", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gera uma explosão de impulso a partir de um ponto específico, empurrando todos ao redor para longe." },
+  { nome:"Ritual de Imersão", elem:"CONHECIMENTO", src:"Enigma do Medo", exec:"Ritual", alcance:"Lápide marcada", dur:"Duração da memória", conjuracao:"Aplicar Lodo em uma lápide do Perímetro, desenhar o símbolo ao redor e se concentrar nele.", desc:"Permite ao conjurador acessar vividamente uma memória específica do dono da Marca da lápide." },
+  { nome:"Ritual de Invocação da Dama de Sangue", elem:"SANGUE", src:"Livro de Regras", exec:"Ritual longo", alcance:"Local do ritual", dur:"Permanente", conjuracao:"Fazer o Símbolo da Orquídea entrar em contato com 7 sacrifícios em 7 condições diferentes.", desc:"Invoca a Dama de Sangue na Realidade." },
+  { nome:"Ritual de Forma Monstruosa", elem:"SANGUE", src:"Vendeta Oculta", exec:"Ritual", alcance:"Animais / Pessoal", dur:"Permanente", conjuracao:"Acender uma vela e matar um animal afogado em uma tina.", desc:"Infecta animais da mesma espécie usada no sacrifício. Após 7 transformações, transforma o próprio conjurador em uma criatura." },
+];
+
+// ══════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════
+let ficha  = null;
+let estado = {
+    vida:{ atual:20,max:20 }, san:{ atual:20,max:20 }, esf:{ atual:10,max:10 },
+    pericias:{}, ataques:[], inventario:[], descricao:{}, fotoCostum:null,
+    logRolagens:[], rituaisPersonagem:[]
+};
+let rituaisAbertos   = {};
+let rituaisResultados = {};
+
+function bonusAtrib(v) { return v || 0; }
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+window.onload = function() {
+    carregarFicha();
+    document.getElementById('foto-input').addEventListener('change', function(e) {
+        const file = e.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const base64 = ev.target.result;
+            document.getElementById('foto-agente').src = base64;
+            estado.fotoCostum = base64;
+            if (ficha) {
+                const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+                const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+                if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem('lista_agentes', JSON.stringify(agentes)); }
+            }
+            salvarEstado(); mostrarToast('📷 FOTO ATUALIZADA');
+        };
+        reader.readAsDataURL(file);
+    });
+    document.getElementById('dado-expr').addEventListener('keydown', e => { if (e.key === 'Enter') rolarDado(); });
+    document.getElementById('rituais-busca').addEventListener('input', rituaisRender);
+};
+
+// ══════════════════════════════════════════════
+// FICHA
+// ══════════════════════════════════════════════
+function carregarFicha() {
+    const params  = new URLSearchParams(window.location.search);
+    const id      = params.get('id');
+    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    if (id) ficha = agentes.find(a => String(a.id) === String(id));
+    if (!ficha && agentes.length > 0) ficha = agentes[agentes.length - 1];
+    if (!ficha) { document.getElementById('display-nome').textContent = 'Agente não encontrado'; return; }
+    const estadoSalvo = localStorage.getItem(`estado_ficha_${ficha.id}`);
+    if (estadoSalvo) {
+        const parsed = JSON.parse(estadoSalvo);
+        estado = { ...estado, ...parsed };
+        if (!estado.logRolagens) estado.logRolagens = [];
+        if (!estado.rituaisPersonagem) estado.rituaisPersonagem = [];
+    } else {
+        const vig = ficha.atributos?.VIG||0, pre = ficha.atributos?.PRE||0, agi = ficha.atributos?.AGI||0;
+        estado.vida.max = 8+vig*4; estado.vida.atual = estado.vida.max;
+        estado.san.max  = 8+pre*4; estado.san.atual  = estado.san.max;
+        estado.esf.max  = 4+agi*2; estado.esf.atual  = estado.esf.max;
+        if (ficha.pericias) ficha.pericias.forEach(p => { estado.pericias[p] = {bonus:0,outros:0,treinada:true}; });
+    }
+    renderFicha();
+}
+
+function renderFicha() {
+    if (!ficha) return;
+    document.getElementById('display-nome').textContent   = ficha.nome + (ficha.codinome ? ` "${ficha.codinome}"` : '');
+    document.getElementById('display-origem').textContent = ficha.origem || '—';
+    document.getElementById('display-classe').textContent = ficha.classe || '—';
+    document.getElementById('display-criado').textContent = ficha.criadoEm || '—';
+    const fotoSrc = estado.fotoCostum || ficha.fotoCostum || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
+    document.getElementById('foto-agente').src = fotoSrc;
+    document.title = `F.I.C.H.A. – ${ficha.nome}`;
+    const atribs = ficha.atributos || {};
+    ['FOR','AGI','INT','PRE','VIG'].forEach(a => {
+        const v = atribs[a]??0, bon = bonusAtrib(v);
+        document.getElementById(`b-${a}`).textContent  = v;
+        if (document.getElementById(`bv-${a}`)) {
+            document.getElementById(`bv-${a}`).textContent = v;
+            document.getElementById(`bd-${a}`).textContent = bon > 0 ? `d20+${bon}` : 'd20';
+        }
+    });
+    desenharRadar(atribs);
+    const nivel = parseInt(ficha.nivel)||1;
+    const nex   = nivel<=1?'5%':nivel<=2?'15%':nivel<=3?'30%':nivel<=4?'50%':'99%';
+    document.getElementById('nex-val').textContent  = nex;
+    document.getElementById('pe-val').textContent   = nivel+2;
+    document.getElementById('desl-val').textContent = '9m';
+    const agi = atribs.AGI||0, defesa = 10+agi;
+    document.getElementById('defesa-val').textContent     = defesa;
+    document.getElementById('esquiva-val').textContent    = defesa;
+    document.getElementById('defesa-detalhe').textContent = `= 10 + AGI(${agi>0?'+'+agi:agi})`;
+    atualizarBarras(); renderPericias(); renderHabilidades(); renderInventario(); renderAtaques(); renderLog();
+    const d = estado.descricao;
+    document.getElementById('desc-personalidade').value = d.personalidade||ficha.personalidade||'';
+    document.getElementById('desc-ideal').value         = d.ideal||ficha.ideal||'';
+    document.getElementById('desc-vinculo').value       = d.vinculo||ficha.vinculo||'';
+    document.getElementById('desc-fraqueza').value      = d.fraqueza||ficha.fraqueza||'';
+    document.getElementById('desc-historia').value      = d.historia||ficha.historia||'';
+}
+
+function desenharRadar(atribs) {
+    const cx=110,cy=110,maxR=80,MAX=5;
+    const ang=[-Math.PI/2+Math.PI,-Math.PI/2,-Math.PI/2+Math.PI*2/5*2,-Math.PI/2+Math.PI*2/5*3,-Math.PI/2+Math.PI*2/5*4];
+    const ord=['FOR','AGI','INT','PRE','VIG'];
+    document.getElementById('radar-bg').setAttribute('points', ang.map(a=>`${cx+maxR*Math.cos(a)},${cy+maxR*Math.sin(a)}`).join(' '));
+    const axesG=document.getElementById('radar-axes'); axesG.innerHTML='';
+    ang.forEach(a=>{ const l=document.createElementNS('http://www.w3.org/2000/svg','line'); l.setAttribute('x1',cx);l.setAttribute('y1',cy);l.setAttribute('x2',cx+maxR*Math.cos(a));l.setAttribute('y2',cy+maxR*Math.sin(a)); axesG.appendChild(l); });
+    document.getElementById('radar-val').setAttribute('points', ang.map((a,i)=>{ const v=atribs[ord[i]]||0,r=(v/MAX)*maxR; return `${cx+r*Math.cos(a)},${cy+r*Math.sin(a)}`; }).join(' '));
+}
+
+function rolarAtributo(atrib) {
+    if (!ficha) return;
+    const v=ficha.atributos?.[atrib]||0, bon=bonusAtrib(v);
+    const dado=Math.floor(Math.random()*20)+1, total=dado+bon;
+    const btn=document.getElementById(`btn-${atrib}`);
+    if (btn){ btn.classList.add('dice-spinning'); setTimeout(()=>btn.classList.remove('dice-spinning'),400); }
+    document.getElementById('atrib-res-nome').textContent=`Teste de ${atrib}`;
+    document.getElementById('atrib-res-num').textContent=total;
+    let det=`d20(${dado})`; if(bon>0) det+=` +${bon} (${atrib}) = ${total}`; else det+=` = ${total}`;
+    document.getElementById('atrib-res-det').textContent=det;
+    const tag=document.getElementById('atrib-res-tag'); let tipo='normal';
+    if(dado===20){ tag.textContent='CRÍTICO!';tag.style.background='#003300';tag.style.color='var(--green)';tipo='critico'; }
+    else if(dado===1){ tag.textContent='FALHA!';tag.style.background='#330000';tag.style.color='var(--red)';tipo='falha'; }
+    else{ tag.textContent='';tag.style.background='transparent'; }
+    document.getElementById('atrib-resultado').classList.add('show');
+    adicionarAoLog(`Atrib. ${atrib}`, bon>0?`d20(${dado}) +${bon} ${atrib}`:`d20(${dado})`, total, tipo);
+}
+
+function adicionarAoLog(nome,expr,total,tipo) {
+    if (!estado.logRolagens) estado.logRolagens=[];
+    estado.logRolagens.unshift({ nome,expr,total,tipo, hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) });
+    if (estado.logRolagens.length>50) estado.logRolagens.pop();
+    salvarEstado(); renderLog();
+}
+
+function renderLog() {
+    const log=document.getElementById('log-rolagens'), ent=estado.logRolagens||[];
+    if (ent.length===0){ log.innerHTML='<div class="log-vazio">▸ Nenhuma rolagem ainda. Clique em 🎲 para rolar!</div>'; return; }
+    log.innerHTML=ent.map(e=>`<div class="log-entrada"><div><div class="log-nome">${e.nome} <span style="color:#444;font-size:0.6rem;">${e.hora||''}</span></div><div class="log-expr">${e.expr}</div></div><div style="display:flex;align-items:center;gap:4px;"><span class="log-total ${e.tipo||'normal'}">${e.total}</span>${e.tipo==='critico'?'<span class="log-tag critico">CRÍTICO</span>':''}${e.tipo==='falha'?'<span class="log-tag falha">FALHA</span>':''}</div></div>`).join('');
+}
+
+function limparLog(){ estado.logRolagens=[]; salvarEstado(); renderLog(); mostrarToast('🗑 LOG LIMPO'); }
+
+function atualizarBarras() {
+    ['vida','san','esf'].forEach(r=>{ const el=estado[r],pct=Math.max(0,Math.min(100,(el.atual/el.max)*100)),suf=r==='esf'?'esforco':r; document.getElementById(`${r}-atual`).textContent=el.atual; document.getElementById(`${r}-max`).textContent=el.max; document.getElementById(`barra-${suf}`).style.width=pct+'%'; });
+}
+
+function ajustarRecurso(tipo,delta){ const r=estado[tipo]; r.atual=Math.max(0,Math.min(r.max,r.atual+delta)); atualizarBarras(); salvarEstado(); }
+
+function renderPericias() {
+    const atribs=ficha?.atributos||{}, lista=document.getElementById('lista-pericias');
+    lista.innerHTML='';
+    PERICIAS.forEach(p=>{
+        const est=estado.pericias[p.nome]||{bonus:0,outros:0,treinada:false};
+        const bon=bonusAtrib(atribs[p.atrib]||0), treino=est.treinada?5:0;
+        const row=document.createElement('div'); row.className='pericia-row'; row.id=`prow-${p.nome.replace(/\s/g,'_')}`;
+        row.innerHTML=`<div class="pericia-nome-col">${est.treinada?'<div class="treinada-dot"></div>':'<div style="width:8px"></div>'}<span class="pericia-nome-txt ${est.treinada?'pericia-treinada':''}">${p.nome}</span><span class="pericia-atrib-badge">${p.atrib}</span></div><div class="pericia-cell">${bon>0?'+'+bon:bon}</div><div class="pericia-cell"><input type="number" class="pericia-input" value="${est.bonus||0}" onchange="atualizarPericia('${p.nome}','bonus',this.value)"></div><div class="pericia-cell" style="color:${est.treinada?'var(--green)':'var(--text-dim)'}">${treino>0?'+'+treino:'0'}</div><div class="pericia-cell"><input type="number" class="pericia-input" value="${est.outros||0}" onchange="atualizarPericia('${p.nome}','outros',this.value)"></div><div class="pericia-cell"><button class="btn-rolar-pericia" onclick="rolarPericia('${p.nome}','${p.atrib}')">🎲 Rolar</button></div>`;
+        lista.appendChild(row);
+    });
+}
+
+function atualizarPericia(nome,campo,valor){ if (!estado.pericias[nome]) estado.pericias[nome]={bonus:0,outros:0,treinada:false}; estado.pericias[nome][campo]=parseInt(valor)||0; salvarEstado(); }
+
+function rolarPericia(nome,atrib) {
+    if (!ficha) return;
+    const atribs=ficha.atributos||{}, est=estado.pericias[nome]||{bonus:0,outros:0,treinada:false};
+    const bon=bonusAtrib(atribs[atrib]||0), treino=est.treinada?5:0, extras=(est.bonus||0)+(est.outros||0);
+    const dado=Math.floor(Math.random()*20)+1, total=dado+bon+treino+extras;
+    const rowEl=document.getElementById(`prow-${nome.replace(/\s/g,'_')}`);
+    if (rowEl){ rowEl.classList.remove('row-critico','row-falha'); void rowEl.offsetWidth; if(dado===20)rowEl.classList.add('row-critico'); else if(dado===1)rowEl.classList.add('row-falha'); setTimeout(()=>rowEl.classList.remove('row-critico','row-falha'),700); }
+    let partes=[`d20(${dado})`]; if(bon!==0)partes.push(`${bon>=0?'+':''}${bon} ${atrib}`); if(treino>0)partes.push(`+${treino} treino`); if(extras!==0)partes.push(`${extras>=0?'+':''}${extras} bônus`);
+    let tipo='normal'; if(dado===20)tipo='critico'; else if(dado===1)tipo='falha';
+    adicionarAoLog(nome,partes.join(' '),total,tipo);
+    trocarAba('combate',document.querySelector('.aba-btn[data-aba="combate"]'));
+}
+
+function renderHabilidades() {
+    const habs=HABILIDADES_CLASSE[ficha?.classe||'']||[], lista=document.getElementById('lista-habilidades');
+    if (habs.length===0){ lista.innerHTML=`<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Nenhuma habilidade encontrada para esta classe.</p>`; return; }
+    lista.innerHTML=habs.map(h=>`<div class="habilidade-card"><div class="hab-nome">✦ ${h.nome}</div><div class="hab-desc">${h.desc}</div></div>`).join('');
+}
+
+function abrirModalAtaque()  { document.getElementById('modal-ataque').style.display='flex'; }
+function fecharModalAtaque() { document.getElementById('modal-ataque').style.display='none'; }
+
+function adicionarAtaque() {
+    const nome=document.getElementById('atq-nome').value.trim(), dano=document.getElementById('atq-dano').value.trim(), tipo=document.getElementById('atq-tipo').value;
+    if (!nome||!dano) return;
+    estado.ataques.push({nome,dano,tipo}); salvarEstado(); renderAtaques(); fecharModalAtaque();
+    document.getElementById('atq-nome').value=''; document.getElementById('atq-dano').value='';
+}
+
+function renderAtaques() {
+    const lista=document.getElementById('lista-ataques');
+    if (estado.ataques.length===0){ lista.innerHTML=`<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Você ainda não possui ataques.</p>`; return; }
+    lista.innerHTML=estado.ataques.map((a,i)=>`<div class="ataque-row"><div class="ataque-nome">${a.nome}</div><div class="ataque-dado">${a.dano}</div><div class="ataque-tipo">${a.tipo}</div><button class="btn-rolar" onclick="rolarAtaque(${i})">🎲 Rolar</button><button onclick="removerAtaque(${i})" style="background:none;border:none;color:#444;cursor:pointer;font-size:0.9rem;" title="Remover">🗑</button></div>`).join('');
+}
+
+function removerAtaque(i){ estado.ataques.splice(i,1); salvarEstado(); renderAtaques(); }
+function rolarAtaque(i){ const atq=estado.ataques[i],r=rolarExpressao(atq.dano); adicionarAoLog(`Ataque: ${atq.nome}`,`${atq.dano} → ${r.detalhe}`,r.total,'normal'); }
+
+function rolarDado() {
+    const exprRaw=document.getElementById('dado-expr').value.trim();
+    if (exprRaw){ const r=rolarExpressao(exprRaw); if(r.total===0&&r.detalhe===exprRaw){ mostrarToast('⚠ Expressão inválida. Use ex: 2d6+3'); return; } adicionarAoLog(`Dado livre (${exprRaw})`,r.detalhe,r.total,'normal'); document.getElementById('dado-expr').value=''; }
+    else { const ts=document.getElementById('dado-tipo').value, qtd=Math.max(1,Math.min(10,parseInt(document.getElementById('dado-qtd').value)||1)), lados=parseInt(ts.replace('d','')), rolls=Array.from({length:qtd},()=>Math.floor(Math.random()*lados)+1); adicionarAoLog(`${qtd}${ts}`,`[${rolls.join(', ')}]`,rolls.reduce((a,b)=>a+b,0),'normal'); }
+}
+
+function rolarExpressao(expr) {
+    const m=expr.match(/^(\d+)d(\d+)([+-]\d+)?$/i); if(!m) return{total:0,detalhe:expr};
+    const qtd=parseInt(m[1]),lados=parseInt(m[2]),bonus=parseInt(m[3]||0);
+    if(qtd<1||qtd>20||lados<2) return{total:0,detalhe:expr};
+    const rolls=Array.from({length:qtd},()=>Math.floor(Math.random()*lados)+1);
+    return{total:rolls.reduce((a,b)=>a+b,0)+bonus,detalhe:`[${rolls.join(', ')}]${bonus?(bonus>0?'+':'')+bonus:''}`};
+}
+
+function adicionarItem() {
+    const nome=document.getElementById('inv-nome-input').value.trim(), qtd=parseInt(document.getElementById('inv-qtd-input').value)||1;
+    if (!nome) return;
+    estado.inventario.push({nome,qtd}); salvarEstado(); renderInventario();
+    document.getElementById('inv-nome-input').value=''; document.getElementById('inv-qtd-input').value='1';
+}
+
+function removerItem(i){ estado.inventario.splice(i,1); salvarEstado(); renderInventario(); }
+
+function renderInventario() {
+    const lista=document.getElementById('lista-inventario');
+    if (estado.inventario.length===0){ lista.innerHTML=`<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:10px;">▸ Inventário vazio.</p>`; return; }
+    lista.innerHTML=estado.inventario.map((item,i)=>`<div class="inventario-item"><div><div class="inv-nome">${item.nome}</div><div class="inv-qtd">Qtd: ${item.qtd}</div></div><button class="btn-del-item" onclick="removerItem(${i})">🗑</button></div>`).join('');
+}
+
+function salvarDescricao() {
+    estado.descricao={ personalidade:document.getElementById('desc-personalidade').value, ideal:document.getElementById('desc-ideal').value, vinculo:document.getElementById('desc-vinculo').value, fraqueza:document.getElementById('desc-fraqueza').value, historia:document.getElementById('desc-historia').value };
+    salvarEstado(); mostrarToast('✦ DESCRIÇÃO SALVA');
+}
+
+function trocarAba(nome,btnClicado) {
+    document.querySelectorAll('.aba-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.aba-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById(`aba-${nome}`).classList.add('active');
+    const btn=btnClicado||document.querySelector(`.aba-btn[data-aba="${nome}"]`);
+    if (btn) btn.classList.add('active');
+    if (nome==='rituais') rituaisRender();
+}
+
+function salvarEstado() { if (!ficha) return; localStorage.setItem(`estado_ficha_${ficha.id}`,JSON.stringify(estado)); }
+function mostrarToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+
+// ══════════════════════════════════════════════
+// RITUAIS — ÚNICA função, usa rituaisPersonagem
+// ══════════════════════════════════════════════
+
+function calcDT() {
+    if (!ficha) return 10;
+    const pre = ficha.atributos?.PRE || 0;
+    const nivel = parseInt(ficha.nivel) || 1;
+    const peTurno = nivel + 2;
+    return 10 + peTurno + pre;
+}
+
+function rituaisRender() {
+    const lista   = document.getElementById('rituais-lista');
+    const countEl = document.getElementById('rituais-count');
+    const dtEl    = document.getElementById('dt-rituais');
+    if (!lista) return;
+
+    if (dtEl) dtEl.textContent = calcDT();
+
+    const busca = (document.getElementById('rituais-busca')?.value || '').toLowerCase();
+    const meus  = estado.rituaisPersonagem || [];
+
+    const filtrados = meus.filter(r =>
+        r.nome.toLowerCase().includes(busca) ||
+        (r.elem || '').toLowerCase().includes(busca)
+    );
+
+    countEl.textContent = `▸ ${filtrados.length} ritual${filtrados.length !== 1 ? 'is' : ''}`;
+
+    if (filtrados.length === 0) {
+        lista.innerHTML = '<div class="rituais-vazio">▸ Nenhum ritual adicionado ainda. Clique em "+ Adicionar" para começar!</div>';
+        return;
+    }
+
+    lista.innerHTML = filtrados.map(r => {
+        const open = rituaisAbertos[r.nome] || false;
+        const res  = rituaisResultados[r.nome];
+        const esc  = s => s.replace(/'/g, "\\'");
+        const eu   = (r.elem || 'DESCONHECIDO').toUpperCase();
+
+        const resHtml = res ? `
+          <div class="ritual-resultado">
+            <div>
+              <div class="res-tipo">${res.expr}</div>
+              <div class="res-num ${res.cls}">${res.total}</div>
+              <div class="res-det">${res.detalhe}</div>
+            </div>
+            <div class="res-tag ${res.cls}">${res.label}</div>
+          </div>` : '';
+
+        const presets = (r.dadosSugeridos || []).map(d =>
+            `<button class="ritual-preset-btn" onclick="rituaisPreset(event,'${esc(r.nome)}','${esc(d)}')">${d}</button>`
+        ).join('');
+
+        const inputId = `ritual-input-${r.nome.replace(/\W+/g,'_')}`;
+
+        const bodyHtml = open ? `
+          <div class="ritual-card-body">
+            <div class="ritual-desc-txt">${r.desc || '—'}</div>
+            <div class="ritual-meta-grid">
+              <div class="ritual-meta-item">Execução <span>${r.exec || '—'}</span></div>
+              <div class="ritual-meta-item">Alcance <span>${r.alcance || '—'}</span></div>
+              <div class="ritual-meta-item">Duração <span>${r.dur || '—'}</span></div>
+              <div class="ritual-meta-item">Conjuração <span>${r.conjuracao || '—'}</span></div>
+            </div>
+            <div class="ritual-rolar-section">
+              <div class="ritual-rolar-title">🎲 Rolar dado do ritual</div>
+              <div class="ritual-rolar-row">
+                <input type="text" class="ritual-dado-input" id="${inputId}" placeholder="ex: 1d20" value="${r.dadosSugeridos?.[0] || '1d20'}">
+                ${presets ? `<div class="ritual-dado-presets">${presets}</div>` : ''}
+                <button class="ritual-btn-rolar" onclick="rituaisRolar(event,'${esc(r.nome)}','${inputId}')">🎲 Rolar</button>
+              </div>
+            </div>
+            ${resHtml}
+            <div style="margin-top:10px;text-align:right;">
+              <button onclick="removerRitual('${esc(r.nome)}')" style="background:none;border:1px solid #2a0030;color:#555;font-size:0.7rem;font-family:'Share Tech Mono',monospace;padding:3px 10px;border-radius:4px;cursor:pointer;transition:0.2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#555'">🗑 Remover</button>
+            </div>
+          </div>` : '';
+
+        return `<div class="ritual-card-f">
+          <div class="ritual-card-hdr" onclick="rituaisToggle('${esc(r.nome)}')">
+            <div class="ritual-hdr-esq">
+              <div class="ritual-card-nome">${r.nome}</div>
+              <div class="ritual-badges">
+                <span class="rbadge rbadge-${eu}">${r.elem || 'Desconhecido'}</span>
+                ${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}
+                ${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}
+              </div>
+            </div>
+            <div class="ritual-toggle">${open ? '▲' : '▼'}</div>
+          </div>
+          ${bodyHtml}
+        </div>`;
+    }).join('');
+}
+
+function rituaisToggle(nome) {
+    rituaisAbertos[nome] = !rituaisAbertos[nome];
+    rituaisRender();
+}
+
+function rituaisPreset(e, nome, dado) {
+    e.stopPropagation();
+    const inputId = `ritual-input-${nome.replace(/\W+/g,'_')}`;
+    const inp = document.getElementById(inputId);
+    if (inp) inp.value = dado;
+}
+
+function rituaisRolar(e, nome, inputId) {
+    e.stopPropagation();
+    const inp = document.getElementById(inputId);
+    if (!inp) return;
+    const expr = inp.value.trim() || '1d20';
+    const r = rolarExpressao(expr);
+    if (r.total === 0 && r.detalhe === expr) { mostrarToast('⚠ Expressão inválida. Use ex: 1d20, 2d8+3'); return; }
+    const m = expr.match(/^1d20([+-]\d+)?$/i);
+    const rolls = r.detalhe.match(/\[(\d+)\]/);
+    const rollVal = rolls ? parseInt(rolls[1]) : -1;
+    let cls = 'r-normal', label = 'ROLAGEM', logTipo = 'normal';
+    if (m && rollVal === 20) { cls = 'r-critico'; label = 'CRÍTICO'; logTipo = 'critico'; }
+    else if (m && rollVal === 1) { cls = 'r-falha'; label = 'FALHA'; logTipo = 'falha'; }
+    rituaisResultados[nome] = { expr, detalhe: r.detalhe, total: r.total, cls, label };
+    rituaisAbertos[nome] = true;
+    rituaisRender();
+    adicionarAoLog(`Ritual: ${nome}`, `${expr} → ${r.detalhe}`, r.total, logTipo);
+}
+
+function removerRitual(nome) {
+    if (!confirm(`Remover "${nome}" da ficha?`)) return;
+    estado.rituaisPersonagem = (estado.rituaisPersonagem || []).filter(r => r.nome !== nome);
+    salvarEstado(); rituaisRender(); mostrarToast('🗑 RITUAL REMOVIDO');
+}
+
+function abrirModalRitual() {
+    document.getElementById('modal-ritual').style.display = 'flex';
+    document.getElementById('modal-ritual-busca').value = '';
+    renderModalRituais();
+}
+function fecharModalRitual() { document.getElementById('modal-ritual').style.display = 'none'; }
+
+function renderModalRituais() {
+    const busca = document.getElementById('modal-ritual-busca').value.toLowerCase();
+    const meus  = (estado.rituaisPersonagem || []).map(r => r.nome);
+    const lista = document.getElementById('modal-rituais-lista');
+    const filtrados = RITUAIS_DATA.filter(r =>
+        r.nome.toLowerCase().includes(busca) || r.elem.toLowerCase().includes(busca)
+    );
+    lista.innerHTML = filtrados.map(r => {
+        const jatem = meus.includes(r.nome);
+        const eu = (r.elem || 'DESCONHECIDO').toUpperCase();
+        return `<div style="background:#0a0015;border:1px solid var(--border);border-radius:6px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;">${r.nome}</div>
+            <span class="rbadge rbadge-${eu}" style="margin-top:3px;display:inline-block;">${r.elem}</span>
+            <span class="rbadge rbadge-src" style="margin-top:3px;">${r.src}</span>
+          </div>
+          <button onclick="adicionarRitual('${r.nome.replace(/'/g,"\\'")}',${jatem})"
+            style="background:${jatem?'#1a0033':'var(--purple-dark)'};border:1px solid ${jatem?'#3a0063':'var(--purple)'};color:${jatem?'#555':'white'};font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;padding:5px 12px;border-radius:4px;cursor:${jatem?'default':'pointer'};white-space:nowrap;transition:0.2s;">
+            ${jatem ? '✓ Adicionado' : '+ Adicionar'}
+          </button>
+        </div>`;
+    }).join('');
+}
+
+function adicionarRitual(nome, jatem) {
+    if (jatem) return;
+    const dados = RITUAIS_DATA.find(r => r.nome === nome);
+    if (!dados) return;
+    if (!estado.rituaisPersonagem) estado.rituaisPersonagem = [];
+    estado.rituaisPersonagem.push({ ...dados });
+    salvarEstado(); renderModalRituais(); rituaisRender();
+    mostrarToast('✦ RITUAL ADICIONADO');
+}
+
+function abrirModalRitualCustom() { document.getElementById('modal-ritual-custom').style.display = 'flex'; }
+function fecharModalRitualCustom() { document.getElementById('modal-ritual-custom').style.display = 'none'; }
+
+function salvarRitualCustom() {
+    const nome = document.getElementById('rc-nome').value.trim();
+    const elem = document.getElementById('rc-elem').value;
+    const dado = document.getElementById('rc-dado').value.trim() || '1d20';
+    const desc = document.getElementById('rc-desc').value.trim();
+    if (!nome) { mostrarToast('⚠ Informe o nome do ritual'); return; }
+    if (!estado.rituaisPersonagem) estado.rituaisPersonagem = [];
+    estado.rituaisPersonagem.push({ nome, elem, src:'Homebrew', desc, exec:'—', alcance:'—', dur:'—', conjuracao:'—', dadosSugeridos:[dado], custom:true });
+    salvarEstado(); fecharModalRitualCustom(); rituaisRender();
+    mostrarToast('✦ RITUAL CRIADO');
+    document.getElementById('rc-nome').value='';
+    document.getElementById('rc-desc').value='';
+    document.getElementById('rc-dado').value='1d20';
+}
+</script>
+</body>
+</html>
