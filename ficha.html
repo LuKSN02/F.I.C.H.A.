@@ -434,6 +434,196 @@
         /* PATCH — Recursos max editáveis */
         .recurso-max-edit { cursor: pointer; border-bottom: 1px dashed var(--border); transition: color 0.2s; }
         .recurso-max-edit:hover { color: var(--purple-neon); }
+
+        .inv-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.inv-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0d0010;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    gap: 8px;
+}
+.inv-stat-row.full { grid-column: 1 / -1; }
+.inv-stat-lbl {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+.inv-stat-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: white;
+}
+.inv-stat-input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    width: 48px;
+    text-align: center;
+    outline: none;
+}
+.inv-stat-input::-webkit-inner-spin-button,
+.inv-stat-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.inv-stat-input[type=number] { -moz-appearance: textfield; }
+.inv-stat-select {
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    outline: none;
+    cursor: pointer;
+    text-align: right;
+}
+.inv-stat-select option { background: #0d0010; color: white; }
+
+.inv-limit-boxes {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.inv-limit-box {
+    background: #080010;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    width: 36px;
+    height: 30px;
+    text-align: center;
+    color: white;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0;
+}
+.inv-limit-box:focus { border-color: var(--purple); outline: none; }
+
+.inv-cat-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+.inv-cat-btn {
+    background: #0d0010;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.inv-cat-btn:hover { color: white; border-color: var(--purple); }
+.inv-cat-btn.active {
+    background: var(--purple-dark);
+    border-color: var(--purple);
+    color: var(--purple-neon);
+}
+
+.inv-item-card {
+    background: #0d0010;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 8px;
+    align-items: center;
+    transition: border-color 0.15s;
+}
+.inv-item-card:hover { border-color: #3a0070; }
+.inv-item-nome { font-size: 0.85rem; font-weight: 600; }
+.inv-item-cat {
+    font-size: 0.58rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 99px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    margin-top: 3px;
+    display: inline-block;
+}
+.inv-cat-ARMA       { background: #1a0010; color: #e84040; border: 1px solid #3a0020; }
+.inv-cat-MUNICAO    { background: #1a0f00; color: #ff8c00; border: 1px solid #3a2000; }
+.inv-cat-PROTECAO   { background: #001020; color: #4a9eff; border: 1px solid #003366; }
+.inv-cat-GERAL      { background: #0d0d0d; color: #888; border: 1px solid #222; }
+.inv-cat-ITEM_AMALD { background: #100020; color: #cc88ff; border: 1px solid #3a0060; }
+
+.inv-qtd-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+}
+.inv-qtd-num {
+    background: #080010;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    width: 36px;
+    height: 26px;
+    text-align: center;
+    color: white;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+}
+.inv-qtd-num:focus { border-color: var(--purple); outline: none; }
+.inv-qtd-btn {
+    background: #1a0033;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 3px;
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.15s;
+}
+.inv-qtd-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+
+/* Modal de novo item */
+#modal-inv-item {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+.modal-inv-box {
+    background: #0d0010;
+    border: 1px solid var(--purple);
+    border-radius: 12px;
+    padding: 28px 24px;
+    max-width: 420px;
+    width: 92%;
+    box-shadow: 0 0 40px var(--purple-glow);
+}
     </style>
     <!-- Firebase -->
 <script type="module">
@@ -714,16 +904,131 @@
       <div class="rituais-lista" id="rituais-lista"></div>
     </div>
 
-    <!-- ABA INVENTÁRIO -->
     <div class="aba-panel card-combate" id="aba-inventario">
-      <div class="sec-title">Inventário</div>
-      <div id="lista-inventario"></div>
-      <div class="add-item-row">
-        <input class="inv-input" id="inv-nome-input" placeholder="Nome do item...">
-        <input class="inv-input" id="inv-qtd-input" type="number" value="1" min="1" style="width:70px;">
-        <button class="btn-add-item" onclick="adicionarItem()">+ Adicionar</button>
-      </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="sec-title" style="margin-bottom:0;">Inventário</div>
+        <button class="btn-add-item" onclick="abrirModalNovoItem()" style="font-size:0.75rem;padding:6px 14px;">+ Adicionar</button>
     </div>
+
+    <!-- ESTATÍSTICAS DO INVENTÁRIO -->
+    <div class="inv-stats-grid">
+        <!-- Pontos de Prestígio -->
+        <div class="inv-stat-row">
+            <span class="inv-stat-lbl">Pontos de Prestígio</span>
+            <input type="number" class="inv-stat-input" id="inv-prestigio" value="0" min="0"
+                   onchange="salvarInvStats()" title="Pontos de Prestígio">
+        </div>
+        <!-- Patente -->
+        <div class="inv-stat-row">
+            <span class="inv-stat-lbl">Patente</span>
+            <select class="inv-stat-select" id="inv-patente" onchange="salvarInvStats()">
+                <option>Recruta</option>
+                <option>Operativo</option>
+                <option>Agente</option>
+                <option>Especialista</option>
+                <option>Veterano</option>
+                <option>Elite</option>
+            </select>
+        </div>
+        <!-- Limite de Itens -->
+        <div class="inv-stat-row full">
+            <span class="inv-stat-lbl">Limite de Itens</span>
+            <div class="inv-limit-boxes">
+                <input type="number" class="inv-limit-box" id="inv-limite-1" value="2" min="0" onchange="salvarInvStats()" title="Limite Cat. I">
+                <input type="number" class="inv-limit-box" id="inv-limite-2" value="0" min="0" onchange="salvarInvStats()" title="Limite Cat. II">
+                <input type="number" class="inv-limit-box" id="inv-limite-3" value="0" min="0" onchange="salvarInvStats()" title="Limite Cat. III">
+                <input type="number" class="inv-limit-box" id="inv-limite-4" value="0" min="0" onchange="salvarInvStats()" title="Limite Cat. IV">
+            </div>
+        </div>
+        <!-- No Inventário -->
+        <div class="inv-stat-row full">
+            <span class="inv-stat-lbl">No Inventário</span>
+            <div class="inv-limit-boxes">
+                <input type="number" class="inv-limit-box" id="inv-slot-1" value="0" min="0" onchange="salvarInvStats()" title="Cat. I usados">
+                <input type="number" class="inv-limit-box" id="inv-slot-2" value="0" min="0" onchange="salvarInvStats()" title="Cat. II usados">
+                <input type="number" class="inv-limit-box" id="inv-slot-3" value="0" min="0" onchange="salvarInvStats()" title="Cat. III usados">
+                <input type="number" class="inv-limit-box" id="inv-slot-4" value="0" min="0" onchange="salvarInvStats()" title="Cat. IV usados">
+            </div>
+        </div>
+        <!-- Limite de Crédito -->
+        <div class="inv-stat-row">
+            <span class="inv-stat-lbl">Limite de Crédito</span>
+            <select class="inv-stat-select" id="inv-credito" onchange="salvarInvStats()">
+                <option>Baixo</option>
+                <option>Médio</option>
+                <option>Alto</option>
+                <option>Ilimitado</option>
+            </select>
+        </div>
+        <!-- Carga Máxima -->
+        <div class="inv-stat-row">
+            <span class="inv-stat-lbl">Carga Máx.</span>
+            <div class="inv-limit-boxes">
+                <input type="number" class="inv-limit-box" id="inv-carga-atual" value="0" min="0" onchange="salvarInvStats()" title="Carga atual" style="width:36px;">
+                <span style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">/</span>
+                <input type="number" class="inv-limit-box" id="inv-carga-max" value="20" min="0" onchange="salvarInvStats()" title="Carga máxima" style="width:36px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTRO POR CATEGORIA -->
+    <div class="inv-cat-btns">
+        <button class="inv-cat-btn active" id="inv-filter-btn-TODOS" onclick="filtrarInvCat('TODOS')">Todos</button>
+        <button class="inv-cat-btn inv-cat-ARMA"       id="inv-filter-btn-ARMA"       onclick="filtrarInvCat('ARMA')">Arma</button>
+        <button class="inv-cat-btn inv-cat-MUNICAO"    id="inv-filter-btn-MUNICAO"    onclick="filtrarInvCat('MUNICAO')">Munição</button>
+        <button class="inv-cat-btn inv-cat-PROTECAO"   id="inv-filter-btn-PROTECAO"   onclick="filtrarInvCat('PROTECAO')">Proteção</button>
+        <button class="inv-cat-btn inv-cat-GERAL"      id="inv-filter-btn-GERAL"      onclick="filtrarInvCat('GERAL')">Geral</button>
+        <button class="inv-cat-btn inv-cat-ITEM_AMALD" id="inv-filter-btn-ITEM_AMALD" onclick="filtrarInvCat('ITEM_AMALD')">Item Amald.</button>
+    </div>
+
+    <!-- LISTA DE ITENS -->
+    <div id="lista-inventario"></div>
+</div>
+
+<!-- Modal: Adicionar Novo Item -->
+<div id="modal-inv-item">
+    <div class="modal-inv-box">
+        <div style="font-size:1.1rem;letter-spacing:3px;font-weight:700;margin-bottom:16px;">NOVO ITEM</div>
+        <div style="margin-bottom:10px;">
+            <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">NOME</label>
+            <input id="inv-new-nome" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;" placeholder="Nome do item...">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div>
+                <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">CATEGORIA</label>
+                <select id="inv-new-cat" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;">
+                    <option value="ARMA">Arma</option>
+                    <option value="MUNICAO">Munição</option>
+                    <option value="PROTECAO">Proteção</option>
+                    <option value="GERAL" selected>Geral</option>
+                    <option value="ITEM_AMALD">Item Amaldiçoado</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">QUANTIDADE</label>
+                <input type="number" id="inv-new-qtd" value="1" min="1"
+                       style="background:#000;border:1px solid var(--border);color:white;font-family:'Share Tech Mono',monospace;width:100%;padding:8px;border-radius:4px;">
+            </div>
+        </div>
+        <div style="margin-bottom:16px;">
+            <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">DESCRIÇÃO (opcional)</label>
+            <textarea id="inv-new-desc" rows="2"
+                      style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;resize:vertical;"
+                      placeholder="Dano, efeito, notas..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button onclick="fecharModalNovoItem()"
+                    style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">
+                Cancelar
+            </button>
+            <button onclick="salvarNovoItem()"
+                    style="background:var(--purple);border:none;color:white;font-family:'Oswald',sans-serif;font-weight:700;padding:8px 18px;border-radius:4px;cursor:pointer;">
+                + Adicionar
+            </button>
+        </div>
+    </div>
+</div>
+
 
     <!-- ABA DESCRIÇÃO -->
     <div class="aba-panel card-combate" id="aba-descricao">
@@ -2208,19 +2513,157 @@ function rolarExpressao(expr) {
 // ══════════════════════════════════════════════
 // INVENTÁRIO
 // ══════════════════════════════════════════════
-function adicionarItem() {
-    const nome=document.getElementById('inv-nome-input').value.trim(), qtd=parseInt(document.getElementById('inv-qtd-input').value)||1;
-    if (!nome) return;
-    estado.inventario.push({nome,qtd}); salvarEstado(); renderInventario();
-    document.getElementById('inv-nome-input').value=''; document.getElementById('inv-qtd-input').value='1';
+let invCatFiltro = 'TODOS';
+
+// ── Labels amigáveis ─────────────────────────────────────────────
+const INV_CAT_LABELS = {
+    ARMA:       'Arma',
+    MUNICAO:    'Munição',
+    PROTECAO:   'Proteção',
+    GERAL:      'Geral',
+    ITEM_AMALD: 'Item Amald.',
+};
+
+// ── Filtrar por categoria ────────────────────────────────────────
+function filtrarInvCat(cat) {
+    invCatFiltro = cat;
+    document.querySelectorAll('.inv-cat-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.getElementById('inv-filter-btn-' + cat);
+    if (btn) btn.classList.add('active');
+    renderInventario();
 }
 
-function removerItem(i){ estado.inventario.splice(i,1); salvarEstado(); renderInventario(); }
+// ── Abrir / fechar modal de novo item ───────────────────────────
+function abrirModalNovoItem() {
+    document.getElementById('modal-inv-item').style.display = 'flex';
+    document.getElementById('inv-new-nome').value = '';
+    document.getElementById('inv-new-qtd').value  = '1';
+    document.getElementById('inv-new-desc').value = '';
+    document.getElementById('inv-new-cat').value  = 'GERAL';
+}
+function fecharModalNovoItem() {
+    document.getElementById('modal-inv-item').style.display = 'none';
+}
 
+// ── Salvar novo item ────────────────────────────────────────────
+function salvarNovoItem() {
+    const nome = document.getElementById('inv-new-nome').value.trim();
+    const cat  = document.getElementById('inv-new-cat').value;
+    const qtd  = parseInt(document.getElementById('inv-new-qtd').value) || 1;
+    const desc = document.getElementById('inv-new-desc').value.trim();
+    if (!nome) { mostrarToast('⚠ Informe o nome do item'); return; }
+    if (!estado.inventario) estado.inventario = [];
+    estado.inventario.push({ nome, cat, qtd, desc });
+    salvarEstado();
+    renderInventario();
+    fecharModalNovoItem();
+    mostrarToast('✦ ITEM ADICIONADO');
+}
+
+// ── Funções legacy (compatibilidade) ────────────────────────────
+function adicionarItem() {
+    const nome = document.getElementById('inv-nome-input')?.value.trim();
+    const qtd  = parseInt(document.getElementById('inv-qtd-input')?.value) || 1;
+    if (!nome) return;
+    if (!estado.inventario) estado.inventario = [];
+    estado.inventario.push({ nome, cat: 'GERAL', qtd, desc: '' });
+    salvarEstado();
+    renderInventario();
+    if (document.getElementById('inv-nome-input')) document.getElementById('inv-nome-input').value = '';
+    if (document.getElementById('inv-qtd-input'))  document.getElementById('inv-qtd-input').value  = '1';
+}
+
+// ── Remover item ────────────────────────────────────────────────
+function removerItem(i) {
+    estado.inventario.splice(i, 1);
+    salvarEstado();
+    renderInventario();
+}
+
+// ── Alterar quantidade inline ────────────────────────────────────
+function alterarQtdItem(i, delta) {
+    if (!estado.inventario[i]) return;
+    estado.inventario[i].qtd = Math.max(1, (estado.inventario[i].qtd || 1) + delta);
+    salvarEstado();
+    renderInventario();
+}
+
+function setQtdItem(i, val) {
+    if (!estado.inventario[i]) return;
+    estado.inventario[i].qtd = Math.max(1, parseInt(val) || 1);
+    salvarEstado();
+}
+
+// ── Render da lista ─────────────────────────────────────────────
 function renderInventario() {
-    const lista=document.getElementById('lista-inventario');
-    if (estado.inventario.length===0){ lista.innerHTML=`<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:10px;">▸ Inventário vazio.</p>`; return; }
-    lista.innerHTML=estado.inventario.map((item,i)=>`<div class="inventario-item"><div><div class="inv-nome">${item.nome}</div><div class="inv-qtd">Qtd: ${item.qtd}</div></div><button class="btn-del-item" onclick="removerItem(${i})">🗑</button></div>`).join('');
+    const lista = document.getElementById('lista-inventario');
+    if (!lista) return;
+
+    // Carrega as estatísticas salvas
+    carregarInvStats();
+
+    const itens = (estado.inventario || []);
+    const filtrados = invCatFiltro === 'TODOS'
+        ? itens.map((item, i) => ({ item, i }))
+        : itens.map((item, i) => ({ item, i })).filter(({ item }) => (item.cat || 'GERAL') === invCatFiltro);
+
+    if (filtrados.length === 0) {
+        lista.innerHTML = `<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:10px;">▸ Nenhum item${invCatFiltro !== 'TODOS' ? ' nessa categoria' : ''} ainda.</p>`;
+        return;
+    }
+
+    lista.innerHTML = filtrados.map(({ item, i }) => {
+        const cat    = item.cat || 'GERAL';
+        const catLbl = INV_CAT_LABELS[cat] || cat;
+        const desc   = item.desc ? `<div style="font-size:0.72rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-top:3px;">${item.desc}</div>` : '';
+        return `
+        <div class="inv-item-card">
+            <div>
+                <div class="inv-item-nome">${item.nome}</div>
+                <span class="inv-item-cat inv-cat-${cat}">${catLbl}</span>
+                ${desc}
+            </div>
+            <div class="inv-qtd-ctrl">
+                <button class="inv-qtd-btn" onclick="alterarQtdItem(${i},-1)">−</button>
+                <input type="number" class="inv-qtd-num" value="${item.qtd || 1}" min="1"
+                       onchange="setQtdItem(${i},this.value)"
+                       onblur="renderInventario()">
+                <button class="inv-qtd-btn" onclick="alterarQtdItem(${i},1)">+</button>
+            </div>
+            <div style="color:var(--text-dim);font-size:0.65rem;font-family:'Share Tech Mono',monospace;text-align:center;">
+                ${item.qtd > 1 ? item.qtd + 'x' : ''}
+            </div>
+            <button onclick="removerItem(${i})"
+                    style="background:none;border:none;color:#444;cursor:pointer;font-size:0.9rem;transition:0.2s;"
+                    onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#444'"
+                    title="Remover">🗑</button>
+        </div>`;
+    }).join('');
+}
+
+// ── Estatísticas do inventário ───────────────────────────────────
+function salvarInvStats() {
+    if (!estado.invStats) estado.invStats = {};
+    estado.invStats.prestigio  = parseInt(document.getElementById('inv-prestigio')?.value)  || 0;
+    estado.invStats.patente    = document.getElementById('inv-patente')?.value               || 'Recruta';
+    estado.invStats.credito    = document.getElementById('inv-credito')?.value               || 'Baixo';
+    estado.invStats.cargaAtual = parseInt(document.getElementById('inv-carga-atual')?.value) || 0;
+    estado.invStats.cargaMax   = parseInt(document.getElementById('inv-carga-max')?.value)   || 20;
+    estado.invStats.limites    = [1,2,3,4].map(n => parseInt(document.getElementById('inv-limite-' + n)?.value) || 0);
+    estado.invStats.slots      = [1,2,3,4].map(n => parseInt(document.getElementById('inv-slot-' + n)?.value)  || 0);
+    salvarEstado();
+}
+
+function carregarInvStats() {
+    const s = estado.invStats || {};
+    const set = (id, val) => { const el = document.getElementById(id); if (el && document.activeElement !== el) el.value = val; };
+    set('inv-prestigio',  s.prestigio  ?? 0);
+    set('inv-patente',    s.patente    ?? 'Recruta');
+    set('inv-credito',    s.credito    ?? 'Baixo');
+    set('inv-carga-atual',s.cargaAtual ?? 0);
+    set('inv-carga-max',  s.cargaMax   ?? 20);
+    if (s.limites) s.limites.forEach((v, i) => set('inv-limite-' + (i+1), v));
+    if (s.slots)   s.slots.forEach((v, i)   => set('inv-slot-'   + (i+1), v));
 }
 
 // ══════════════════════════════════════════════
