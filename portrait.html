@@ -36,7 +36,6 @@
     overflow: hidden;
   }
 
-  /* ── PORTRAIT CONTAINER ── */
   .portrait {
     width: var(--w);
     position: relative;
@@ -51,7 +50,6 @@
     to   { transform: translateX(0);     opacity: 1; }
   }
 
-  /* ── FOTO + DECORAÇÃO ── */
   .foto-wrap {
     position: relative;
     width: 100%;
@@ -71,7 +69,6 @@
     pointer-events: none;
   }
 
-  /* canto decorativo */
   .corner-deco {
     position: absolute;
     width: 24px; height: 24px;
@@ -93,7 +90,6 @@
     filter: saturate(1.1) contrast(1.05);
   }
 
-  /* scan line */
   .scanlines {
     position: absolute;
     inset: 0;
@@ -108,7 +104,6 @@
     pointer-events: none;
   }
 
-  /* nex badge on photo */
   .nex-badge {
     position: absolute;
     top: 10px;
@@ -125,7 +120,6 @@
     box-shadow: 0 0 10px var(--purple-glow);
   }
 
-  /* ── PAINEL INFERIOR ── */
   .info-panel {
     background: var(--card);
     border-left: 2px solid var(--purple);
@@ -136,7 +130,6 @@
     position: relative;
   }
 
-  /* linha brilhante no topo do painel */
   .info-panel::before {
     content: '';
     position: absolute;
@@ -182,7 +175,6 @@
     font-family: 'Share Tech Mono', monospace;
   }
 
-  /* ── BARRAS ── */
   .barras-wrap {
     display: flex;
     flex-direction: column;
@@ -237,10 +229,12 @@
   .barra-san   { background: linear-gradient(90deg, #2a0055, #bc6ff1); }
   .barra-esf   { background: linear-gradient(90deg, #5c3a00, #ff8c00); }
 
-  .barra-vida-low { background: linear-gradient(90deg, #6b0000, #ff0000); animation: pulseRed 1s ease infinite; }
+  .barra-vida-low {
+    background: linear-gradient(90deg, #6b0000, #ff0000);
+    animation: pulseRed 1s ease infinite;
+  }
   @keyframes pulseRed { 0%,100%{opacity:1} 50%{opacity:0.65} }
 
-  /* ── PE DOTS ── */
   .pe-row {
     display: flex;
     align-items: center;
@@ -273,7 +267,6 @@
     letter-spacing: 1px;
   }
 
-  /* ── BOTÃO FICHA ── */
   .btn-ficha-wrap {
     position: absolute;
     bottom: 12px;
@@ -303,7 +296,7 @@
     box-shadow: 0 0 8px var(--purple-glow);
   }
 
-  /* ── PULSE DE STATUS ── */
+  /* dot verde = conectado, vermelho = desconectado */
   .status-dot {
     width: 6px; height: 6px;
     border-radius: 50%;
@@ -312,10 +305,14 @@
     display: inline-block;
     animation: pulseDot 2s ease infinite;
   }
+  .status-dot.offline {
+    background: var(--red);
+    box-shadow: 0 0 6px var(--red);
+    animation: none;
+  }
 
   @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
 
-  /* ── GLITCH EFFECT (opcional, ativado ao hover) ── */
   .nome:hover {
     animation: glitch 0.3s steps(2) both;
   }
@@ -327,7 +324,6 @@
     100% { text-shadow: 0 0 12px var(--purple-glow); }
   }
 
-  /* ── SELECTOR OVERLAY (quando clicado no botão ⊕) ── */
   .selector-overlay {
     display: none;
     position: fixed;
@@ -421,7 +417,6 @@
     letter-spacing: 1px;
   }
 
-  /* Mensagem OBS */
   .obs-note {
     font-size: 0.55rem;
     color: #333;
@@ -433,44 +428,38 @@
   }
 
   .obs-note span { color: #555; }
-
 </style>
 
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
     authDomain: "ficha-op-c9df8.firebaseapp.com",
-    databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com", // ← ADICIONE ISSO
+    databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com",
     projectId: "ficha-op-c9df8",
     storageBucket: "ficha-op-c9df8.firebasestorage.app",
     messagingSenderId: "5463680704",
     appId: "1:5463680704:web:3d6296c296699f4d41af25"
-};
+  };
 
   const app = initializeApp(firebaseConfig);
   const db  = getDatabase(app);
 
   window._firebaseDB      = db;
   window._firebaseRef     = ref;
-  window._firebaseSet     = set;
   window._firebaseOnValue = onValue;
   window._firebaseGet     = get;
+  window._firebaseReady   = true;
 
-  // ← DISPARA O INIT AQUI, depois que o Firebase estiver pronto
-  window._firebaseReady = true;
   iniciarPortrait();
 </script>
-
 </head>
 <body>
 
 <div class="portrait" id="portrait">
-
-  <!-- FOTO -->
   <div class="foto-wrap">
     <div class="corner-deco tl"></div>
     <div class="corner-deco tr"></div>
@@ -481,7 +470,6 @@
     <div class="nex-badge" id="nex-badge">NEX 5%</div>
   </div>
 
-  <!-- INFO PANEL -->
   <div class="info-panel">
     <div class="nome-row">
       <div class="nome" id="nome-txt">Agente</div>
@@ -490,7 +478,6 @@
     <div class="origem-txt" id="origem-txt">—</div>
 
     <div class="barras-wrap">
-      <!-- VIDA -->
       <div class="barra-row">
         <div class="barra-header">
           <span class="barra-label" style="color:#e84040;">VIDA</span>
@@ -501,7 +488,6 @@
         </div>
       </div>
 
-      <!-- SANIDADE -->
       <div class="barra-row">
         <div class="barra-header">
           <span class="barra-label" style="color:var(--purple-neon);">SANIDADE</span>
@@ -512,7 +498,6 @@
         </div>
       </div>
 
-      <!-- ESFORÇO -->
       <div class="barra-row">
         <div class="barra-header">
           <span class="barra-label" style="color:var(--orange);">ESFORÇO</span>
@@ -524,7 +509,6 @@
       </div>
     </div>
 
-    <!-- PE / DESL -->
     <div class="pe-row">
       <div>
         <div class="pe-label">PE / TURNO</div>
@@ -534,15 +518,13 @@
         <div class="pe-label">DESLOCAMENTO</div>
         <div class="pe-desl" id="desl-txt">9m</div>
       </div>
-      <span class="status-dot" title="Ao vivo"></span>
+      <span class="status-dot" id="status-dot" title="Conectado"></span>
     </div>
 
-    <!-- botão ficha (canto inferior direito) -->
     <div class="btn-ficha-wrap">
       <button class="btn-ficha" onclick="abrirSelector()" title="Selecionar agente">⊕ FICHA</button>
     </div>
   </div>
-
 </div>
 
 <!-- SELECTOR OVERLAY -->
@@ -552,22 +534,19 @@
     <button class="btn-fechar-sel" onclick="fecharSelector()">✕ Fechar</button>
   </div>
   <div class="agentes-grid" id="agentes-grid"></div>
-  <!-- SUBSTITUA o obs-note por: -->
-<div class="obs-note">
-  ▸ Dados sincronizados via <span>Firebase em tempo real</span><br>
-  ▸ Funciona em qualquer navegador ou computador<br>
-  ▸ No OBS: Fonte de Navegador → URL desta página → Largura 320 px
-</div>
+  <div class="obs-note">
+    ▸ Dados sincronizados via <span>Firebase em tempo real</span><br>
+    ▸ Funciona em qualquer navegador ou computador<br>
+    ▸ No OBS: Fonte de Navegador → URL desta página → Largura 320 px
+  </div>
 </div>
 
 <script>
 // ══════════════════════════════════════════════
-// ESTADO LOCAL
+// ESTADO
 // ══════════════════════════════════════════════
-// ══════════════════════════════════════════════
-// ESTADO LOCAL
-// ══════════════════════════════════════════════
-let agenteAtivo = null;
+let agenteAtivo    = null;   // dados base do agente (nome, classe, etc.)
+let unsubEstado    = null;   // função para cancelar o listener anterior
 
 // ══════════════════════════════════════════════
 // APLICAR DADOS NO PORTRAIT
@@ -575,26 +554,32 @@ let agenteAtivo = null;
 function aplicarAgente(ficha, est) {
   if (!ficha) return;
 
+  // Foto — prioridade: estado > ficha > dicebear
   const fotoSrc = est?.fotoCostum || ficha.fotoCostum ||
     `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
   document.getElementById('foto-img').src = fotoSrc;
 
+  // Nome / classe / origem
   document.getElementById('nome-txt').textContent   = (ficha.codinome ? `"${ficha.codinome}"` : ficha.nome) || 'Agente';
   document.getElementById('classe-txt').textContent = ficha.classe || '—';
   document.getElementById('origem-txt').textContent = ficha.origem || '—';
 
+  // NEX / PE / Desl
   const nex  = est?.progressao?.nex  || '5%';
-  const pe   = est?.progressao?.pe   || (parseInt(ficha.nivel)||1) + 2;
+  const pe   = est?.progressao?.pe   || '3';
   const desl = est?.progressao?.desl || '9m';
   document.getElementById('nex-badge').textContent = 'NEX ' + nex;
   document.getElementById('pe-txt').textContent    = pe + ' PE';
   document.getElementById('desl-txt').textContent  = desl;
 
+  // Barras — só atualiza se tiver estado
   if (est) {
-    const v = est.vida || {}; const s = est.san || {}; const e = est.esf || {};
-    atualizarBarra('vida', v.atual ?? 20, v.max ?? 20);
-    atualizarBarra('san',  s.atual ?? 20, s.max ?? 20);
-    atualizarBarra('esf',  e.atual ?? 10, e.max ?? 10);
+    const v = est.vida || {}; 
+    const s = est.san  || {}; 
+    const e = est.esf  || {};
+    atualizarBarra('vida', v.atual ?? 0, v.max ?? 20);
+    atualizarBarra('san',  s.atual ?? 0, s.max ?? 20);
+    atualizarBarra('esf',  e.atual ?? 0, e.max ?? 10);
   }
 }
 
@@ -606,9 +591,50 @@ function atualizarBarra(tipo, atual, max) {
   if (barEl) {
     barEl.style.width = pct + '%';
     if (tipo === 'vida') {
-      barEl.className = pct <= 25 ? 'barra-fill barra-vida-low' : 'barra-fill barra-vida';
+      barEl.className = pct <= 25
+        ? 'barra-fill barra-vida-low'
+        : 'barra-fill barra-vida';
     }
   }
+}
+
+// ══════════════════════════════════════════════
+// ESCUTAR ESTADO EM TEMPO REAL
+// ══════════════════════════════════════════════
+function escutarEstado(id) {
+  if (!window._firebaseDB) return;
+
+  // Cancela listener anterior se existir
+  if (unsubEstado) { unsubEstado(); unsubEstado = null; }
+
+  const estadoRef = window._firebaseRef(window._firebaseDB, `fichas/${id}/estado`);
+
+  // ✅ onValue dispara imediatamente com o valor atual E toda vez que mudar
+  unsubEstado = window._firebaseOnValue(estadoRef, snap => {
+    if (!snap.exists()) return;
+
+    // ✅ Garante que agenteAtivo existe antes de aplicar
+    // (pode ter chegado antes do get do agente terminar)
+    if (!agenteAtivo) {
+      const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${id}`);
+      window._firebaseGet(agenteRef).then(aSnap => {
+        if (!aSnap.exists()) return;
+        agenteAtivo = aSnap.val();
+        aplicarAgente(agenteAtivo, snap.val());
+      });
+    } else {
+      aplicarAgente(agenteAtivo, snap.val());
+    }
+
+    // Dot verde = recebendo dados
+    const dot = document.getElementById('status-dot');
+    if (dot) {
+      dot.classList.remove('offline');
+      // Pisca para indicar atualização
+      dot.style.background = '#fff';
+      setTimeout(() => { dot.style.background = ''; }, 200);
+    }
+  });
 }
 
 // ══════════════════════════════════════════════
@@ -658,49 +684,50 @@ function selecionarAgente(id) {
   if (!window._firebaseDB) return;
   localStorage.setItem('portrait_agente_ativo', String(id));
 
+  // Busca dados base do agente
   const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${id}`);
   window._firebaseGet(agenteRef).then(snap => {
     if (!snap.exists()) return;
     agenteAtivo = snap.val();
-
-    const estadoRef = window._firebaseRef(window._firebaseDB, `fichas/${id}/estado`);
-    window._firebaseOnValue(estadoRef, snap => {
-      if (!snap.exists()) return;
-      aplicarAgente(agenteAtivo, snap.val());
-    });
-
+    // Aplica dados base (sem estado ainda)
+    aplicarAgente(agenteAtivo, null);
+    // Inicia escuta em tempo real do estado
+    escutarEstado(id);
     fecharSelector();
   });
 }
 
 // ══════════════════════════════════════════════
-// INIT — chamado pelo módulo Firebase quando pronto
+// INIT
 // ══════════════════════════════════════════════
 function iniciarPortrait() {
+  if (!window._firebaseDB) return;
+
   const params  = new URLSearchParams(window.location.search);
   const idParam = params.get('id');
   const idSalvo = idParam || localStorage.getItem('portrait_agente_ativo');
-  if (!idSalvo || !window._firebaseDB) return;
+  if (!idSalvo) return;
 
   localStorage.setItem('portrait_agente_ativo', idSalvo);
 
+  // ✅ Busca dados base do agente primeiro, DEPOIS inicia o listener de estado
   const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${idSalvo}`);
   window._firebaseGet(agenteRef).then(snap => {
-    if (!snap.exists()) return;
-    agenteAtivo = snap.val();
-    aplicarAgente(agenteAtivo, null);
-  });
-
-  const estadoRef = window._firebaseRef(window._firebaseDB, `fichas/${idSalvo}/estado`);
-  window._firebaseOnValue(estadoRef, snap => {
-    if (!snap.exists()) return;
-    aplicarAgente(agenteAtivo, snap.val());
+    if (snap.exists()) {
+      agenteAtivo = snap.val();
+      aplicarAgente(agenteAtivo, null); // mostra dados base imediatamente
+    }
+    // Inicia escuta em tempo real independente de ter achado o agente
+    // (o listener trata o caso de agenteAtivo ser null)
+    escutarEstado(idSalvo);
   });
 }
 
-// Fallback caso o módulo demore
+// Fallback caso o módulo Firebase demore
 window.onload = function() {
-  if (!window._firebaseReady) setTimeout(iniciarPortrait, 1000);
+  if (!window._firebaseReady) {
+    setTimeout(iniciarPortrait, 1000);
+  }
 };
 </script>
 </body>
