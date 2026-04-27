@@ -105,9 +105,24 @@
         .atrib-res-det { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
 
         .nex-row { display: flex; gap: 8px; width: 100%; margin-top: 8px; }
-        .nex-box { flex: 1; background: #0d0010; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; text-align: center; }
-        .nex-box .val { font-size: 1rem; font-weight: 700; color: white; }
+        .nex-box { flex: 1; background: #0d0010; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; text-align: center; transition: border-color 0.2s; }
+        .nex-box .val { font-size: 1rem; font-weight: 700; color: white; transition: color 0.2s; }
         .nex-box .lbl { font-size: 0.55rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; }
+
+        /* ── NEX/PE row edit ── */
+        .nex-box-edit { cursor: pointer; position: relative; }
+        .nex-box-edit:hover { border-color: var(--purple); }
+        .nex-box-edit:hover .val { color: var(--purple-neon); }
+        .nex-box-edit::after {
+            content: '✎';
+            position: absolute;
+            top: 3px; right: 5px;
+            font-size: 0.55rem;
+            color: var(--border);
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .nex-box-edit:hover::after { opacity: 1; color: var(--purple-neon); }
 
         .card-recursos { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
         .recurso-row { display: flex; flex-direction: column; gap: 4px; }
@@ -333,6 +348,91 @@
         .res-tag.r-falha   { background: #330000; color: var(--red); }
         .res-tag.r-normal  { background: #1a0033; color: var(--purple-neon); }
         .rituais-vazio { text-align: center; padding: 24px; color: #333; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; }
+
+        /* HABILIDADES */
+        .hab-categorias{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;}
+        .hab-cat-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 12px;border-radius:6px;cursor:pointer;transition:0.2s;}
+        .hab-cat-btn:hover{color:white;background:#1a0033;}
+        .hab-cat-btn.active{background:var(--purple-dark);border-color:var(--purple);color:var(--purple-neon);}
+        .hab-subabas{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+        .hab-subaba-btn{background:#0d0010;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:4px;cursor:pointer;transition:0.2s;}
+        .hab-subaba-btn:hover{color:white;border-color:var(--purple);}
+        .hab-subaba-btn.active{background:var(--purple);border-color:var(--purple);color:white;}
+        .hab-search-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
+        .hab-search-wrap2{flex:1;position:relative;}
+        .hab-search-wrap2 .sicon2{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:0.9rem;pointer-events:none;}
+        .hab-search-input{width:100%;padding:7px 10px 7px 30px;background:#0d0010;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;border-radius:6px;transition:border-color 0.2s;}
+        .hab-search-input:focus{border-color:var(--purple);outline:none;}
+        .hab-search-input::placeholder{color:#444;}
+        .hab-count{font-size:0.6rem;letter-spacing:2px;color:#444;text-transform:uppercase;font-family:'Share Tech Mono',monospace;margin-bottom:8px;}
+        .poder-card{background:#0d0010;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:6px;transition:border-color 0.15s;}
+        .poder-card:hover{border-color:#3a0070;}
+        .poder-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 14px;cursor:pointer;gap:10px;transition:background 0.15s;}
+        .poder-card-hdr:hover{background:#130020;}
+        .poder-hdr-esq{flex:1;}
+        .poder-nome{font-size:0.9rem;font-weight:700;color:white;margin-bottom:5px;}
+        .poder-badges{display:flex;gap:4px;flex-wrap:wrap;}
+        .poder-toggle{font-size:0.7rem;color:#444;flex-shrink:0;padding-top:2px;transition:color 0.15s;}
+        .poder-card-hdr:hover .poder-toggle{color:var(--purple-neon);}
+        .poder-card-body{padding:0 14px 14px;border-top:1px solid #150025;animation:fadeIn 0.2s ease;}
+        .poder-desc{font-size:0.8rem;color:#999;font-family:'Share Tech Mono',monospace;line-height:1.6;margin:10px 0;}
+        .poder-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px;margin-bottom:10px;}
+        .poder-meta-item{font-size:0.65rem;color:#555;font-family:'Share Tech Mono',monospace;}
+        .poder-meta-item span{color:#888;}
+        .btn-add-poder{background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;padding:5px 12px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:0.2s;}
+        .btn-add-poder:hover{background:var(--purple);box-shadow:0 0 8px var(--purple-glow);}
+        .btn-add-poder.added{background:#1a0033;border:1px solid #3a0063;color:#555;cursor:default;}
+        .btn-rem-poder{background:none;border:1px solid #2a0030;color:#555;font-size:0.7rem;font-family:'Share Tech Mono',monospace;padding:3px 10px;border-radius:4px;cursor:pointer;transition:0.2s;}
+        .btn-rem-poder:hover{color:var(--red);border-color:var(--red-dark);}
+        .hab-vazio{text-align:center;padding:24px;color:#333;font-family:'Share Tech Mono',monospace;font-size:0.8rem;letter-spacing:1px;}
+
+        /* PATCH — Botão de edição inline */
+        .edit-btn {
+            background: transparent; border: none; color: var(--text-dim);
+            font-size: 0.75rem; cursor: pointer; padding: 0 3px;
+            opacity: 0.4; transition: opacity 0.2s, color 0.2s; line-height: 1;
+        }
+        .edit-btn:hover { opacity: 1; color: var(--purple-neon); }
+
+        /* PATCH — Modal de edição de atributos */
+        #modal-atributos {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.88); z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        .modal-atrib-box {
+            background: #0d0010; border: 1px solid var(--purple); border-radius: 12px;
+            padding: 28px 24px; max-width: 420px; width: 92%;
+            box-shadow: 0 0 40px var(--purple-glow);
+        }
+        .modal-atrib-title { font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 18px; }
+        .atrib-edit-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+        .atrib-edit-item { display: flex; flex-direction: column; align-items: center; gap: 6px; background: #080010; border: 1px solid var(--border); border-radius: 8px; padding: 10px 6px; }
+        .atrib-edit-label { font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+        .atrib-edit-controls { display: flex; align-items: center; gap: 4px; }
+        .atrib-spin-btn { background: #1a0033; border: 1px solid var(--border); color: var(--text-dim); width: 22px; height: 22px; border-radius: 3px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: 0.15s; flex-shrink: 0; }
+        .atrib-spin-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+        .atrib-edit-val { font-size: 1.3rem; font-weight: 700; color: white; width: 28px; text-align: center; background: transparent; border: none; outline: none; font-family: 'Oswald', sans-serif; }
+        .atrib-edit-val::-webkit-outer-spin-button,
+        .atrib-edit-val::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .atrib-edit-val[type=number] { -moz-appearance: textfield; }
+
+        /* PATCH — Modal NEX */
+        #modal-nex {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.88); z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        .modal-nex-box { background: #0d0010; border: 1px solid var(--purple); border-radius: 12px; padding: 28px 24px; max-width: 380px; width: 92%; box-shadow: 0 0 40px var(--purple-glow); }
+        .nex-edit-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+        .nex-edit-item { display: flex; flex-direction: column; gap: 4px; }
+        .nex-edit-label { font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+        .nex-edit-input { background: #080010; border: 1px solid var(--border); color: white; font-family: 'Share Tech Mono', monospace; font-size: 0.95rem; padding: 6px 8px; border-radius: 5px; text-align: center; width: 100%; }
+        .nex-edit-input:focus { border-color: var(--purple); outline: none; }
+
+        /* PATCH — Recursos max editáveis */
+        .recurso-max-edit { cursor: pointer; border-bottom: 1px dashed var(--border); transition: color 0.2s; }
+        .recurso-max-edit:hover { color: var(--purple-neon); }
     </style>
 </head>
 <body>
@@ -385,7 +485,12 @@
     </div>
 
     <div class="card-atributos">
-      <div style="font-size:0.65rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;">Atributos</div>
+      <!-- PATCH: cabeçalho com botão Editar Atributos -->
+      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:6px;">
+        <div style="font-size:0.65rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;">Atributos</div>
+        <button onclick="abrirModalAtributos()" style="background:#1a0033;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:4px;cursor:pointer;transition:0.2s;" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--purple-neon)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">✎ Editar</button>
+      </div>
+
       <div class="radar-container">
         <svg id="radar-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
           <polygon id="radar-bg"  points="" fill="rgba(58,0,99,0.15)" stroke="#2a0050" stroke-width="1"/>
@@ -440,10 +545,11 @@
         </div>
       </div>
 
+      <!-- PATCH: nex-box com onclick para abrir modal NEX -->
       <div class="nex-row">
-        <div class="nex-box"><div class="val" id="nex-val">5%</div><div class="lbl">NEX</div></div>
-        <div class="nex-box"><div class="val" id="pe-val">3</div><div class="lbl">PE/turno</div></div>
-        <div class="nex-box"><div class="val" id="desl-val">9m</div><div class="lbl">Deslocamento</div></div>
+        <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="nex-val">5%</div><div class="lbl">NEX</div></div>
+        <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="pe-val">3</div><div class="lbl">PE/turno</div></div>
+        <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="desl-val">9m</div><div class="lbl">Deslocamento</div></div>
       </div>
     </div>
 
@@ -553,7 +659,6 @@
 
     <!-- ABA HABILIDADES -->
     <div class="aba-panel card-combate" id="aba-habilidades">
-      <div class="sec-title">Habilidades da Classe</div>
       <div id="lista-habilidades"><p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Carregando...</p></div>
     </div>
 
@@ -678,6 +783,99 @@
   </div>
 </div>
 
+<!-- PATCH: Modal edição de Atributos -->
+<div id="modal-atributos">
+  <div class="modal-atrib-box">
+    <div class="modal-atrib-title">✦ Editar Atributos</div>
+    <div class="atrib-edit-grid">
+      <div class="atrib-edit-item">
+        <div class="atrib-edit-label">FOR</div>
+        <div class="atrib-edit-controls">
+          <button class="atrib-spin-btn" onclick="stepAtrib('FOR',-1)">−</button>
+          <input type="number" class="atrib-edit-val" id="ae-FOR" min="-1" max="5" value="0">
+          <button class="atrib-spin-btn" onclick="stepAtrib('FOR',1)">+</button>
+        </div>
+      </div>
+      <div class="atrib-edit-item">
+        <div class="atrib-edit-label">AGI</div>
+        <div class="atrib-edit-controls">
+          <button class="atrib-spin-btn" onclick="stepAtrib('AGI',-1)">−</button>
+          <input type="number" class="atrib-edit-val" id="ae-AGI" min="-1" max="5" value="0">
+          <button class="atrib-spin-btn" onclick="stepAtrib('AGI',1)">+</button>
+        </div>
+      </div>
+      <div class="atrib-edit-item">
+        <div class="atrib-edit-label">INT</div>
+        <div class="atrib-edit-controls">
+          <button class="atrib-spin-btn" onclick="stepAtrib('INT',-1)">−</button>
+          <input type="number" class="atrib-edit-val" id="ae-INT" min="-1" max="5" value="0">
+          <button class="atrib-spin-btn" onclick="stepAtrib('INT',1)">+</button>
+        </div>
+      </div>
+      <div class="atrib-edit-item">
+        <div class="atrib-edit-label">PRE</div>
+        <div class="atrib-edit-controls">
+          <button class="atrib-spin-btn" onclick="stepAtrib('PRE',-1)">−</button>
+          <input type="number" class="atrib-edit-val" id="ae-PRE" min="-1" max="5" value="0">
+          <button class="atrib-spin-btn" onclick="stepAtrib('PRE',1)">+</button>
+        </div>
+      </div>
+      <div class="atrib-edit-item">
+        <div class="atrib-edit-label">VIG</div>
+        <div class="atrib-edit-controls">
+          <button class="atrib-spin-btn" onclick="stepAtrib('VIG',-1)">−</button>
+          <input type="number" class="atrib-edit-val" id="ae-VIG" min="-1" max="5" value="0">
+          <button class="atrib-spin-btn" onclick="stepAtrib('VIG',1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:0.65rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-bottom:16px;">
+      Distribuição: min –1 / máx 5 por atributo. Alterações afetam os recursos derivados.
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="fecharModalAtributos()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Cancelar</button>
+      <button onclick="salvarAtributos()" style="background:var(--purple);border:none;color:white;font-family:'Oswald',sans-serif;font-weight:700;padding:8px 18px;border-radius:4px;cursor:pointer;">✦ Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PATCH: Modal edição de NEX / PE / Deslocamento / Recursos -->
+<div id="modal-nex">
+  <div class="modal-nex-box">
+    <div class="modal-atrib-title">✦ Editar Progressão</div>
+    <div class="nex-edit-grid">
+      <div class="nex-edit-item" style="grid-column:1/-1;">
+        <div class="nex-edit-label">NEX</div>
+        <select class="nex-edit-input" id="ne-nex" onchange="atualizarPreviewNex()" style="cursor:pointer;">
+          <option>5%</option><option>10%</option><option>15%</option><option>20%</option>
+          <option>25%</option><option>30%</option><option>35%</option><option>40%</option>
+          <option>45%</option><option>50%</option><option>55%</option><option>60%</option>
+          <option>65%</option><option>70%</option><option>75%</option><option>80%</option>
+          <option>85%</option><option>90%</option><option>95%</option><option>99%</option>
+        </select>
+      </div>
+      <div class="nex-edit-item">
+        <div class="nex-edit-label">PE / turno</div>
+        <input type="number" class="nex-edit-input" id="ne-pe" min="1" max="30">
+      </div>
+      <div class="nex-edit-item">
+        <div class="nex-edit-label">Deslocamento</div>
+        <input type="text" class="nex-edit-input" id="ne-desl" placeholder="9m">
+      </div>
+    </div>
+    <!-- Preview automático -->
+    <div id="nex-preview" style="background:#080010;border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin:12px 0;"></div>
+    <div style="font-size:0.6rem;color:#444;font-family:'Share Tech Mono',monospace;margin-bottom:14px;">
+      ▸ PV e SAN calculados pela classe <strong style="color:#666;">${ficha?.classe || '—'}</strong> + atributos.<br>
+      ▸ PE máx = valor do NEX + AGI. Os valores atuais serão restaurados ao máximo.
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="fecharModalNex()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Cancelar</button>
+      <button onclick="salvarNex()" style="background:var(--purple);border:none;color:white;font-family:'Oswald',sans-serif;font-weight:700;padding:8px 18px;border-radius:4px;cursor:pointer;">✦ Salvar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-msg" id="toast">✦ SALVO</div>
 
 <footer style="background:black;border-top:2px solid #222;padding:32px 0;margin-top:40px;">
@@ -688,7 +886,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  const PERICIAS = [
+// ══════════════════════════════════════════════
+// DADOS ESTÁTICOS
+// ══════════════════════════════════════════════
+const PERICIAS = [
     { nome:'Acrobacia',atrib:'AGI' },{ nome:'Adestramento',atrib:'PRE' },
     { nome:'Artes',atrib:'PRE' },{ nome:'Atletismo',atrib:'FOR' },
     { nome:'Atualidades',atrib:'INT' },{ nome:'Ciências',atrib:'INT' },
@@ -705,26 +906,76 @@
     { nome:'Tecnologia',atrib:'INT' },{ nome:'Vontade',atrib:'PRE' },
 ];
 
-const HABILIDADES_CLASSE = {
-    'Combatente':[
-        { nome:'Ataque Especial', desc:'Uma vez por rodada pode realizar um ataque adicional com -5 no rolamento.' },
-        { nome:'Resistência de Combate', desc:'+2 de Defesa enquanto estiver usando armadura.' },
-    ],
-    'Especialista':[
-        { nome:'Foco Profissional', desc:'Pode rolar duas vezes em qualquer perícia de sua especialidade e usar o maior resultado.' },
-        { nome:'Improviso', desc:'Uma vez por cena pode usar um objeto como arma ou ferramenta improvisada sem penalidade.' },
-    ],
-    'Ocultista':[
-        { nome:'Sentido Paranormal', desc:'Pode detectar a presença de entidades em até 30 metros automaticamente.' },
-        { nome:'Ritual Menor', desc:'Conhece um ritual de nível 1 que pode executar sem custo de PE.' },
-    ],
-    'Mundano':[
-        { nome:'Sortudo', desc:'Uma vez por sessão pode rerrolar qualquer dado e ficar com o melhor resultado.' },
-        { nome:'Conexões', desc:'Possui contatos em 3 áreas distintas que podem fornecer informações ou ajuda.' },
-    ],
+// ══════════════════════════════════════════════
+// TABELA DE NEX — Ordem Paranormal oficial
+// ══════════════════════════════════════════════
+const NEX_TABELA = [
+    { nex:'5%',  pe:3,  desl:'9m'  },
+    { nex:'10%', pe:4,  desl:'9m'  },
+    { nex:'15%', pe:5,  desl:'9m'  },
+    { nex:'20%', pe:6,  desl:'9m'  },
+    { nex:'25%', pe:7,  desl:'9m'  },
+    { nex:'30%', pe:8,  desl:'9m'  },
+    { nex:'35%', pe:9,  desl:'9m'  },
+    { nex:'40%', pe:10, desl:'9m'  },
+    { nex:'45%', pe:11, desl:'9m'  },
+    { nex:'50%', pe:12, desl:'9m'  },
+    { nex:'55%', pe:13, desl:'9m'  },
+    { nex:'60%', pe:14, desl:'9m'  },
+    { nex:'65%', pe:15, desl:'9m'  },
+    { nex:'70%', pe:16, desl:'9m'  },
+    { nex:'75%', pe:17, desl:'9m'  },
+    { nex:'80%', pe:18, desl:'9m'  },
+    { nex:'85%', pe:19, desl:'9m'  },
+    { nex:'90%', pe:20, desl:'9m'  },
+    { nex:'95%', pe:21, desl:'9m'  },
+    { nex:'99%', pe:22, desl:'9m'  },
+];
+
+// PV base por classe (valor inicial no NEX 5%)
+// A cada nível de exposição (a cada 5% de NEX) soma-se o incremento
+const CLASSE_PV = {
+    'Combatente': { base: 20, inc: 4 },
+    'Especialista':{ base: 16, inc: 3 },
+    'Ocultista':   { base: 12, inc: 2 },
 };
 
+// SAN base igual para todas as classes (PRE influencia)
+// PE máx = PE do NEX atual (da tabela acima)
+function calcRecursosPorNex(nexStr, classe, atribs) {
+    const vig = atribs?.VIG || 0;
+    const pre = atribs?.PRE || 0;
+    const agi = atribs?.AGI || 0;
+
+    // Descobre o índice do NEX (0 = 5%, 1 = 10%, etc.)
+    const idx = NEX_TABELA.findIndex(n => n.nex === nexStr);
+    const nivel = idx >= 0 ? idx : 0; // fallback para NEX 5%
+    const entrada = NEX_TABELA[nivel] || NEX_TABELA[0];
+
+    const classeNorm = Object.keys(CLASSE_PV).find(
+        c => c.toLowerCase() === (classe || '').toLowerCase()
+    ) || 'Especialista';
+
+    const { base, inc } = CLASSE_PV[classeNorm];
+
+    // PV máx = base + (incremento × nível) + VIG × (nível + 1)
+    const pvMax  = base + (inc * nivel) + (vig * (nivel + 1));
+    // SAN máx = mesma fórmula mas com PRE
+    const sanMax = base + (inc * nivel) + (pre * (nivel + 1));
+    // PE máx = valor da tabela + AGI
+    const peMax  = entrada.pe + agi;
+
+    return {
+        pvMax,
+        sanMax,
+        peMax,
+        pe:   entrada.pe,
+        desl: entrada.desl,
+    };
+}
+
 const RITUAIS_DATA = [
+  // ── ORIGINAIS ──────────────────────────────────────────────────────────────
   { nome:"Transcender", elem:"CONHECIMENTO", src:"A Ordem Paranormal", exec:"Concentrar-se no símbolo", alcance:"Pessoal", dur:"Instantânea", conjuracao:"Ficar sobre o símbolo e se concentrar nele.", desc:"Conecta o usuário ao Outro Lado, fortalecendo-o e permitindo aprender um ritual. Se carregar um objeto amaldiçoado, o Outro Lado faz uma pergunta em troca de um ritual relacionado ao objeto." },
   { nome:"Ritual de Passagem de Sangue", elem:"SANGUE", src:"A Ordem Paranormal", exec:"Desconhecida", alcance:"Toque", dur:"Permanente", conjuracao:"Desconhecida", desc:"Funde a mente de dois seres em uma, mesclando suas consciências. Utilizado por Álvaro Augusto." },
   { nome:"Ritual de Passagem de Conhecimento", elem:"SANGUE", src:"A Ordem Paranormal / Desconjuração", exec:"Desconhecida", alcance:"Toque", dur:"Permanente", conjuracao:"Desconhecida", desc:"Permite troca, substituição ou compartilhamento de mentes entre dois ou mais corpos." },
@@ -732,101 +983,254 @@ const RITUAIS_DATA = [
   { nome:"Ritual de Descarnar", elem:"SANGUE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"10m", dur:"Instantânea", conjuracao:"Derramar sangue humano sob o Símbolo, se concentrar e apontar o alvo.", desc:"A pele do alvo é dilacerada, deixando a carne à mostra. Não funciona em criaturas de Sangue. Indouto: 1d10 dano de Sangue. Discente: 2d10+2 dano de Sangue.", dadosSugeridos:["1d10","2d10+2"] },
   { nome:"Ritual de Gritos", elem:"DESCONHECIDO", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Visual", dur:"Duração do ritual", conjuracao:"Enrolar o braço em arame farpado até sangrar, focar no símbolo e no alvo.", desc:"O alvo começa a escutar gritos ensurdecedores, tendo desvantagem em qualquer ação efetuada durante o tempo do ritual." },
   { nome:"Ritual de Terceiro Olho", elem:"CONHECIMENTO", src:"A Ordem Paranormal", exec:"Ação livre", alcance:"Campo de visão", dur:"Cena", conjuracao:"Segurar um celular e focar no símbolo.", desc:"Localiza concentrações paranormais no campo de visão do usuário." },
-  { nome:"Ritual de Poluição Mental", elem:"DESCONHECIDO", src:"A Ordem Paranormal", exec:"Desconhecida", alcance:"Desconhecido", dur:"Desconhecida", conjuracao:"Desconhecida", desc:"A mente do alvo começa a ser preenchida por pensamentos horríveis e violentos, tentando fazer o alvo enlouquecer." },
   { nome:"Ritual de Infligir Doença", elem:"MORTE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Curto", dur:"Concentração", conjuracao:"Ter em mãos cinzas animais e um órgão humano, focar no símbolo.", desc:"A vítima contrai ou acelera os efeitos de algum tipo de doença, dando 1d8 de dano de Morte por rodada no alvo.", dadosSugeridos:["1d8"] },
   { nome:"Ritual de Cicatrização Acelerada", elem:"MORTE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Toque", dur:"Instantânea", conjuracao:"Ter em mãos cinzas humanas e assoprá-las sobre uma ferida.", desc:"Acelera o tempo de cicatrização de feridas. Não cura doenças. Indouto: cura 1d6 de vida. Discente: cura 2d6+2, cura lesão grave.", dadosSugeridos:["1d6","2d6+2"] },
   { nome:"Ritual de Teletransporte", elem:"ENERGIA", src:"A Ordem Paranormal", exec:"Desconhecida", alcance:"Desconhecido", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Desaparecer e reaparecer em outro local a uma distância incerta." },
   { nome:"Ritual de Destruição Temporal", elem:"MORTE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Curto", dur:"Instantânea", conjuracao:"Consumir meia porção de cinzas humanas e se concentrar no Símbolo.", desc:"Destrói temporalmente o alvo. Gasta 5 PO. Causa 2d8 de dano direto de Morte.", dadosSugeridos:["2d8"] },
   { nome:"Ritual de Controle Mental", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Limitada", conjuracao:"Desconhecida", desc:"Faz com que a mente da vítima seja completamente controlada por outra pessoa." },
   { nome:"Ritual de Paralisia", elem:"ENERGIA", src:"Desconjuração", exec:"Desconhecida", alcance:"Área", dur:"Duração do ritual", conjuracao:"Desconhecida", desc:"A vítima fica em estado de paralisia, podendo apenas se comunicar." },
-  { nome:"Ritual de Forma Fantasmagórica", elem:"ENERGIA", src:"Desconjuração", exec:"Desconhecida", alcance:"Pessoal", dur:"Cena", conjuracao:"Desconhecida", desc:"Os braços tornam-se inconsistentes e as mãos se transformam em garras alongadas." },
   { nome:"Ritual de Bênção Maldita", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Pessoal", dur:"Próximos 5 testes", conjuracao:"Ter em mãos um objeto tecnológico, estar próximo de uma fonte de energia e se concentrar no símbolo.", desc:"O usuário rola um d20 cinco vezes; esses serão os próximos 5 resultados de uma perícia escolhida.", dadosSugeridos:["1d20"] },
   { nome:"Ritual de Eletrocussão", elem:"ENERGIA", src:"Desconjuração / O Segredo na Ilha", exec:"Desconhecida", alcance:"Curto", dur:"Instantânea", conjuracao:"Desconhecida", desc:"O alvo é eletrocutado de dentro para fora. Versão de Amelie Florence: 3d6 de dano de Energia usando 1 PE.", dadosSugeridos:["3d6"] },
-  { nome:"Ritual de Onda de Choque", elem:"ENERGIA", src:"Desconjuração", exec:"Desconhecida", alcance:"Área ao redor", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Raios saem do corpo do usuário eletrocutando todos ao seu redor." },
   { nome:"Ritual de Dissipar Espíritos", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Curto", dur:"Instantânea", conjuracao:"Focar no símbolo segurando um dispositivo eletrônico funcional com correntes nos braços.", desc:"Gasta 3 PO. Causa 2d10 de dano em entidades de Energia, e metade deste dano em seres de outro elemento.", dadosSugeridos:["2d10"] },
   { nome:"Ritual de Cinerária", elem:"MEDO", src:"Desconjuração / Sinais do Outro Lado", exec:"1 ação", alcance:"Raio de 5-6m", dur:"Cena", conjuracao:"Focar no símbolo.", desc:"Invoca a névoa do Outro Lado em raio de 5-6 metros. Gasta 6 PO. Concede vantagem em esquiva e furtividade." },
   { nome:"Ritual de Reação", elem:"ENERGIA", src:"Desconjuração", exec:"Reação", alcance:"Pessoal", dur:"Instantânea", conjuracao:"Segurar um aparelho eletrônico enquanto sofre um ataque e focar no símbolo.", desc:"Gasta 5 PO e uma reação. Metade do dano de um golpe físico é refletido em dano de Energia no agressor." },
-  { nome:"Ritual de Esconder dos Olhos", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Pessoal", dur:"Limitada", conjuracao:"Desconhecida", desc:"Torna o usuário invisível aos olhos comuns por determinado tempo." },
-  { nome:"Ritual de Censura Escripta", elem:"DESCONHECIDO", src:"Desconjuração", exec:"Desconhecida", alcance:"Documentos", dur:"Permanente", conjuracao:"Desconhecida", desc:"Censura completamente informações sobre atividades escriptas em documentos." },
   { nome:"Ritual de Ouvir os Sussurros", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Local ou objeto específico", dur:"Cena", conjuracao:"Segurar um objeto conectado ao espírito ou estar em local/horário específico.", desc:"Permite comunicar-se com os mortos. O usuário ouve sussurros do Outro Lado." },
   { nome:"Ritual de Leitura Psíquica", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Raio de 5m", dur:"Concentração", conjuracao:"Se concentrar no símbolo e ter um alvo num raio de 5 metros.", desc:"Gasta 6 PO. Permite ler a mente do alvo para prever seus próximos movimentos, pensamentos e intenções." },
   { nome:"Ritual de Ligação Telepática", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Marcados", dur:"1 hora", conjuracao:"Marcar o símbolo em quem o usuário quer afetar.", desc:"Cria uma linha telepática entre todos os marcados com o símbolo, permitindo comunicação telepática livre por uma hora." },
   { nome:"Ritual de Amaldiçoar Tecnologia", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Curto", dur:"1d6 rodadas", conjuracao:"Possuir uma fonte de energia próxima e se concentrar no símbolo.", desc:"Amaldiçoa temporariamente uma arma de fogo próxima, fazendo ela dar +1d6 de dano caótico.", dadosSugeridos:["1d6"] },
-  { nome:"Ritual de Coincidência Forçada", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Pessoal", dur:"1d6 rodadas", conjuracao:"Se concentrar no símbolo, segurar objeto tecnológico e ter fonte de energia próxima.", desc:"Gasta 5 PO. Concede um dado de vantagem em bloquear e contra-atacar por 1d6 rodadas." },
-  { nome:"Ritual de Sentir Através", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Ilimitado (via símbolo)", dur:"5 minutos", conjuracao:"Marcar o símbolo de Emissão no alvo e o de Absorção no usuário.", desc:"Gasta 6 PO. É possível observar e escutar tudo que o marcado pelo Símbolo de Emissão ver e ouvir por até 5 minutos." },
-  { nome:"Ritual de Assombração Forçada", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Local", dur:"Permanente", conjuracao:"Desconhecida", desc:"Aprisiona espíritos dos mortos em um local por tempo indeterminado." },
   { nome:"Ritual de Derreter Criaturas de Sangue", elem:"SANGUE", src:"Desconjuração", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Segurar uma corrente com sangue escorrendo e focar no símbolo.", desc:"Causa 4d10+5 em criaturas de Sangue ou 2d10 em outras criaturas. Funciona apenas em criaturas, não em humanos.", dadosSugeridos:["4d10+5","2d10"] },
-  { nome:"Ritual de Espelho", elem:"SANGUE", src:"Desconjuração / Hexatombe", exec:"Desconhecida", alcance:"Curto", dur:"Permanente", conjuracao:"Desconhecida", desc:"Cria um clone de carne e sangue idêntico ao afetado." },
-  { nome:"Ritual de Pavor Anormal", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Campo de visão", dur:"1d6 rodadas", conjuracao:"Desenhar o símbolo no chão, subir em cima e definir o alvo em campo de visão.", desc:"Gasta 5 PO. Paralisa o alvo por 1d6 rodadas e faz ele ter vantagens em escutar e encontrar." },
   { nome:"Ritual de Ódio Incontrolável", elem:"SANGUE", src:"Desconjuração / Calamidade", exec:"1 ação", alcance:"Pessoal / Curto", dur:"1d4+2 rodadas", conjuracao:"Cortar a mão, botá-la no olho enquanto se concentra no símbolo.", desc:"Gasta 8 PO. Por 1d4+2 rodadas, +2d6 de dano corpo-a-corpo e vantagem em força/ataques.", dadosSugeridos:["2d6","1d4+2"] },
-  { nome:"Ritual de Compreensão Paranormal", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Pessoal", dur:"5 minutos", conjuracao:"Se concentrar no símbolo e estar próximo a uma vela acesa.", desc:"Permite compreender toda linguagem da Realidade escrita por 5 minutos." },
-  { nome:"Ritual de Vínculo de Sangue", elem:"SANGUE", src:"Desconjuração / Hexatombe", exec:"1 ação", alcance:"Marcados", dur:"Cena", conjuracao:"Marcar o símbolo de enviar dano em um alvo e receber dano em outro.", desc:"Espalha parte da dor causada nos marcados por enviar dano para os marcados por receber dano." },
   { nome:"Ritual de Armadura de Sangue", elem:"SANGUE", src:"Desconjuração / Calamidade / Sinais / Hexatombe", exec:"1 ação", alcance:"Pessoal / Aliado próximo", dur:"Cena", conjuracao:"Se concentrar no símbolo.", desc:"Cria uma armadura de sangue. Gasta 1 PE: +5 de armadura." },
   { nome:"Ritual de Paralisia de Sangue", elem:"SANGUE", src:"Desconjuração", exec:"1 ação", alcance:"Toque / Marcado", dur:"1d4 rodadas", conjuracao:"Marcar o símbolo no alvo, enrolar arame farpado no braço até sangrar e focar no símbolo.", desc:"Paralisa o alvo por 1d4 rodadas. O alvo faz um teste de Poder a cada rodada para tentar se libertar." },
-  { nome:"Ritual de Transfusão Vital", elem:"SANGUE", src:"Desconjuração", exec:"Desconhecida", alcance:"Múltiplos alvos", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Transfere vida do usuário para vários alvos, curando-os instantaneamente." },
-  { nome:"Ritual de Distorcer o Tempo", elem:"MORTE", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Rodadas", conjuracao:"Desconhecida", desc:"Desacelera temporalmente os alvos, fazendo-os perder um número desconhecido de rodadas." },
-  { nome:"Ritual de Chamas do Caos", elem:"ENERGIA", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Aquece uma arma ao ponto em que o portador é obrigado a soltá-la." },
-  { nome:"Ritual de Graduação", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Via objeto amaldiçoado", dur:"Temporária", conjuracao:"Desconhecida", desc:"Temporariamente apaga o alvo, fazendo-o se transformar em um porta-voz do usuário." },
-  { nome:"Ritual de Definhar", elem:"MORTE", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Concentração", conjuracao:"Desconhecida", desc:"O alvo deve fazer um teste de Constituição; se falhar, começa a definhar aos poucos até sua pele enrugar." },
-  { nome:"Ritual de Inexistir", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Instantânea", conjuracao:"Desconhecida", desc:"O alvo realiza um teste de Poder. Se falhar, deixa de existir completamente." },
   { nome:"Ritual de Toque da Morte", elem:"MORTE", src:"Desconjuração", exec:"Toque", alcance:"Toque", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Faz o corpo do alvo envelhecer até definhar completamente, causando 4d10 de dano.", dadosSugeridos:["4d10"] },
-  { nome:"Ritual de Rejeitar Névoa", elem:"MEDO", src:"Desconjuração", exec:"Desconhecida", alcance:"Raio de 20m", dur:"Cena", conjuracao:"Desconhecida", desc:"Em um raio de 20 metros, a névoa é dissipada. Todos os rituais na área demoram muito mais para ser conjurados." },
   { nome:"Ritual de Levitação", elem:"DESCONHECIDO", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Concentração", conjuracao:"Desconhecida", desc:"Levita qualquer objeto à distância." },
-  { nome:"Ritual de Sugada Mortal", elem:"MORTE", src:"Desconjuração", exec:"Desconhecida", alcance:"Desconhecido", dur:"Permanente", conjuracao:"Desconhecida", desc:"Remove permanentemente 2 pontos de Constituição do alvo." },
-  { nome:"Ritual de Flashback", elem:"MEDO", src:"Desconjuração", exec:"Desconhecida", alcance:"Via objeto amaldiçoado", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Permite que o alvo tenha uma visão do passado ao interagir com o objeto amaldiçoado." },
   { nome:"Ritual de Fortalecimento Sensorial", elem:"SANGUE", src:"Calamidade", exec:"1 ação", alcance:"Pessoal", dur:"Cena", conjuracao:"Cortar a palma da mão.", desc:"Gasta 1 PE. Ganha um dado extra em testes de Percepção, Investigação, Luta e Pontaria." },
   { nome:"Ritual de Embaralhar", elem:"ENERGIA", src:"Calamidade / Sinais do Outro Lado / Enigma do Medo", exec:"1 ação", alcance:"Pessoal", dur:"Cena", conjuracao:"Apertar duas baterias.", desc:"Cria cópias ilusórias do usuário. A primeira cópia gasta 2 PE; cada adicional gasta 1 PE." },
-  { nome:"Ritual de Eco Espiral", elem:"MORTE", src:"Calamidade", exec:"1 ação", alcance:"Campo de visão", dur:"1 rodada + turno seguinte", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Cada dado de dano que o alvo sofre é repetido no turno seguinte como dano de Morte." },
   { nome:"Ritual de Cicatrização", elem:"MORTE", src:"Calamidade / O Segredo na Ilha / Sinais do Outro Lado", exec:"1 ação", alcance:"Toque / Aliado", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Cura 2d8+2 PV. Pode ser aprimorado (+2 PE) para adicionar +2d8+2.", dadosSugeridos:["2d8+2","3d8+3"] },
   { nome:"Ritual de Salto Fantasma", elem:"ENERGIA", src:"Calamidade", exec:"1 ação / Reação", alcance:"9m (base)", dur:"Instantânea", conjuracao:"Pensar ou ver o ponto onde quer se teletransportar.", desc:"Gasta 3 PE. Teleporta o usuário em área de 9 metros." },
-  { nome:"Ritual de Mergulho Mental", elem:"CONHECIMENTO", src:"Calamidade", exec:"1 ação", alcance:"Toque", dur:"Concentração", conjuracao:"Furar os 5 dedos de uma mão com agulhas e colocá-la sobre a testa do alvo.", desc:"Gasta 2 PE. Leva o conjurador e o alvo a um lugar mental vazio, onde o alvo é obrigado a responder sim ou não." },
   { nome:"Ritual de Decadência", elem:"MORTE", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Acelera o envelhecimento dos órgãos internos, causando 2d8+2 de dano de Morte.", dadosSugeridos:["2d8+2"] },
-  { nome:"Ritual de Distorcer Aparência", elem:"SANGUE", src:"Calamidade / Sinais do Outro Lado", exec:"Desconhecida", alcance:"Pessoal / Aliado", dur:"Cena", conjuracao:"Desconhecida", desc:"Transforma o usuário ou aliado fisicamente em outra pessoa." },
   { nome:"Ritual de Amaldiçoar Arma com Conhecimento", elem:"CONHECIMENTO", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Arma próxima", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Adiciona +1d6 de dano de Conhecimento. Aprimoramento (+2 PE): +1d6 adicional, máximo 3d6.", dadosSugeridos:["1d6","2d6","3d6"] },
-  { nome:"Ritual de Vomitar Pestes", elem:"SANGUE", src:"Calamidade", exec:"1 ação", alcance:"Área (formato à escolha)", dur:"Cena", conjuracao:"Desconhecida", desc:"O usuário vomita criaturas paranormais minúsculas que causam 2d12 de dano de Sangue.", dadosSugeridos:["2d12"] },
-  { nome:"Ritual de Blackout", elem:"CONHECIMENTO", src:"Calamidade", exec:"1 ação", alcance:"Visual", dur:"Cena", conjuracao:"Se concentrar no símbolo.", desc:"Gasta 3 PE. O alvo faz teste de Vontade: se passar, fica frustrado; se falhar, fica confuso." },
-  { nome:"Ritual de Perturbação", elem:"CONHECIMENTO", src:"Calamidade / Sinais do Outro Lado / Hexatombe", exec:"1 ação", alcance:"Audível", dur:"1 rodada", conjuracao:"Desconhecida", desc:"Gasta 1 PE (Calamidade) ou 3 PE (Hexatombe). O alvo ouve um comando e, se falhar no teste de Vontade, obedece." },
-  { nome:"Ritual de Enfeitiçar", elem:"CONHECIMENTO", src:"Calamidade", exec:"1 ação", alcance:"Visual", dur:"Cena", conjuracao:"Desconhecida", desc:"Muda a atitude do alvo (se falhar no teste de Vontade). O conjurador recebe +10 em diplomacia, intimidação e enganação." },
-  { nome:"Ritual de Velocidade Mortal", elem:"MORTE", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Pessoal / Alvo", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 3 PE. A quantidade de ações do usuário em um turno dobra." },
-  { nome:"Ritual de Amaldiçoar Arma com Energia", elem:"ENERGIA", src:"Calamidade / O Segredo na Ilha / Sinais do Outro Lado", exec:"1 ação", alcance:"Arma próxima", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Adiciona +1d6 de dano de Energia. Aprimoramento (+2 PE): +1d6 adicional, máximo 3d6.", dadosSugeridos:["1d6","2d6","3d6"] },
-  { nome:"Ritual de Cicatrização em Área", elem:"DESCONHECIDO", src:"Calamidade", exec:"Desconhecida", alcance:"Área ao redor", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Cura simultaneamente várias pessoas ao redor, reinstaurando o vigor de todos." },
-  { nome:"Ritual de Portal", elem:"DESCONHECIDO", src:"Calamidade", exec:"Minutos", alcance:"Desconhecido", dur:"Limitada", conjuracao:"Desconhecida", desc:"Abre um portal que pode teletransportar somente os indivíduos permitidos pelo conjurador." },
   { nome:"Ritual de Paradoxo", elem:"MORTE", src:"Calamidade", exec:"1 ação", alcance:"Área", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 3 PE. Causa 6d6 de dano de Morte em todos os alvos na área.", dadosSugeridos:["6d6"] },
-  { nome:"Ritual de Polarização Caótica", elem:"ENERGIA", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Visual", dur:"Cena", conjuracao:"Desconhecida", desc:"Faz objetos metálicos se atraírem mutuamente." },
-  { nome:"Ritual de Impulso de Eletricidade", elem:"ENERGIA", src:"Calamidade", exec:"Reação / Automático", alcance:"Área", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Solta raios elétricos que causam dano de Energia. Ao acertar um alvo, os raios se propagam aleatoriamente." },
-  { nome:"Ritual de Proteção de Energia", elem:"ENERGIA", src:"Calamidade", exec:"Ritual (preparação)", alcance:"Local", dur:"Permanente (até ser ativado)", conjuracao:"Desconhecida", desc:"Cria uma armadilha que eletrocuta e causa dano de sanidade em pessoas que aproximem objetos amaldiçoados de locais específicos." },
-  { nome:"Ritual de Lâmina do Medo", elem:"MEDO", src:"Calamidade", exec:"1 ação", alcance:"Toque", dur:"Instantânea", conjuracao:"Desconhecida", desc:"O usuário cria uma lâmina translúcida em sua mão que emana um som melodioso. Ao perfurar um alvo, o deixa morrendo instantaneamente." },
+  { nome:"Ritual de Amaldiçoar Arma com Energia", elem:"ENERGIA", src:"Calamidade / O Segredo na Ilha / Sinais do Outro Lado", exec:"1 ação", alcance:"Arma próxima", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Adiciona +1d6 de dano de Energia. Aprimoramento (+2 PE): +1d6 adicional, máximo 3d6.", dadosSugeridos:["1d6","2d6","3d6"] },
   { nome:"Ritual de Amaldiçoar Arma com Sangue", elem:"SANGUE", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Arma próxima", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Adiciona +1d6 de dano de Sangue. Aprimoramento (+2 PE): +1d6 adicional, máximo 3d6.", dadosSugeridos:["1d6","2d6","3d6"] },
-  { nome:"Ritual de Desacelerar Impacto", elem:"MORTE", src:"Calamidade", exec:"Reação", alcance:"Pessoal", dur:"Até o fim da cena", conjuracao:"Desconhecida", desc:"Gasta 2 PE. Recebe 10 PV temporários contra ataques físicos e balísticos." },
-  { nome:"Ritual de Cartas do Destino", elem:"CONHECIMENTO", src:"Calamidade", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 2 PE. Causa 2d6 de dano de Conhecimento. Alvo: teste de Vontade.", dadosSugeridos:["2d6"] },
-  { nome:"Ritual de Cura de Conhecimento", elem:"CONHECIMENTO", src:"Calamidade", exec:"Desconhecida", alcance:"Aliados", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Conjura sigilos de Conhecimento nas feridas dos alvos, curando toda vida, sanidade e pontos de esforço." },
-  { nome:"Ritual de Tentáculos de Lodo", elem:"MORTE", src:"Calamidade", exec:"1 ação", alcance:"Área de 3m", dur:"Cena", conjuracao:"Desconhecida", desc:"Manifesta uma área de lodo (terreno difícil) de 3m. Após uma rodada completa, alvos presos tomam 4d6 de dano de Morte.", dadosSugeridos:["4d6"] },
   { nome:"Ritual de Disparo de Energia Concentrado", elem:"ENERGIA", src:"Calamidade", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Se concentrar no símbolo (via celular).", desc:"Gasta 3 PE. Dispara um projétil causando 6d6 de Dano Caótico. Aprimoramento (+2 PE por nível): até 14d6.", dadosSugeridos:["6d6","8d6","10d6","14d6"] },
-  { nome:"Ritual de Consumir Manancial", elem:"MORTE", src:"O Segredo na Ilha", exec:"1 ação", alcance:"Área ao redor", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Absorve a Energia Potencial de plantas, insetos e solo ao redor, fornecendo 3d6 PV temporários.", dadosSugeridos:["3d6"] },
   { nome:"Ritual de Tela de Ruído", elem:"ENERGIA", src:"Sinais do Outro Lado", exec:"1 ação / Reação", alcance:"Pessoal", dur:"Cena / Instantânea", conjuracao:"Desconhecida", desc:"Cria uma película de Energia que recobre o corpo. Concede 30 PV temporários contra dano físico/balístico." },
-  { nome:"Ritual de Tecer Ilusão", elem:"CONHECIMENTO", src:"Sinais do Outro Lado", exec:"Desconhecida", alcance:"Visual / Auditivo", dur:"Concentração", conjuracao:"Desconhecida", desc:"Cria uma ilusão visual ou sonora simples." },
-  { nome:"Ritual de Invadir Mente", elem:"CONHECIMENTO", src:"Sinais do Outro Lado", exec:"Desconhecida", alcance:"Visual / Telepático", dur:"Cena", conjuracao:"Desconhecida", desc:"Gera uma Rajada Mental que causa dano de Conhecimento, ou cria uma Ligação Telepática." },
-  { nome:"Ritual de Espirais da Perdição", elem:"MORTE", src:"Sinais do Outro Lado", exec:"Desconhecida", alcance:"Visual", dur:"Cena", conjuracao:"Desconhecida", desc:"Espirais surgem no corpo do alvo, tornando seus movimentos lentos. O alvo sofre -1d20 em testes de ataque." },
-  { nome:"Ritual de Luz", elem:"ENERGIA", src:"Sinais do Outro Lado", exec:"Desconhecida", alcance:"Raio de 9m", dur:"Cena", conjuracao:"Desconhecida", desc:"Faz um objeto emitir luz de cores alternadas e brilhantes em uma área com 9m de raio." },
-  { nome:"Ritual de Passagem de Conhecimento Expandido", elem:"SANGUE", src:"Hexatombe", exec:"Desconhecida", alcance:"10 pessoas", dur:"Cena", conjuracao:"Desconhecida", desc:"Versão modificada do Ritual de Passagem de Conhecimento. Realiza troca de consciências simultânea entre 10 pessoas." },
   { nome:"Ritual de Rajada Caótica", elem:"ENERGIA", src:"Hexatombe", exec:"1 ação", alcance:"Médio", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Dispara um raio que causa 8d8 pontos de dano de Energia em um ser em alcance médio.", dadosSugeridos:["8d8"] },
   { nome:"Ritual de Tempestade Caótica", elem:"ENERGIA", src:"Hexatombe", exec:"1 ação", alcance:"Médio", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Versão aprimorada da Rajada Caótica. Dispara um raio que causa 8d10 pontos de dano de Energia.", dadosSugeridos:["8d10"] },
-  { nome:"Ritual de Labirinto Mental", elem:"CONHECIMENTO", src:"Hexatombe", exec:"1 ação", alcance:"Visual", dur:"1d4 rodadas", conjuracao:"Desconhecida", desc:"Obriga o alvo a gastar suas ações para se mover em uma direção aleatória por 1d4 rodadas." },
-  { nome:"Ritual de Labirinto Abissal", elem:"CONHECIMENTO", src:"Hexatombe", exec:"1 ação", alcance:"Visual", dur:"1d4 rodadas", conjuracao:"Desconhecida", desc:"Versão aprimorada do Labirinto Mental. Obriga o alvo a se mover em uma direção à escolha do usuário." },
   { nome:"Ritual de Mapa Sanguíneo", elem:"SANGUE", src:"Hexatombe", exec:"1 ação", alcance:"Raio de 1km", dur:"Cena", conjuracao:"Desconhecida", desc:"Desenha um mapa que sinaliza a localização em tempo real de todos os seres em um raio de um quilômetro." },
-  { nome:"Ritual de Revelação Sanguínea", elem:"SANGUE", src:"Hexatombe", exec:"Desconhecida", alcance:"Raio de 1km", dur:"Cena", conjuracao:"Desconhecida", desc:"Versão aprimorada do Mapa Sanguíneo. Sinaliza localização, intenção geral e condições de saúde de todos os seres em 1km." },
-  { nome:"Ritual de Armadura de Sangue Diabólica", elem:"SANGUE", src:"Hexatombe", exec:"1 ação", alcance:"Pessoal / Aliado", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Conjura armadura de sangue para si ou aliado próximo (+5 de armadura)." },
-  { nome:"Ritual de Capturar Momento", elem:"MORTE", src:"Hexatombe", exec:"Desconhecida", alcance:"Local marcado", dur:"Cena", conjuracao:"Desconhecida", desc:"O usuário pode ver imagens e captar sons próximos de onde o símbolo foi marcado." },
-  { nome:"Ritual de Consumir Momento", elem:"MORTE", src:"Hexatombe", exec:"Desconhecida", alcance:"Local marcado", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Versão aprimorada de Capturar Momento. Gera uma explosão de Morte em área a partir do símbolo marcado." },
-  { nome:"Ritual de Esfolar", elem:"SANGUE", src:"Hexatombe", exec:"Armadilha (ao ser tocado)", alcance:"Área de 3m", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Quando o objeto ou pessoa marcada é tocado, explode lançando lâminas que causam dano de corte e sangramento em área de 3 metros." },
-  { nome:"Ritual de Olhar da Curiosidade Mórbida", elem:"CONHECIMENTO", src:"Hexatombe", exec:"1 ação", alcance:"Visual", dur:"Cena", conjuracao:"Desconhecida", desc:"Se o alvo olhar: teste de Vontade ou sofre penalidades graves. Se evitar olhar: desvantagem de 2d20 em todos os testes e fica cego." },
-  { nome:"Ritual de Bolsa do Sangue", elem:"SANGUE", src:"Hexatombe", exec:"1 ação", alcance:"Toque", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Recupera pontos de vida de um alvo usando o próprio sangue do conjurador." },
-  { nome:"Ritual de Maldição Sanguínea", elem:"SANGUE", src:"Hexatombe", exec:"1 ação", alcance:"Visual", dur:"Cena", conjuracao:"Desconhecida", desc:"Pode ser resistido com teste de Fortitude. Se falhar, o alvo fica abalado e recebe desvantagem de 1d20." },
+  { nome:"Ritual de Labirinto Mental", elem:"CONHECIMENTO", src:"Hexatombe", exec:"1 ação", alcance:"Visual", dur:"1d4 rodadas", conjuracao:"Desconhecida", desc:"Obriga o alvo a gastar suas ações para se mover em uma direção aleatória por 1d4 rodadas." },
   { nome:"Ritual de Explosão", elem:"ENERGIA", src:"Enigma do Medo", exec:"Desconhecida", alcance:"Área", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gera uma explosão de impulso a partir de um ponto específico, empurrando todos ao redor para longe." },
   { nome:"Ritual de Imersão", elem:"CONHECIMENTO", src:"Enigma do Medo", exec:"Ritual", alcance:"Lápide marcada", dur:"Duração da memória", conjuracao:"Aplicar Lodo em uma lápide do Perímetro, desenhar o símbolo ao redor e se concentrar nele.", desc:"Permite ao conjurador acessar vividamente uma memória específica do dono da Marca da lápide." },
   { nome:"Ritual de Invocação da Dama de Sangue", elem:"SANGUE", src:"Livro de Regras", exec:"Ritual longo", alcance:"Local do ritual", dur:"Permanente", conjuracao:"Fazer o Símbolo da Orquídea entrar em contato com 7 sacrifícios em 7 condições diferentes.", desc:"Invoca a Dama de Sangue na Realidade." },
   { nome:"Ritual de Forma Monstruosa", elem:"SANGUE", src:"Vendeta Oculta", exec:"Ritual", alcance:"Animais / Pessoal", dur:"Permanente", conjuracao:"Acender uma vela e matar um animal afogado em uma tina.", desc:"Infecta animais da mesma espécie usada no sacrifício. Após 7 transformações, transforma o próprio conjurador em uma criatura." },
+ 
+  // ── SOBREVIVENDO AO HORROR ─────────────────────────────────────────────────
+  { nome:"Esfolar", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", dur:"Instantânea", conjuracao:"Sangue 1º círculo.", desc:"Projeta agulhas e lâminas rubras no alvo. Causa 3d4+3 dano de corte e sangrando. Resistência: metade do dano, evita condição. Discente (+2 PE, 2º círculo): médio, 5d4+5, explosão 6m. Verdadeiro (+5 PE, 3º círculo): longo, 10d4+10, explosão 6m.", dadosSugeridos:["3d4+3","5d4+5","10d4+10"] },
+  { nome:"Sede de Adrenalina", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Reação", alcance:"Pessoal", dur:"Instantânea", conjuracao:"Sangue 2º círculo.", desc:"Quando falha em Acrobacia/Atletismo, repete o teste usando Presença. Ou reduz 20 de dano de impacto (mas fica 1 rodada atordoado). Discente (+3 PE): reduz 40. Verdadeiro (+7 PE, 4º círculo+afinidade): reduz 70.", dadosSugeridos:["1d20"] },
+  { nome:"Odor da Caçada", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", dur:"Cena", conjuracao:"Sangue 3º círculo.", desc:"Recebe Faro. Em perseguições, +5 em Atletismo e não perde PV por esforço extra. Após a cena, sofre fome e sede. Discente (+4 PE): toque, 1 ser. Verdadeiro (+9 PE+afinidade): curto, até 5 seres." },
+  { nome:"Martírio de Sangue", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", dur:"Veja texto", conjuracao:"Sangue 4º círculo.", desc:"Transforma em monstruosidade bestial: faro, visão no escuro, cura acelerada 10, +10 em ataques e dano, 30 PV temporários, ataques desarmados +1 dado. Perde capacidade de usar rituais e –30 em testes sociais. Ao fim da cena, torna-se permanentemente criatura de Sangue. Discente (+5 PE+afinidade): bônus +20, 50 PV temp." },
+  { nome:"Apagar as Luzes", elem:"MORTE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", dur:"Instantânea (escuridão até fim da cena)", conjuracao:"Morte 1º círculo.", desc:"Apaga toda fonte de luz em alcance curto. Você recebe visão no escuro até o fim da cena. Discente (+2 PE, 2º círculo): alcance longo para fontes afetadas. Verdadeiro (+5 PE, 3º círculo): até 5 seres recebem visão no escuro." },
+  { nome:"Língua Morta", elem:"MORTE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Toque", dur:"Sustentada (máx. 3 rodadas)", conjuracao:"Morte 2º círculo.", desc:"Reanima cadáver com Lodo para responder até 3 perguntas (1 por rodada). Ao final da 3ª resposta, torna-se Esqueleto de Lodo. Discente (+3 PE): 4 rodadas, vira Enraizado. Verdadeiro (+7 PE, 4º círculo+afinidade): 5 rodadas, vira Marionete." },
+  { nome:"Fedor Pútrido", elem:"MORTE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", dur:"Sustentada", conjuracao:"Morte 3º círculo.", desc:"Cobre o corpo com o fedor da Morte. Animais fogem. –30 em Diplomacia, +5 em Furtividade, +10 em Enganação para fingir de morto. Sofre 1d4 dano de Morte por rodada. Discente (+4 PE): toque, 1 ser. Verdadeiro (+9 PE+afinidade): curto, até 5 seres.", dadosSugeridos:["1d4"] },
+  { nome:"Singularidade Temporal", elem:"MORTE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", dur:"Instantânea", conjuracao:"Morte 4º círculo.", desc:"Avança no tempo o estado de decomposição de 1 objeto não-paranormal Médio, possivelmente danificando-o ou destruindo-o. Resistência (Fortitude) protege objeto em uso. Discente (+5 PE): objeto Grande. Verdadeiro (+10 PE): objeto Enorme." },
+  { nome:"Desfazer Sinapses", elem:"CONHECIMENTO", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", dur:"Instantânea", conjuracao:"Conhecimento 1º círculo.", desc:"Inexiste neurônios do alvo. Causa 2d6+2 dano de Conhecimento e fica frustrado por 1 rodada. Resistência: metade, evita condição. Discente (+2 PE, 2º): longo, 3d6+3, até 5 alvos. Verdadeiro (+5 PE, 3º): extremo, 8d6+8, condição esmorecido.", dadosSugeridos:["2d6+2","3d6+3","8d6+8"] },
+  { nome:"Aurora da Verdade", elem:"CONHECIMENTO", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", dur:"Sustentada", conjuracao:"Conhecimento 2º círculo.", desc:"Luz espectral em esfera de 3m. Todos na área devem falar a verdade (incluindo conjurador). Seres ocultos são revelados. Resistência (Vontade): pode mentir. Discente (+3 PE): médio, esfera 9m, conjurador imune. Verdadeiro (+7 PE, 4º+afinidade): longo, duração cena, ouve tudo na área.", dadosSugeridos:["1d20"] },
+  { nome:"Relembrar Fragmento", elem:"CONHECIMENTO", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Toque", dur:"Enquanto tocar", conjuracao:"Conhecimento 3º círculo.", desc:"Restaura texto danificado de um livro/papel ao seu estado original enquanto o conjurador o toca. Discente (+4 PE): objeto permanece restaurado até fim da missão. Verdadeiro (+9 PE+afinidade): pode alterar o conteúdo do objeto de forma imperceptível até fim da missão." },
+  { nome:"Pronunciar Sigilo", elem:"CONHECIMENTO", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", dur:"Instantânea/veja texto", conjuracao:"Conhecimento 4º círculo.", desc:"Pronuncia um sigilo que causa um dos efeitos: Esquecer (atordoado 1d4+1 rodadas), Cegar (cego permanente) ou Inexistir (desaparece 1d4+1 rodadas). Resistência (Vontade): efeito reduzido. Discente (+5 PE): extremo. Verdadeiro (+10 PE+afinidade): até 5 alvos.", dadosSugeridos:["1d4+1"] },
+  { nome:"Overclock", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Reação", alcance:"Pessoal", dur:"Instantânea", conjuracao:"Energia 1º círculo.", desc:"Após falhar num teste de Tecnologia, conjura para forçar o aparelho via descarga de Energia. Mesa joga 'estátua': se não errar movimento, obtém a informação. O objeto fica com vírus paranormal e inutilizável. Discente (+2 PE, 2º): falha só com 2 erros. Verdadeiro (+5 PE, 3º): falha só com 3 erros." },
+  { nome:"Tremeluzir", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", dur:"Sustentada", conjuracao:"Energia 2º círculo.", desc:"Reorganiza moléculas em fótons, permitindo atravessar objetos sólidos (1 ação de movimento por objeto, 25% de falha). Em perseguições, permite Cortar Caminho sem penalidade. Sofre 1d4 dano de Energia por rodada. Discente (+3 PE): toque, 1 ser. Verdadeiro (+7 PE, 4º): curto, até 5 seres.", dadosSugeridos:["1d4"] },
+  { nome:"Mutar (Silêncio)", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", dur:"Sustentada", conjuracao:"Energia 3º círculo.", desc:"Inibe emissão e recepção de sons pelo conjurador. +10 em Furtividade. Visibilidade reduzida em 1 nas cenas de furtividade. Jogador só pode falar com permissão do mestre; se falar sem permissão, o ritual se desfaz. Discente (+4 PE): toque, 1 ser. Verdadeiro (+9 PE+afinidade): curto, até 5 seres." },
+  { nome:"Milagre Ionizante", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Completa", alcance:"Toque", dur:"Instantânea", conjuracao:"Energia 3º círculo.", desc:"Cura o alvo de uma condição, doença ou veneno (exceto os causados por Energia ou permanentes). Após a cura, alvo faz Fortitude DT 30 ou contrai o vírus do infectcídio." },
+ 
+  // ── ARQUIVOS SECRETOS #1 ───────────────────────────────────────────────────
+  { nome:"Passagem de Conhecimento", elem:"SANGUE/CONHECIMENTO", src:"Arquivos Secretos #1", exec:"Completa", alcance:"Toque", dur:"Cena", conjuracao:"Sangue/Conhecimento 2º círculo.", desc:"Transfere consciência para o corpo do alvo. Dois modos: sobreposição (controla o alvo, que pode resistir por rodada) ou troca total (consciências trocam de corpo). Se o corpo habitado morrer, o conjurador também morre. Discente (+3 PE, 2º): médio, duração 1 dia. Verdadeiro (+7 PE, 4º+afinidade): médio, permanente.", dadosSugeridos:["1d20"] },
+  { nome:"Passagem de Conhecimento Expandido", elem:"SANGUE/CONHECIMENTO", src:"Arquivos Secretos #1", exec:"1 dia", alcance:"Curto", dur:"Permanente", conjuracao:"Sangue/Conhecimento 4º círculo. Requer conhecer Passagem de Conhecimento.", desc:"Versão avançada criada por Agatha. Afeta de 2 a 10 pessoas (sempre em número par), divididas em grupos. Os corpos de um grupo ficam presos em caixões por 1d6+1 dias enquanto as consciências habitam os corpos do outro grupo. Ao trocar, os personagens assumem atributos e habilidades do novo corpo." },
+  { nome:"Vínculo de Sangue", elem:"SANGUE", src:"Arquivos Secretos #2 (Juan)", exec:"Padrão", alcance:"Curto", dur:"Cena", conjuracao:"Sangue 4º círculo.", desc:"Manifesta símbolo no conjurador e num alvo em alcance curto. Sempre que o conjurador sofre dano, metade é transferida para o alvo. Pode ser invertido. Resistência (Fortitude DT 20) evita. Versão diabólica: DT 25, médio." },
 ];
+ 
+const HABILIDADES_DB = {
+  classe: [
+    { nome:'Ataque Especial', classe:'Combatente', tipo:'classe', elem:'NEUTRO', nex:'5%', desc:'Você pode gastar PE para melhorar seus ataques. Gaste 1 PE para receber +1 no ataque ou +3 no dano; gaste 2 PE para +2 no ataque ou +6 no dano; gaste 3 PE para +3 no ataque ou +9 no dano; gaste 4 PE para +4 no ataque ou +12 no dano; gaste 5 PE para +5 no ataque ou +15 no dano.' },
+    { nome:'Perito', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'5%', desc:'Escolha duas perícias nas quais você é treinado (exceto Luta e Pontaria). Quando faz um teste de uma dessas perícias, você pode gastar 2 PE para somar +1d6 no resultado do teste.' },
+    { nome:'Eclético', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'5%', desc:'Quando faz um teste de uma perícia, você pode gastar 2 PE para receber os benefícios de ser treinado nesta perícia.' },
+    { nome:'Engenhosidade', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'40%', desc:'Em NEX 40%, quando usa sua habilidade Eclético, você pode gastar 2 PE adicionais para receber os benefícios de ser veterano na perícia. Em NEX 75%, pode gastar 4 PE adicionais para receber os benefícios de ser expert na perícia.' },
+    { nome:'Escolhido pelo Outro Lado', classe:'Ocultista', tipo:'classe', elem:'NEUTRO', nex:'5%', desc:'Você pode lançar rituais de 1º círculo. À medida que aumenta seu NEX, pode lançar rituais de círculos maiores (2º círculo em NEX 25%, 3º em NEX 55% e 4º em NEX 85%).' },
+    { nome:'Identificação Paranormal', classe:'Ocultista', tipo:'classe', elem:'NEUTRO', nex:'15%', desc:'Você recebe +10 em testes de Ocultismo para identificar criaturas, objetos ou rituais.' },
+  ],
+ 
+  trilha: [
+    // ── COMBATENTE ──
+    { nome:'A Favorita', trilha:'Aniquilador', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Escolha uma arma para ser sua favorita. A categoria da arma escolhida é reduzida em I.' },
+    { nome:'Técnica Secreta', trilha:'Aniquilador', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', desc:'A categoria da arma favorita passa a ser reduzida em II. Quando faz um ataque com ela, você pode gastar 2 PE para executar um dos efeitos: Amplo ou Destruidor.' },
+    { nome:'Técnica Letal', trilha:'Guerreiro', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você recebe um aumento de +2 na margem de ameaça com todos os seus ataques corpo a corpo.' },
+    { nome:'Revidar', trilha:'Guerreiro', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', desc:'Sempre que bloquear um ataque, você pode gastar uma reação e 2 PE para fazer um ataque corpo a corpo no inimigo que o atacou.' },
+    { nome:'Inspirar Confiança', trilha:'Comandante de Campo', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você pode gastar uma reação e 2 PE para fazer um aliado em alcance curto rolar novamente um teste recém realizado.' },
+    { nome:'Casca Grossa', trilha:'Tropa de Choque', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você recebe +1 PV para cada 5% de NEX e, quando faz um bloqueio, soma seu Vigor na resistência a dano recebida.' },
+    { nome:'Iniciativa Aprimorada', trilha:'Operações Especiais', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você recebe +5 em Iniciativa e uma ação de movimento adicional na primeira rodada de combate.' },
+    { nome:'Ataque Extra', trilha:'Operações Especiais', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', desc:'Uma vez por rodada, quando faz um ataque, você pode gastar 2 PE para fazer um ataque adicional.' },
+    // SaH — Combatente
+    { nome:'Ensaio (NEX 10%)', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror / Arquivos Secretos #3', desc:'Nova ação de interlúdio "ensaiar combate": recebe +1 na margem de ameaça até o início da próxima cena de interlúdio. Bônus aumenta para +2 em NEX 40%, +3 em NEX 65%, +4 em NEX 99%. Outros personagens podem ensaiar junto e receber o mesmo bônus.' },
+    { nome:'Frase de Efeito (NEX 40%)', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Arquivos Secretos #3', desc:'Quando você ou aliado em alcance curto obter acerto crítico, pode gastar 2 PE para mudar o multiplicador de crítico para um valor igual a sua Presença (ou +1 se a Presença for menor ou igual).' },
+    { nome:'Mosh Pit (NEX 65%)', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Arquivos Secretos #3', desc:'Quando está flanqueando um alvo, você e todos os aliados flanqueando ou adjacentes ao mesmo alvo recebem +1d6 no dano contra ele para cada aliado cercando-o (até +5d6).' },
+    { nome:'Ritmo Contagiante (NEX 99%)', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Arquivos Secretos #3', desc:'No início de uma cena de combate, você e todos os aliados em alcance médio recebem +5 na Defesa até o fim do combate. Sempre que obtiver acerto crítico, esse bônus aumenta em +1.' },
+    // SaH — Agente Secreto
+    { nome:'Agente Secreto', trilha:'Agente Secreto', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror', desc:'Trilha de combatente para agentes que trabalham sozinhos ou em pequenos grupos. Cada nível desbloqueia habilidades de infiltração, disfarce e combate de elite.' },
+    // ── ESPECIALISTA ──
+    { nome:'Mira de Elite', trilha:'Atirador de Elite', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você recebe proficiência com armas de fogo que usam balas longas e soma seu Intelecto em rolagens de dano com essas armas.' },
+    { nome:'Ataque Furtivo', trilha:'Infiltrador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Uma vez por rodada, quando atinge um alvo desprevenido, você pode gastar 1 PE para causar +1d6 de dano adicional.' },
+    { nome:'Paramédico', trilha:'Médico de Campo', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você pode usar uma ação padrão e 2 PE para curar 2d10 pontos de vida de si mesmo ou de um aliado adjacente.' },
+    { nome:'Inventário Otimizado', trilha:'Técnico', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você soma seu Intelecto à sua Força para calcular sua capacidade de carga.' },
+    { nome:'Eloquência', trilha:'Negociador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Faça um teste de Diplomacia, Enganação ou Intimidação contra a Vontade dos alvos. Se vencer, os alvos ficam fascinados.' },
+    // SaH — Bibliotecário
+    { nome:'Conhecimento Prático (NEX 10%)', trilha:'Bibliotecário', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror', desc:'Quando faz um teste de perícia (exceto Luta e Pontaria), pode gastar 2 PE para mudar o atributo-base da perícia para Int. Com Conhecimento Aplicado, custo reduzido em –1 PE.' },
+    { nome:'Leitor Contumaz (NEX 40%)', trilha:'Bibliotecário', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Sobrevivendo ao Horror', desc:'Cada dado de bônus da ação de interlúdio "ler" muda para 1d8 e pode ser aplicado em qualquer perícia. Ao usar o bônus, pode gastar 2 PE para aumentar em +1 dado.' },
+    { nome:'Rato de Biblioteca (NEX 65%)', trilha:'Bibliotecário', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Sobrevivendo ao Horror', desc:'Sabe como extrair informações em ambientes repletos de livros. Pode fazer testes especiais de investigação com bônus quando em bibliotecas e locais similares.' },
+    // ── OCULTISTA ──
+    { nome:'Ampliar Ritual', trilha:'Conduíte', classe:'Ocultista', tipo:'trilha', elem:'ENERGIA', nex:'10%', desc:'Quando lança um ritual, você pode gastar +2 PE para aumentar seu alcance em um passo ou dobrar sua área de efeito.' },
+    { nome:'Poder do Flagelo', trilha:'Flagelador', classe:'Ocultista', tipo:'trilha', elem:'SANGUE', nex:'10%', desc:'Ao conjurar um ritual, você pode gastar seus próprios pontos de vida para pagar o custo em pontos de esforço, à taxa de 2 PV por PE pago.' },
+    { nome:'Saber Ampliado', trilha:'Graduado', classe:'Ocultista', tipo:'trilha', elem:'CONHECIMENTO', nex:'10%', desc:'Você aprende um ritual de 1º círculo adicional. Toda vez que ganha acesso a um novo círculo, aprende um ritual adicional daquele círculo.' },
+    { nome:'Mente Sã', trilha:'Intuitivo', classe:'Ocultista', tipo:'trilha', elem:'CONHECIMENTO', nex:'10%', desc:'Você recebe resistência paranormal +5 (+5 em testes de resistência contra efeitos paranormais).' },
+    { nome:'Lâmina Maldita', trilha:'Lâmina Paranormal', classe:'Ocultista', tipo:'trilha', elem:'MORTE', nex:'10%', desc:'Você aprende o ritual Amaldiçoar Arma. Quando conjura esse ritual, você pode usar Ocultismo para testes de ataque.' },
+    // SaH — Exorcista
+    { nome:'Revelação do Mal (NEX 10%)', trilha:'Exorcista', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror', desc:'Recebe treinamento em Religião (ou +2 se já treinado). Pode usar Religião no lugar de Investigação e Percepção para notar pistas e rastros paranormais.' },
+    // AS#1 — Maledictólogo
+    { nome:'Identificação Macabra (NEX 10%)', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Arquivos Secretos #1', desc:'Quando faz um teste para identificar item amaldiçoado ou ritual, pode gastar 1 PE para +1d10. Sofre apenas –5 para identificar itens amaldiçoados como ação completa.' },
+    { nome:'Compreensão de Maldições (NEX 40%)', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Arquivos Secretos #1', desc:'Gasta ação de interlúdio e 3 PE para fazer leituras em item amaldiçoado (Ocultismo DT 10+5/cat.). Se passar e contiver ritual: aprende o ritual (não conta no limite). Se não contiver ritual: pode transferir a maldição para outro item ou tatuagem no corpo.' },
+    { nome:'Reproduzir Maldição (NEX 65%)', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Arquivos Secretos #1', desc:'Pode memorizar uma maldição de item já manipulado. Depois, pode aplicá-la a outro item (Ocultismo DT 10+5/cat., perde 1d8+1 SAN se passar, ou 2d8+2 SAN se falhar). Maldições aumentam categorias de itens (máximo Cat. IV).' },
+    { nome:'Maldição Suprema (NEX 99%)', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Arquivos Secretos #1', desc:'Ao usar Reproduzir Maldição, considera o item três categorias efetivas a menos, permitindo aplicar maldições em itens de categoria mais alta.' },
+  ],
+ 
+  paranormal: [
+    { nome:'Aprender Ritual', elemento:'MEDO', tipo:'paranormal', elem:'MEDO', nex:'—', desc:'Você aprende e pode conjurar um ritual de 1º círculo à sua escolha. A partir de 45% de NEX, aprende um ritual de até 2º círculo; a partir de 75%, aprende um ritual de até 3º círculo.' },
+    { nome:'Resistir a Elemento', elemento:'NEUTRO', tipo:'paranormal', elem:'NEUTRO', nex:'—', desc:'Escolha entre Conhecimento, Energia, Morte ou Sangue. Você recebe resistência 10 contra esse elemento. Afinidade: aumenta a resistência para 20.' },
+    { nome:'Percepção Paranormal', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', desc:'Em cenas de investigação, sempre que fizer um teste para procurar pistas, você pode rolar novamente um dado com resultado menor que 10.' },
+    { nome:'Precognição', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', desc:'Você possui um "sexto sentido" que o avisa do perigo antes que ele aconteça. Você recebe +2 em Defesa e em testes de resistência.' },
+    { nome:'Sensitivo', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', desc:'Você consegue sentir as emoções e intenções de outros personagens, recebendo +5 em testes de Diplomacia, Intimidação e Intuição.' },
+    { nome:'Visão do Oculto', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', desc:'Você recebe +5 em testes de Percepção e enxerga no escuro. Afinidade: você ignora camuflagem.' },
+    { nome:'Conhecimento de Direção Precognitiva', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', src:'Arquivos Secretos #3', desc:'Você recebe +5 em testes de Percepção ou Sobrevivência para se localizar até um local, mesmo nunca tendo visto ou sabendo onde fica. Afinidade: bônus aumenta para +10.' },
+    { nome:'Afortunado', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', desc:'Uma vez por rolagem, você pode rolar novamente um resultado 1 em qualquer dado que não seja d20.' },
+    { nome:'Campo Protetor', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', desc:'Quando usa a ação esquiva, você pode gastar 1 PE para receber +5 em Defesa.' },
+    { nome:'Golpe de Sorte', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', desc:'Seus ataques recebem +1 na margem de ameaça. Afinidade: seus ataques recebem +1 no multiplicador de crítico.' },
+    { nome:'Instrumento Elétrico de Combate', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Arquivos Secretos #3', desc:'Transforma um instrumento musical em arma de Energia (tática, 2 mãos, alcance curto, 2d8 dano de Energia, testes de ataque com Artes, soma Presença no dano, crítico 20/x2, Cat. II, 2 espaços). Se quebrar, pode ativar o poder em novo instrumento.' },
+    { nome:'Encarar a Morte', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', desc:'Durante cenas de ação, seu limite de gasto de PE aumenta em +1. Afinidade: durante cenas de ação, seu limite de gasto de PE aumenta em +2.' },
+    { nome:'Escapar da Morte', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', desc:'Uma vez por cena, quando receber dano que o deixaria com 0 PV, você fica com 1 PV. Não funciona em caso de dano massivo.' },
+    { nome:'Potencial Aprimorado', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', desc:'Você recebe +1 ponto de esforço por NEX. Afinidade: você recebe +1 PE adicional por NEX.' },
+    { nome:'Surto Temporal', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', desc:'Uma vez por cena, durante seu turno, você pode gastar 3 PE para realizar uma ação padrão adicional.' },
+    { nome:'Arma de Sangue', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', desc:'Você pode gastar uma ação de movimento e 2 PE para produzir garras ou uma lâmina de sangue cristalizado que causa 1d6 de dano de Sangue.' },
+    { nome:'Sangue de Ferro', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', desc:'Você recebe +2 pontos de vida por NEX. Afinidade: você recebe +5 em Fortitude e se torna imune a venenos e doenças.' },
+    { nome:'Sangue Vivo', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', desc:'Na primeira vez que ficar machucado durante uma cena, você recebe cura acelerada 2. Afinidade: a cura acelerada aumenta para 5.' },
+    // AS#1 novos poderes paranormais de Sangue
+    { nome:'Ferro Maculado', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1', desc:'Pode gastar ação de movimento e 2 PV para amaldiçoar 1 projétil de munição. O projétil causa +1d6 de dano de Sangue uma única vez. Afinidade: +1d8.' },
+    { nome:'Sangue Corrosivo', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1', desc:'Pode gastar ação de movimento e 1 PE para tornar o sangue corrosivo até o fim da cena. Quando sofre dano de ser adjacente, causa 1d10 dano de Sangue nele. Afinidade: +2d10.' },
+    { nome:'Placas Sanguinolentas', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1', desc:'Quando conjura um ritual de Sangue, recebe bônus na Defesa igual ao círculo do ritual até o início do próximo turno. Afinidade: bônus = círculo do ritual +2.' },
+    { nome:'Sangue Prazeroso', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1', desc:'Enquanto estiver machucado, recebe RD 5. Afinidade: também recebe +20 PV temporários (uma vez por cena).' },
+    // AS#2 novos poderes paranormais
+    { nome:'Predador de Sangue', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #2', desc:'Pode gastar ação padrão e 3 PE para memorizar o odor de uma vítima, recebendo +1d20 em testes para rastreá-la, percebê-la e atacá-la. Só pode memorizar uma vítima por vez. Afinidade: até 3 vítimas simultaneamente.' },
+    { nome:'Engolir Sangue', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #2', desc:'Pode gastar ação completa para consumir carne humana e recuperar 2d8+2 PV, mas perde 1d4 SAN. Afinidade: cura 4d8+4 PV.' },
+  ],
+ 
+  poder_classe: [
+    { nome:'Golpe Pesado', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Uma vez por rodada, declare Golpe Pesado antes de atacar. Se acertar, cause +3d6 de dano e o alvo faz Fortitude ou é derrubado.' },
+    { nome:'Proteção Pesada', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Se estiver usando uma proteção pesada, a Defesa e a resistência a dano que ela fornece aumentam em +2.' },
+    { nome:'Combater com Duas Armas', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Você pode atacar com duas armas leves por ação de ataque sem penalidade.' },
+    { nome:'Mochila de Utilidades', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Um item a sua escolha (exceto armas) conta como uma categoria abaixo e ocupa 1 espaço a menos.' },
+    { nome:'Balística Avançada', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Você recebe proficiência com armas táticas de fogo e +2 em rolagens de dano com armas de fogo.' },
+    { nome:'Artista Marcial', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Seus ataques desarmados causam 1d6 pontos de dano, podem causar dano letal e contam como armas ágeis.' },
+    { nome:'Hacker', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Você recebe +5 em testes de Tecnologia para invadir sistemas e diminui o tempo necessário para hackear qualquer sistema para uma ação completa.' },
+    { nome:'Camuflar Ocultismo', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Você pode gastar uma ação livre para esconder símbolos e sigilos. Quando lança um ritual, pode gastar +2 PE para lançá-lo sem componentes ritualísticos.' },
+    { nome:'Ritual Potente', classe:'Ocultista', tipo:'poder_classe', elem:'CONHECIMENTO', nex:'15%', desc:'Você soma seu Intelecto nas rolagens de dano ou nos efeitos de cura de seus rituais. Pré-requisito: Int 2.' },
+    { nome:'Especialista em Elemento', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'30%', desc:'Escolha um elemento paranormal. A DT para resistir aos seus rituais desse elemento aumenta em +2.' },
+    { nome:'Ritual Predileto', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Escolha um ritual que você conhece. Você reduz em –1 PE o custo do ritual.' },
+    // SaH — Novos poderes de combatente
+    { nome:'Apego Angustiado', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Você não fica inconsciente por estar morrendo. Entretanto, sempre que terminar uma rodada nesta condição e consciente, perde 2 SAN.' },
+    { nome:'Caminho para a Forca', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Quando usa ação sacrifício em perseguição, pode gastar 1 PE para fornecer +10 extra nos testes dos outros personagens. Ao chamar atenção em furtividade, pode gastar 1 PE para diminuir visibilidade de aliados próximos em –2.' },
+    { nome:'Guardião da Tropa', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #3', desc:'Se aliado adjacente for alvo de ataque/habilidade de alvo único, pode gastar reação e 2 PE para sofrer o ataque por ele. Se não for afetado, recupera 1 SAN. Pode ser adquirido novamente para mudar alcance de adjacente para curto. Pré-req: Ataque Especial, Casca Grossa.' },
+    { nome:'Vitalidade Sofrida', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #3', desc:'Seus PV iniciais e a cada nível de exposição mudam para 24+Vigor e 6 PV (+Vig), respectivamente. Aplica-se retroativamente. Pré-req: Ataque Especial.' },
+    // SaH — Novos poderes de especialista
+    { nome:'Acolher o Terror', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Você pode se entregar para o medo uma vez por sessão de jogo adicional.' },
+    { nome:'Contatos Oportunos', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Pode usar ação de interlúdio para acionar contatos locais, recebendo um aliado à escolha que o acompanha até o fim da missão ou ser dispensado. Só pode ter um desses aliados por vez. Pré-req: treinado em Crime.' },
+    // SaH — Novos poderes de ocultista
+    { nome:'Deixe os Sussurros Guiarem', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Uma vez por cena, pode gastar 2 PE e uma rodada para receber +2 em testes de perícia para investigação até o fim da cena. Enquanto ativo, sempre que falha em um teste de perícia, perde 1 SAN.' },
+    { nome:'Domínio Esotérico', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Ao lançar um ritual, pode combinar os efeitos de até dois catalisadores ritualísticos diferentes ao mesmo tempo. Pré-req: Int 3.' },
+    // AS#1 — Novos poderes de ocultista
+    { nome:'Acostumado à Maldição de <Elemento>', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1', desc:'Escolha um elemento (exceto Medo). Quando falha no teste relacionado ao preço da maldição de itens amaldiçoados desse elemento, não perde SAN (ainda sofre outros efeitos negativos). Pré-req: Int 2, conjurar ritual de 2º círculo do elemento.' },
+    { nome:'Ritual Intenso', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1', desc:'Você soma sua Presença nas rolagens de dano e de cura de seus rituais. Pré-req: Pre 2.' },
+    { nome:'Saúde Sobrenatural', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1', desc:'Uma vez por cena, pode gastar ação de movimento e 3 PE para receber PV temporários igual a Presença × 10. Desaparecem no fim da cena e não são cumulativos. Pré-req: Int 2, Pre 2, conjurar ritual de 1º círculo.' },
+    { nome:'Reter Ritual de Combate', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1', desc:'Quando ritual retido com duração retida deixa a linha de efeito, pode mudar a duração para cena como reação. Quando sofre condição que o faz deixar de reter rituais, pode gastar reação e 1 PE por ritual para mudar duração para cena. Pré-req: Int 2, conjurar ritual de 1º círculo; requer regra opcional Reter Ritual.' },
+    { nome:'Flagelo Bem Aproveitado', classe:'Ocultista', tipo:'poder_classe', elem:'SANGUE', nex:'15%', src:'Arquivos Secretos #3', desc:'A taxa da habilidade Poder do Flagelo muda para 1 PV por PE pago. Pré-req: Escolhido pelo Outro Lado, Poder do Flagelo.' },
+    { nome:'Recuperação Flagelante', classe:'Ocultista', tipo:'poder_classe', elem:'SANGUE', nex:'15%', src:'Arquivos Secretos #3', desc:'Entre interlúdios, pode recuperar PV gastos com Poder do Flagelo com outros métodos além de descanso (uma vez, podendo adquirir novamente até 3 usos). Pré-req: Escolhido pelo Outro Lado, Poder do Flagelo.' },
+    { nome:'Liturgia de Fortalecimento Ritualístico', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #2', desc:'Em cena de interlúdio, pode gastar 2 PE e ação de interlúdio para fortalecer um ritual que conheça: a DT aumenta em +2 até o início da próxima cena de interlúdio. Pré-req: Int e Pre 2.' },
+  ],
+ 
+  poder_geral: [
+    // AS#1
+    { nome:'<Habilidade> Aprimorada', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Escolha uma habilidade ou ritual que tenha DT. A DT para resistir aumenta em +2. Pode ser escolhido até duas vezes para a mesma habilidade/ritual (total +5). Pode ser escolhido para habilidades e rituais diferentes.' },
+    { nome:'Instintos Urbanos', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Recebe treinamento em Crime (ou +2 se treinado). Quando entra em ambiente fechado, pode fazer teste de Crime DT 20 para identificar saídas. Se passar: ação de movimento extra no primeiro turno da fuga e +2 na Defesa até fugir. Pré-req: Agi 2.' },
+    { nome:'Curiosidade Oculta', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Recebe treinamento em Ocultismo (ou +2 se treinado). Quando faz teste de Vontade, pode gastar 2 PE para trocar a perícia por Ocultismo. Pré-req: Int 2.' },
+    { nome:'Especialista Exotérico', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Ao conjurar um ritual, pode combinar efeitos de até três catalisadores ritualísticos diferentes ao mesmo tempo. Pré-req: Int 3, conjurar ritual de 2º círculo, Domínio Esotérico.' },
+    { nome:'Cicatrizes Expostas', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Pode gastar ação de movimento para expor cicatriz, causando +1d8 dano do mesmo tipo, mas sofre –5 em Vontade e testes que exijam calma. Efeitos duram até o fim da cena. Pré-req: ter cicatrizes.' },
+    // AS#2
+    { nome:'Revidar Violento', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #2 (Aguiar)', desc:'Você pode fazer uma segunda reação especial de defesa na mesma rodada, desde que ela seja um contra-ataque. Pré-req: For 2 ou Agi 2.' },
+    { nome:'Especialista em Correntes (Prender)', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #2 (Jasper)', desc:'Pode gastar ação completa para prender um item em corrente bem amarrada ao corpo (seu ou aliado). O item não pode ser desarmado sem quebrar a corrente. +2 em testes de manobras com correntes, chicotes e armas presas. Cada item além do primeiro causa –1 em testes afetados por carga. Pré-req: Agi 2.' },
+    { nome:'Especialista em Correntes (Puxar)', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #2 (Jasper)', desc:'Quando acerta ataque com corrente ou semelhante, pode gastar 2 PE para puxar o alvo adjacente. Se o alvo se afastar, sofre –5 em ataques contra outros alvos por 1 rodada. Pré-req: For 2 ou Agi 2, treinado em Luta.' },
+    // AS#3
+    { nome:'Ambidestria', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Se empunhando duas armas (pelo menos uma leve) e fizer agredir, pode fazer dois ataques, um com cada. Sofre –1d20 em todos os ataques até o próximo turno. Com Combater com Duas Armas: sem penalidade e pode empunhar duas armas de uma mão. Pré-req: For 2 ou Agi 2, treinado em Luta.' },
+    { nome:'Entrada Triunfal', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Ao entrar em um ambiente, uma vez por sessão, pode anunciar chegada em voz alta para receber +1d20 no primeiro teste (exceto Furtividade). Pode transferir o bônus ao primeiro teste de aliado em alcance longo. Pré-req: Pre 2.' },
+    { nome:'Papinho Sedutor', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Quando faz teste de perícia baseado em Presença para seduzir, pode gastar 1 PE para +5. Se passar, o alvo fica apaixonado (pode causar problemas a critério do mestre). Pré-req: Pre 2.' },
+  ],
+ 
+  poder_sacrificio: [
+    { nome:'Causar Culpa', tipo:'poder_sacrificio', elem:'CONHECIMENTO', src:'Arquivos Secretos #3', desc:'Gasta ação padrão e 3 PE para causar culpa terrível em pessoa em alcance curto (Vontade DT Pre+5 evita). Se falhar, o alvo fica indefeso (pode resistir no início de seus turnos). Pré-req: ser o sacrifício da Culpa.' },
+    { nome:'Despertar Obsessão', tipo:'poder_sacrificio', elem:'SANGUE', src:'Arquivos Secretos #3', desc:'Gasta ação padrão e 3 PE para encarar alguém em alcance curto. Se desviar o olhar: fica desprevenido 1 rodada. Se encarar e falhar (Vontade DT Pre+5): deve gastar ações para se aproximar e adorar o conjurador, ou se automutila. Pré-req: ser o sacrifício da Obsessão.' },
+    { nome:'Arrogância Diabólica', tipo:'poder_sacrificio', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Gasta ação padrão e 3 PE para convencer alguém (alcance médio) de que pode fazer tudo. Vontade DT Pre+5; se falhar, faz ação imprudente no próximo turno. Se passar: sofre 2d6 dano mental (irresistível). Pré-req: ser o sacrifício do Orgulho.' },
+    { nome:'Ódio Suprimido', tipo:'poder_sacrificio', elem:'SANGUE', src:'Arquivos Secretos #3', desc:'Gasta ação completa e 3 PE para explodir de raiva. Seres em alcance curto fazem Fortitude e Reflexos (DT Pre+5). Falha em Fortitude: sofre dano corpo a corpo e cai. Falha em Reflexos: sofre dano à distância. Após, fica exausto até fim da cena. Pré-req: ser o sacrifício do Rancor.' },
+    { nome:'Estimular Hedonismo', tipo:'poder_sacrificio', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Gasta ação padrão e 3 PE para inundar alguém em alcance curto com prazer insano (Vontade DT Pre+5). Se falhar: fica indefeso 1 rodada (sem autopreservação). Pré-req: ser o sacrifício do Prazer.' },
+    { nome:'Fruto da Ambição', tipo:'poder_sacrificio', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Escolha um poder ou ritual que conheça. Além do efeito normal, ele se torna um gatilho para assumir uma forma poderosa (funciona como As Máscaras do AS#2). Pré-req: ser o sacrifício do Desejo.' },
+  ],
+ 
+  poder_intencao: [
+    { nome:'Provar-se Digno', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2', desc:'Gatilho: Obedecer a Ele (d\'Ele). Efeito: Ao fazer um teste, em vez de rolar, pode gastar reação para sucesso automático (como 20 natural). Uma vez por cena, apenas na mesma cena em que obedeceu uma vontade d\'Ele.' },
+    { nome:'Silêncio Assombroso', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2', desc:'Gatilho: Provar o sangue de ser adjacente machucado (ação padrão). Efeito: Ataques causam +1d8 e +2 na margem de ameaça. Acerto crítico: corta a boca do alvo, silenciando-o por 1d4 rodadas. Dura até fim da cena.' },
+    { nome:'Escudo da Dor', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2', desc:'Gatilho: Ser ferido 3 vezes (cada ferimento: mínimo 5 de dano). Efeito: Pode gastar reação para receber RD 25. Enquanto ativo, perde 5 PV no início dos turnos. Pode gastar reação para desativar.' },
+    { nome:'Vingança do Guardião', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2', desc:'Gatilho: Ouvir o grito de morte de aliado que tentou proteger (aliado morrendo em linha de visão/audição). Efeito: Pode gastar ação padrão para fazer ataque como reação contra quem deixou o aliado morrendo. Pode usar ao ficar inconsciente por inimigo.' },
+    { nome:'Labirinto de Intenções', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2', desc:'Gatilho: Testemunhar a morte de uma pessoa. Efeito: Pode gastar ação padrão para absorver as intenções de pessoa morta em alcance curto e recuperar PV de ser em alcance curto equivalentes a metade dos PV máximos do cadáver.' },
+  ],
+ 
+  origem: [
+    // Originais
+    { nome:'Ingrediente Secreto', origem:'Chefe de Cozinha', tipo:'origem', elem:'NEUTRO', desc:'Você pode preparar refeições especiais que restauram 2d6 PV e 1d4 SAN por porção. Requer ingredientes e 1 hora de preparo.' },
+    { nome:'Técnicas Medicinais', origem:'Agente de Saúde', tipo:'origem', elem:'NEUTRO', desc:'Kits médicos nas suas mãos curam o dobro do normal. Você pode tratar lesões graves com um teste de Medicina bem-sucedido.' },
+    { nome:'Rede de Contatos', origem:'Policial / Detetive', tipo:'origem', elem:'NEUTRO', desc:'Possui contatos em delegacias e agências. Uma vez por sessão, pode obter informações privilegiadas ou acesso a locais restritos.' },
+    { nome:'Código de Combate', origem:'Militar', tipo:'origem', elem:'NEUTRO', desc:'+2 em Iniciativa e em testes de Atletismo. Você nunca entra em pânico em situações de combate.' },
+    { nome:'Hacker Iniciante', origem:'Programador / TI', tipo:'origem', elem:'NEUTRO', desc:'+3 em testes de Tecnologia. Pode invadir sistemas de segurança simples sem equipamento especial.' },
+    { nome:'Carisma Natural', origem:'Artista / Músico', tipo:'origem', elem:'NEUTRO', desc:'+3 em testes de Diplomacia e Artes. Uma vez por sessão, pode usar uma performance para distrair ou acalmar um grupo.' },
+    { nome:'Olho Clínico', origem:'Pesquisador / Cientista', tipo:'origem', elem:'NEUTRO', desc:'+3 em Ciências e Investigação. Você percebe detalhes que outros ignoram.' },
+    { nome:'Fé Inabalável', origem:'Religioso / Padre', tipo:'origem', elem:'NEUTRO', desc:'+2 em Sanidade. Criaturas de Medo e Morte têm desvantagem em ataques contra você quando você afirmar sua fé.' },
+    { nome:'Negociação Forçada', origem:'Advogado / Executivo', tipo:'origem', elem:'NEUTRO', desc:'+3 em Enganação e Diplomacia. Uma vez por sessão, pode exigir que um NPC releve uma informação verdadeira.' },
+    // SaH — Novas origens
+    { nome:'Companheiro Animal', origem:'Amigo dos Animais', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Adestramento e Percepção. Entende intenções de animais e usa Adestramento para mudar atitude deles. Possui um animal aliado (+2 em uma perícia a escolha). Em NEX 35%, fornece bônus de aliado. Em NEX 70%, fornece habilidade do tipo de aliado. Se morrer: –10 SAN permanente.' },
+    { nome:'Acostumado ao Extremo', origem:'Astronauta', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Ciências e Fortitude. Quando sofre dano de fogo, frio ou mental, pode gastar 1 PE para reduzir em 5. Cada uso adicional na mesma cena aumenta o custo em +1 PE.' },
+    { nome:'Fome do Outro Lado', origem:'Chef do Outro Lado', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Ocultismo e Profissão (cozinheiro). Pode usar partes de criaturas paranormais como ingredientes. Gastar ação de interlúdio e 1 ingrediente para preparar prato: Profissão DT 15+5 (mestre oculta resultado). Se passar: RD 10 contra tipo do elemento da criatura. Se falhar: vulnerabilidade. O personagem perde 1 SAN permanente por refeição consumida.' },
+    { nome:'Poder da Amizade', origem:'Nerd Entusiasta', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Atualidades e Tecnologia. Escolha um melhor amigo: +2 em todos os testes de perícia se em alcance médio e puderem se ver. Se ele morrer: –1 PE total para cada 5% de NEX até o fim da missão.' },
+    { nome:'Não É Fantasia, É Cosplay!', origem:'Cosplayer', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Artes e Vontade. Pode fazer testes de disfarce usando Artes em vez de Enganação. Se estiver com cosplay relacionado ao teste, recebe +2.' },
+    { nome:'Conexões', origem:'Diplomata', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Atualidades e Diplomacia. +2 em Diplomacia. Se puder contatar um NPC capaz de auxiliar, pode gastar 10 minutos e 2 PE para substituir um teste de perícia por um teste de Diplomacia até o fim da cena.' },
+    { nome:'Manual do Sobrevivente', origem:'Explorador', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Fortitude e Sobrevivência. Ao fazer teste para resistir a armadilhas, clima, doenças, fome, sede, fumaça, sono, sufocamento ou veneno, pode gastar 2 PE para +5 no teste. Em interlúdios, condições de sono precárias são consideradas normais.' },
+    { nome:'Mutação', origem:'Experimento', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Atletismo e Fortitude. Recebe RD 2/mental e +2 em uma perícia de Força, Agilidade ou Vigor. Sofre –5 em Diplomacia.' },
+    { nome:'Conhecimento Oculto', origem:'Fanático por Criaturas', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Investigação e Ocultismo. Pode fazer testes de Ocultismo para identificar criaturas a partir de pistas (sem saber identidade específica). Se passar, recebe +2 em todos os testes contra a criatura até o fim da missão.' },
+    { nome:'Através da Lente', origem:'Fotógrafo', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Artes e Percepção. Quando faz teste de Investigação ou Percepção olhando por câmera ou analisando fotos, pode gastar 2 PE para +5 (mas anda à metade do deslocamento enquanto olha pela lente).' },
+    { nome:'Invenção Paranormal', origem:'Inventor Paranormal', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Profissão (engenheiro) e Vontade. Possui invento paranormal (Cat. 0, 1 espaço) com um ritual de 1º círculo. Ativar: ação padrão + teste de Profissão DT 15+5 por ativação anterior. Se passar: executa o ritual sem custo em PE. Se falhar: enguiça. Ação de interlúdio para manutenção (conserta e redefine DT para 15).' },
+    { nome:'A Culpa é das Estrelas', origem:'Jovem Místico', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Ocultismo e Religião. Escolha um número da sorte (1-6). No início de cada cena, pode gastar 1 PE e rolar 1d6: se rolar seu número, recebe +2 em testes de perícia até o fim da cena. Caso contrário, escolhe mais um número da sorte (resetando ao rolar sucesso).' },
+    { nome:'Luto Habitual', origem:'Legista do Turno da Noite', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Ciências e Medicina. Sofre apenas metade do dano mental ao presenciar cenas típicas da rotina de um legista (mortes, cadáveres, órgãos). Quando faz teste de Medicina para primeiros socorros ou necropsia, pode gastar 2 PE para +5.' },
+    { nome:'Mãos no Volante', origem:'Motorista', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Pilotagem e Reflexos. Não sofre penalidades em testes de ataque por estar em veículo em movimento. Ao pilotar e precisar fazer teste de Pilotagem ou resistência, pode gastar 2 PE para +5.' },
+    { nome:'O Inteligentão', origem:'Nerd Entusiasta', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Ciências e Tecnologia. O bônus ao usar a ação de interlúdio "ler" aumenta em +1 dado (de +1d6 para +2d6).' },
+    { nome:'Terapia', origem:'Psicólogo', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Intuição e Profissão (psicólogo). Pode usar Profissão (psicólogo) como Diplomacia. Uma vez por rodada, quando você ou aliado em alcance curto falha em teste de resistência contra efeito de dano mental, pode gastar 2 PE para substituir o resultado pelo de um teste de Profissão (psicólogo).' },
+    { nome:'Luta ou Fuga', origem:'Profetizado', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Vontade e outra relacionada à premonição. Recebe +2 em Vontade. Quando surge referência à sua premonição em cena, recebe +2 PE temporários até o fim da cena.' },
+    { nome:'Encontrar a Verdade', origem:'Repórter Investigativo', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Atualidades e Investigação. Pode usar Investigação no lugar de Diplomacia para persuadir e mudar atitude. Quando faz teste de Investigação, pode gastar 2 PE para +5.' },
+    // AS#1 — Novas origens
+    { nome:'Mácula Ritualística', origem:'Ferido por Ritual', tipo:'origem', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Perícias: Ocultismo e 1 perícia do elemento (Fortitude=Sangue, Vontade=Morte/Conhecimento, Reflexos=Energia). Aprende e pode conjurar ritual de 1º círculo do elemento correspondente; uma vez por cena, pode conjurá-lo sem gastar PE (ainda gasta PE por formas avançadas). Não conta no limite de rituais. Sofre –5 em testes de resistência contra efeitos desse elemento.' },
+    { nome:'Sofrimento de Sangue', origem:'Transtornado Arrependido', tipo:'origem', elem:'SANGUE', src:'Arquivos Secretos #1', desc:'Perícias: Luta e Ocultismo. Recebe RD 2/mental, +1 para cada 2 rituais/poderes de Sangue que possua. Contudo, pesadelos impedem descanso tranquilo: condição de descanso é sempre 1 categoria pior.' },
+  ],
+};
 
 // ══════════════════════════════════════════════
 // ESTADO
@@ -835,10 +1239,13 @@ let ficha  = null;
 let estado = {
     vida:{ atual:20,max:20 }, san:{ atual:20,max:20 }, esf:{ atual:10,max:10 },
     pericias:{}, ataques:[], inventario:[], descricao:{}, fotoCostum:null,
-    logRolagens:[], rituaisPersonagem:[]
+    logRolagens:[], rituaisPersonagem:[], habilidadesPersonagem:[], progressao:{}
 };
-let rituaisAbertos   = {};
+let rituaisAbertos    = {};
 let rituaisResultados = {};
+let habCatAtiva    = 'ficha';
+let habSubabaAtiva = 'todos';
+let habAbertos     = {};
 
 function bonusAtrib(v) { return v || 0; }
 
@@ -868,7 +1275,7 @@ window.onload = function() {
 };
 
 // ══════════════════════════════════════════════
-// FICHA
+// FICHA — CARREGAR
 // ══════════════════════════════════════════════
 function carregarFicha() {
     const params  = new URLSearchParams(window.location.search);
@@ -877,22 +1284,40 @@ function carregarFicha() {
     if (id) ficha = agentes.find(a => String(a.id) === String(id));
     if (!ficha && agentes.length > 0) ficha = agentes[agentes.length - 1];
     if (!ficha) { document.getElementById('display-nome').textContent = 'Agente não encontrado'; return; }
+
     const estadoSalvo = localStorage.getItem(`estado_ficha_${ficha.id}`);
     if (estadoSalvo) {
         const parsed = JSON.parse(estadoSalvo);
-        estado = { ...estado, ...parsed };
-        if (!estado.logRolagens) estado.logRolagens = [];
-        if (!estado.rituaisPersonagem) estado.rituaisPersonagem = [];
+        // Merge profundo para preservar os sub-objetos (vida, san, esf)
+        estado = {
+            ...estado,
+            ...parsed,
+            vida: { ...estado.vida, ...(parsed.vida || {}) },
+            san:  { ...estado.san,  ...(parsed.san  || {}) },
+            esf:  { ...estado.esf,  ...(parsed.esf  || {}) },
+        };
+        if (!estado.logRolagens)           estado.logRolagens = [];
+        if (!estado.rituaisPersonagem)     estado.rituaisPersonagem = [];
+        if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
+        if (!estado.progressao)            estado.progressao = {};
     } else {
-        const vig = ficha.atributos?.VIG||0, pre = ficha.atributos?.PRE||0, agi = ficha.atributos?.AGI||0;
-        estado.vida.max = 8+vig*4; estado.vida.atual = estado.vida.max;
-        estado.san.max  = 8+pre*4; estado.san.atual  = estado.san.max;
-        estado.esf.max  = 4+agi*2; estado.esf.atual  = estado.esf.max;
-        if (ficha.pericias) ficha.pericias.forEach(p => { estado.pericias[p] = {bonus:0,outros:0,treinada:true}; });
+        // Primeiro acesso: calcula máximos pelos atributos
+        const vig = ficha.atributos?.VIG || 0;
+        const pre = ficha.atributos?.PRE || 0;
+        const agi = ficha.atributos?.AGI || 0;
+        estado.vida = { max: 8 + vig * 4, atual: 8 + vig * 4 };
+        estado.san  = { max: 8 + pre * 4, atual: 8 + pre * 4 };
+        estado.esf  = { max: 4 + agi * 2, atual: 4 + agi * 2 };
+        if (ficha.pericias) ficha.pericias.forEach(p => {
+            estado.pericias[p] = { bonus: 0, outros: 0, treinada: true };
+        });
     }
     renderFicha();
 }
 
+// ══════════════════════════════════════════════
+// FICHA — RENDER
+// ══════════════════════════════════════════════
 function renderFicha() {
     if (!ficha) return;
     document.getElementById('display-nome').textContent   = ficha.nome + (ficha.codinome ? ` "${ficha.codinome}"` : '');
@@ -913,10 +1338,15 @@ function renderFicha() {
     });
     desenharRadar(atribs);
     const nivel = parseInt(ficha.nivel)||1;
-    const nex   = nivel<=1?'5%':nivel<=2?'15%':nivel<=3?'30%':nivel<=4?'50%':'99%';
-    document.getElementById('nex-val').textContent  = nex;
-    document.getElementById('pe-val').textContent   = nivel+2;
-    document.getElementById('desl-val').textContent = '9m';
+    // PATCH: usa progressão salva se existir, senão calcula pelo nível
+    const prog = estado.progressao || {};
+    const nexDisplay  = prog.nex  || (nivel<=1?'5%':nivel<=2?'15%':nivel<=3?'30%':nivel<=4?'50%':'99%');
+    const peDisplay   = prog.pe   || (nivel+2);
+    const deslDisplay = prog.desl || '9m';
+    document.getElementById('nex-val').textContent  = nexDisplay;
+    document.getElementById('pe-val').textContent   = peDisplay;
+    document.getElementById('desl-val').textContent = deslDisplay;
+
     const agi = atribs.AGI||0, defesa = 10+agi;
     document.getElementById('defesa-val').textContent     = defesa;
     document.getElementById('esquiva-val').textContent    = defesa;
@@ -940,6 +1370,9 @@ function desenharRadar(atribs) {
     document.getElementById('radar-val').setAttribute('points', ang.map((a,i)=>{ const v=atribs[ord[i]]||0,r=(v/MAX)*maxR; return `${cx+r*Math.cos(a)},${cy+r*Math.sin(a)}`; }).join(' '));
 }
 
+// ══════════════════════════════════════════════
+// ATRIBUTOS — ROLAR
+// ══════════════════════════════════════════════
 function rolarAtributo(atrib) {
     if (!ficha) return;
     const v=ficha.atributos?.[atrib]||0, bon=bonusAtrib(v);
@@ -958,6 +1391,9 @@ function rolarAtributo(atrib) {
     adicionarAoLog(`Atrib. ${atrib}`, bon>0?`d20(${dado}) +${bon} ${atrib}`:`d20(${dado})`, total, tipo);
 }
 
+// ══════════════════════════════════════════════
+// LOG DE ROLAGENS
+// ══════════════════════════════════════════════
 function adicionarAoLog(nome,expr,total,tipo) {
     if (!estado.logRolagens) estado.logRolagens=[];
     estado.logRolagens.unshift({ nome,expr,total,tipo, hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) });
@@ -973,12 +1409,18 @@ function renderLog() {
 
 function limparLog(){ estado.logRolagens=[]; salvarEstado(); renderLog(); mostrarToast('🗑 LOG LIMPO'); }
 
+// ══════════════════════════════════════════════
+// RECURSOS
+// ══════════════════════════════════════════════
 function atualizarBarras() {
     ['vida','san','esf'].forEach(r=>{ const el=estado[r],pct=Math.max(0,Math.min(100,(el.atual/el.max)*100)),suf=r==='esf'?'esforco':r; document.getElementById(`${r}-atual`).textContent=el.atual; document.getElementById(`${r}-max`).textContent=el.max; document.getElementById(`barra-${suf}`).style.width=pct+'%'; });
 }
 
 function ajustarRecurso(tipo,delta){ const r=estado[tipo]; r.atual=Math.max(0,Math.min(r.max,r.atual+delta)); atualizarBarras(); salvarEstado(); }
 
+// ══════════════════════════════════════════════
+// PERÍCIAS
+// ══════════════════════════════════════════════
 function renderPericias() {
     const atribs=ficha?.atributos||{}, lista=document.getElementById('lista-pericias');
     lista.innerHTML='';
@@ -1006,12 +1448,9 @@ function rolarPericia(nome,atrib) {
     trocarAba('combate',document.querySelector('.aba-btn[data-aba="combate"]'));
 }
 
-function renderHabilidades() {
-    const habs=HABILIDADES_CLASSE[ficha?.classe||'']||[], lista=document.getElementById('lista-habilidades');
-    if (habs.length===0){ lista.innerHTML=`<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Nenhuma habilidade encontrada para esta classe.</p>`; return; }
-    lista.innerHTML=habs.map(h=>`<div class="habilidade-card"><div class="hab-nome">✦ ${h.nome}</div><div class="hab-desc">${h.desc}</div></div>`).join('');
-}
-
+// ══════════════════════════════════════════════
+// ATAQUES
+// ══════════════════════════════════════════════
 function abrirModalAtaque()  { document.getElementById('modal-ataque').style.display='flex'; }
 function fecharModalAtaque() { document.getElementById('modal-ataque').style.display='none'; }
 
@@ -1031,6 +1470,9 @@ function renderAtaques() {
 function removerAtaque(i){ estado.ataques.splice(i,1); salvarEstado(); renderAtaques(); }
 function rolarAtaque(i){ const atq=estado.ataques[i],r=rolarExpressao(atq.dano); adicionarAoLog(`Ataque: ${atq.nome}`,`${atq.dano} → ${r.detalhe}`,r.total,'normal'); }
 
+// ══════════════════════════════════════════════
+// DADO LIVRE
+// ══════════════════════════════════════════════
 function rolarDado() {
     const exprRaw=document.getElementById('dado-expr').value.trim();
     if (exprRaw){ const r=rolarExpressao(exprRaw); if(r.total===0&&r.detalhe===exprRaw){ mostrarToast('⚠ Expressão inválida. Use ex: 2d6+3'); return; } adicionarAoLog(`Dado livre (${exprRaw})`,r.detalhe,r.total,'normal'); document.getElementById('dado-expr').value=''; }
@@ -1045,6 +1487,9 @@ function rolarExpressao(expr) {
     return{total:rolls.reduce((a,b)=>a+b,0)+bonus,detalhe:`[${rolls.join(', ')}]${bonus?(bonus>0?'+':'')+bonus:''}`};
 }
 
+// ══════════════════════════════════════════════
+// INVENTÁRIO
+// ══════════════════════════════════════════════
 function adicionarItem() {
     const nome=document.getElementById('inv-nome-input').value.trim(), qtd=parseInt(document.getElementById('inv-qtd-input').value)||1;
     if (!nome) return;
@@ -1060,11 +1505,17 @@ function renderInventario() {
     lista.innerHTML=estado.inventario.map((item,i)=>`<div class="inventario-item"><div><div class="inv-nome">${item.nome}</div><div class="inv-qtd">Qtd: ${item.qtd}</div></div><button class="btn-del-item" onclick="removerItem(${i})">🗑</button></div>`).join('');
 }
 
+// ══════════════════════════════════════════════
+// DESCRIÇÃO
+// ══════════════════════════════════════════════
 function salvarDescricao() {
     estado.descricao={ personalidade:document.getElementById('desc-personalidade').value, ideal:document.getElementById('desc-ideal').value, vinculo:document.getElementById('desc-vinculo').value, fraqueza:document.getElementById('desc-fraqueza').value, historia:document.getElementById('desc-historia').value };
     salvarEstado(); mostrarToast('✦ DESCRIÇÃO SALVA');
 }
 
+// ══════════════════════════════════════════════
+// ABAS
+// ══════════════════════════════════════════════
 function trocarAba(nome,btnClicado) {
     document.querySelectorAll('.aba-panel').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.aba-btn').forEach(b=>b.classList.remove('active'));
@@ -1074,13 +1525,15 @@ function trocarAba(nome,btnClicado) {
     if (nome==='rituais') rituaisRender();
 }
 
+// ══════════════════════════════════════════════
+// UTILITÁRIOS
+// ══════════════════════════════════════════════
 function salvarEstado() { if (!ficha) return; localStorage.setItem(`estado_ficha_${ficha.id}`,JSON.stringify(estado)); }
 function mostrarToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
 
 // ══════════════════════════════════════════════
-// RITUAIS — ÚNICA função, usa rituaisPersonagem
+// RITUAIS
 // ══════════════════════════════════════════════
-
 function calcDT() {
     if (!ficha) return 10;
     const pre = ficha.atributos?.PRE || 0;
@@ -1094,90 +1547,26 @@ function rituaisRender() {
     const countEl = document.getElementById('rituais-count');
     const dtEl    = document.getElementById('dt-rituais');
     if (!lista) return;
-
     if (dtEl) dtEl.textContent = calcDT();
-
     const busca = (document.getElementById('rituais-busca')?.value || '').toLowerCase();
     const meus  = estado.rituaisPersonagem || [];
-
-    const filtrados = meus.filter(r =>
-        r.nome.toLowerCase().includes(busca) ||
-        (r.elem || '').toLowerCase().includes(busca)
-    );
-
+    const filtrados = meus.filter(r => r.nome.toLowerCase().includes(busca) || (r.elem || '').toLowerCase().includes(busca));
     countEl.textContent = `▸ ${filtrados.length} ritual${filtrados.length !== 1 ? 'is' : ''}`;
-
-    if (filtrados.length === 0) {
-        lista.innerHTML = '<div class="rituais-vazio">▸ Nenhum ritual adicionado ainda. Clique em "+ Adicionar" para começar!</div>';
-        return;
-    }
-
+    if (filtrados.length === 0) { lista.innerHTML = '<div class="rituais-vazio">▸ Nenhum ritual adicionado ainda. Clique em "+ Adicionar" para começar!</div>'; return; }
     lista.innerHTML = filtrados.map(r => {
         const open = rituaisAbertos[r.nome] || false;
         const res  = rituaisResultados[r.nome];
         const esc  = s => s.replace(/'/g, "\\'");
         const eu   = (r.elem || 'DESCONHECIDO').toUpperCase();
-
-        const resHtml = res ? `
-          <div class="ritual-resultado">
-            <div>
-              <div class="res-tipo">${res.expr}</div>
-              <div class="res-num ${res.cls}">${res.total}</div>
-              <div class="res-det">${res.detalhe}</div>
-            </div>
-            <div class="res-tag ${res.cls}">${res.label}</div>
-          </div>` : '';
-
-        const presets = (r.dadosSugeridos || []).map(d =>
-            `<button class="ritual-preset-btn" onclick="rituaisPreset(event,'${esc(r.nome)}','${esc(d)}')">${d}</button>`
-        ).join('');
-
+        const resHtml = res ? `<div class="ritual-resultado"><div><div class="res-tipo">${res.expr}</div><div class="res-num ${res.cls}">${res.total}</div><div class="res-det">${res.detalhe}</div></div><div class="res-tag ${res.cls}">${res.label}</div></div>` : '';
+        const presets = (r.dadosSugeridos || []).map(d => `<button class="ritual-preset-btn" onclick="rituaisPreset(event,'${esc(r.nome)}','${esc(d)}')">${d}</button>`).join('');
         const inputId = `ritual-input-${r.nome.replace(/\W+/g,'_')}`;
-
-        const bodyHtml = open ? `
-          <div class="ritual-card-body">
-            <div class="ritual-desc-txt">${r.desc || '—'}</div>
-            <div class="ritual-meta-grid">
-              <div class="ritual-meta-item">Execução <span>${r.exec || '—'}</span></div>
-              <div class="ritual-meta-item">Alcance <span>${r.alcance || '—'}</span></div>
-              <div class="ritual-meta-item">Duração <span>${r.dur || '—'}</span></div>
-              <div class="ritual-meta-item">Conjuração <span>${r.conjuracao || '—'}</span></div>
-            </div>
-            <div class="ritual-rolar-section">
-              <div class="ritual-rolar-title">🎲 Rolar dado do ritual</div>
-              <div class="ritual-rolar-row">
-                <input type="text" class="ritual-dado-input" id="${inputId}" placeholder="ex: 1d20" value="${r.dadosSugeridos?.[0] || '1d20'}">
-                ${presets ? `<div class="ritual-dado-presets">${presets}</div>` : ''}
-                <button class="ritual-btn-rolar" onclick="rituaisRolar(event,'${esc(r.nome)}','${inputId}')">🎲 Rolar</button>
-              </div>
-            </div>
-            ${resHtml}
-            <div style="margin-top:10px;text-align:right;">
-              <button onclick="removerRitual('${esc(r.nome)}')" style="background:none;border:1px solid #2a0030;color:#555;font-size:0.7rem;font-family:'Share Tech Mono',monospace;padding:3px 10px;border-radius:4px;cursor:pointer;transition:0.2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#555'">🗑 Remover</button>
-            </div>
-          </div>` : '';
-
-        return `<div class="ritual-card-f">
-          <div class="ritual-card-hdr" onclick="rituaisToggle('${esc(r.nome)}')">
-            <div class="ritual-hdr-esq">
-              <div class="ritual-card-nome">${r.nome}</div>
-              <div class="ritual-badges">
-                <span class="rbadge rbadge-${eu}">${r.elem || 'Desconhecido'}</span>
-                ${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}
-                ${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}
-              </div>
-            </div>
-            <div class="ritual-toggle">${open ? '▲' : '▼'}</div>
-          </div>
-          ${bodyHtml}
-        </div>`;
+        const bodyHtml = open ? `<div class="ritual-card-body"><div class="ritual-desc-txt">${r.desc || '—'}</div><div class="ritual-meta-grid"><div class="ritual-meta-item">Execução <span>${r.exec || '—'}</span></div><div class="ritual-meta-item">Alcance <span>${r.alcance || '—'}</span></div><div class="ritual-meta-item">Duração <span>${r.dur || '—'}</span></div><div class="ritual-meta-item">Conjuração <span>${r.conjuracao || '—'}</span></div></div><div class="ritual-rolar-section"><div class="ritual-rolar-title">🎲 Rolar dado do ritual</div><div class="ritual-rolar-row"><input type="text" class="ritual-dado-input" id="${inputId}" placeholder="ex: 1d20" value="${r.dadosSugeridos?.[0] || '1d20'}">${presets ? `<div class="ritual-dado-presets">${presets}</div>` : ''}<button class="ritual-btn-rolar" onclick="rituaisRolar(event,'${esc(r.nome)}','${inputId}')">🎲 Rolar</button></div></div>${resHtml}<div style="margin-top:10px;text-align:right;"><button onclick="removerRitual('${esc(r.nome)}')" style="background:none;border:1px solid #2a0030;color:#555;font-size:0.7rem;font-family:'Share Tech Mono',monospace;padding:3px 10px;border-radius:4px;cursor:pointer;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#555'">🗑 Remover</button></div></div>` : '';
+        return `<div class="ritual-card-f"><div class="ritual-card-hdr" onclick="rituaisToggle('${esc(r.nome)}')"><div class="ritual-hdr-esq"><div class="ritual-card-nome">${r.nome}</div><div class="ritual-badges"><span class="rbadge rbadge-${eu}">${r.elem || 'Desconhecido'}</span>${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}</div></div><div class="ritual-toggle">${open ? '▲' : '▼'}</div></div>${bodyHtml}</div>`;
     }).join('');
 }
 
-function rituaisToggle(nome) {
-    rituaisAbertos[nome] = !rituaisAbertos[nome];
-    rituaisRender();
-}
+function rituaisToggle(nome) { rituaisAbertos[nome] = !rituaisAbertos[nome]; rituaisRender(); }
 
 function rituaisPreset(e, nome, dado) {
     e.stopPropagation();
@@ -1188,8 +1577,7 @@ function rituaisPreset(e, nome, dado) {
 
 function rituaisRolar(e, nome, inputId) {
     e.stopPropagation();
-    const inp = document.getElementById(inputId);
-    if (!inp) return;
+    const inp = document.getElementById(inputId); if (!inp) return;
     const expr = inp.value.trim() || '1d20';
     const r = rolarExpressao(expr);
     if (r.total === 0 && r.detalhe === expr) { mostrarToast('⚠ Expressão inválida. Use ex: 1d20, 2d8+3'); return; }
@@ -1211,41 +1599,24 @@ function removerRitual(nome) {
     salvarEstado(); rituaisRender(); mostrarToast('🗑 RITUAL REMOVIDO');
 }
 
-function abrirModalRitual() {
-    document.getElementById('modal-ritual').style.display = 'flex';
-    document.getElementById('modal-ritual-busca').value = '';
-    renderModalRituais();
-}
+function abrirModalRitual() { document.getElementById('modal-ritual').style.display = 'flex'; document.getElementById('modal-ritual-busca').value = ''; renderModalRituais(); }
 function fecharModalRitual() { document.getElementById('modal-ritual').style.display = 'none'; }
 
 function renderModalRituais() {
     const busca = document.getElementById('modal-ritual-busca').value.toLowerCase();
     const meus  = (estado.rituaisPersonagem || []).map(r => r.nome);
     const lista = document.getElementById('modal-rituais-lista');
-    const filtrados = RITUAIS_DATA.filter(r =>
-        r.nome.toLowerCase().includes(busca) || r.elem.toLowerCase().includes(busca)
-    );
+    const filtrados = RITUAIS_DATA.filter(r => r.nome.toLowerCase().includes(busca) || r.elem.toLowerCase().includes(busca));
     lista.innerHTML = filtrados.map(r => {
         const jatem = meus.includes(r.nome);
         const eu = (r.elem || 'DESCONHECIDO').toUpperCase();
-        return `<div style="background:#0a0015;border:1px solid var(--border);border-radius:6px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-          <div>
-            <div style="font-size:0.85rem;font-weight:700;">${r.nome}</div>
-            <span class="rbadge rbadge-${eu}" style="margin-top:3px;display:inline-block;">${r.elem}</span>
-            <span class="rbadge rbadge-src" style="margin-top:3px;">${r.src}</span>
-          </div>
-          <button onclick="adicionarRitual('${r.nome.replace(/'/g,"\\'")}',${jatem})"
-            style="background:${jatem?'#1a0033':'var(--purple-dark)'};border:1px solid ${jatem?'#3a0063':'var(--purple)'};color:${jatem?'#555':'white'};font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;padding:5px 12px;border-radius:4px;cursor:${jatem?'default':'pointer'};white-space:nowrap;transition:0.2s;">
-            ${jatem ? '✓ Adicionado' : '+ Adicionar'}
-          </button>
-        </div>`;
+        return `<div style="background:#0a0015;border:1px solid var(--border);border-radius:6px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;"><div><div style="font-size:0.85rem;font-weight:700;">${r.nome}</div><span class="rbadge rbadge-${eu}" style="margin-top:3px;display:inline-block;">${r.elem}</span><span class="rbadge rbadge-src" style="margin-top:3px;">${r.src}</span></div><button onclick="adicionarRitual('${r.nome.replace(/'/g,"\\'")}',${jatem})" style="background:${jatem?'#1a0033':'var(--purple-dark)'};border:1px solid ${jatem?'#3a0063':'var(--purple)'};color:${jatem?'#555':'white'};font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;padding:5px 12px;border-radius:4px;cursor:${jatem?'default':'pointer'};white-space:nowrap;">${jatem ? '✓ Adicionado' : '+ Adicionar'}</button></div>`;
     }).join('');
 }
 
 function adicionarRitual(nome, jatem) {
     if (jatem) return;
-    const dados = RITUAIS_DATA.find(r => r.nome === nome);
-    if (!dados) return;
+    const dados = RITUAIS_DATA.find(r => r.nome === nome); if (!dados) return;
     if (!estado.rituaisPersonagem) estado.rituaisPersonagem = [];
     estado.rituaisPersonagem.push({ ...dados });
     salvarEstado(); renderModalRituais(); rituaisRender();
@@ -1265,9 +1636,223 @@ function salvarRitualCustom() {
     estado.rituaisPersonagem.push({ nome, elem, src:'Homebrew', desc, exec:'—', alcance:'—', dur:'—', conjuracao:'—', dadosSugeridos:[dado], custom:true });
     salvarEstado(); fecharModalRitualCustom(); rituaisRender();
     mostrarToast('✦ RITUAL CRIADO');
-    document.getElementById('rc-nome').value='';
-    document.getElementById('rc-desc').value='';
-    document.getElementById('rc-dado').value='1d20';
+    document.getElementById('rc-nome').value=''; document.getElementById('rc-desc').value=''; document.getElementById('rc-dado').value='1d20';
+}
+
+// ══════════════════════════════════════════════
+// HABILIDADES
+// ══════════════════════════════════════════════
+function renderHabilidades() {
+    const container = document.getElementById('aba-habilidades'); if (!container) return;
+    const cats = [
+        { id:'ficha',        label:'✦ Minha Ficha' },
+        { id:'classe',       label:'Classe' },
+        { id:'trilha',       label:'Trilhas' },
+        { id:'paranormal',   label:'Poderes Paranormais' },
+        { id:'poder_classe', label:'Poderes de Classe' },
+        { id:'origem',       label:'Origem' },
+    ];
+    const catBtns = cats.map(c => `<button class="hab-cat-btn ${habCatAtiva===c.id?'active':''}" onclick="setHabCat('${c.id}')">${c.label}</button>`).join('');
+    let content = habCatAtiva === 'ficha' ? buildHabFichaView() : buildHabCatView(habCatAtiva);
+    container.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div class="sec-title" style="margin-bottom:0;">Habilidades & Poderes</div></div><div class="hab-categorias">${catBtns}</div>${content}`;
+    container.querySelector('#hab-search')?.addEventListener('input', renderHabilidades);
+}
+
+function buildHabFichaView() {
+    const lista = estado.habilidadesPersonagem || [];
+    if (lista.length === 0) return `<div class="hab-vazio">▸ Nenhuma habilidade adicionada ainda.<br>Use as abas acima para explorar e adicionar!</div>`;
+    const grupos = {}; lista.forEach(h => { const g = h.tipo || 'outro'; if (!grupos[g]) grupos[g] = []; grupos[g].push(h); });
+    const labels = { classe:'Habilidades de Classe',trilha:'Habilidades de Trilha',paranormal:'Poderes Paranormais',poder_classe:'Poderes de Classe',origem:'Habilidades de Origem' };
+    let html = '';
+    Object.entries(grupos).forEach(([tipo, habs]) => {
+        html += `<div style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px;margin-top:14px;">${labels[tipo]||tipo}</div>`;
+        html += habs.map(h => buildPoderCard(h, true)).join('');
+    });
+    return html;
+}
+
+function buildHabCatView(cat) {
+    let todos = HABILIDADES_DB[cat] || [];
+    let subabaOpts = ['todos'];
+    if (cat === 'classe' || cat === 'poder_classe') subabaOpts = ['todos', ...new Set(todos.map(h => h.classe).filter(Boolean))];
+    else if (cat === 'trilha') subabaOpts = ['todos', 'Combatente', 'Especialista', 'Ocultista'];
+    else if (cat === 'paranormal') subabaOpts = ['todos', 'SANGUE', 'MORTE', 'CONHECIMENTO', 'ENERGIA', 'MEDO'];
+    if (!subabaOpts.includes(habSubabaAtiva)) habSubabaAtiva = 'todos';
+    if (habSubabaAtiva !== 'todos') {
+        if (cat === 'paranormal') todos = todos.filter(h => h.elemento === habSubabaAtiva);
+        else todos = todos.filter(h => h.classe === habSubabaAtiva);
+    }
+    const busca = (document.getElementById('hab-search')?.value || '').toLowerCase();
+    if (busca) todos = todos.filter(h => h.nome.toLowerCase().includes(busca) || (h.desc||'').toLowerCase().includes(busca) || (h.trilha||'').toLowerCase().includes(busca) || (h.classe||'').toLowerCase().includes(busca));
+    const subBtns = subabaOpts.map(s => { const lbl = s === 'todos' ? 'Todos' : s.charAt(0)+s.slice(1).toLowerCase(); return `<button class="hab-subaba-btn ${habSubabaAtiva===s?'active':''}" onclick="setHabSubaba('${s}')">${lbl}</button>`; }).join('');
+    const cards = todos.length === 0 ? `<div class="hab-vazio">▸ Nenhuma habilidade encontrada.</div>` : todos.map(h => buildPoderCard(h, false)).join('');
+    return `<div class="hab-subabas">${subBtns}</div><div class="hab-search-row"><div class="hab-search-wrap2"><span class="sicon2">⌕</span><input type="text" id="hab-search" class="hab-search-input" placeholder="Buscar habilidade..." value="${busca}"></div></div><div class="hab-count">▸ ${todos.length} habilidade${todos.length!==1?'s':''}</div>${cards}`;
+}
+
+function buildPoderCard(h, isFicha) {
+    const open  = habAbertos[h.nome] || false;
+    const jatem = (estado.habilidadesPersonagem || []).some(x => x.nome === h.nome);
+    const esc   = s => (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    const ECORES = { SANGUE:{cor:'#ff4466',bg:'#200010',border:'#440020'}, MORTE:{cor:'#9966ff',bg:'#150030',border:'#330066'}, CONHECIMENTO:{cor:'#4a9eff',bg:'#001020',border:'#003366'}, ENERGIA:{cor:'#ffcc00',bg:'#1a1400',border:'#443300'}, MEDO:{cor:'#ff8c00',bg:'#0d0800',border:'#3a2000'}, NEUTRO:{cor:'#888',bg:'#0d0d0d',border:'#222'} };
+    const elem  = (h.elem || 'NEUTRO').toUpperCase();
+    const ec    = ECORES[elem] || ECORES.NEUTRO;
+    const elbl  = elem === 'NEUTRO' ? '—' : elem.charAt(0)+elem.slice(1).toLowerCase();
+    const badgeElem = `<span style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;background:${ec.bg};color:${ec.cor};border:1px solid ${ec.border};">${elbl}</span>`;
+    const TIPOS = { classe:{cor:'var(--purple-neon)',bg:'#0d0020',border:'var(--border)',lbl:'CLASSE'}, trilha:{cor:'#39d353',bg:'#001510',border:'#003322',lbl:'TRILHA'}, paranormal:{cor:'#cc88ff',bg:'#100010',border:'#3a0060',lbl:'PARANORMAL'}, poder_classe:{cor:'var(--purple-neon)',bg:'#0d0020',border:'var(--border)',lbl:'PODER'}, origem:{cor:'#ffd700',bg:'#101000',border:'#443300',lbl:'ORIGEM'} };
+    const tc = TIPOS[h.tipo] || TIPOS.classe;
+    const badgeTipo = `<span style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;color:${tc.cor};background:${tc.bg};border:1px solid ${tc.border};">${tc.lbl}</span>`;
+    const badgeTrilha = h.trilha ? `<span style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;color:#888;background:#0d0010;border:1px solid var(--border);">${h.trilha}</span>` : '';
+    const badgeNex = (h.nex && h.nex !== '—') ? `<span style="font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;color:#666;background:#080010;border:1px solid #1a0033;">NEX ${h.nex}</span>` : '';
+    const acaoBtn = isFicha ? `<button class="btn-rem-poder" onclick="removerHabilidade(event,'${esc(h.nome)}')">🗑 Remover</button>` : `<button class="${jatem?'btn-add-poder added':'btn-add-poder'}" onclick="adicionarHabilidade(event,'${esc(h.nome)}')">${jatem?'✓ Adicionado':'+ Adicionar'}</button>`;
+    const metaExtra = h.trilha ? `<div class="poder-meta-grid"><div class="poder-meta-item">Classe <span>${h.classe}</span></div><div class="poder-meta-item">Trilha <span>${h.trilha}</span></div></div>` : '';
+    const metaOrigem = h.origem ? `<div class="poder-meta-grid"><div class="poder-meta-item">Origem <span>${h.origem}</span></div></div>` : '';
+    const bodyHtml = open ? `<div class="poder-card-body"><div class="poder-desc">${h.desc||'—'}</div>${metaExtra}${metaOrigem}<div style="text-align:right;margin-top:8px;">${acaoBtn}</div></div>` : '';
+    return `<div class="poder-card"><div class="poder-card-hdr" onclick="toggleHab('${esc(h.nome)}')"><div class="poder-hdr-esq"><div class="poder-nome">${h.nome}</div><div class="poder-badges">${badgeElem}${badgeTipo}${badgeTrilha}${badgeNex}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${!open ? acaoBtn : ''}<div class="poder-toggle">${open?'▲':'▼'}</div></div></div>${bodyHtml}</div>`;
+}
+
+function setHabCat(cat)  { habCatAtiva=cat; habSubabaAtiva='todos'; renderHabilidades(); }
+function setHabSubaba(s) { habSubabaAtiva=s; renderHabilidades(); }
+function toggleHab(nome) { habAbertos[nome]=!habAbertos[nome]; renderHabilidades(); }
+
+function adicionarHabilidade(e, nome) {
+    e.stopPropagation();
+    if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem=[];
+    if (estado.habilidadesPersonagem.some(x=>x.nome===nome)) return;
+    let encontrado=null;
+    for (const arr of Object.values(HABILIDADES_DB)) { encontrado=arr.find(h=>h.nome===nome); if (encontrado) break; }
+    if (!encontrado) return;
+    estado.habilidadesPersonagem.push({...encontrado});
+    salvarEstado(); mostrarToast('✦ HABILIDADE ADICIONADA'); renderHabilidades();
+}
+
+function removerHabilidade(e, nome) {
+    e.stopPropagation();
+    if (!confirm(`Remover "${nome}" da ficha?`)) return;
+    estado.habilidadesPersonagem=(estado.habilidadesPersonagem||[]).filter(h=>h.nome!==nome);
+    salvarEstado(); mostrarToast('🗑 HABILIDADE REMOVIDA'); renderHabilidades();
+}
+
+// ══════════════════════════════════════════════
+// PATCH — MODAL ATRIBUTOS
+// ══════════════════════════════════════════════
+function abrirModalAtributos() {
+    if (!ficha) return;
+    const a = ficha.atributos || {};
+    ['FOR','AGI','INT','PRE','VIG'].forEach(k => {
+        const el = document.getElementById('ae-' + k);
+        if (el) el.value = a[k] ?? 0;
+    });
+    document.getElementById('modal-atributos').style.display = 'flex';
+}
+
+function fecharModalAtributos() {
+    document.getElementById('modal-atributos').style.display = 'none';
+}
+
+function stepAtrib(key, delta) {
+    const el = document.getElementById('ae-' + key); if (!el) return;
+    el.value = Math.min(5, Math.max(-1, (parseInt(el.value) || 0) + delta));
+}
+
+function salvarAtributos() {
+    if (!ficha) return;
+    if (!ficha.atributos) ficha.atributos = {};
+    ['FOR','AGI','INT','PRE','VIG'].forEach(k => {
+        const el = document.getElementById('ae-' + k);
+        if (el) ficha.atributos[k] = Math.min(5, Math.max(-1, parseInt(el.value) || 0));
+    });
+    // Persistir no localStorage
+    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+    if (idx !== -1) { agentes[idx].atributos = ficha.atributos; localStorage.setItem('lista_agentes', JSON.stringify(agentes)); }
+    // Recalcular recursos derivados
+    const vig = ficha.atributos.VIG || 0;
+    const pre = ficha.atributos.PRE || 0;
+    const novoVidaMax = 8 + vig * 4;
+    const novoSanMax  = 8 + pre * 4;
+    if (estado.vida.max !== novoVidaMax) {
+        const diff = novoVidaMax - estado.vida.max;
+        estado.vida.max   = novoVidaMax;
+        estado.vida.atual = Math.min(estado.vida.atual + diff, novoVidaMax);
+    }
+    if (estado.san.max !== novoSanMax) {
+        const diff = novoSanMax - estado.san.max;
+        estado.san.max   = novoSanMax;
+        estado.san.atual = Math.min(estado.san.atual + diff, novoSanMax);
+    }
+    salvarEstado(); fecharModalAtributos(); renderFicha();
+    mostrarToast('✦ ATRIBUTOS ATUALIZADOS');
+}
+
+// ══════════════════════════════════════════════
+// PATCH — MODAL NEX / PROGRESSÃO
+// ══════════════════════════════════════════════
+function abrirModalNex() {
+    const nexAtual = document.getElementById('nex-val')?.textContent || '5%';
+    document.getElementById('ne-nex').value   = nexAtual;
+    document.getElementById('ne-pe').value    = document.getElementById('pe-val')?.textContent || '3';
+    document.getElementById('ne-desl').value  = document.getElementById('desl-val')?.textContent || '9m';
+
+    // Mostra os valores calculados automaticamente
+    atualizarPreviewNex();
+
+    document.getElementById('modal-nex').style.display = 'flex';
+}
+
+function atualizarPreviewNex() {
+    const nex  = document.getElementById('ne-nex')?.value || '5%';
+    const calc = calcRecursosPorNex(nex, ficha?.classe, ficha?.atributos);
+    const el = document.getElementById('nex-preview');
+    if (el) {
+        el.innerHTML = `
+            <div style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;">Preview após salvar</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;">
+                <div style="text-align:center;"><div style="color:#e84040;font-size:1rem;font-weight:700;">${calc.pvMax}</div><div style="color:#555;font-size:0.6rem;">PV MÁX</div></div>
+                <div style="text-align:center;"><div style="color:var(--purple-neon);font-size:1rem;font-weight:700;">${calc.sanMax}</div><div style="color:#555;font-size:0.6rem;">SAN MÁX</div></div>
+                <div style="text-align:center;"><div style="color:var(--orange);font-size:1rem;font-weight:700;">${calc.peMax}</div><div style="color:#555;font-size:0.6rem;">PE MÁX</div></div>
+            </div>`;
+    }
+    // Atualiza PE automaticamente na caixa
+    const peEl = document.getElementById('ne-pe');
+    if (peEl) peEl.value = calc.pe;
+}
+
+function fecharModalNex() {
+    document.getElementById('modal-nex').style.display = 'none';
+}
+
+function salvarNex() {
+    if (!estado.progressao) estado.progressao = {};
+
+    const nex  = document.getElementById('ne-nex').value.trim() || '5%';
+    const desl = document.getElementById('ne-desl').value.trim() || '9m';
+
+    // Calcula automaticamente pelo NEX e classe
+    const calc = calcRecursosPorNex(nex, ficha?.classe, ficha?.atributos);
+
+    // PE/turno vem da tabela, mas permite edição manual
+    const peManual = parseInt(document.getElementById('ne-pe').value);
+    const pe = (!isNaN(peManual) && peManual > 0) ? peManual : calc.pe;
+
+    estado.progressao = { nex, pe, desl };
+
+    // Atualiza máximos E atuais (sobe junto)
+    estado.vida.max   = calc.pvMax;
+    estado.vida.atual = calc.pvMax;
+    estado.san.max    = calc.sanMax;
+    estado.san.atual  = calc.sanMax;
+    estado.esf.max    = calc.peMax;
+    estado.esf.atual  = calc.peMax;
+
+    salvarEstado();
+    fecharModalNex();
+
+    document.getElementById('nex-val').textContent  = nex;
+    document.getElementById('pe-val').textContent   = pe;
+    document.getElementById('desl-val').textContent = desl;
+
+    atualizarBarras();
+    mostrarToast('✦ NEX ATUALIZADO — RECURSOS RECALCULADOS');
 }
 </script>
 </body>

@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F.I.C.H.A. – Campanhas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --purple: #8a2be2; --purple-neon: #bc6ff1; --purple-dark: #3a0063;
+            --purple-glow: rgba(138,43,226,0.45); --red: #e84040; --green: #39d353;
+            --orange: #ff8c00; --bg: #0a000f; --card: #110018; --border: #2a0050;
+            --text-dim: #888;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Oswald', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #000000 100%);
+            background-attachment: fixed; color: white; min-height: 100vh;
+            display: flex; flex-direction: column;
+        }
+        .custom-nav { background: black; border-bottom: 2px solid #222; }
+        .nav-link:hover { color: #ff0000 !important; }
+
+        /* ── ESTADO DE CARREGAMENTO ── */
+        #loading-screen {
+            position: fixed; inset: 0; background: #0a000f;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; flex-direction: column; gap: 16px;
+        }
+        .loading-spinner {
+            width: 48px; height: 48px; border: 3px solid var(--border);
+            border-top-color: var(--purple); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── LAYOUT ── */
+        .page-wrapper { max-width: 1200px; margin: 0 auto; padding: 32px 16px 80px; flex: 1; }
+
+        /* ── CARDS DE CAMPANHA ── */
+        .camp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+        .camp-card {
+            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+            overflow: hidden; transition: 0.2s; cursor: pointer; position: relative;
+        }
+        .camp-card:hover { border-color: var(--purple); box-shadow: 0 0 20px var(--purple-glow); transform: translateY(-3px); }
+        .camp-card-banner {
+            height: 80px; background: linear-gradient(135deg, var(--purple-dark), #0d0010);
+            position: relative; overflow: hidden;
+        }
+        .camp-card-banner::after {
+            content: ''; position: absolute; inset: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(138,43,226,0.05) 10px, rgba(138,43,226,0.05) 20px);
+        }
+        .camp-role-badge {
+            position: absolute; top: 10px; right: 10px; z-index: 1;
+            font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 99px; font-family: 'Share Tech Mono', monospace;
+        }
+        .camp-role-badge.mestre { background: #2a0050; color: var(--purple-neon); border: 1px solid var(--purple); }
+        .camp-role-badge.jogador { background: #001a10; color: var(--green); border: 1px solid #004400; }
+        .camp-card-body { padding: 14px 16px; }
+        .camp-nome { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+        .camp-meta { font-size: 0.65rem; letter-spacing: 1px; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; }
+        .camp-stats { display: flex; gap: 12px; margin-top: 10px; }
+        .camp-stat { font-size: 0.6rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; }
+        .camp-stat span { display: block; font-size: 1rem; font-weight: 700; color: white; font-family: 'Share Tech Mono', monospace; }
+
+        /* ── BOTÕES ── */
+        .btn-primary-purple {
+            background: var(--purple-dark); border: 1px solid var(--purple); color: white;
+            font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 2px;
+            font-size: 0.85rem; padding: 10px 24px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-primary-purple:hover { background: var(--purple); box-shadow: 0 0 16px var(--purple-glow); }
+        .btn-ghost {
+            background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+            font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 1px;
+            padding: 8px 18px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-ghost:hover { border-color: var(--purple); color: var(--purple-neon); }
+        .btn-danger {
+            background: transparent; border: 1px solid #3a0000; color: #666;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
+            padding: 5px 12px; border-radius: 4px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-danger:hover { border-color: var(--red); color: var(--red); }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 9000; align-items: center; justify-content: center; padding: 16px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: #0d0010; border: 1px solid var(--purple); border-radius: 12px;
+            padding: 28px 24px; max-width: 520px; width: 100%;
+            box-shadow: 0 0 50px var(--purple-glow); max-height: 90vh; overflow-y: auto;
+        }
+        .modal-title { font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 20px; }
+        .form-label { font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .form-input {
+            background: #080010; border: 1px solid var(--border); color: white;
+            font-family: 'Oswald', sans-serif; font-size: 0.9rem; padding: 8px 12px;
+            border-radius: 6px; width: 100%; margin-bottom: 14px; transition: border-color 0.2s;
+        }
+        .form-input:focus { border-color: var(--purple); outline: none; }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+
+        /* ── PÁGINA DE CAMPANHA ── */
+        .camp-detalhe { display: none; }
+        .camp-detalhe.show { display: block; }
+        .camp-header {
+            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 24px; margin-bottom: 16px; position: relative; overflow: hidden;
+        }
+        .camp-header::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--purple), var(--purple-neon), var(--purple));
+        }
+        .camp-header-nome { font-size: 2rem; font-weight: 700; margin-bottom: 4px; }
+        .camp-header-desc { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; line-height: 1.6; }
+
+        .btn-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+        .btn-bar-item {
+            background: #0d0010; border: 1px solid var(--border); color: var(--text-dim);
+            font-family: 'Oswald', sans-serif; font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 1px; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-bar-item:hover { border-color: var(--purple); color: var(--purple-neon); }
+        .btn-bar-item.danger:hover { border-color: var(--red); color: var(--red); }
+
+        /* ── LINK DE CONVITE ── */
+        .invite-box {
+            background: #080010; border: 1px solid var(--border); border-radius: 8px;
+            padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+        }
+        .invite-url {
+            flex: 1; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;
+            color: var(--purple-neon); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .btn-copy {
+            background: var(--purple-dark); border: 1px solid var(--purple); color: white;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; padding: 5px 12px;
+            border-radius: 4px; cursor: pointer; transition: 0.2s; white-space: nowrap;
+        }
+        .btn-copy:hover { background: var(--purple); }
+        .btn-copy.copied { background: #003300; border-color: var(--green); color: var(--green); }
+
+        /* ── ABAS ── */
+        .abas { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 6px; margin-bottom: 16px; }
+        .aba-btn {
+            flex: 1; background: transparent; border: 1px solid transparent; color: var(--text-dim);
+            font-family: 'Oswald', sans-serif; font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase; padding: 8px 4px;
+            border-radius: 6px; cursor: pointer; transition: 0.2s;
+        }
+        .aba-btn:hover { color: white; background: #1a0033; }
+        .aba-btn.active { background: var(--purple-dark); border-color: var(--purple); color: var(--purple-neon); }
+        .aba-panel { display: none; }
+        .aba-panel.active { display: block; }
+
+        /* ── AGENTES NA CAMPANHA ── */
+        .agente-camp-card {
+            background: #0d0010; border: 1px solid var(--border); border-radius: 8px;
+            padding: 12px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; transition: 0.15s;
+        }
+        .agente-camp-card:hover { border-color: #3a0060; }
+        .agente-camp-foto { width: 48px; height: 48px; border-radius: 6px; border: 1px solid var(--border); object-fit: cover; }
+        .agente-camp-info { flex: 1; }
+        .agente-camp-nome { font-size: 0.9rem; font-weight: 700; }
+        .agente-camp-meta { font-size: 0.65rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; }
+        .agente-camp-player { font-size: 0.6rem; letter-spacing: 1px; color: #555; font-family: 'Share Tech Mono', monospace; }
+
+        /* ── JOGADORES ── */
+        .jogador-row {
+            background: #0d0010; border: 1px solid var(--border); border-radius: 6px;
+            padding: 10px 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .jogador-nome { font-size: 0.85rem; font-weight: 700; }
+        .jogador-meta { font-size: 0.6rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; }
+        .jogador-badge {
+            font-size: 0.55rem; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px;
+            border-radius: 99px; font-family: 'Share Tech Mono', monospace;
+        }
+        .jogador-badge.mestre { background: #2a0050; color: var(--purple-neon); border: 1px solid var(--purple); }
+        .jogador-badge.jogador { background: #001a10; color: var(--green); border: 1px solid #004400; }
+
+        /* ── VAZIO ── */
+        .empty-state {
+            text-align: center; padding: 60px 20px; color: var(--text-dim);
+            font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; letter-spacing: 1px;
+        }
+        .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+
+        /* ── TOAST ── */
+        .toast-msg {
+            position: fixed; bottom: 24px; right: 24px; background: #1a0033;
+            border: 1px solid var(--purple); color: var(--purple-neon);
+            font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 1px;
+            padding: 10px 20px; border-radius: 6px; box-shadow: 0 0 20px var(--purple-glow);
+            z-index: 9999; display: none; animation: fadeUp 0.3s ease;
+        }
+        .toast-msg.show { display: block; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+        /* ── SELECIONAR AGENTES ── */
+        .agente-select-item {
+            background: #080010; border: 1px solid var(--border); border-radius: 6px;
+            padding: 10px 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px;
+            cursor: pointer; transition: 0.15s;
+        }
+        .agente-select-item:hover { border-color: var(--purple); }
+        .agente-select-item.selected { border-color: var(--green); background: #001500; }
+        .agente-select-item img { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
+        .check-circle {
+            width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border);
+            margin-left: auto; display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; flex-shrink: 0; transition: 0.15s;
+        }
+        .agente-select-item.selected .check-circle { background: var(--green); border-color: var(--green); color: #000; }
+
+        /* ── SECTION TITLE ── */
+        .sec-title { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; }
+
+        .btn-voltar {
+            background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+            font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 2px;
+            padding: 6px 16px; border-radius: 4px; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block;
+        }
+        .btn-voltar:hover { border-color: var(--purple); color: var(--purple-neon); }
+
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+        .status-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+        .status-dot.offline { background: #444; }
+    </style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading-screen">
+    <div class="loading-spinner"></div>
+    <div style="font-size:0.7rem;letter-spacing:3px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">CONECTANDO...</div>
+</div>
+
+<nav class="navbar navbar-expand-lg custom-nav navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand fs-2" href="index.html">
+            <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="52" height="52" class="d-inline-block align-text-center">
+            F.I.C.H.A.
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <div class="navbar-nav">
+                <a class="nav-link px-3" href="index.html?view=agentes">Agentes</a>
+                <a class="nav-link px-3 active" href="campanhas.html">Campanhas</a>
+                <a class="nav-link px-3" href="#">Homebrew</a>
+            </div>
+        </div>
+        <div class="d-none d-lg-flex pe-3">
+            <span id="user-status" style="font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;display:flex;align-items:center;gap:4px;">
+                <span class="status-dot offline" id="status-dot"></span>
+                <span id="status-txt">Conectando...</span>
+            </span>
+        </div>
+    </div>
+</nav>
+
+<div class="page-wrapper">
+
+    <!-- LISTA DE CAMPANHAS -->
+    <div id="view-lista">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px;">
+            <div>
+                <div style="font-size:0.6rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">F.I.C.H.A.</div>
+                <h2 style="font-size:2rem;font-weight:700;">Campanhas</h2>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn-ghost" onclick="abrirModalEntrar()">🔗 Entrar com convite</button>
+                <button class="btn-primary-purple" onclick="abrirModalCriar()">+ Nova Campanha</button>
+            </div>
+        </div>
+        <div id="lista-campanhas" class="camp-grid">
+            <div class="empty-state" style="grid-column:1/-1;">
+                <div class="loading-spinner" style="margin:0 auto 12px;"></div>
+                <div>Carregando campanhas...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETALHE DE CAMPANHA -->
+    <div id="view-detalhe" class="camp-detalhe">
+        <div style="margin-bottom:16px;">
+            <button class="btn-voltar" onclick="voltarLista()">← Voltar</button>
+        </div>
+        <div class="camp-header" id="camp-header-box">
+            <div class="camp-header-nome" id="camp-header-nome">—</div>
+            <div class="camp-header-desc" id="camp-header-desc"></div>
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;" id="camp-header-meta"></div>
+        </div>
+
+        <!-- Barra de ações do mestre -->
+        <div class="btn-bar" id="btn-bar-mestre" style="display:none;">
+            <button class="btn-bar-item" onclick="copiarConvite()">🔗 Copiar Link de Convite</button>
+            <button class="btn-bar-item" onclick="abrirModalEditarCamp()">✎ Editar Campanha</button>
+            <button class="btn-bar-item danger" onclick="deletarCampanha()">🗑 Encerrar Campanha</button>
+        </div>
+
+        <!-- Barra de ações do jogador -->
+        <div class="btn-bar" id="btn-bar-jogador" style="display:none;">
+            <button class="btn-bar-item" onclick="abrirModalVincularAgente()">+ Vincular meu Agente</button>
+            <button class="btn-bar-item danger" onclick="sairCampanha()">🚪 Sair da Campanha</button>
+        </div>
+
+        <!-- Abas -->
+        <div class="abas">
+            <button class="aba-btn active" onclick="trocarAba('agentes',this)">Agentes</button>
+            <button class="aba-btn" onclick="trocarAba('jogadores',this)">Jogadores</button>
+        </div>
+
+        <!-- Aba Agentes -->
+        <div class="aba-panel active" id="aba-agentes">
+            <div id="lista-agentes-camp"></div>
+        </div>
+
+        <!-- Aba Jogadores -->
+        <div class="aba-panel" id="aba-jogadores">
+            <div id="lista-jogadores-camp"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MODAL CRIAR CAMPANHA ══ -->
+<div class="modal-overlay" id="modal-criar">
+    <div class="modal-box">
+        <div class="modal-title">✦ Nova Campanha</div>
+        <label class="form-label">Nome da Campanha *</label>
+        <input type="text" class="form-input" id="criar-nome" placeholder="Ex.: A Maldição de Carcosa">
+        <label class="form-label">Descrição</label>
+        <textarea class="form-input form-textarea" id="criar-desc" placeholder="Sinopse da campanha..."></textarea>
+        <label class="form-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="criar-escudo" style="accent-color:var(--purple);">
+            <span>Escudo do Mestre Privado</span>
+        </label>
+        <div class="modal-footer" style="margin-top:16px;">
+            <button class="btn-ghost" onclick="fecharModal('modal-criar')">Cancelar</button>
+            <button class="btn-primary-purple" onclick="criarCampanha()">✦ Criar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MODAL ENTRAR COM CONVITE ══ -->
+<div class="modal-overlay" id="modal-entrar">
+    <div class="modal-box">
+        <div class="modal-title">🔗 Entrar em Campanha</div>
+        <label class="form-label">Cole o link ou código de convite</label>
+        <input type="text" class="form-input" id="entrar-codigo" placeholder="https://... ou apenas o código">
+        <div class="modal-footer">
+            <button class="btn-ghost" onclick="fecharModal('modal-entrar')">Cancelar</button>
+            <button class="btn-primary-purple" onclick="entrarCampanha()">Entrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MODAL EDITAR CAMPANHA ══ -->
+<div class="modal-overlay" id="modal-editar">
+    <div class="modal-box">
+        <div class="modal-title">✎ Editar Campanha</div>
+        <label class="form-label">Nome</label>
+        <input type="text" class="form-input" id="editar-nome">
+        <label class="form-label">Descrição</label>
+        <textarea class="form-input form-textarea" id="editar-desc"></textarea>
+        <div class="modal-footer">
+            <button class="btn-ghost" onclick="fecharModal('modal-editar')">Cancelar</button>
+            <button class="btn-primary-purple" onclick="salvarEdicaoCamp()">✦ Salvar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MODAL VINCULAR AGENTE ══ -->
+<div class="modal-overlay" id="modal-vincular">
+    <div class="modal-box">
+        <div class="modal-title">+ Vincular Agente à Campanha</div>
+        <p style="font-size:0.75rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-bottom:14px;">
+            Selecione um ou mais agentes da sua ficha local para adicionar a esta campanha.
+        </p>
+        <div id="lista-agentes-locais"></div>
+        <div class="modal-footer" style="margin-top:8px;">
+            <button class="btn-ghost" onclick="fecharModal('modal-vincular')">Cancelar</button>
+            <button class="btn-primary-purple" onclick="vincularAgentes()">✦ Adicionar Selecionados</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-msg" id="toast"></div>
+
+<footer style="background:black;border-top:2px solid #222;padding:24px 0;margin-top:auto;">
+    <div class="container text-center">
+        <p class="text-secondary small mb-0">© 2026 F.I.C.H.A. – <span style="color:var(--purple-neon);">O MEDO É REAL.</span></p>
+    </div>
+</footer>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// ══ CONFIG FIREBASE ══
+const firebaseConfig = {
+    apiKey: "AIzaSyBiPlsUPhgNleCOvezR1UfNXqbjiC9Rws",  // ← corrigida
+    authDomain: "ficha-op-c9df8.firebaseapp.com",
+    projectId: "ficha-op-c9df8",
+    storageBucket: "ficha-op-c9df8.firebasestorage.app",
+    messagingSenderId: "5463680704",
+    appId: "1:5463680704:web:3d6296c296699f4d41af25"
+};
+
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
+
+// ══ ESTADO GLOBAL ══
+let currentUser   = null;
+let campanhaAtual = null;
+let unsubListeners = [];
+let agentesSelecionados = new Set();
+
+// ══ AUTH ══
+onAuthStateChanged(auth, async user => {
+    if (user) {
+        currentUser = user;
+        document.getElementById('status-dot').className = 'status-dot online';
+        document.getElementById('status-txt').textContent = `UID: ${user.uid.slice(0,8)}...`;
+
+        // Salva UID no localStorage para associar agentes
+        localStorage.setItem('ficha_uid', user.uid);
+
+        // Checa se veio de link de convite
+        const params = new URLSearchParams(window.location.search);
+        const conviteId = params.get('convite');
+        if (conviteId) {
+            await processarConvite(conviteId);
+        }
+
+        await carregarCampanhas();
+        document.getElementById('loading-screen').style.display = 'none';
+    }
+});
+
+signInAnonymously(auth).catch(err => {
+    console.error('Auth error:', err);
+    document.getElementById('loading-screen').innerHTML = `
+        <div style="color:var(--red);font-family:'Share Tech Mono',monospace;text-align:center;padding:20px;">
+            ⚠ Erro ao conectar ao Firebase.<br>
+            <small style="color:#666;font-size:0.7rem;">Verifique sua conexão e as regras do Firestore.</small>
+        </div>`;
+});
+
+// ══ CARREGAR CAMPANHAS ══
+async function carregarCampanhas() {
+    const lista = document.getElementById('lista-campanhas');
+    try {
+        // Campanhas onde sou mestre
+        const qMestre = query(collection(db, 'campanhas'), where('mestreUid', '==', currentUser.uid));
+        // Campanhas onde sou jogador
+        const qJogador = query(collection(db, 'campanhas'), where('jogadoresUids', 'array-contains', currentUser.uid));
+
+        const [snapMestre, snapJogador] = await Promise.all([getDocs(qMestre), getDocs(qJogador)]);
+
+        const campanhas = [];
+        snapMestre.forEach(d  => campanhas.push({ id: d.id, ...d.data(), meuPapel: 'mestre' }));
+        snapJogador.forEach(d => campanhas.push({ id: d.id, ...d.data(), meuPapel: 'jogador' }));
+
+        if (campanhas.length === 0) {
+            lista.innerHTML = `
+                <div class="empty-state" style="grid-column:1/-1;">
+                    <div class="icon">⚔️</div>
+                    <div>Você ainda não criou nem entrou em nenhuma campanha.</div>
+                    <div style="margin-top:8px;font-size:0.7rem;color:#444;">Crie uma nova ou use um link de convite.</div>
+                </div>`;
+            return;
+        }
+
+        lista.innerHTML = campanhas.map(c => `
+            <div class="camp-card" onclick="abrirCampanha('${c.id}')">
+                <div class="camp-card-banner">
+                    <span class="camp-role-badge ${c.meuPapel}">${c.meuPapel === 'mestre' ? '★ MESTRE' : '◆ JOGADOR'}</span>
+                </div>
+                <div class="camp-card-body">
+                    <div class="camp-nome">${c.nome}</div>
+                    <div class="camp-meta">${c.criadoEm?.toDate ? c.criadoEm.toDate().toLocaleDateString('pt-BR') : '—'}</div>
+                    ${c.descricao ? `<div style="font-size:0.75rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-top:6px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${c.descricao}</div>` : ''}
+                    <div class="camp-stats">
+                        <div class="camp-stat"><span id="stat-agentes-${c.id}">—</span>Agentes</div>
+                        <div class="camp-stat"><span id="stat-jogadores-${c.id}">—</span>Jogadores</div>
+                    </div>
+                </div>
+            </div>`).join('');
+
+        // Carrega stats async
+        campanhas.forEach(async c => {
+            const snapA = await getDocs(collection(db, 'campanhas', c.id, 'agentes'));
+            const snapJ = await getDocs(collection(db, 'campanhas', c.id, 'jogadores'));
+            const elA = document.getElementById(`stat-agentes-${c.id}`);
+            const elJ = document.getElementById(`stat-jogadores-${c.id}`);
+            if (elA) elA.textContent = snapA.size;
+            if (elJ) elJ.textContent = snapJ.size;
+        });
+
+    } catch(e) {
+        console.error(e);
+        lista.innerHTML = `<div class="empty-state" style="grid-column:1/-1;color:var(--red);">⚠ Erro ao carregar campanhas. Verifique as regras do Firestore.</div>`;
+    }
+}
+
+// ══ ABRIR CAMPANHA ══
+window.abrirCampanha = async function(id) {
+    campanhaAtual = id;
+    document.getElementById('view-lista').style.display = 'none';
+    document.getElementById('view-detalhe').classList.add('show');
+
+    // Cancela listeners anteriores
+    unsubListeners.forEach(u => u());
+    unsubListeners = [];
+
+    // Carrega dados da campanha
+    const snap = await getDoc(doc(db, 'campanhas', id));
+    if (!snap.exists()) { mostrarToast('⚠ Campanha não encontrada'); voltarLista(); return; }
+    const camp = snap.data();
+
+    document.getElementById('camp-header-nome').textContent = camp.nome;
+    document.getElementById('camp-header-desc').textContent = camp.descricao || '';
+
+    const isMestre = camp.mestreUid === currentUser.uid;
+    document.getElementById('btn-bar-mestre').style.display = isMestre ? 'flex' : 'none';
+    document.getElementById('btn-bar-jogador').style.display = isMestre ? 'none' : 'flex';
+
+    // Listener em tempo real — Agentes
+    const unsubA = onSnapshot(collection(db, 'campanhas', id, 'agentes'), snap => {
+        renderAgentes(snap.docs.map(d => ({ id: d.id, ...d.data() })), isMestre);
+    });
+    // Listener em tempo real — Jogadores
+    const unsubJ = onSnapshot(collection(db, 'campanhas', id, 'jogadores'), snap => {
+        renderJogadores(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+    unsubListeners.push(unsubA, unsubJ);
+};
+
+// ══ RENDER AGENTES ══
+function renderAgentes(agentes, isMestre) {
+    const el = document.getElementById('lista-agentes-camp');
+    if (agentes.length === 0) {
+        el.innerHTML = `<div class="empty-state"><div class="icon">👤</div><div>Nenhum agente na campanha ainda.</div></div>`;
+        return;
+    }
+    el.innerHTML = agentes.map(a => `
+        <div class="agente-camp-card">
+            <img class="agente-camp-foto" src="${a.foto || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(a.nome)}`}" alt="${a.nome}">
+            <div class="agente-camp-info">
+                <div class="agente-camp-nome">${a.nome}${a.codinome ? ` <span style="color:#555;font-size:0.75rem">"${a.codinome}"</span>` : ''}</div>
+                <div class="agente-camp-meta">${a.classe || '—'} • ${a.origem || '—'} • Nível ${a.nivel || 1}</div>
+                <div class="agente-camp-player">▸ ${a.playerNome || 'Jogador'} ${a.playerUid === currentUser.uid ? '(você)' : ''}</div>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <a href="ficha.html?id=${a.fichaLocalId}&campanha=${campanhaAtual}" style="background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:4px;text-decoration:none;transition:0.2s;" onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">Ver Ficha</a>
+                ${(isMestre || a.playerUid === currentUser.uid) ? `<button onclick="removerAgente('${a.id}')" style="background:none;border:none;color:#444;cursor:pointer;font-size:0.85rem;" title="Remover" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#444'">🗑</button>` : ''}
+            </div>
+        </div>`).join('');
+}
+
+// ══ RENDER JOGADORES ══
+function renderJogadores(jogadores) {
+    const el = document.getElementById('lista-jogadores-camp');
+    if (jogadores.length === 0) {
+        el.innerHTML = `<div class="empty-state"><div class="icon">👥</div><div>Nenhum jogador ainda.</div></div>`;
+        return;
+    }
+    el.innerHTML = jogadores.map(j => `
+        <div class="jogador-row">
+            <div>
+                <div class="jogador-nome">${j.nome || 'Agente Anônimo'}</div>
+                <div class="jogador-meta">UID: ${j.uid?.slice(0,12)}... • Entrou: ${j.entradoEm?.toDate ? j.entradoEm.toDate().toLocaleDateString('pt-BR') : '—'}</div>
+            </div>
+            <span class="jogador-badge ${j.papel || 'jogador'}">${j.papel === 'mestre' ? '★ MESTRE' : '◆ JOGADOR'}</span>
+        </div>`).join('');
+}
+
+// ══ CRIAR CAMPANHA ══
+window.criarCampanha = async function() {
+    const nome = document.getElementById('criar-nome').value.trim();
+    const desc = document.getElementById('criar-desc').value.trim();
+    if (!nome) { mostrarToast('⚠ Informe o nome da campanha'); return; }
+
+    try {
+        const ref = await addDoc(collection(db, 'campanhas'), {
+            nome, descricao: desc,
+            mestreUid: currentUser.uid,
+            jogadoresUids: [currentUser.uid],
+            criadoEm: serverTimestamp(),
+        });
+
+        // Adiciona mestre como jogador
+        await setDoc(doc(db, 'campanhas', ref.id, 'jogadores', currentUser.uid), {
+            uid: currentUser.uid,
+            nome: getNomeLocal(),
+            papel: 'mestre',
+            entradoEm: serverTimestamp(),
+        });
+
+        fecharModal('modal-criar');
+        document.getElementById('criar-nome').value = '';
+        document.getElementById('criar-desc').value = '';
+        mostrarToast('✦ CAMPANHA CRIADA!');
+        await carregarCampanhas();
+        abrirCampanha(ref.id);
+    } catch(e) {
+        console.error(e);
+        mostrarToast('⚠ Erro ao criar campanha');
+    }
+};
+
+// ══ PROCESSAR CONVITE ══
+async function processarConvite(campanhaId) {
+    try {
+        const snap = await getDoc(doc(db, 'campanhas', campanhaId));
+        if (!snap.exists()) { mostrarToast('⚠ Campanha não encontrada'); return; }
+        const camp = snap.data();
+
+        // Já é membro?
+        if (camp.jogadoresUids?.includes(currentUser.uid)) {
+            mostrarToast('✦ Você já está nesta campanha!');
+            setTimeout(() => abrirCampanha(campanhaId), 500);
+            return;
+        }
+
+        // Adiciona como jogador
+        await updateDoc(doc(db, 'campanhas', campanhaId), {
+            jogadoresUids: arrayUnion(currentUser.uid)
+        });
+        await setDoc(doc(db, 'campanhas', campanhaId, 'jogadores', currentUser.uid), {
+            uid: currentUser.uid,
+            nome: getNomeLocal(),
+            papel: 'jogador',
+            entradoEm: serverTimestamp(),
+        });
+
+        mostrarToast(`✦ ENTROU EM: ${camp.nome}`);
+        // Limpa a URL
+        window.history.replaceState({}, '', 'campanhas.html');
+        setTimeout(() => abrirCampanha(campanhaId), 800);
+    } catch(e) {
+        console.error(e);
+        mostrarToast('⚠ Erro ao entrar na campanha');
+    }
+}
+
+// ══ ENTRAR COM CÓDIGO/LINK ══
+window.entrarCampanha = async function() {
+    let valor = document.getElementById('entrar-codigo').value.trim();
+    if (!valor) { mostrarToast('⚠ Cole o link ou código'); return; }
+
+    // Extrai ID do link ou usa como ID direto
+    let campanhaId = valor;
+    try {
+        const url = new URL(valor);
+        campanhaId = url.searchParams.get('convite') || valor;
+    } catch(e) { /* não é URL, usa como ID */ }
+
+    fecharModal('modal-entrar');
+    document.getElementById('entrar-codigo').value = '';
+    await processarConvite(campanhaId);
+};
+
+// ══ COPIAR CONVITE ══
+window.copiarConvite = function() {
+    if (!campanhaAtual) return;
+    const base = window.location.origin + window.location.pathname;
+    const link = `${base}?convite=${campanhaAtual}`;
+    navigator.clipboard.writeText(link).then(() => mostrarToast('🔗 LINK COPIADO!'));
+};
+
+// ══ VINCULAR AGENTE ══
+window.abrirModalVincularAgente = function() {
+    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    const lista   = document.getElementById('lista-agentes-locais');
+    agentesSelecionados.clear();
+
+    if (agentes.length === 0) {
+        lista.innerHTML = `<div class="empty-state"><div class="icon">👤</div><div>Nenhum agente local encontrado.<br><a href="criar.html" style="color:var(--purple-neon);">Crie um agente primeiro!</a></div></div>`;
+    } else {
+        lista.innerHTML = agentes.map((a, i) => {
+            const foto = a.fotoCostum || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(a.nome)}`;
+            return `<div class="agente-select-item" id="sel-${i}" onclick="toggleSelecionarAgente(${i})">
+                <img src="${foto}" alt="${a.nome}">
+                <div>
+                    <div style="font-size:0.85rem;font-weight:700;">${a.nome}</div>
+                    <div style="font-size:0.65rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">${a.classe} • ${a.origem}</div>
+                </div>
+                <div class="check-circle" id="check-${i}"></div>
+            </div>`;
+        }).join('');
+    }
+    document.getElementById('modal-vincular').classList.add('show');
+};
+
+window.toggleSelecionarAgente = function(i) {
+    const el = document.getElementById(`sel-${i}`);
+    const ch = document.getElementById(`check-${i}`);
+    if (agentesSelecionados.has(i)) {
+        agentesSelecionados.delete(i);
+        el.classList.remove('selected');
+        ch.textContent = '';
+    } else {
+        agentesSelecionados.add(i);
+        el.classList.add('selected');
+        ch.textContent = '✓';
+    }
+};
+
+window.vincularAgentes = async function() {
+    if (agentesSelecionados.size === 0) { mostrarToast('⚠ Selecione ao menos um agente'); return; }
+    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    const playerNome = getNomeLocal();
+
+    try {
+        for (const i of agentesSelecionados) {
+            const a = agentes[i];
+            const foto = a.fotoCostum || null;
+            await setDoc(doc(db, 'campanhas', campanhaAtual, 'agentes', `${currentUser.uid}_${a.id}`), {
+                fichaLocalId: a.id,
+                playerUid: currentUser.uid,
+                playerNome,
+                nome: a.nome,
+                codinome: a.codinome || '',
+                classe: a.classe || '',
+                origem: a.origem || '',
+                nivel: a.nivel || 1,
+                foto: foto || '',
+                adicionadoEm: serverTimestamp(),
+            });
+        }
+        fecharModal('modal-vincular');
+        mostrarToast(`✦ ${agentesSelecionados.size} AGENTE(S) ADICIONADO(S)!`);
+    } catch(e) {
+        console.error(e);
+        mostrarToast('⚠ Erro ao vincular agentes');
+    }
+};
+
+// ══ REMOVER AGENTE ══
+window.removerAgente = async function(agenteDocId) {
+    if (!confirm('Remover este agente da campanha?')) return;
+    try {
+        await deleteDoc(doc(db, 'campanhas', campanhaAtual, 'agentes', agenteDocId));
+        mostrarToast('🗑 AGENTE REMOVIDO');
+    } catch(e) { mostrarToast('⚠ Erro ao remover agente'); }
+};
+
+// ══ EDITAR CAMPANHA ══
+window.abrirModalEditarCamp = async function() {
+    const snap = await getDoc(doc(db, 'campanhas', campanhaAtual));
+    if (!snap.exists()) return;
+    const c = snap.data();
+    document.getElementById('editar-nome').value = c.nome;
+    document.getElementById('editar-desc').value = c.descricao || '';
+    document.getElementById('modal-editar').classList.add('show');
+};
+
+window.salvarEdicaoCamp = async function() {
+    const nome = document.getElementById('editar-nome').value.trim();
+    const desc = document.getElementById('editar-desc').value.trim();
+    if (!nome) { mostrarToast('⚠ Nome é obrigatório'); return; }
+    try {
+        await updateDoc(doc(db, 'campanhas', campanhaAtual), { nome, descricao: desc });
+        document.getElementById('camp-header-nome').textContent = nome;
+        document.getElementById('camp-header-desc').textContent = desc;
+        fecharModal('modal-editar');
+        mostrarToast('✦ CAMPANHA ATUALIZADA');
+    } catch(e) { mostrarToast('⚠ Erro ao salvar'); }
+};
+
+// ══ DELETAR CAMPANHA ══
+window.deletarCampanha = async function() {
+    if (!confirm('Encerrar esta campanha permanentemente? Esta ação não pode ser desfeita.')) return;
+    try {
+        await deleteDoc(doc(db, 'campanhas', campanhaAtual));
+        mostrarToast('🗑 CAMPANHA ENCERRADA');
+        voltarLista();
+    } catch(e) { mostrarToast('⚠ Erro ao encerrar campanha'); }
+};
+
+// ══ SAIR DA CAMPANHA ══
+window.sairCampanha = async function() {
+    if (!confirm('Sair desta campanha?')) return;
+    try {
+        await updateDoc(doc(db, 'campanhas', campanhaAtual), {
+            jogadoresUids: arrayRemove(currentUser.uid)
+        });
+        await deleteDoc(doc(db, 'campanhas', campanhaAtual, 'jogadores', currentUser.uid));
+        mostrarToast('🚪 SAIU DA CAMPANHA');
+        voltarLista();
+    } catch(e) { mostrarToast('⚠ Erro ao sair da campanha'); }
+};
+
+// ══ UTILITÁRIOS ══
+function getNomeLocal() {
+    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    return agentes[0]?.nome || `Agente_${currentUser.uid.slice(0,6)}`;
+}
+
+window.voltarLista = function() {
+    unsubListeners.forEach(u => u());
+    unsubListeners = [];
+    campanhaAtual = null;
+    document.getElementById('view-detalhe').classList.remove('show');
+    document.getElementById('view-lista').style.display = 'block';
+    carregarCampanhas();
+};
+
+window.trocarAba = function(nome, btn) {
+    document.querySelectorAll('.aba-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`aba-${nome}`).classList.add('active');
+    btn.classList.add('active');
+};
+
+window.abrirModalCriar   = () => document.getElementById('modal-criar').classList.add('show');
+window.abrirModalEntrar  = () => document.getElementById('modal-entrar').classList.add('show');
+window.fecharModal       = (id) => document.getElementById(id).classList.remove('show');
+
+function mostrarToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// Fecha modal clicando fora
+document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

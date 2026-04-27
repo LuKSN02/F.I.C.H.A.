@@ -12,138 +12,73 @@
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
 
     body {
-    font-family: 'Oswald', sans-serif;
-    background: linear-gradient(135deg, #1a0033 0%, #000000 100%);
-    background-attachment: fixed;
-    color: white;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-#secao-inicio,
-#secao-agentes {
-    flex: 1;
-}
+        font-family: 'Oswald', sans-serif;
+        background: linear-gradient(135deg, #1a0033 0%, #000000 100%);
+        background-attachment: fixed;
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    #secao-inicio, #secao-agentes { flex: 1; }
 
     .titulo-destaque {
         border-bottom: 5px solid #8a2be2;
         padding-bottom: 5px;
         text-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
     }
-
-    .text-purple-neon {
-        color: #bc6ff1;
-        text-shadow: 0 0 10px rgba(188, 111, 241, 0.8);
-    }
-
+    .text-purple-neon { color: #bc6ff1; text-shadow: 0 0 10px rgba(188, 111, 241, 0.8); }
     .navbar-brand { font-weight: 700; }
     .nav-link { font-weight: 700; }
     .custom-nav { background-color: black; border-bottom: 2px solid #333; }
     .nav-link:hover { color: #ff0000 !important; }
-
     .text-purple { color: #8a2be2; }
     .border-purple { border: 3px solid #3a0063; }
 
     .btn-criar-ficha {
-        display: inline-block;
-        padding: 12px 40px;
-        border: 2px solid #8a2be2;
-        color: white;
-        text-decoration: none;
-        font-size: 1.5rem;
-        font-weight: 700;
-        border-radius: 5px;
-        transition: 0.3s;
-        background-color: rgba(0, 0, 0, 0.5);
+        display: inline-block; padding: 12px 40px;
+        border: 2px solid #8a2be2; color: white; text-decoration: none;
+        font-size: 1.5rem; font-weight: 700; border-radius: 5px;
+        transition: 0.3s; background-color: rgba(0,0,0,0.5);
     }
-
-    .btn-criar-ficha:hover {
-        background-color: #8a2be2;
-        color: white;
-        box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
-    }
+    .btn-criar-ficha:hover { background-color: #8a2be2; color: white; box-shadow: 0 0 20px rgba(138,43,226,0.6); }
 
     .card-agente {
-        background-color: #161616;
-        border: 1px solid #333;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-        transition: 0.3s;
+        background-color: #161616; border: 1px solid #333; border-radius: 10px;
+        display: flex; align-items: center; overflow: hidden; transition: 0.3s;
     }
-
-    .card-agente:hover {
-        transform: translateY(-8px);
-        border-color: #8a2be2;
-        box-shadow: 0 10px 20px rgba(138, 43, 226, 0.2);
-    }
-
-    .img-agente {
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border-right: 1px solid #333;
-        background-color: #222;
-        flex-shrink: 0;
-    }
-
+    .card-agente:hover { transform: translateY(-8px); border-color: #8a2be2; box-shadow: 0 10px 20px rgba(138,43,226,0.2); }
+    .img-agente { width: 120px; height: 120px; object-fit: cover; border-right: 1px solid #333; background-color: #222; flex-shrink: 0; }
     .card-body { flex: 1; }
 
     .btn-acessar {
-        background-color: #8a2be2;
-        color: white;
-        font-size: 0.9rem;
-        font-weight: bold;
-        border: none;
-        padding: 5px 15px;
-        border-radius: 4px;
-        transition: 0.3s;
-        text-decoration: none;
-        display: inline-block;
+        background-color: #8a2be2; color: white; font-size: 0.9rem; font-weight: bold;
+        border: none; padding: 5px 15px; border-radius: 4px; transition: 0.3s;
+        text-decoration: none; display: inline-block;
     }
-
-    .btn-acessar:hover {
-        background-color: #bc6ff1;
-        color: white;
-    }
+    .btn-acessar:hover { background-color: #bc6ff1; color: white; }
 
     .footer-link { color: #888; text-decoration: none; display: block; margin-bottom: 4px; }
     .footer-link:hover { color: #bc6ff1; }
-
-    body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-#secao-inicio,
-#secao-agentes {
-    flex: 1;
-}
 </style>
 
 <body>
-
     <nav class="navbar navbar-expand-lg custom-nav navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand fs-2" href="#" onclick="mostrarInicio()">
                 <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="72" height="72" class="d-inline-block align-text-center">
                 F.I.C.H.A.
             </a>
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <div class="navbar-nav">
                     <a class="nav-link px-3" href="#" onclick="mostrarAgentes()">Agentes</a>
-                    <a class="nav-link px-3" href="#">Campanhas</a>
+                    <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
                     <a class="nav-link px-3" href="#">Homebrew</a>
                 </div>
             </div>
-
             <div class="d-none d-lg-flex" style="width: 200px;"></div>
         </div>
     </nav>
@@ -173,7 +108,6 @@
             <h2 class="text-white display-5 fw-bold mb-0">Agentes: <span id="contador" class="text-purple-neon">0</span></h2>
             <a href="criar.html" class="btn btn-outline-light px-4 py-2">Novo Agente</a>
         </div>
-
         <div id="lista-agentes" class="row g-4"></div>
     </section>
 
@@ -187,22 +121,18 @@
                     </a>
                     <p class="text-secondary mt-3">Sistema de auxílio para agentes de elite em missões paranormais.</p>
                 </div>
-
                 <div class="col-md-4 text-center">
                     <h5 class="text-purple-neon mb-3">Links</h5>
                     <ul class="list-unstyled">
                         <li><a href="#" class="footer-link" onclick="mostrarAgentes()">Agentes</a></li>
                         <li><a href="#" class="footer-link" onclick="mostrarInicio()">Início</a></li>
-                        <li><a href="#" class="footer-link">Sobre o Sistema</a></li>
+                        <li><a href="campanhas.html" class="footer-link">Campanhas</a></li>
                         <li><a href="#" class="footer-link">Suporte</a></li>
                     </ul>
                 </div>
-
                 <div class="col-md-4 text-center text-md-end">
                     <p class="text-secondary small">© 2026 F.I.C.H.A. – Inspirado no universo de Ordem Paranormal.</p>
-                    <div class="mt-2">
-                        <span class="text-purple-neon fw-bold">O MEDO É REAL.</span>
-                    </div>
+                    <div class="mt-2"><span class="text-purple-neon fw-bold">O MEDO É REAL.</span></div>
                 </div>
             </div>
             <hr class="border-secondary mt-4">
@@ -213,11 +143,8 @@
     <script>
         window.onload = function () {
             const params = new URLSearchParams(window.location.search);
-            if (params.get('view') === 'agentes') {
-                mostrarAgentes();
-            } else {
-                carregarAgentes();
-            }
+            if (params.get('view') === 'agentes') mostrarAgentes();
+            else carregarAgentes();
         };
 
         function mostrarAgentes() {
@@ -248,9 +175,7 @@
             }
 
             lista.innerHTML = '';
-
             agentes.forEach((agente, index) => {
-                // Foto: usa customizada se existir, senão usa o estado salvo, senão DiceBear
                 let fotoSrc = agente.fotoCostum;
                 if (!fotoSrc) {
                     const estadoSalvo = localStorage.getItem(`estado_ficha_${agente.id}`);
@@ -259,11 +184,9 @@
                         fotoSrc = est.fotoCostum || null;
                     }
                 }
-                if (!fotoSrc) {
-                    fotoSrc = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(agente.nome)}`;
-                }
+                if (!fotoSrc) fotoSrc = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(agente.nome)}`;
 
-                const cardHtml = `
+                lista.innerHTML += `
                     <div class="col-md-6 col-lg-4">
                         <div class="card-agente">
                             <img src="${fotoSrc}" class="img-agente" alt="${agente.nome}">
@@ -278,7 +201,6 @@
                             </div>
                         </div>
                     </div>`;
-                lista.innerHTML += cardHtml;
             });
         }
 
@@ -286,9 +208,7 @@
             if (!confirm('Remover este agente? Esta ação não pode ser desfeita.')) return;
             const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
             const agente  = agentes[index];
-            if (agente && agente.id) {
-                localStorage.removeItem(`estado_ficha_${agente.id}`);
-            }
+            if (agente?.id) localStorage.removeItem(`estado_ficha_${agente.id}`);
             agentes.splice(index, 1);
             localStorage.setItem('lista_agentes', JSON.stringify(agentes));
             carregarAgentes();
