@@ -34,7 +34,6 @@
         }
         .custom-nav { background: black; border-bottom: 2px solid #222; }
 
-        /* badge somente leitura */
         .readonly-badge {
             display: inline-flex; align-items: center; gap: 6px;
             background: #1a0010; border: 1px solid #440020;
@@ -54,8 +53,21 @@
         .col-esquerda { display: flex; flex-direction: column; gap: 12px; }
         .card-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
 
-        .foto-wrapper { width: 72px; height: 72px; border-radius: 8px; border: 2px solid var(--purple); overflow: hidden; flex-shrink: 0; }
+        /* FOTO CLICÁVEL */
+        .foto-wrapper {
+            width: 72px; height: 72px; border-radius: 8px;
+            border: 2px solid var(--purple); overflow: hidden;
+            flex-shrink: 0; position: relative; cursor: pointer;
+        }
         .foto-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .foto-overlay {
+            position: absolute; inset: 0;
+            background: rgba(138,43,226,0.75);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s;
+            font-size: 1.3rem; pointer-events: none;
+        }
+        .foto-wrapper:hover .foto-overlay { opacity: 1; }
 
         .label-field { font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 2px; }
         .value-field { font-size: 0.95rem; font-weight: 600; color: white; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px; }
@@ -181,8 +193,13 @@
                 <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
             </div>
         </div>
+        <!-- ✅ NAV: botão Portrait + Voltar -->
         <div class="d-none d-lg-flex pe-3 gap-2 align-items-center">
             <span class="readonly-badge">👁 SOMENTE LEITURA</span>
+            <a id="btn-portrait-view" href="#" class="btn-voltar"
+               style="border-color:var(--purple);color:var(--purple-neon);" target="_blank">
+                🎭 Portrait
+            </a>
             <a id="btn-voltar-camp" href="campanhas.html" class="btn-voltar">← Voltar</a>
         </div>
     </div>
@@ -194,8 +211,10 @@
         <!-- Personagem -->
         <div class="card-box">
             <div class="d-flex gap-3 mb-3">
-                <div class="foto-wrapper">
+                <!-- ✅ FOTO: clicável para abrir portrait -->
+                <div class="foto-wrapper" onclick="abrirPortrait()" title="Ver Portrait">
                     <img id="foto-agente" src="" alt="Foto">
+                    <div class="foto-overlay">🎭</div>
                 </div>
                 <div style="flex:1">
                     <div class="label-field">Personagem</div>
@@ -312,7 +331,6 @@
         <!-- ABA INVENTÁRIO -->
         <div class="aba-panel card-box" id="aba-inventario">
             <div class="sec-title">Inventário</div>
-            <!-- Stats do inventário -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;" id="inv-stats-view"></div>
             <div id="lista-inventario"></div>
         </div>
@@ -365,26 +383,24 @@ const INV_CAT_LABELS = {
 
 // Lê parâmetros da URL
 const params     = new URLSearchParams(window.location.search);
-const agenteDoc  = params.get('agenteDoc');  // ID do doc na subcoleção agentes da campanha
+const agenteDoc  = params.get('agenteDoc');
 const campanhaId = params.get('campanha');
-const fichaId    = params.get('fichaId');    // ID direto da ficha no Realtime DB (alternativo)
+const fichaId    = params.get('fichaId');
 
 // Botão voltar
 const btnVoltar = document.getElementById('btn-voltar-camp');
 if (campanhaId) btnVoltar.href = `campanhas.html`;
 
+// ✅ Função global para abrir portrait (usada pelo onclick da foto)
+window.abrirPortrait = function() {
+    if (window._portraitUrl) window.open(window._portraitUrl, '_blank');
+};
+
 async function init() {
     try {
-        // Carrega o estado da ficha do Realtime Database
-        // A ficha é salva em fichas/{fichaId}/estado pelo salvarEstado() do ficha.html
         let fichaIdFinal = fichaId;
 
-        // Se veio pelo agenteDoc, primeiro precisamos descobrir o fichaLocalId
-        // Ele está salvo no Firestore na subcoleção agentes, mas aqui usamos o Realtime DB
-        // O fichaLocalId é o ID da ficha no localStorage do dono — também é o ID no Realtime DB
-        // O agenteDoc tem formato: {uid}_{fichaLocalId}
         if (!fichaIdFinal && agenteDoc) {
-            // Extrai o fichaLocalId do agenteDoc (parte após o primeiro _)
             const parts = agenteDoc.split('_');
             parts.shift(); // remove o UID
             fichaIdFinal = parts.join('_');
@@ -395,9 +411,14 @@ async function init() {
             return;
         }
 
-        // Carrega agente base (dados do perfil)
+        // ✅ Configura links do portrait DENTRO do init(), onde fichaIdFinal existe
+        const portraitUrl = `portrait.html?id=${fichaIdFinal}`;
+        window._portraitUrl = portraitUrl;
+        const btnPortrait = document.getElementById('btn-portrait-view');
+        if (btnPortrait) btnPortrait.href = portraitUrl;
+
+        // Carrega dados do Firebase
         const agenteSnap = await get(ref(db, `agentes/${fichaIdFinal}`));
-        // Carrega estado completo da ficha
         const estadoSnap = await get(ref(db, `fichas/${fichaIdFinal}/estado`));
 
         if (!estadoSnap.exists()) {
@@ -419,7 +440,6 @@ async function init() {
 }
 
 function renderFicha(agente, estado) {
-    // Cabeçalho
     const nome = agente.nome || '—';
     const codinome = agente.codinome ? ` "${agente.codinome}"` : '';
     document.getElementById('display-nome').textContent   = nome + codinome;
@@ -428,12 +448,10 @@ function renderFicha(agente, estado) {
     document.getElementById('display-player').textContent = agente.fotoCostum ? '' : '—';
     document.title = `F.I.C.H.A. – ${nome} (visão)`;
 
-    // Foto
     const fotoSrc = estado.fotoCostum || agente.fotoCostum ||
         `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(nome)}`;
     document.getElementById('foto-agente').src = fotoSrc;
 
-    // Atributos
     const atribs = agente.atributos || {};
     ['FOR','AGI','INT','PRE','VIG'].forEach(a => {
         const v = atribs[a] ?? 0;
@@ -441,13 +459,11 @@ function renderFicha(agente, estado) {
     });
     desenharRadar(atribs);
 
-    // NEX / PE / Deslocamento
     const prog = estado.progressao || {};
     document.getElementById('nex-val').textContent  = prog.nex  || '5%';
     document.getElementById('pe-val').textContent   = prog.pe   || '3';
     document.getElementById('desl-val').textContent = prog.desl || '9m';
 
-    // Recursos
     const vida = estado.vida || { atual:0, max:0 };
     const san  = estado.san  || { atual:0, max:0 };
     const esf  = estado.esf  || { atual:0, max:0 };
@@ -461,25 +477,15 @@ function renderFicha(agente, estado) {
     document.getElementById('barra-san').style.width     = pct(san.atual,  san.max);
     document.getElementById('barra-esforco').style.width = pct(esf.atual,  esf.max);
 
-    // Defesa
     const agi = atribs.AGI || 0;
-    document.getElementById('defesa-val').textContent  = 10 + agi;
-    document.getElementById('esquiva-val').textContent = 10 + agi;
+    document.getElementById('defesa-val').textContent   = 10 + agi;
+    document.getElementById('esquiva-val').textContent  = 10 + agi;
     document.getElementById('bloqueio-val').textContent = 0;
 
-    // Perícias
     renderPericias(atribs, estado.pericias || {});
-
-    // Habilidades
     renderHabilidades(estado.habilidadesPersonagem || []);
-
-    // Rituais
     renderRituais(estado.rituaisPersonagem || []);
-
-    // Inventário
     renderInventario(estado.inventario || [], estado.invStats || {});
-
-    // Descrição
     renderDescricao(estado.descricao || {});
 }
 
@@ -557,7 +563,6 @@ function renderRituais(rituais) {
 }
 
 function renderInventario(itens, invStats) {
-    // Stats
     const statsEl = document.getElementById('inv-stats-view');
     statsEl.innerHTML = `
         <div style="background:#0d0010;border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;">
