@@ -341,24 +341,45 @@
             <select class="form-select" id="input-origem">
                 <option value="">Selecione...</option>
                 <optgroup label="── Livro Base ──">
-                    <option>Acadêmica</option><option>Amnésia</option><option>Artificial</option>
-                    <option>Celebridade</option><option>Chefão do Crime</option><option>Científica</option>
-                    <option>Construto</option><option>Criminosa</option><option>Executivo</option>
-                    <option>Imigrante</option><option>Indígena</option><option>Investigador</option>
-                    <option>Lutador</option><option>Médica</option><option>Militar</option>
-                    <option>Nobre</option><option>Ocultista</option><option>Periférica</option>
-                    <option>Policial</option><option>Riqueza</option><option>Religiosa</option>
-                    <option>Sem-Teto</option><option>Showbusiness</option><option>Supersticiosa</option>
-                </optgroup>
-                <optgroup label="── Suplementos ──">
-                    <option>Agente de Campo</option><option>Artista Marcial</option><option>Caçador</option>
-                    <option>Contrabandista</option><option>Cultista Arrependido</option><option>Espiã</option>
-                    <option>Ex-Cultista</option><option>Especialista em TI</option><option>Fazendeiro</option>
-                    <option>Filho da Rua</option><option>Hacker</option><option>Jornalista</option>
-                    <option>Médico de Guerra</option><option>Mercenária</option><option>Nerd</option>
-                    <option>Operário</option><option>Parapsicóloga</option><option>Pescador</option>
-                    <option>Piloto</option><option>Protetor</option><option>Técnico</option>
-                    <option>Veterinário</option><option>Viajante</option>
+<option>Acadêmica</option><option>Amnésia</option><option>Artificial</option>
+<option>Celebridade</option><option>Chefão do Crime</option><option>Científica</option>
+<option>Construto</option><option>Criminosa</option><option>Executivo</option>
+<option>Imigrante</option><option>Indígena</option><option>Investigador</option>
+<option>Lutador</option><option>Médica</option><option>Militar</option>
+<option>Nobre</option><option>Ocultista</option><option>Periférica</option>
+<option>Policial</option><option>Riqueza</option><option>Religiosa</option>
+<option>Sem-Teto</option><option>Showbusiness</option><option>Supersticiosa</option>
+</optgroup>
+<optgroup label="── Livro Base (extras) ──">
+    <option>Agente de Saúde</option><option>Artista</option><option>Atleta</option>
+    <option>Chef</option><option>Cultista Arrependido</option><option>Desgarrado</option>
+    <option>Engenheiro</option><option>Magnata</option><option>Mercenário</option>
+    <option>Servidor Público</option><option>T.I.</option><option>Teórico da Conspiração</option>
+    <option>Trabalhador Rural</option><option>Trambiqueiro</option><option>Universitário</option>
+    <option>Vítima</option>
+</optgroup>
+<optgroup label="── Suplementos ──">
+    <option>Agente de Campo</option><option>Artista Marcial</option><option>Caçador</option>
+    <option>Contrabandista</option><option>Cultista Arrependido</option><option>Espiã</option>
+    <option>Ex-Cultista</option><option>Especialista em TI</option><option>Fazendeiro</option>
+    <option>Filho da Rua</option><option>Hacker</option><option>Jornalista</option>
+    <option>Médico de Guerra</option><option>Mercenária</option><option>Nerd</option>
+    <option>Operário</option><option>Parapsicóloga</option><option>Pescador</option>
+    <option>Piloto</option><option>Protetor</option><option>Técnico</option>
+    <option>Veterinário</option><option>Viajante</option>
+</optgroup>
+<optgroup label="── Arquivos Secretos ──">
+    <option>Ferido por Ritual</option><option>Transtornado Arrependido</option>
+</optgroup>
+<optgroup label="── Sobrevivendo ao Horror ──">
+    <option>Amigo dos Animais</option><option>Astronauta</option><option>Chef do Outro Lado</option>
+    <option>Colegial</option><option>Cosplayer</option><option>Diplomata</option>
+    <option>Explorador</option><option>Experimento</option><option>Fanático por Criaturas</option>
+    <option>Fotógrafo</option><option>Inventor Paranormal</option><option>Jovem Místico</option>
+    <option>Legista do Turno da Noite</option><option>Mateiro</option><option>Mergulhador</option>
+    <option>Motorista</option><option>Nerd Entusiasta</option><option>Profetizado</option>
+    <option>Psicólogo</option><option>Repórter Investigativo</option>
+</optgroup>
                 </optgroup>
             </select>
             <div class="alerta-campo">⚠ Selecione uma origem</div>
@@ -571,6 +592,14 @@ const HABILIDADES_CLASSE = {
         { nome:'Conexões', desc:'Possui contatos em 3 áreas distintas que podem fornecer informações ou ajuda.' },
     ],
 };
+
+// ══════════════════════════════════════════════
+// PREFIXO DE USUÁRIO (mesmo que index.html)
+// ══════════════════════════════════════════════
+function getPrefix() {
+    const user = sessionStorage.getItem('ficha_user');
+    return user ? user + '_' : '';
+}
 
 // ══════════════════════════════════════════════
 // ESTADO
@@ -847,9 +876,10 @@ function finalizarFicha() {
         criadoEm:      new Date().toLocaleDateString('pt-BR'),
     };
 
-    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    const chave = getPrefix() + 'lista_agentes';
+    const agentes = JSON.parse(localStorage.getItem(chave)) || [];
     agentes.push(ficha);
-    localStorage.setItem('lista_agentes', JSON.stringify(agentes));
+    localStorage.setItem(chave, JSON.stringify(agentes));
 
     document.getElementById('modal-nome').textContent   = nome + (codinome ? ` "${codinome}"` : '');
     document.getElementById('modal-classe').textContent = `${classe} • Nível ${nivel} • ${origem}`;

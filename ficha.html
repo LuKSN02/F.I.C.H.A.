@@ -1648,6 +1648,14 @@ const HABILIDADES_DB = {
 
 
 // ══════════════════════════════════════════════
+// PREFIXO DE USUÁRIO (mesmo que index.html)
+// ══════════════════════════════════════════════
+function getPrefix() {
+    const user = sessionStorage.getItem('ficha_user');
+    return user ? user + '_' : '';
+}
+
+// ══════════════════════════════════════════════
 // ESTADO
 // ══════════════════════════════════════════════
 let ficha  = null;
@@ -1677,9 +1685,9 @@ window.onload = function() {
             document.getElementById('foto-agente').src = base64;
             estado.fotoCostum = base64;
             if (ficha) {
-                const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+                const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
                 const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-                if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem('lista_agentes', JSON.stringify(agentes)); }
+                if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
             }
             salvarEstado(); mostrarToast('📷 FOTO ATUALIZADA');
         };
@@ -1695,12 +1703,12 @@ window.onload = function() {
 function carregarFicha() {
     const params  = new URLSearchParams(window.location.search);
     const id      = params.get('id');
-    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
     if (id) ficha = agentes.find(a => String(a.id) === String(id));
     if (!ficha && agentes.length > 0) ficha = agentes[agentes.length - 1];
     if (!ficha) { document.getElementById('display-nome').textContent = 'Agente não encontrado'; return; }
 
-    const estadoSalvo = localStorage.getItem(`estado_ficha_${ficha.id}`);
+    const estadoSalvo = localStorage.getItem(getPrefix() + `estado_ficha_${ficha.id}`);
     if (estadoSalvo) {
         const parsed = JSON.parse(estadoSalvo);
         // Merge profundo para preservar os sub-objetos (vida, san, esf)
@@ -1966,7 +1974,7 @@ function salvarEstado() {
   if (!ficha) return;
 
   // Continua salvando local (fallback)
-  localStorage.setItem(`estado_ficha_${ficha.id}`, JSON.stringify(estado));
+  localStorage.setItem(getPrefix() + `estado_ficha_${ficha.id}`, JSON.stringify(estado));
 
   // Salva no Firebase
   if (window._firebaseDB) {
@@ -2207,9 +2215,9 @@ function salvarAtributos() {
         if (el) ficha.atributos[k] = Math.min(5, Math.max(-1, parseInt(el.value) || 0));
     });
     // Persistir no localStorage
-    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
     const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-    if (idx !== -1) { agentes[idx].atributos = ficha.atributos; localStorage.setItem('lista_agentes', JSON.stringify(agentes)); }
+    if (idx !== -1) { agentes[idx].atributos = ficha.atributos; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
     // Recalcular recursos derivados
     const vig = ficha.atributos.VIG || 0;
     const pre = ficha.atributos.PRE || 0;
