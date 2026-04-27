@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F.I.C.H.A. – Visualizar Agente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
+    <style>
+        :root {
+            --purple:      #8a2be2;
+            --purple-neon: #bc6ff1;
+            --purple-dark: #3a0063;
+            --purple-glow: rgba(138,43,226,0.45);
+            --red:         #e84040;
+            --red-dark:    #8b0000;
+            --blue:        #4a9eff;
+            --orange:      #ff8c00;
+            --green:       #39d353;
+            --yellow:      #ffd700;
+            --bg:          #0a000f;
+            --card:        #110018;
+            --border:      #2a0050;
+            --text-dim:    #888;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Oswald', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #000000 100%);
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+        }
+        .custom-nav { background: black; border-bottom: 2px solid #222; }
+
+        /* badge somente leitura */
+        .readonly-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #1a0010; border: 1px solid #440020;
+            color: #e84040; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
+            padding: 4px 12px; border-radius: 99px;
+        }
+
+        .ficha-wrapper {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 16px;
+            max-width: 1300px;
+            margin: 24px auto;
+            padding: 0 16px 60px;
+        }
+        .col-esquerda { display: flex; flex-direction: column; gap: 12px; }
+        .card-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+
+        .foto-wrapper { width: 72px; height: 72px; border-radius: 8px; border: 2px solid var(--purple); overflow: hidden; flex-shrink: 0; }
+        .foto-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .label-field { font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 2px; }
+        .value-field { font-size: 0.95rem; font-weight: 600; color: white; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px; }
+
+        /* radar */
+        .radar-container { position: relative; width: 220px; height: 220px; margin: 8px auto; }
+        #radar-svg { width: 100%; height: 100%; }
+        .atrib-bubble { position: absolute; display: flex; flex-direction: column; align-items: center; }
+        .atrib-label { font-size: 0.5rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+        .atrib-val { font-size: 1.3rem; font-weight: 700; color: white; line-height: 1; }
+        .bubble-FOR { top:44%; left:-2%; transform:translate(-50%,-50%); }
+        .bubble-AGI { top:13%; left:50%; transform:translate(-50%,-50%); }
+        .bubble-INT { top:44%; right:-2%; transform:translate(50%,-50%); }
+        .bubble-PRE { bottom:5%; left:30%; transform:translate(-50%,50%); }
+        .bubble-VIG { bottom:5%; right:30%; transform:translate(50%,50%); }
+        .bubble-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:0.55rem; letter-spacing:2px; color:var(--text-dim); text-align:center; text-transform:uppercase; }
+
+        /* recursos */
+        .recurso-row { display:flex; flex-direction:column; gap:4px; }
+        .recurso-header { display:flex; justify-content:space-between; font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; }
+        .recurso-val { font-family:'Share Tech Mono',monospace; }
+        .barra-track { height:18px; background:#1a0033; border-radius:4px; overflow:hidden; }
+        .barra-fill { height:100%; border-radius:4px; }
+        .barra-vida    { background:linear-gradient(90deg,var(--red-dark),var(--red)); }
+        .barra-san     { background:linear-gradient(90deg,#3a0080,var(--purple)); }
+        .barra-esforco { background:linear-gradient(90deg,#804000,var(--orange)); }
+
+        /* defesa */
+        .defesa-grid { display:grid; grid-template-columns:auto 1fr 1fr; gap:8px; align-items:center; }
+        .defesa-escudo { width:54px; height:62px; position:relative; display:flex; align-items:center; justify-content:center; }
+        .defesa-escudo svg { position:absolute; top:0; left:0; }
+        .defesa-num { position:relative; font-size:1.4rem; font-weight:700; z-index:1; }
+        .defesa-col { text-align:center; }
+        .defesa-col .val { font-size:1.1rem; font-weight:700; }
+        .defesa-col .lbl { font-size:0.55rem; letter-spacing:1px; color:var(--text-dim); text-transform:uppercase; }
+
+        /* nex row */
+        .nex-row { display:flex; gap:8px; width:100%; margin-top:8px; }
+        .nex-box { flex:1; background:#0d0010; border:1px solid var(--border); border-radius:6px; padding:6px 8px; text-align:center; }
+        .nex-box .val { font-size:1rem; font-weight:700; color:white; }
+        .nex-box .lbl { font-size:0.55rem; letter-spacing:1px; color:var(--text-dim); text-transform:uppercase; }
+
+        /* abas */
+        .abas { display:flex; gap:4px; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:6px; flex-wrap:wrap; }
+        .aba-btn { flex:1; background:transparent; border:1px solid transparent; color:var(--text-dim); font-family:'Oswald',sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:8px 4px; border-radius:6px; cursor:pointer; transition:0.2s; min-width:60px; }
+        .aba-btn:hover { color:white; background:#1a0033; }
+        .aba-btn.active { background:var(--purple-dark); border-color:var(--purple); color:var(--purple-neon); }
+        .aba-panel { display:none; }
+        .aba-panel.active { display:block; }
+
+        /* perícias */
+        .pericias-header { display:grid; grid-template-columns:1fr 50px 55px 55px 55px; padding:8px 16px; background:#0d0010; border-bottom:1px solid var(--border); font-size:0.6rem; letter-spacing:2px; color:var(--text-dim); text-transform:uppercase; text-align:center; }
+        .pericias-header div:first-child { text-align:left; }
+        .pericia-row { display:grid; grid-template-columns:1fr 50px 55px 55px 55px; padding:5px 16px; border-bottom:1px solid #150025; align-items:center; }
+        .pericia-nome-col { display:flex; align-items:center; gap:8px; }
+        .pericia-nome-txt { font-size:0.8rem; font-weight:600; }
+        .pericia-atrib-badge { font-size:0.6rem; font-family:'Share Tech Mono',monospace; background:#1a0033; color:var(--purple-neon); padding:1px 5px; border-radius:3px; }
+        .pericia-cell { text-align:center; font-family:'Share Tech Mono',monospace; font-size:0.8rem; }
+        .pericia-treinada { color:var(--green); font-weight:700; }
+        .treinada-dot { width:8px; height:8px; border-radius:50%; background:var(--purple); flex-shrink:0; }
+
+        /* habilidades */
+        .hab-card { background:#0d0010; border:1px solid var(--border); border-left:4px solid var(--purple); border-radius:6px; padding:12px 16px; margin-bottom:8px; }
+        .hab-nome { color:var(--purple-neon); font-weight:700; font-size:0.9rem; letter-spacing:1px; }
+        .hab-desc { color:#888; font-size:0.8rem; margin-top:4px; font-family:'Share Tech Mono',monospace; line-height:1.5; }
+        .hab-badge { font-size:0.58rem; letter-spacing:1px; text-transform:uppercase; padding:2px 7px; border-radius:99px; font-family:'Oswald',sans-serif; font-weight:700; }
+
+        /* rituais */
+        .ritual-card { background:#0d0010; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:6px; }
+        .ritual-card-hdr { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; }
+        .ritual-card-nome { font-size:0.9rem; font-weight:700; color:white; }
+        .ritual-badges { display:flex; gap:4px; flex-wrap:wrap; margin-top:4px; }
+        .rbadge { font-size:0.58rem; letter-spacing:1px; text-transform:uppercase; padding:2px 7px; border-radius:99px; font-family:'Oswald',sans-serif; font-weight:700; }
+        .rbadge-MORTE        { background:#1a0010; color:#e84040; border:1px solid #3a0020; }
+        .rbadge-SANGUE       { background:#200000; color:#ff5555; border:1px solid #440000; }
+        .rbadge-ENERGIA      { background:#00101a; color:#4a9eff; border:1px solid #003366; }
+        .rbadge-CONHECIMENTO { background:#1a0033; color:var(--purple-neon); border:1px solid #3a0063; }
+        .rbadge-MEDO         { background:#0d0800; color:var(--orange); border:1px solid #3a2000; }
+        .rbadge-DESCONHECIDO { background:#0d0d0d; color:#555; border:1px solid #222; }
+        .rbadge-src          { background:#0d0010; color:#555; border:1px solid #2a0040; }
+
+        /* inventário */
+        .inv-item { background:#0d0010; border:1px solid var(--border); border-radius:6px; padding:10px 14px; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; }
+        .inv-nome { font-size:0.85rem; font-weight:600; }
+        .inv-qtd  { font-size:0.75rem; font-family:'Share Tech Mono',monospace; color:var(--text-dim); }
+        .inv-cat  { font-size:0.58rem; letter-spacing:1px; text-transform:uppercase; padding:2px 7px; border-radius:99px; font-family:'Oswald',sans-serif; font-weight:700; margin-top:3px; display:inline-block; }
+        .inv-cat-ARMA       { background:#1a0010; color:#e84040; border:1px solid #3a0020; }
+        .inv-cat-MUNICAO    { background:#1a0f00; color:#ff8c00; border:1px solid #3a2000; }
+        .inv-cat-PROTECAO   { background:#001020; color:#4a9eff; border:1px solid #003366; }
+        .inv-cat-GERAL      { background:#0d0d0d; color:#888; border:1px solid #222; }
+        .inv-cat-ITEM_AMALD { background:#100020; color:#cc88ff; border:1px solid #3a0060; }
+
+        /* sec title */
+        .sec-title { font-size:0.7rem; letter-spacing:3px; text-transform:uppercase; color:var(--text-dim); border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:12px; }
+
+        /* loading */
+        #loading-screen { position:fixed; inset:0; background:#0a000f; display:flex; align-items:center; justify-content:center; z-index:9999; flex-direction:column; gap:16px; }
+        .loading-spinner { width:48px; height:48px; border:3px solid var(--border); border-top-color:var(--purple); border-radius:50%; animation:spin 0.8s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+
+        .btn-voltar { background:transparent; border:1px solid var(--border); color:var(--text-dim); font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:2px; padding:6px 16px; border-radius:4px; cursor:pointer; transition:0.2s; text-decoration:none; display:inline-block; }
+        .btn-voltar:hover { border-color:var(--purple); color:var(--purple-neon); }
+
+        @media (max-width:768px) { .ficha-wrapper { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+
+<div id="loading-screen">
+    <div class="loading-spinner"></div>
+    <div style="font-size:0.7rem;letter-spacing:3px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">CARREGANDO FICHA...</div>
+</div>
+
+<nav class="navbar navbar-expand-lg custom-nav navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand fs-2" href="index.html">
+            <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="52" height="52" class="d-inline-block align-text-center">
+            F.I.C.H.A.
+        </a>
+        <div class="collapse navbar-collapse justify-content-center">
+            <div class="navbar-nav">
+                <a class="nav-link px-3" href="index.html?view=agentes">Agentes</a>
+                <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
+            </div>
+        </div>
+        <div class="d-none d-lg-flex pe-3 gap-2 align-items-center">
+            <span class="readonly-badge">👁 SOMENTE LEITURA</span>
+            <a id="btn-voltar-camp" href="campanhas.html" class="btn-voltar">← Voltar</a>
+        </div>
+    </div>
+</nav>
+
+<div class="ficha-wrapper" id="ficha-wrapper" style="display:none;">
+    <!-- COLUNA ESQUERDA -->
+    <div class="col-esquerda">
+        <!-- Personagem -->
+        <div class="card-box">
+            <div class="d-flex gap-3 mb-3">
+                <div class="foto-wrapper">
+                    <img id="foto-agente" src="" alt="Foto">
+                </div>
+                <div style="flex:1">
+                    <div class="label-field">Personagem</div>
+                    <div class="value-field" id="display-nome">—</div>
+                    <div class="label-field">Jogador</div>
+                    <div style="color:var(--text-dim);font-size:0.85rem" id="display-player">—</div>
+                </div>
+            </div>
+            <div class="label-field">Origem</div>
+            <div class="value-field" id="display-origem">—</div>
+            <div class="label-field">Classe</div>
+            <div style="color:var(--purple-neon);font-size:0.95rem;font-weight:700;" id="display-classe">—</div>
+        </div>
+
+        <!-- Atributos -->
+        <div class="card-box" style="display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:0.65rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;align-self:flex-start;">Atributos</div>
+            <div class="radar-container">
+                <svg id="radar-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+                    <polygon id="radar-bg"  points="" fill="rgba(58,0,99,0.15)" stroke="#2a0050" stroke-width="1"/>
+                    <polygon id="radar-val" points="" fill="rgba(138,43,226,0.25)" stroke="#8a2be2" stroke-width="1.5"/>
+                    <g id="radar-axes" stroke="#2a0050" stroke-width="1" opacity="0.6"></g>
+                    <circle cx="110" cy="110" r="25"  fill="none" stroke="#2a0050" stroke-width="0.5" opacity="0.4"/>
+                    <circle cx="110" cy="110" r="50"  fill="none" stroke="#2a0050" stroke-width="0.5" opacity="0.4"/>
+                    <circle cx="110" cy="110" r="75"  fill="none" stroke="#2a0050" stroke-width="0.5" opacity="0.4"/>
+                    <circle cx="110" cy="110" r="90"  fill="none" stroke="#2a0050" stroke-width="0.5" opacity="0.3"/>
+                    <circle cx="110" cy="110" r="3" fill="#8a2be2" opacity="0.6"/>
+                </svg>
+                <div class="atrib-bubble bubble-FOR"><div class="atrib-label">FOR</div><div class="atrib-val" id="b-FOR">0</div></div>
+                <div class="atrib-bubble bubble-AGI"><div class="atrib-label">AGI</div><div class="atrib-val" id="b-AGI">0</div></div>
+                <div class="atrib-bubble bubble-INT"><div class="atrib-label">INT</div><div class="atrib-val" id="b-INT">0</div></div>
+                <div class="atrib-bubble bubble-PRE"><div class="atrib-label">PRE</div><div class="atrib-val" id="b-PRE">0</div></div>
+                <div class="atrib-bubble bubble-VIG"><div class="atrib-label">VIG</div><div class="atrib-val" id="b-VIG">0</div></div>
+                <div class="bubble-center">ATRIBUTOS</div>
+            </div>
+            <div class="nex-row">
+                <div class="nex-box"><div class="val" id="nex-val">5%</div><div class="lbl">NEX</div></div>
+                <div class="nex-box"><div class="val" id="pe-val">3</div><div class="lbl">PE/turno</div></div>
+                <div class="nex-box"><div class="val" id="desl-val">9m</div><div class="lbl">Deslocamento</div></div>
+            </div>
+        </div>
+
+        <!-- Recursos -->
+        <div class="card-box" style="display:flex;flex-direction:column;gap:10px;">
+            <div class="recurso-row">
+                <div class="recurso-header">
+                    <span style="color:#e84040;letter-spacing:2px;">VIDA</span>
+                    <span class="recurso-val"><span id="vida-atual">0</span> / <span id="vida-max">0</span></span>
+                </div>
+                <div class="barra-track"><div class="barra-fill barra-vida" id="barra-vida" style="width:100%"></div></div>
+            </div>
+            <div class="recurso-row">
+                <div class="recurso-header">
+                    <span style="color:var(--purple-neon);letter-spacing:2px;">SANIDADE</span>
+                    <span class="recurso-val"><span id="san-atual">0</span> / <span id="san-max">0</span></span>
+                </div>
+                <div class="barra-track"><div class="barra-fill barra-san" id="barra-san" style="width:100%"></div></div>
+            </div>
+            <div class="recurso-row">
+                <div class="recurso-header">
+                    <span style="color:var(--orange);letter-spacing:2px;">ESFORÇO</span>
+                    <span class="recurso-val"><span id="esf-atual">0</span> / <span id="esf-max">0</span></span>
+                </div>
+                <div class="barra-track"><div class="barra-fill barra-esforco" id="barra-esforco" style="width:100%"></div></div>
+            </div>
+        </div>
+
+        <!-- Defesa -->
+        <div class="card-box">
+            <div class="sec-title">Combate</div>
+            <div class="defesa-grid">
+                <div class="defesa-escudo">
+                    <svg width="54" height="62" viewBox="0 0 54 62" fill="none">
+                        <path d="M27 2L52 12V32C52 46 38 58 27 61C16 58 2 46 2 32V12L27 2Z" fill="#0d0010" stroke="#8a2be2" stroke-width="1.5"/>
+                    </svg>
+                    <div class="defesa-num" id="defesa-val">10</div>
+                </div>
+                <div class="defesa-col"><div class="val" id="bloqueio-val">0</div><div class="lbl">Bloqueio</div></div>
+                <div class="defesa-col"><div class="val" id="esquiva-val">10</div><div class="lbl">Esquiva</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COLUNA DIREITA -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="abas" id="abas-container">
+            <button class="aba-btn active" onclick="trocarAba('pericias',this)">Perícias</button>
+            <button class="aba-btn" onclick="trocarAba('habilidades',this)">Habilidades</button>
+            <button class="aba-btn" onclick="trocarAba('rituais',this)">Rituais</button>
+            <button class="aba-btn" onclick="trocarAba('inventario',this)">Inventário</button>
+            <button class="aba-btn" onclick="trocarAba('descricao',this)">Descrição</button>
+        </div>
+
+        <!-- ABA PERÍCIAS -->
+        <div class="aba-panel active card-box" id="aba-pericias" style="padding:0;overflow:hidden;">
+            <div class="pericias-header">
+                <div>Perícia</div><div>Atrib</div><div>Bônus</div><div>Treino</div><div>Outros</div>
+            </div>
+            <div id="lista-pericias"></div>
+        </div>
+
+        <!-- ABA HABILIDADES -->
+        <div class="aba-panel card-box" id="aba-habilidades">
+            <div class="sec-title">Habilidades & Poderes</div>
+            <div id="lista-habilidades"></div>
+        </div>
+
+        <!-- ABA RITUAIS -->
+        <div class="aba-panel card-box" id="aba-rituais">
+            <div class="sec-title">Rituais</div>
+            <div id="lista-rituais"></div>
+        </div>
+
+        <!-- ABA INVENTÁRIO -->
+        <div class="aba-panel card-box" id="aba-inventario">
+            <div class="sec-title">Inventário</div>
+            <!-- Stats do inventário -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;" id="inv-stats-view"></div>
+            <div id="lista-inventario"></div>
+        </div>
+
+        <!-- ABA DESCRIÇÃO -->
+        <div class="aba-panel card-box" id="aba-descricao">
+            <div class="sec-title">Antecedente & Descrição</div>
+            <div id="lista-descricao"></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
+    authDomain: "ficha-op-c9df8.firebaseapp.com",
+    databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com",
+    projectId: "ficha-op-c9df8",
+    storageBucket: "ficha-op-c9df8.firebasestorage.app",
+    messagingSenderId: "5463680704",
+    appId: "1:5463680704:web:3d6296c296699f4d41af25"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+const PERICIAS = [
+    { nome:'Acrobacia',atrib:'AGI' },{ nome:'Adestramento',atrib:'PRE' },
+    { nome:'Artes',atrib:'PRE' },{ nome:'Atletismo',atrib:'FOR' },
+    { nome:'Atualidades',atrib:'INT' },{ nome:'Ciências',atrib:'INT' },
+    { nome:'Crime',atrib:'AGI' },{ nome:'Diplomacia',atrib:'PRE' },
+    { nome:'Enganação',atrib:'PRE' },{ nome:'Fortitude',atrib:'VIG' },
+    { nome:'Furtividade',atrib:'AGI' },{ nome:'Iniciativa',atrib:'AGI' },
+    { nome:'Intimidação',atrib:'PRE' },{ nome:'Intuição',atrib:'PRE' },
+    { nome:'Investigação',atrib:'INT' },{ nome:'Luta',atrib:'FOR' },
+    { nome:'Medicina',atrib:'INT' },{ nome:'Ocultismo',atrib:'INT' },
+    { nome:'Percepção',atrib:'PRE' },{ nome:'Pilotagem',atrib:'AGI' },
+    { nome:'Pontaria',atrib:'AGI' },{ nome:'Profissão',atrib:'INT' },
+    { nome:'Reflexos',atrib:'AGI' },{ nome:'Religião',atrib:'PRE' },
+    { nome:'Sobrevivência',atrib:'INT' },{ nome:'Tática',atrib:'INT' },
+    { nome:'Tecnologia',atrib:'INT' },{ nome:'Vontade',atrib:'PRE' },
+];
+
+const INV_CAT_LABELS = {
+    ARMA:'Arma', MUNICAO:'Munição', PROTECAO:'Proteção', GERAL:'Geral', ITEM_AMALD:'Item Amald.'
+};
+
+// Lê parâmetros da URL
+const params     = new URLSearchParams(window.location.search);
+const agenteDoc  = params.get('agenteDoc');  // ID do doc na subcoleção agentes da campanha
+const campanhaId = params.get('campanha');
+const fichaId    = params.get('fichaId');    // ID direto da ficha no Realtime DB (alternativo)
+
+// Botão voltar
+const btnVoltar = document.getElementById('btn-voltar-camp');
+if (campanhaId) btnVoltar.href = `campanhas.html`;
+
+async function init() {
+    try {
+        // Carrega o estado da ficha do Realtime Database
+        // A ficha é salva em fichas/{fichaId}/estado pelo salvarEstado() do ficha.html
+        let fichaIdFinal = fichaId;
+
+        // Se veio pelo agenteDoc, primeiro precisamos descobrir o fichaLocalId
+        // Ele está salvo no Firestore na subcoleção agentes, mas aqui usamos o Realtime DB
+        // O fichaLocalId é o ID da ficha no localStorage do dono — também é o ID no Realtime DB
+        // O agenteDoc tem formato: {uid}_{fichaLocalId}
+        if (!fichaIdFinal && agenteDoc) {
+            // Extrai o fichaLocalId do agenteDoc (parte após o primeiro _)
+            const parts = agenteDoc.split('_');
+            parts.shift(); // remove o UID
+            fichaIdFinal = parts.join('_');
+        }
+
+        if (!fichaIdFinal) {
+            mostrarErro('ID da ficha não encontrado.');
+            return;
+        }
+
+        // Carrega agente base (dados do perfil)
+        const agenteSnap = await get(ref(db, `agentes/${fichaIdFinal}`));
+        // Carrega estado completo da ficha
+        const estadoSnap = await get(ref(db, `fichas/${fichaIdFinal}/estado`));
+
+        if (!estadoSnap.exists()) {
+            mostrarErro('Esta ficha ainda não foi sincronizada. O jogador precisa abrir a ficha pelo menos uma vez.');
+            return;
+        }
+
+        const agente = agenteSnap.exists() ? agenteSnap.val() : {};
+        const estado = estadoSnap.val();
+
+        renderFicha(agente, estado);
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('ficha-wrapper').style.display = 'grid';
+
+    } catch(e) {
+        console.error(e);
+        mostrarErro('Erro ao carregar a ficha: ' + e.message);
+    }
+}
+
+function renderFicha(agente, estado) {
+    // Cabeçalho
+    const nome = agente.nome || '—';
+    const codinome = agente.codinome ? ` "${agente.codinome}"` : '';
+    document.getElementById('display-nome').textContent   = nome + codinome;
+    document.getElementById('display-origem').textContent = agente.origem || '—';
+    document.getElementById('display-classe').textContent = agente.classe || '—';
+    document.getElementById('display-player').textContent = agente.fotoCostum ? '' : '—';
+    document.title = `F.I.C.H.A. – ${nome} (visão)`;
+
+    // Foto
+    const fotoSrc = estado.fotoCostum || agente.fotoCostum ||
+        `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(nome)}`;
+    document.getElementById('foto-agente').src = fotoSrc;
+
+    // Atributos
+    const atribs = agente.atributos || {};
+    ['FOR','AGI','INT','PRE','VIG'].forEach(a => {
+        const v = atribs[a] ?? 0;
+        document.getElementById(`b-${a}`).textContent = v;
+    });
+    desenharRadar(atribs);
+
+    // NEX / PE / Deslocamento
+    const prog = estado.progressao || {};
+    document.getElementById('nex-val').textContent  = prog.nex  || '5%';
+    document.getElementById('pe-val').textContent   = prog.pe   || '3';
+    document.getElementById('desl-val').textContent = prog.desl || '9m';
+
+    // Recursos
+    const vida = estado.vida || { atual:0, max:0 };
+    const san  = estado.san  || { atual:0, max:0 };
+    const esf  = estado.esf  || { atual:0, max:0 };
+    document.getElementById('vida-atual').textContent = vida.atual;
+    document.getElementById('vida-max').textContent   = vida.max;
+    document.getElementById('san-atual').textContent  = san.atual;
+    document.getElementById('san-max').textContent    = san.max;
+    document.getElementById('esf-atual').textContent  = esf.atual;
+    document.getElementById('esf-max').textContent    = esf.max;
+    document.getElementById('barra-vida').style.width    = pct(vida.atual, vida.max);
+    document.getElementById('barra-san').style.width     = pct(san.atual,  san.max);
+    document.getElementById('barra-esforco').style.width = pct(esf.atual,  esf.max);
+
+    // Defesa
+    const agi = atribs.AGI || 0;
+    document.getElementById('defesa-val').textContent  = 10 + agi;
+    document.getElementById('esquiva-val').textContent = 10 + agi;
+    document.getElementById('bloqueio-val').textContent = 0;
+
+    // Perícias
+    renderPericias(atribs, estado.pericias || {});
+
+    // Habilidades
+    renderHabilidades(estado.habilidadesPersonagem || []);
+
+    // Rituais
+    renderRituais(estado.rituaisPersonagem || []);
+
+    // Inventário
+    renderInventario(estado.inventario || [], estado.invStats || {});
+
+    // Descrição
+    renderDescricao(estado.descricao || {});
+}
+
+function pct(atual, max) {
+    if (!max) return '0%';
+    return Math.max(0, Math.min(100, (atual / max) * 100)) + '%';
+}
+
+function desenharRadar(atribs) {
+    const cx=110, cy=110, maxR=80, MAX=5;
+    const ang = [-Math.PI/2+Math.PI, -Math.PI/2, -Math.PI/2+Math.PI*2/5*2, -Math.PI/2+Math.PI*2/5*3, -Math.PI/2+Math.PI*2/5*4];
+    const ord = ['FOR','AGI','INT','PRE','VIG'];
+    document.getElementById('radar-bg').setAttribute('points', ang.map(a=>`${cx+maxR*Math.cos(a)},${cy+maxR*Math.sin(a)}`).join(' '));
+    const axesG = document.getElementById('radar-axes'); axesG.innerHTML='';
+    ang.forEach(a=>{ const l=document.createElementNS('http://www.w3.org/2000/svg','line'); l.setAttribute('x1',cx);l.setAttribute('y1',cy);l.setAttribute('x2',cx+maxR*Math.cos(a));l.setAttribute('y2',cy+maxR*Math.sin(a)); axesG.appendChild(l); });
+    document.getElementById('radar-val').setAttribute('points', ang.map((a,i)=>{ const v=atribs[ord[i]]||0, r=(v/MAX)*maxR; return `${cx+r*Math.cos(a)},${cy+r*Math.sin(a)}`; }).join(' '));
+}
+
+function renderPericias(atribs, periciasSalvas) {
+    const lista = document.getElementById('lista-pericias');
+    lista.innerHTML = PERICIAS.map(p => {
+        const est    = periciasSalvas[p.nome] || { bonus:0, outros:0, treinada:false };
+        const bon    = atribs[p.atrib] || 0;
+        const treino = est.treinada ? 5 : 0;
+        return `<div class="pericia-row">
+            <div class="pericia-nome-col">
+                ${est.treinada ? '<div class="treinada-dot"></div>' : '<div style="width:8px"></div>'}
+                <span class="pericia-nome-txt ${est.treinada?'pericia-treinada':''}">${p.nome}</span>
+                <span class="pericia-atrib-badge">${p.atrib}</span>
+            </div>
+            <div class="pericia-cell">${bon>0?'+'+bon:bon}</div>
+            <div class="pericia-cell">${est.bonus||0}</div>
+            <div class="pericia-cell" style="color:${est.treinada?'var(--green)':'var(--text-dim)'}">${treino>0?'+'+treino:'0'}</div>
+            <div class="pericia-cell">${est.outros||0}</div>
+        </div>`;
+    }).join('');
+}
+
+function renderHabilidades(habs) {
+    const el = document.getElementById('lista-habilidades');
+    if (!habs.length) { el.innerHTML = `<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Nenhuma habilidade registrada.</p>`; return; }
+    const TIPOS = { classe:'Classe', trilha:'Trilha', paranormal:'Paranormal', poder_classe:'Poder', origem:'Origem' };
+    el.innerHTML = habs.map(h => {
+        const tipoCor = { classe:'var(--purple-neon)', trilha:'var(--green)', paranormal:'#cc88ff', poder_classe:'var(--purple-neon)', origem:'var(--yellow)' };
+        return `<div class="hab-card">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                <div class="hab-nome">${h.nome}</div>
+                <span class="hab-badge" style="background:#0d0010;color:${tipoCor[h.tipo]||'#888'};border:1px solid var(--border);">${TIPOS[h.tipo]||h.tipo}</span>
+                ${h.nex&&h.nex!=='—'?`<span class="hab-badge" style="background:#080010;color:#666;border:1px solid #1a0033;">NEX ${h.nex}</span>`:''}
+            </div>
+            <div class="hab-desc">${h.desc||'—'}</div>
+        </div>`;
+    }).join('');
+}
+
+function renderRituais(rituais) {
+    const el = document.getElementById('lista-rituais');
+    if (!rituais.length) { el.innerHTML = `<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Nenhum ritual registrado.</p>`; return; }
+    el.innerHTML = rituais.map(r => {
+        const eu = (r.elem||'DESCONHECIDO').toUpperCase();
+        return `<div class="ritual-card">
+            <div class="ritual-card-hdr">
+                <div>
+                    <div class="ritual-card-nome">${r.nome}</div>
+                    <div class="ritual-badges">
+                        <span class="rbadge rbadge-${eu}">${r.elem||'Desconhecido'}</span>
+                        ${r.src?`<span class="rbadge rbadge-src">${r.src}</span>`:''}
+                        ${r.custom?'<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>':''}
+                    </div>
+                    ${r.desc?`<div style="font-size:0.75rem;color:#888;font-family:'Share Tech Mono',monospace;margin-top:6px;padding:0 0 6px;line-height:1.5;">${r.desc}</div>`:''}
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderInventario(itens, invStats) {
+    // Stats
+    const statsEl = document.getElementById('inv-stats-view');
+    statsEl.innerHTML = `
+        <div style="background:#0d0010;border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;">Patente</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:0.9rem;font-weight:700;">${invStats.patente||'Recruta'}</span>
+        </div>
+        <div style="background:#0d0010;border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;">Prestígio</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:0.9rem;font-weight:700;">${invStats.prestigio||0}</span>
+        </div>
+        <div style="background:#0d0010;border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;">Crédito</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:0.9rem;font-weight:700;">${invStats.credito||'Baixo'}</span>
+        </div>
+        <div style="background:#0d0010;border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;">Carga</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:0.9rem;font-weight:700;">${invStats.cargaAtual||0} / ${invStats.cargaMax||20}</span>
+        </div>`;
+
+    const el = document.getElementById('lista-inventario');
+    if (!itens.length) { el.innerHTML = `<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Inventário vazio.</p>`; return; }
+    el.innerHTML = itens.map(item => {
+        const cat = item.cat || 'GERAL';
+        return `<div class="inv-item">
+            <div>
+                <div class="inv-nome">${item.nome}</div>
+                <span class="inv-cat inv-cat-${cat}">${INV_CAT_LABELS[cat]||cat}</span>
+                ${item.desc?`<div style="font-size:0.72rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-top:2px;">${item.desc}</div>`:''}
+            </div>
+            <div class="inv-qtd">× ${item.qtd||1}</div>
+        </div>`;
+    }).join('');
+}
+
+function renderDescricao(desc) {
+    const campos = [
+        { key:'personalidade', label:'Personalidade' },
+        { key:'ideal',         label:'Ideal' },
+        { key:'vinculo',       label:'Vínculo' },
+        { key:'fraqueza',      label:'Fraqueza / Segredo' },
+        { key:'historia',      label:'História' },
+    ];
+    const el = document.getElementById('lista-descricao');
+    const html = campos.filter(c => desc[c.key]).map(c => `
+        <div style="margin-bottom:14px;">
+            <div style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">${c.label}</div>
+            <div style="background:#0d0010;border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:#aaa;line-height:1.6;">${desc[c.key]}</div>
+        </div>`).join('');
+    el.innerHTML = html || `<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Nenhuma descrição registrada.</p>`;
+}
+
+function mostrarErro(msg) {
+    document.getElementById('loading-screen').innerHTML = `
+        <div style="color:var(--red);font-family:'Share Tech Mono',monospace;text-align:center;padding:20px;max-width:400px;">
+            ⚠ ${msg}<br><br>
+            <a href="campanhas.html" style="color:var(--purple-neon);font-size:0.8rem;">← Voltar para Campanhas</a>
+        </div>`;
+}
+
+window.trocarAba = function(nome, btn) {
+    document.querySelectorAll('.aba-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`aba-${nome}`).classList.add('active');
+    btn.classList.add('active');
+};
+
+init();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
