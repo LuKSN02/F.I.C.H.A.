@@ -688,7 +688,9 @@ window.copiarConvite = function() {
 
 // ══ VINCULAR AGENTE ══
 window.abrirModalVincularAgente = function() {
-    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    const usuario = sessionStorage.getItem('ficha_user');
+    const prefix = usuario ? usuario + '_' : '';
+    const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
     const lista   = document.getElementById('lista-agentes-locais');
     agentesSelecionados.clear();
 
@@ -726,7 +728,9 @@ window.toggleSelecionarAgente = function(i) {
 
 window.vincularAgentes = async function() {
     if (agentesSelecionados.size === 0) { mostrarToast('⚠ Selecione ao menos um agente'); return; }
-    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+    const usuario = sessionStorage.getItem('ficha_user');
+    const prefix = usuario ? usuario + '_' : '';
+    const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
     const playerNome = getNomeLocal();
 
     try {
@@ -811,8 +815,10 @@ window.sairCampanha = async function() {
 
 // ══ UTILITÁRIOS ══
 function getNomeLocal() {
-    const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
-    return agentes[0]?.nome || `Agente_${currentUser.uid.slice(0,6)}`;
+    const usuario = sessionStorage.getItem('ficha_user');
+    const prefix = usuario ? usuario + '_' : '';
+    const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
+    return usuario || agentes[0]?.nome || `Agente_${currentUser.uid.slice(0,6)}`;
 }
 
 window.voltarLista = function() {
