@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>F.I.C.H.A. – Ficha do Agente</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -435,6 +435,32 @@
         .recurso-max-edit { cursor: pointer; border-bottom: 1px dashed var(--border); transition: color 0.2s; }
         .recurso-max-edit:hover { color: var(--purple-neon); }
     </style>
+    <!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
+    authDomain: "ficha-op-c9df8.firebaseapp.com",
+    databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com", // ← ADICIONE ISSO
+    projectId: "ficha-op-c9df8",
+    storageBucket: "ficha-op-c9df8.firebasestorage.app",
+    messagingSenderId: "5463680704",
+    appId: "1:5463680704:web:3d6296c296699f4d41af25"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  // Expõe globalmente para o restante do código
+  window._firebaseDB  = db;
+  window._firebaseRef = ref;
+  window._firebaseSet = set;
+  window._firebaseOnValue  = onValue;
+  window._firebaseGet  = get;
+</script>
+
 </head>
 <body>
 
@@ -454,9 +480,13 @@
         <a class="nav-link px-3" href="#">Homebrew</a>
       </div>
     </div>
-    <div class="d-none d-lg-flex pe-3">
-      <a href="index.html?view=agentes" class="btn-voltar">← Voltar</a>
-    </div>
+    <div class="d-none d-lg-flex pe-3 gap-2">
+  <a href="portrait.html" id="btn-portrait" class="btn-voltar" 
+     style="border-color:var(--purple);color:var(--purple-neon);" target="_blank">
+    🎭 Portrait
+  </a>
+  <a href="index.html?view=agentes" class="btn-voltar">← Voltar</a>
+</div>
   </div>
 </nav>
 
@@ -1050,188 +1080,572 @@ const RITUAIS_DATA = [
 ];
  
 const HABILIDADES_DB = {
+
+  // ══════════════════════════════════════════════
+  // HABILIDADES DE CLASSE
+  // ══════════════════════════════════════════════
   classe: [
-    { nome:'Ataque Especial', classe:'Combatente', tipo:'classe', elem:'NEUTRO', nex:'5%', desc:'Você pode gastar PE para melhorar seus ataques. Gaste 1 PE para receber +1 no ataque ou +3 no dano; gaste 2 PE para +2 no ataque ou +6 no dano; gaste 3 PE para +3 no ataque ou +9 no dano; gaste 4 PE para +4 no ataque ou +12 no dano; gaste 5 PE para +5 no ataque ou +15 no dano.' },
-    { nome:'Perito', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'5%', desc:'Escolha duas perícias nas quais você é treinado (exceto Luta e Pontaria). Quando faz um teste de uma dessas perícias, você pode gastar 2 PE para somar +1d6 no resultado do teste.' },
-    { nome:'Eclético', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'5%', desc:'Quando faz um teste de uma perícia, você pode gastar 2 PE para receber os benefícios de ser treinado nesta perícia.' },
-    { nome:'Engenhosidade', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'40%', desc:'Em NEX 40%, quando usa sua habilidade Eclético, você pode gastar 2 PE adicionais para receber os benefícios de ser veterano na perícia. Em NEX 75%, pode gastar 4 PE adicionais para receber os benefícios de ser expert na perícia.' },
-    { nome:'Escolhido pelo Outro Lado', classe:'Ocultista', tipo:'classe', elem:'NEUTRO', nex:'5%', desc:'Você pode lançar rituais de 1º círculo. À medida que aumenta seu NEX, pode lançar rituais de círculos maiores (2º círculo em NEX 25%, 3º em NEX 55% e 4º em NEX 85%).' },
-    { nome:'Identificação Paranormal', classe:'Ocultista', tipo:'classe', elem:'NEUTRO', nex:'15%', desc:'Você recebe +10 em testes de Ocultismo para identificar criaturas, objetos ou rituais.' },
+    // COMBATENTE
+    { nome:'Ataque Especial', classe:'Combatente', tipo:'classe', elem:'NEUTRO', nex:'5%', src:'Livro Base',
+      desc:'Você pode gastar PE para melhorar seus ataques. 1 PE: +1 ataque ou +3 dano. 2 PE: +2/+6. 3 PE: +3/+9. 4 PE: +4/+12. 5 PE: +5/+15. Em NEX 25% o custo máximo sobe para 3 PE (+10), NEX 55% para 4 PE (+15), NEX 85% para 5 PE (+20).' },
+    { nome:'Habilidade de Trilha (Combatente)', classe:'Combatente', tipo:'classe', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Em NEX 10% escolha uma trilha de combatente e receba o 1º poder. Recebe novos poderes da trilha em NEX 40%, 65% e 99%.' },
+
+    // ESPECIALISTA
+    { nome:'Eclético', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'5%', src:'Livro Base',
+      desc:'Quando faz um teste de uma perícia, você pode gastar 2 PE para receber os benefícios de ser treinado nesta perícia.' },
+    { nome:'Perito', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'5%', src:'Livro Base',
+      desc:'Escolha duas perícias treinadas (exceto Luta e Pontaria). Quando faz um teste dessas perícias, gaste 2 PE para +1d6. Em NEX 25%: 3 PE/+1d8. NEX 55%: 4 PE/+1d10. NEX 85%: 5 PE/+1d12.' },
+    { nome:'Engenhosidade', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'Em NEX 40%: ao usar Eclético, gaste +2 PE para receber benefícios de veterano. Em NEX 75%: gaste +4 PE para benefícios de expert.' },
+
+    // OCULTISTA
+    { nome:'Escolhido pelo Outro Lado', classe:'Ocultista', tipo:'classe', elem:'NEUTRO', nex:'5%', src:'Livro Base',
+      desc:'Você pode lançar rituais de 1º círculo. NEX 25%: 2º círculo. NEX 55%: 3º círculo. NEX 85%: 4º círculo. Começa com 3 rituais de 1º círculo e aprende 1 ritual por aumento de NEX.' },
+    { nome:'Identificação Paranormal', classe:'Ocultista', tipo:'classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você recebe +10 em testes de Ocultismo para identificar criaturas, objetos ou rituais.' },
   ],
- 
-  trilha: [
-    // ── COMBATENTE ──
-    { nome:'A Favorita', trilha:'Aniquilador', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Escolha uma arma para ser sua favorita. A categoria da arma escolhida é reduzida em I.' },
-    { nome:'Técnica Secreta', trilha:'Aniquilador', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', desc:'A categoria da arma favorita passa a ser reduzida em II. Quando faz um ataque com ela, você pode gastar 2 PE para executar um dos efeitos: Amplo ou Destruidor.' },
-    { nome:'Técnica Letal', trilha:'Guerreiro', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você recebe um aumento de +2 na margem de ameaça com todos os seus ataques corpo a corpo.' },
-    { nome:'Revidar', trilha:'Guerreiro', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', desc:'Sempre que bloquear um ataque, você pode gastar uma reação e 2 PE para fazer um ataque corpo a corpo no inimigo que o atacou.' },
-    { nome:'Inspirar Confiança', trilha:'Comandante de Campo', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você pode gastar uma reação e 2 PE para fazer um aliado em alcance curto rolar novamente um teste recém realizado.' },
-    { nome:'Casca Grossa', trilha:'Tropa de Choque', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você recebe +1 PV para cada 5% de NEX e, quando faz um bloqueio, soma seu Vigor na resistência a dano recebida.' },
-    { nome:'Iniciativa Aprimorada', trilha:'Operações Especiais', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você recebe +5 em Iniciativa e uma ação de movimento adicional na primeira rodada de combate.' },
-    { nome:'Ataque Extra', trilha:'Operações Especiais', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', desc:'Uma vez por rodada, quando faz um ataque, você pode gastar 2 PE para fazer um ataque adicional.' },
-    // SaH — Combatente
-    { nome:'Ensaio (NEX 10%)', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror / Arquivos Secretos #3', desc:'Nova ação de interlúdio "ensaiar combate": recebe +1 na margem de ameaça até o início da próxima cena de interlúdio. Bônus aumenta para +2 em NEX 40%, +3 em NEX 65%, +4 em NEX 99%. Outros personagens podem ensaiar junto e receber o mesmo bônus.' },
-    { nome:'Frase de Efeito (NEX 40%)', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Arquivos Secretos #3', desc:'Quando você ou aliado em alcance curto obter acerto crítico, pode gastar 2 PE para mudar o multiplicador de crítico para um valor igual a sua Presença (ou +1 se a Presença for menor ou igual).' },
-    { nome:'Mosh Pit (NEX 65%)', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Arquivos Secretos #3', desc:'Quando está flanqueando um alvo, você e todos os aliados flanqueando ou adjacentes ao mesmo alvo recebem +1d6 no dano contra ele para cada aliado cercando-o (até +5d6).' },
-    { nome:'Ritmo Contagiante (NEX 99%)', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Arquivos Secretos #3', desc:'No início de uma cena de combate, você e todos os aliados em alcance médio recebem +5 na Defesa até o fim do combate. Sempre que obtiver acerto crítico, esse bônus aumenta em +1.' },
-    // SaH — Agente Secreto
-    { nome:'Agente Secreto', trilha:'Agente Secreto', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror', desc:'Trilha de combatente para agentes que trabalham sozinhos ou em pequenos grupos. Cada nível desbloqueia habilidades de infiltração, disfarce e combate de elite.' },
-    // ── ESPECIALISTA ──
-    { nome:'Mira de Elite', trilha:'Atirador de Elite', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você recebe proficiência com armas de fogo que usam balas longas e soma seu Intelecto em rolagens de dano com essas armas.' },
-    { nome:'Ataque Furtivo', trilha:'Infiltrador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Uma vez por rodada, quando atinge um alvo desprevenido, você pode gastar 1 PE para causar +1d6 de dano adicional.' },
-    { nome:'Paramédico', trilha:'Médico de Campo', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você pode usar uma ação padrão e 2 PE para curar 2d10 pontos de vida de si mesmo ou de um aliado adjacente.' },
-    { nome:'Inventário Otimizado', trilha:'Técnico', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Você soma seu Intelecto à sua Força para calcular sua capacidade de carga.' },
-    { nome:'Eloquência', trilha:'Negociador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', desc:'Faça um teste de Diplomacia, Enganação ou Intimidação contra a Vontade dos alvos. Se vencer, os alvos ficam fascinados.' },
-    // SaH — Bibliotecário
-    { nome:'Conhecimento Prático (NEX 10%)', trilha:'Bibliotecário', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror', desc:'Quando faz um teste de perícia (exceto Luta e Pontaria), pode gastar 2 PE para mudar o atributo-base da perícia para Int. Com Conhecimento Aplicado, custo reduzido em –1 PE.' },
-    { nome:'Leitor Contumaz (NEX 40%)', trilha:'Bibliotecário', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Sobrevivendo ao Horror', desc:'Cada dado de bônus da ação de interlúdio "ler" muda para 1d8 e pode ser aplicado em qualquer perícia. Ao usar o bônus, pode gastar 2 PE para aumentar em +1 dado.' },
-    { nome:'Rato de Biblioteca (NEX 65%)', trilha:'Bibliotecário', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Sobrevivendo ao Horror', desc:'Sabe como extrair informações em ambientes repletos de livros. Pode fazer testes especiais de investigação com bônus quando em bibliotecas e locais similares.' },
-    // ── OCULTISTA ──
-    { nome:'Ampliar Ritual', trilha:'Conduíte', classe:'Ocultista', tipo:'trilha', elem:'ENERGIA', nex:'10%', desc:'Quando lança um ritual, você pode gastar +2 PE para aumentar seu alcance em um passo ou dobrar sua área de efeito.' },
-    { nome:'Poder do Flagelo', trilha:'Flagelador', classe:'Ocultista', tipo:'trilha', elem:'SANGUE', nex:'10%', desc:'Ao conjurar um ritual, você pode gastar seus próprios pontos de vida para pagar o custo em pontos de esforço, à taxa de 2 PV por PE pago.' },
-    { nome:'Saber Ampliado', trilha:'Graduado', classe:'Ocultista', tipo:'trilha', elem:'CONHECIMENTO', nex:'10%', desc:'Você aprende um ritual de 1º círculo adicional. Toda vez que ganha acesso a um novo círculo, aprende um ritual adicional daquele círculo.' },
-    { nome:'Mente Sã', trilha:'Intuitivo', classe:'Ocultista', tipo:'trilha', elem:'CONHECIMENTO', nex:'10%', desc:'Você recebe resistência paranormal +5 (+5 em testes de resistência contra efeitos paranormais).' },
-    { nome:'Lâmina Maldita', trilha:'Lâmina Paranormal', classe:'Ocultista', tipo:'trilha', elem:'MORTE', nex:'10%', desc:'Você aprende o ritual Amaldiçoar Arma. Quando conjura esse ritual, você pode usar Ocultismo para testes de ataque.' },
-    // SaH — Exorcista
-    { nome:'Revelação do Mal (NEX 10%)', trilha:'Exorcista', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror', desc:'Recebe treinamento em Religião (ou +2 se já treinado). Pode usar Religião no lugar de Investigação e Percepção para notar pistas e rastros paranormais.' },
-    // AS#1 — Maledictólogo
-    { nome:'Identificação Macabra (NEX 10%)', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Arquivos Secretos #1', desc:'Quando faz um teste para identificar item amaldiçoado ou ritual, pode gastar 1 PE para +1d10. Sofre apenas –5 para identificar itens amaldiçoados como ação completa.' },
-    { nome:'Compreensão de Maldições (NEX 40%)', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Arquivos Secretos #1', desc:'Gasta ação de interlúdio e 3 PE para fazer leituras em item amaldiçoado (Ocultismo DT 10+5/cat.). Se passar e contiver ritual: aprende o ritual (não conta no limite). Se não contiver ritual: pode transferir a maldição para outro item ou tatuagem no corpo.' },
-    { nome:'Reproduzir Maldição (NEX 65%)', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Arquivos Secretos #1', desc:'Pode memorizar uma maldição de item já manipulado. Depois, pode aplicá-la a outro item (Ocultismo DT 10+5/cat., perde 1d8+1 SAN se passar, ou 2d8+2 SAN se falhar). Maldições aumentam categorias de itens (máximo Cat. IV).' },
-    { nome:'Maldição Suprema (NEX 99%)', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Arquivos Secretos #1', desc:'Ao usar Reproduzir Maldição, considera o item três categorias efetivas a menos, permitindo aplicar maldições em itens de categoria mais alta.' },
-  ],
- 
-  paranormal: [
-    { nome:'Aprender Ritual', elemento:'MEDO', tipo:'paranormal', elem:'MEDO', nex:'—', desc:'Você aprende e pode conjurar um ritual de 1º círculo à sua escolha. A partir de 45% de NEX, aprende um ritual de até 2º círculo; a partir de 75%, aprende um ritual de até 3º círculo.' },
-    { nome:'Resistir a Elemento', elemento:'NEUTRO', tipo:'paranormal', elem:'NEUTRO', nex:'—', desc:'Escolha entre Conhecimento, Energia, Morte ou Sangue. Você recebe resistência 10 contra esse elemento. Afinidade: aumenta a resistência para 20.' },
-    { nome:'Percepção Paranormal', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', desc:'Em cenas de investigação, sempre que fizer um teste para procurar pistas, você pode rolar novamente um dado com resultado menor que 10.' },
-    { nome:'Precognição', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', desc:'Você possui um "sexto sentido" que o avisa do perigo antes que ele aconteça. Você recebe +2 em Defesa e em testes de resistência.' },
-    { nome:'Sensitivo', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', desc:'Você consegue sentir as emoções e intenções de outros personagens, recebendo +5 em testes de Diplomacia, Intimidação e Intuição.' },
-    { nome:'Visão do Oculto', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', desc:'Você recebe +5 em testes de Percepção e enxerga no escuro. Afinidade: você ignora camuflagem.' },
-    { nome:'Conhecimento de Direção Precognitiva', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', src:'Arquivos Secretos #3', desc:'Você recebe +5 em testes de Percepção ou Sobrevivência para se localizar até um local, mesmo nunca tendo visto ou sabendo onde fica. Afinidade: bônus aumenta para +10.' },
-    { nome:'Afortunado', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', desc:'Uma vez por rolagem, você pode rolar novamente um resultado 1 em qualquer dado que não seja d20.' },
-    { nome:'Campo Protetor', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', desc:'Quando usa a ação esquiva, você pode gastar 1 PE para receber +5 em Defesa.' },
-    { nome:'Golpe de Sorte', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', desc:'Seus ataques recebem +1 na margem de ameaça. Afinidade: seus ataques recebem +1 no multiplicador de crítico.' },
-    { nome:'Instrumento Elétrico de Combate', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Arquivos Secretos #3', desc:'Transforma um instrumento musical em arma de Energia (tática, 2 mãos, alcance curto, 2d8 dano de Energia, testes de ataque com Artes, soma Presença no dano, crítico 20/x2, Cat. II, 2 espaços). Se quebrar, pode ativar o poder em novo instrumento.' },
-    { nome:'Encarar a Morte', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', desc:'Durante cenas de ação, seu limite de gasto de PE aumenta em +1. Afinidade: durante cenas de ação, seu limite de gasto de PE aumenta em +2.' },
-    { nome:'Escapar da Morte', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', desc:'Uma vez por cena, quando receber dano que o deixaria com 0 PV, você fica com 1 PV. Não funciona em caso de dano massivo.' },
-    { nome:'Potencial Aprimorado', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', desc:'Você recebe +1 ponto de esforço por NEX. Afinidade: você recebe +1 PE adicional por NEX.' },
-    { nome:'Surto Temporal', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', desc:'Uma vez por cena, durante seu turno, você pode gastar 3 PE para realizar uma ação padrão adicional.' },
-    { nome:'Arma de Sangue', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', desc:'Você pode gastar uma ação de movimento e 2 PE para produzir garras ou uma lâmina de sangue cristalizado que causa 1d6 de dano de Sangue.' },
-    { nome:'Sangue de Ferro', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', desc:'Você recebe +2 pontos de vida por NEX. Afinidade: você recebe +5 em Fortitude e se torna imune a venenos e doenças.' },
-    { nome:'Sangue Vivo', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', desc:'Na primeira vez que ficar machucado durante uma cena, você recebe cura acelerada 2. Afinidade: a cura acelerada aumenta para 5.' },
-    // AS#1 novos poderes paranormais de Sangue
-    { nome:'Ferro Maculado', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1', desc:'Pode gastar ação de movimento e 2 PV para amaldiçoar 1 projétil de munição. O projétil causa +1d6 de dano de Sangue uma única vez. Afinidade: +1d8.' },
-    { nome:'Sangue Corrosivo', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1', desc:'Pode gastar ação de movimento e 1 PE para tornar o sangue corrosivo até o fim da cena. Quando sofre dano de ser adjacente, causa 1d10 dano de Sangue nele. Afinidade: +2d10.' },
-    { nome:'Placas Sanguinolentas', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1', desc:'Quando conjura um ritual de Sangue, recebe bônus na Defesa igual ao círculo do ritual até o início do próximo turno. Afinidade: bônus = círculo do ritual +2.' },
-    { nome:'Sangue Prazeroso', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1', desc:'Enquanto estiver machucado, recebe RD 5. Afinidade: também recebe +20 PV temporários (uma vez por cena).' },
-    // AS#2 novos poderes paranormais
-    { nome:'Predador de Sangue', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #2', desc:'Pode gastar ação padrão e 3 PE para memorizar o odor de uma vítima, recebendo +1d20 em testes para rastreá-la, percebê-la e atacá-la. Só pode memorizar uma vítima por vez. Afinidade: até 3 vítimas simultaneamente.' },
-    { nome:'Engolir Sangue', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #2', desc:'Pode gastar ação completa para consumir carne humana e recuperar 2d8+2 PV, mas perde 1d4 SAN. Afinidade: cura 4d8+4 PV.' },
-  ],
- 
+
+  // ══════════════════════════════════════════════
+  // PODERES DE CLASSE
+  // ══════════════════════════════════════════════
   poder_classe: [
-    { nome:'Golpe Pesado', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Uma vez por rodada, declare Golpe Pesado antes de atacar. Se acertar, cause +3d6 de dano e o alvo faz Fortitude ou é derrubado.' },
-    { nome:'Proteção Pesada', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Se estiver usando uma proteção pesada, a Defesa e a resistência a dano que ela fornece aumentam em +2.' },
-    { nome:'Combater com Duas Armas', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Você pode atacar com duas armas leves por ação de ataque sem penalidade.' },
-    { nome:'Mochila de Utilidades', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Um item a sua escolha (exceto armas) conta como uma categoria abaixo e ocupa 1 espaço a menos.' },
-    { nome:'Balística Avançada', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Você recebe proficiência com armas táticas de fogo e +2 em rolagens de dano com armas de fogo.' },
-    { nome:'Artista Marcial', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Seus ataques desarmados causam 1d6 pontos de dano, podem causar dano letal e contam como armas ágeis.' },
-    { nome:'Hacker', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Você recebe +5 em testes de Tecnologia para invadir sistemas e diminui o tempo necessário para hackear qualquer sistema para uma ação completa.' },
-    { nome:'Camuflar Ocultismo', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Você pode gastar uma ação livre para esconder símbolos e sigilos. Quando lança um ritual, pode gastar +2 PE para lançá-lo sem componentes ritualísticos.' },
-    { nome:'Ritual Potente', classe:'Ocultista', tipo:'poder_classe', elem:'CONHECIMENTO', nex:'15%', desc:'Você soma seu Intelecto nas rolagens de dano ou nos efeitos de cura de seus rituais. Pré-requisito: Int 2.' },
-    { nome:'Especialista em Elemento', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'30%', desc:'Escolha um elemento paranormal. A DT para resistir aos seus rituais desse elemento aumenta em +2.' },
-    { nome:'Ritual Predileto', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', desc:'Escolha um ritual que você conhece. Você reduz em –1 PE o custo do ritual.' },
-    // SaH — Novos poderes de combatente
-    { nome:'Apego Angustiado', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Você não fica inconsciente por estar morrendo. Entretanto, sempre que terminar uma rodada nesta condição e consciente, perde 2 SAN.' },
-    { nome:'Caminho para a Forca', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Quando usa ação sacrifício em perseguição, pode gastar 1 PE para fornecer +10 extra nos testes dos outros personagens. Ao chamar atenção em furtividade, pode gastar 1 PE para diminuir visibilidade de aliados próximos em –2.' },
-    { nome:'Guardião da Tropa', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #3', desc:'Se aliado adjacente for alvo de ataque/habilidade de alvo único, pode gastar reação e 2 PE para sofrer o ataque por ele. Se não for afetado, recupera 1 SAN. Pode ser adquirido novamente para mudar alcance de adjacente para curto. Pré-req: Ataque Especial, Casca Grossa.' },
-    { nome:'Vitalidade Sofrida', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #3', desc:'Seus PV iniciais e a cada nível de exposição mudam para 24+Vigor e 6 PV (+Vig), respectivamente. Aplica-se retroativamente. Pré-req: Ataque Especial.' },
-    // SaH — Novos poderes de especialista
-    { nome:'Acolher o Terror', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Você pode se entregar para o medo uma vez por sessão de jogo adicional.' },
-    { nome:'Contatos Oportunos', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Pode usar ação de interlúdio para acionar contatos locais, recebendo um aliado à escolha que o acompanha até o fim da missão ou ser dispensado. Só pode ter um desses aliados por vez. Pré-req: treinado em Crime.' },
-    // SaH — Novos poderes de ocultista
-    { nome:'Deixe os Sussurros Guiarem', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Uma vez por cena, pode gastar 2 PE e uma rodada para receber +2 em testes de perícia para investigação até o fim da cena. Enquanto ativo, sempre que falha em um teste de perícia, perde 1 SAN.' },
-    { nome:'Domínio Esotérico', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror', desc:'Ao lançar um ritual, pode combinar os efeitos de até dois catalisadores ritualísticos diferentes ao mesmo tempo. Pré-req: Int 3.' },
-    // AS#1 — Novos poderes de ocultista
-    { nome:'Acostumado à Maldição de <Elemento>', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1', desc:'Escolha um elemento (exceto Medo). Quando falha no teste relacionado ao preço da maldição de itens amaldiçoados desse elemento, não perde SAN (ainda sofre outros efeitos negativos). Pré-req: Int 2, conjurar ritual de 2º círculo do elemento.' },
-    { nome:'Ritual Intenso', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1', desc:'Você soma sua Presença nas rolagens de dano e de cura de seus rituais. Pré-req: Pre 2.' },
-    { nome:'Saúde Sobrenatural', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1', desc:'Uma vez por cena, pode gastar ação de movimento e 3 PE para receber PV temporários igual a Presença × 10. Desaparecem no fim da cena e não são cumulativos. Pré-req: Int 2, Pre 2, conjurar ritual de 1º círculo.' },
-    { nome:'Reter Ritual de Combate', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1', desc:'Quando ritual retido com duração retida deixa a linha de efeito, pode mudar a duração para cena como reação. Quando sofre condição que o faz deixar de reter rituais, pode gastar reação e 1 PE por ritual para mudar duração para cena. Pré-req: Int 2, conjurar ritual de 1º círculo; requer regra opcional Reter Ritual.' },
-    { nome:'Flagelo Bem Aproveitado', classe:'Ocultista', tipo:'poder_classe', elem:'SANGUE', nex:'15%', src:'Arquivos Secretos #3', desc:'A taxa da habilidade Poder do Flagelo muda para 1 PV por PE pago. Pré-req: Escolhido pelo Outro Lado, Poder do Flagelo.' },
-    { nome:'Recuperação Flagelante', classe:'Ocultista', tipo:'poder_classe', elem:'SANGUE', nex:'15%', src:'Arquivos Secretos #3', desc:'Entre interlúdios, pode recuperar PV gastos com Poder do Flagelo com outros métodos além de descanso (uma vez, podendo adquirir novamente até 3 usos). Pré-req: Escolhido pelo Outro Lado, Poder do Flagelo.' },
-    { nome:'Liturgia de Fortalecimento Ritualístico', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #2', desc:'Em cena de interlúdio, pode gastar 2 PE e ação de interlúdio para fortalecer um ritual que conheça: a DT aumenta em +2 até o início da próxima cena de interlúdio. Pré-req: Int e Pre 2.' },
-  ],
- 
-  poder_geral: [
-    // AS#1
-    { nome:'<Habilidade> Aprimorada', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Escolha uma habilidade ou ritual que tenha DT. A DT para resistir aumenta em +2. Pode ser escolhido até duas vezes para a mesma habilidade/ritual (total +5). Pode ser escolhido para habilidades e rituais diferentes.' },
-    { nome:'Instintos Urbanos', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Recebe treinamento em Crime (ou +2 se treinado). Quando entra em ambiente fechado, pode fazer teste de Crime DT 20 para identificar saídas. Se passar: ação de movimento extra no primeiro turno da fuga e +2 na Defesa até fugir. Pré-req: Agi 2.' },
-    { nome:'Curiosidade Oculta', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Recebe treinamento em Ocultismo (ou +2 se treinado). Quando faz teste de Vontade, pode gastar 2 PE para trocar a perícia por Ocultismo. Pré-req: Int 2.' },
-    { nome:'Especialista Exotérico', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Ao conjurar um ritual, pode combinar efeitos de até três catalisadores ritualísticos diferentes ao mesmo tempo. Pré-req: Int 3, conjurar ritual de 2º círculo, Domínio Esotérico.' },
-    { nome:'Cicatrizes Expostas', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Pode gastar ação de movimento para expor cicatriz, causando +1d8 dano do mesmo tipo, mas sofre –5 em Vontade e testes que exijam calma. Efeitos duram até o fim da cena. Pré-req: ter cicatrizes.' },
-    // AS#2
-    { nome:'Revidar Violento', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #2 (Aguiar)', desc:'Você pode fazer uma segunda reação especial de defesa na mesma rodada, desde que ela seja um contra-ataque. Pré-req: For 2 ou Agi 2.' },
-    { nome:'Especialista em Correntes (Prender)', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #2 (Jasper)', desc:'Pode gastar ação completa para prender um item em corrente bem amarrada ao corpo (seu ou aliado). O item não pode ser desarmado sem quebrar a corrente. +2 em testes de manobras com correntes, chicotes e armas presas. Cada item além do primeiro causa –1 em testes afetados por carga. Pré-req: Agi 2.' },
-    { nome:'Especialista em Correntes (Puxar)', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #2 (Jasper)', desc:'Quando acerta ataque com corrente ou semelhante, pode gastar 2 PE para puxar o alvo adjacente. Se o alvo se afastar, sofre –5 em ataques contra outros alvos por 1 rodada. Pré-req: For 2 ou Agi 2, treinado em Luta.' },
+    // ── COMBATENTE ──
+    { nome:'Armamento Pesado', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você recebe proficiência com armas pesadas. Pré-requisito: For 2.' },
+    { nome:'Artista Marcial', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Seus ataques desarmados causam 1d6 de dano, podem causar dano letal e contam como armas ágeis. Em NEX 35% o dano aumenta para 1d8 e em NEX 70% para 1d10.' },
+    { nome:'Ataque de Oportunidade', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Sempre que um ser sair voluntariamente de um espaço adjacente ao seu, você pode gastar uma reação e 1 PE para fazer um ataque corpo a corpo contra ele.' },
+    { nome:'Combater com Duas Armas', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Se estiver empunhando duas armas (pelo menos uma leve) e fizer agredir, pode fazer dois ataques, um com cada arma. Sofre –5 em todos os testes de ataque até o próximo turno. Pré-req: Agi 3, treinado em Luta ou Pontaria.' },
+    { nome:'Combate Defensivo', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Quando usa a ação agredir, pode combater defensivamente: sofre –5 em todos os testes de ataque, mas recebe +5 na Defesa até o próximo turno. Pré-requisito: Int 2.' },
+    { nome:'Golpe Demolidor', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Quando usa manobra quebrar ou ataca um objeto, pode gastar 1 PE para causar dois dados de dano extra do mesmo tipo. Pré-req: For 2, treinado em Luta.' },
+    { nome:'Golpe Pesado', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'O dano de suas armas corpo a corpo aumenta em mais um dado do mesmo tipo.' },
+    { nome:'Incansável', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Uma vez por cena, pode gastar 2 PE para fazer uma ação de investigação adicional, mas deve usar Força ou Agilidade como atributo-base do teste.' },
+    { nome:'Presteza Atlética', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Quando faz um teste para facilitar investigação, pode gastar 1 PE para usar Força ou Agilidade no lugar do atributo-base. Se passar, o próximo aliado que usar seu bônus também recebe +5 no teste.' },
+    { nome:'Proteção Pesada', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'30%', src:'Livro Base',
+      desc:'Você recebe proficiência com Proteções Pesadas. Pré-requisito: NEX 30%.' },
+    { nome:'Reflexos Defensivos', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você recebe +2 em Defesa e em testes de resistência. Pré-requisito: Agi 2.' },
+    { nome:'Saque Rápido', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você pode sacar ou guardar itens como ação livre. Além disso, uma vez por rodada pode recarregar uma arma de disparo como ação livre. Pré-requisito: treinado em Iniciativa.' },
+    { nome:'Segurar o Gatilho', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'60%', src:'Livro Base',
+      desc:'Sempre que acerta um ataque com arma de fogo, pode fazer outro ataque com a mesma arma contra o mesmo alvo, pagando 2 PE por cada ataque já realizado no turno. Pré-requisito: NEX 60%.' },
+    { nome:'Sentido Tático', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Pode gastar uma ação de movimento e 2 PE para analisar o ambiente, recebendo bônus em Defesa e testes de resistência igual ao seu Intelecto até o final da cena. Pré-req: Int 2, treinado em Percepção e Tática.' },
+    { nome:'Tanque de Guerra', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'30%', src:'Livro Base',
+      desc:'Se estiver usando proteção pesada, a Defesa e a resistência a dano que ela fornece aumentam em +2. Pré-requisito: Proteção Pesada.' },
+    { nome:'Tiro Certeiro', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Se estiver usando arma de disparo, soma sua Agilidade nas rolagens de dano e ignora a penalidade contra alvos em combate corpo a corpo. Pré-requisito: treinado em Pontaria.' },
+    { nome:'Tiro de Cobertura', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Gaste uma ação padrão e 1 PE para forçar um alvo a se proteger. Teste de Pontaria vs. Vontade; se vencer, até o início do seu próximo turno o alvo não pode sair do lugar e sofre –5 em testes de ataque. Efeito de medo.' },
+    // SaH
+    { nome:'Apego Angustiado', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror',
+      desc:'Você não fica inconsciente por estar morrendo. Entretanto, sempre que terminar uma rodada nesta condição e consciente, perde 2 SAN.' },
+    { nome:'Caminho para a Forca', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror',
+      desc:'Em perseguição ao usar ação sacrifício, gaste 1 PE para fornecer +10 extra nos testes dos outros. Ao chamar atenção em furtividade, gaste 1 PE para diminuir visibilidade de aliados próximos em –2.' },
     // AS#3
-    { nome:'Ambidestria', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Se empunhando duas armas (pelo menos uma leve) e fizer agredir, pode fazer dois ataques, um com cada. Sofre –1d20 em todos os ataques até o próximo turno. Com Combater com Duas Armas: sem penalidade e pode empunhar duas armas de uma mão. Pré-req: For 2 ou Agi 2, treinado em Luta.' },
-    { nome:'Entrada Triunfal', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Ao entrar em um ambiente, uma vez por sessão, pode anunciar chegada em voz alta para receber +1d20 no primeiro teste (exceto Furtividade). Pode transferir o bônus ao primeiro teste de aliado em alcance longo. Pré-req: Pre 2.' },
-    { nome:'Papinho Sedutor', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Quando faz teste de perícia baseado em Presença para seduzir, pode gastar 1 PE para +5. Se passar, o alvo fica apaixonado (pode causar problemas a critério do mestre). Pré-req: Pre 2.' },
+    { nome:'Guardião da Tropa', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #3',
+      desc:'Se aliado adjacente for alvo de ataque de alvo único, pode gastar reação e 2 PE para sofrer o ataque por ele. Se não for afetado, recupera 1 SAN. Pode ser adquirido novamente para mudar alcance para curto. Pré-req: Ataque Especial, Casca Grossa.' },
+    { nome:'Vitalidade Sofrida', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #3',
+      desc:'Seus PV iniciais e a cada nível de exposição mudam para 24+Vigor e 6 PV (+Vig), respectivamente. Aplica-se retroativamente. Pré-req: Ataque Especial.' },
+
+    // ── ESPECIALISTA ──
+    { nome:'Artista Marcial (Especialista)', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Seus ataques desarmados causam 1d6 de dano, podem causar dano letal e contam como armas ágeis. Em NEX 35% o dano aumenta para 1d8 e em NEX 70% para 1d10.' },
+    { nome:'Balística Avançada', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você recebe proficiência com armas táticas de fogo e +2 em rolagens de dano com armas de fogo.' },
+    { nome:'Conhecimento Aplicado', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Quando faz um teste de perícia (exceto Luta e Pontaria), pode gastar 2 PE para mudar o atributo-base para Int. Pré-requisito: Int 2.' },
+    { nome:'Hacker', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você recebe +5 em testes de Tecnologia para invadir sistemas e diminui o tempo necessário para hackear qualquer sistema para uma ação completa. Pré-requisito: treinado em Tecnologia.' },
+    { nome:'Mãos Rápidas', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Ao fazer um teste de Crime, pode pagar 1 PE para fazê-lo como ação livre. Pré-req: Agi 3, treinado em Crime.' },
+    { nome:'Mochila de Utilidades', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Um item a sua escolha (exceto armas) conta como uma categoria abaixo e ocupa 1 espaço a menos.' },
+    { nome:'Movimento Tático', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Pode gastar 1 PE para ignorar penalidade em deslocamento por terreno difícil e por escalar até o final do turno. Pré-requisito: treinado em Atletismo.' },
+    { nome:'Na Trilha Certa', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Sempre que tiver sucesso em um teste para procurar pistas, pode gastar 1 PE para receber +5 no próximo teste. Os custos e bônus são cumulativos.' },
+    { nome:'Nerd', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Uma vez por cena, gaste 2 PE para fazer um teste de Atualidades (DT 20). Se passar, recebe uma informação útil para a cena (dica de pista em investigação, fraqueza de inimigo em combate, etc.).' },
+    { nome:'Ninja Urbano', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você recebe proficiência com armas táticas de corpo a corpo e de disparo (exceto de fogo) e +2 em rolagens de dano com armas de corpo a corpo e de disparo.' },
+    { nome:'Pensamento Ágil', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Uma vez por rodada, durante uma cena de investigação, pode gastar 2 PE para fazer uma ação de procurar pistas adicional.' },
+    { nome:'Perito em Explosivos', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você soma seu Intelecto na DT para resistir aos seus explosivos e pode excluir dos efeitos da explosão um número de alvos igual ao seu valor de Intelecto.' },
+    { nome:'Primeira Impressão', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você recebe +10 no primeiro teste de Diplomacia, Enganação, Intimidação ou Intuição que fizer em uma cena.' },
+    // SaH
+    { nome:'Acolher o Terror', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror',
+      desc:'Você pode se entregar para o medo uma vez por sessão de jogo adicional.' },
+    { nome:'Contatos Oportunos', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror',
+      desc:'Pode usar ação de interlúdio para acionar contatos locais, recebendo um aliado à escolha que o acompanha até o fim da missão. Só pode ter um desses aliados por vez. Pré-req: treinado em Crime.' },
+
+    // ── OCULTISTA ──
+    { nome:'Camuflar Ocultismo', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Pode gastar ação livre para esconder símbolos e sigilos. Quando lança um ritual, pode gastar +2 PE para lançá-lo sem componentes ritualísticos e sem gesticular. Outros percebem apenas com Ocultismo DT 25.' },
+    { nome:'Criar Selo', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você sabe fabricar selos paranormais de rituais que conheça. Fabricar gasta uma ação de interlúdio e PE iguais ao custo de conjurar o ritual. Máximo de selos ativos igual à sua Presença.' },
+    { nome:'Envolto em Mistério', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você recebe +5 em Enganação e Intimidação contra pessoas não treinadas em Ocultismo.' },
+    { nome:'Especialista em Elemento', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Escolha um elemento paranormal. A DT para resistir aos seus rituais desse elemento aumenta em +2.' },
+    { nome:'Ferramentas Paranormais', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Você reduz a categoria de um item paranormal em I e pode ativar itens paranormais sem pagar seu custo em PE.' },
+    { nome:'Fluxo de Poder', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'60%', src:'Livro Base',
+      desc:'Você pode manter dois efeitos sustentados de rituais ativos ao mesmo tempo com apenas uma ação livre, pagando o custo de cada efeito separadamente. Pré-requisito: NEX 60%.' },
+    { nome:'Guiado pelo Paranormal', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Uma vez por cena, pode gastar 2 PE para fazer uma ação de investigação adicional.' },
+    { nome:'Improvisar Componentes', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Uma vez por cena, gaste uma ação completa para fazer teste de Investigação (DT 15). Se passar, encontra objetos que servem como componentes ritualísticos de um elemento à escolha.' },
+    { nome:'Intuição Paranormal', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Sempre que usa a ação facilitar investigação, você soma seu Intelecto ou Presença no teste (à sua escolha).' },
+    { nome:'Mestre em Elemento', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'45%', src:'Livro Base',
+      desc:'Escolha um elemento. O custo para lançar rituais desse elemento diminui em –1 PE. Pré-req: Especialista no elemento escolhido, NEX 45%.' },
+    { nome:'Ritual Potente', classe:'Ocultista', tipo:'poder_classe', elem:'CONHECIMENTO', nex:'15%', src:'Livro Base',
+      desc:'Você soma seu Intelecto nas rolagens de dano ou nos efeitos de cura de seus rituais. Pré-requisito: Int 2.' },
+    { nome:'Ritual Predileto', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Escolha um ritual que você conhece. Você reduz em –1 PE o custo do ritual. Essa redução se acumula com outras fontes.' },
+    { nome:'Tatuagem Ritualística', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
+      desc:'Símbolos marcados em sua pele reduzem em –1 PE o custo de rituais de alcance pessoal que têm você como alvo.' },
+    // SaH
+    { nome:'Deixe os Sussurros Guiarem', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror',
+      desc:'Uma vez por cena, gaste 2 PE e uma rodada para receber +2 em testes de perícia para investigação até o fim da cena. Enquanto ativo, sempre que falha em um teste de perícia, perde 1 SAN.' },
+    { nome:'Domínio Esotérico', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror',
+      desc:'Ao lançar um ritual, pode combinar os efeitos de até dois catalisadores ritualísticos diferentes ao mesmo tempo. Pré-req: Int 3.' },
+    // AS#1
+    { nome:'Acostumado à Maldição de <Elemento>', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1',
+      desc:'Escolha um elemento (exceto Medo). Quando falha no teste relacionado ao preço da maldição de itens amaldiçoados desse elemento, não perde SAN. Pré-req: Int 2, conjurar ritual de 2º círculo do elemento.' },
+    { nome:'Ritual Intenso', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1',
+      desc:'Você soma sua Presença nas rolagens de dano e de cura de seus rituais. Pré-req: Pre 2.' },
+    { nome:'Saúde Sobrenatural', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1',
+      desc:'Uma vez por cena, gaste ação de movimento e 3 PE para receber PV temporários igual a Presença × 10. Desaparecem no fim da cena e não são cumulativos. Pré-req: Int 2, Pre 2, conjurar ritual de 1º círculo.' },
+    { nome:'Reter Ritual de Combate', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1',
+      desc:'Quando ritual retido deixa a linha de efeito, pode mudar a duração para cena como reação. Quando sofre condição que o faz deixar de reter rituais, pode gastar reação e 1 PE por ritual para mudar duração para cena. Pré-req: Int 2, conjurar ritual de 1º círculo.' },
+    { nome:'Flagelo Bem Aproveitado', classe:'Ocultista', tipo:'poder_classe', elem:'SANGUE', nex:'15%', src:'Arquivos Secretos #3',
+      desc:'A taxa da habilidade Poder do Flagelo muda para 1 PV por PE pago. Pré-req: Escolhido pelo Outro Lado, Poder do Flagelo.' },
+    { nome:'Recuperação Flagelante', classe:'Ocultista', tipo:'poder_classe', elem:'SANGUE', nex:'15%', src:'Arquivos Secretos #3',
+      desc:'Entre interlúdios, pode recuperar PV gastos com Poder do Flagelo com outros métodos além de descanso (uma vez; pode ser adquirido novamente até 3 usos). Pré-req: Escolhido pelo Outro Lado, Poder do Flagelo.' },
+    { nome:'Liturgia de Fortalecimento Ritualístico', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #2',
+      desc:'Em cena de interlúdio, gaste 2 PE e ação de interlúdio para fortalecer um ritual que conheça: a DT aumenta em +2 até o início da próxima cena de interlúdio. Pré-req: Int e Pre 2.' },
+    { nome:'Especialista Exotérico', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #1',
+      desc:'Ao conjurar um ritual, pode combinar efeitos de até três catalisadores ritualísticos diferentes ao mesmo tempo. Pré-req: Int 3, conjurar ritual de 2º círculo, Domínio Esotérico.' },
   ],
- 
+
+  // ══════════════════════════════════════════════
+  // TRILHAS
+  // ══════════════════════════════════════════════
+  trilha: [
+    // ── COMBATENTE: ANIQUILADOR ──
+    { nome:'A Favorita', trilha:'Aniquilador', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Escolha uma arma para ser sua favorita. A categoria da arma escolhida é reduzida em I.' },
+    { nome:'Técnica Secreta', trilha:'Aniquilador', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'A categoria da arma favorita passa a ser reduzida em II. Quando faz um ataque com ela, pode gastar 2 PE para executar um efeito: Amplo (atingir alvo adicional adjacente) ou Destruidor (+1 no multiplicador de crítico). +2 PE por efeito adicional.' },
+    { nome:'Técnica Sublime', trilha:'Aniquilador', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Livro Base',
+      desc:'Adiciona novos efeitos à Técnica Secreta: Letal (+2 na margem de ameaça; pode escolher duas vezes para +5 total) e Perfurante (ignora até 5 pontos de RD de qualquer tipo).' },
+    { nome:'Máquina de Matar', trilha:'Aniquilador', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Livro Base',
+      desc:'A categoria da arma favorita passa a ser reduzida em III, ela recebe +2 na margem de ameaça e seu dano aumenta em um dado do mesmo tipo.' },
+
+    // ── COMBATENTE: COMANDANTE DE CAMPO ──
+    { nome:'Inspirar Confiança', trilha:'Comandante de Campo', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Você pode gastar uma reação e 2 PE para fazer um aliado em alcance curto rolar novamente um teste recém realizado.' },
+    { nome:'Estrategista', trilha:'Comandante de Campo', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'Gaste uma ação padrão e 1 PE por aliado em alcance curto (limitado pelo Intelecto). No próximo turno dos aliados afetados, eles ganham uma ação de movimento adicional.' },
+    { nome:'Brecha na Guarda', trilha:'Comandante de Campo', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Livro Base',
+      desc:'Uma vez por rodada, quando um aliado causar dano em um inimigo em alcance curto, pode gastar reação e 2 PE para que você ou outro aliado faça um ataque adicional contra o mesmo inimigo. Alcance de Inspirar Confiança e Estrategista aumenta para médio.' },
+    { nome:'Oficial Comandante', trilha:'Comandante de Campo', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Livro Base',
+      desc:'Gaste uma ação padrão e 5 PE para que cada aliado em alcance médio receba uma ação padrão adicional no próximo turno.' },
+
+    // ── COMBATENTE: GUERREIRO ──
+    { nome:'Técnica Letal', trilha:'Guerreiro', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Você recebe um aumento de +2 na margem de ameaça com todos os seus ataques corpo a corpo.' },
+    { nome:'Revidar', trilha:'Guerreiro', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'Sempre que bloquear um ataque, você pode gastar uma reação e 2 PE para fazer um ataque corpo a corpo no inimigo que o atacou.' },
+    { nome:'Força Opressora', trilha:'Guerreiro', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Livro Base',
+      desc:'Quando acerta ataque corpo a corpo, pode gastar 1 PE para realizar manobra derrubar ou empurrar como ação livre. Se empurrar, recebe +5 por 10 pontos de dano causado. Se derrubar, pode gastar 1 PE para ataque adicional contra o alvo caído.' },
+    { nome:'Potência Máxima', trilha:'Guerreiro', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Livro Base',
+      desc:'Quando usa Ataque Especial com armas corpo a corpo, todos os bônus numéricos são dobrados. Ex: 5 PE para +5/+15 vira +10/+30.' },
+
+    // ── COMBATENTE: OPERAÇÕES ESPECIAIS ──
+    { nome:'Iniciativa Aprimorada', trilha:'Operações Especiais', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Você recebe +5 em Iniciativa e uma ação de movimento adicional na primeira rodada de combate.' },
+    { nome:'Ataque Extra', trilha:'Operações Especiais', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'Uma vez por rodada, quando faz um ataque, você pode gastar 2 PE para fazer um ataque adicional.' },
+    { nome:'Surto de Adrenalina', trilha:'Operações Especiais', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Livro Base',
+      desc:'Uma vez por rodada, pode gastar 5 PE para realizar uma ação padrão ou de movimento adicional.' },
+    { nome:'Sempre Alerta', trilha:'Operações Especiais', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Livro Base',
+      desc:'Você recebe uma ação padrão adicional no início de cada cena de combate.' },
+
+    // ── COMBATENTE: TROPA DE CHOQUE ──
+    { nome:'Casca Grossa', trilha:'Tropa de Choque', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Você recebe +1 PV para cada 5% de NEX e, quando faz um bloqueio, soma seu Vigor na resistência a dano recebida.' },
+    { nome:'Cai Dentro', trilha:'Tropa de Choque', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'Quando oponente em alcance curto ataca um aliado, gaste reação e 1 PE para forçá-lo a fazer Vontade (DT Vig). Se falhar, o oponente deve atacar você em vez do aliado.' },
+    { nome:'Duro de Matar', trilha:'Tropa de Choque', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Livro Base',
+      desc:'Ao sofrer dano não paranormal, pode gastar reação e 2 PE para reduzir esse dano à metade. Em NEX 85%, pode usar esta habilidade para reduzir dano paranormal também.' },
+    { nome:'Inquebrável', trilha:'Tropa de Choque', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Livro Base',
+      desc:'Enquanto estiver machucado, recebe +5 na Defesa e RD 5. Enquanto estiver morrendo, não fica indefeso e ainda pode realizar ações.' },
+
+    // ── COMBATENTE: PERFORMÁTICO (SaH/AS#3) ──
+    { nome:'Ensaio', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror / Arquivos Secretos #3',
+      desc:'Nova ação de interlúdio "ensaiar combate": recebe +1 na margem de ameaça. Bônus +2 em NEX 40%, +3 em NEX 65%, +4 em NEX 99%. Outros personagens podem ensaiar junto para receber o mesmo bônus.' },
+    { nome:'Frase de Efeito', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Arquivos Secretos #3',
+      desc:'Quando você ou aliado em alcance curto obter acerto crítico, pode gastar 2 PE para mudar o multiplicador de crítico para um valor igual a sua Presença (ou +1 se Presença for menor ou igual).' },
+    { nome:'Mosh Pit', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Arquivos Secretos #3',
+      desc:'Quando flanqueando um alvo, você e todos os aliados flanqueando ou adjacentes recebem +1d6 no dano para cada aliado cercando o alvo (até +5d6).' },
+    { nome:'Ritmo Contagiante', trilha:'Performático', classe:'Combatente/Especialista/Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Arquivos Secretos #3',
+      desc:'No início de cena de combate, você e aliados em alcance médio recebem +5 na Defesa até o fim do combate. Sempre que obtiver acerto crítico, esse bônus aumenta em +1.' },
+
+    // ── ESPECIALISTA: ATIRADOR DE ELITE ──
+    { nome:'Mira de Elite', trilha:'Atirador de Elite', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Você recebe proficiência com armas de fogo que usam balas longas e soma seu Intelecto em rolagens de dano com essas armas.' },
+    { nome:'Disparo Letal', trilha:'Atirador de Elite', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'Quando faz a ação mirar, pode gastar 1 PE para aumentar em +2 a margem de ameaça do próximo ataque até o final do próximo turno.' },
+    { nome:'Disparo Impactante', trilha:'Atirador de Elite', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Livro Base',
+      desc:'Se estiver usando arma de fogo com calibre grosso, pode gastar 2 PE para fazer as manobras derrubar, desarmar, empurrar ou quebrar usando um ataque à distância.' },
+    { nome:'Atirar para Matar', trilha:'Atirador de Elite', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Livro Base',
+      desc:'Quando faz um acerto crítico com arma de fogo, você causa dano máximo, sem precisar rolar dados.' },
+
+    // ── ESPECIALISTA: INFILTRADOR ──
+    { nome:'Ataque Furtivo', trilha:'Infiltrador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Uma vez por rodada, quando atinge um alvo desprevenido ou flanqueado, pode gastar 1 PE para causar +1d6 de dano extra. NEX 40%: +2d6. NEX 65%: +3d6. NEX 99%: +4d6.' },
+    { nome:'Gatuno', trilha:'Infiltrador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'Você recebe +5 em Atletismo e Crime e pode percorrer seu deslocamento normal quando se esconder sem penalidade.' },
+    { nome:'Assassinar', trilha:'Infiltrador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Livro Base',
+      desc:'Gaste ação de movimento e 3 PE para analisar alvo em alcance curto. Até o fim do próximo turno, o primeiro Ataque Furtivo tem seus dados de dano extras dobrados. Se causar dano, o alvo fica inconsciente ou morrendo (Fortitude DT Agi evita).' },
+    { nome:'Sombra Fugaz', trilha:'Infiltrador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Livro Base',
+      desc:'Quando faz um teste de Furtividade após atacar ou fazer outra ação chamativa, pode gastar 3 PE para não sofrer a penalidade de –30 no teste.' },
+
+    // ── ESPECIALISTA: MÉDICO DE CAMPO ──
+    { nome:'Paramédico', trilha:'Médico de Campo', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Use uma ação padrão e 2 PE para curar 2d10 PV de si mesmo ou aliado adjacente. +1d10 PV em NEX 40%, 65% e 99%, gastando +1 PE por dado adicional. Requer kit de medicina.' },
+    { nome:'Equipe de Trauma', trilha:'Médico de Campo', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'Use uma ação padrão e 2 PE para remover uma condição negativa (exceto morrendo) de um aliado adjacente. Requer kit de medicina.' },
+    { nome:'Resgate', trilha:'Médico de Campo', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Livro Base',
+      desc:'Uma vez por rodada, se em alcance curto de aliado machucado/morrendo, pode se aproximar com ação livre. Sempre que curar PV ou remover condições, você e o aliado recebem +5 na Defesa até o início do seu próximo turno.' },
+    { nome:'Reanimação', trilha:'Médico de Campo', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Livro Base',
+      desc:'Uma vez por cena, gaste ação completa e 10 PE para trazer de volta à vida um personagem que tenha morrido na mesma cena (exceto morte por dano massivo).' },
+
+    // ── ESPECIALISTA: NEGOCIADOR ──
+    { nome:'Eloquência', trilha:'Negociador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Gaste ação completa e 1 PE por alvo em alcance curto. Faça teste de Diplomacia, Enganação ou Intimidação vs. Vontade dos alvos. Se vencer, ficam fascinados enquanto você se concentrar (ação padrão por rodada).' },
+    { nome:'Discurso Motivador', trilha:'Negociador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'Gaste ação padrão e 4 PE para inspirar aliados. Você e todos os aliados em alcance curto ganham +5 em testes de perícia até o fim da cena. Em NEX 65%, pode gastar 8 PE para bônus total de +10.' },
+    { nome:'Eu Conheço um Cara', trilha:'Negociador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Livro Base',
+      desc:'Uma vez por missão, ative sua rede de contatos para pedir um favor (trocar equipamento, conseguir local de descanso, ser resgatado de uma cena, etc.). O mestre tem a palavra final.' },
+    { nome:'Truque de Mestre', trilha:'Negociador', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Livro Base',
+      desc:'Gaste 5 PE para simular o efeito de qualquer habilidade que tenha visto um aliado usar durante a cena. Ignora pré-requisitos, mas ainda precisa pagar todos os custos.' },
+
+    // ── ESPECIALISTA: TÉCNICO ──
+    { nome:'Inventário Otimizado', trilha:'Técnico', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Livro Base',
+      desc:'Você soma seu Intelecto à sua Força para calcular sua capacidade de carga.' },
+    { nome:'Remendão', trilha:'Técnico', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Livro Base',
+      desc:'Gaste ação completa e 1 PE para remover a condição quebrado de um equipamento adjacente até o final da cena. Qualquer equipamento geral tem sua categoria reduzida em I para você.' },
+    { nome:'Improvisar', trilha:'Técnico', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Livro Base',
+      desc:'Pode improvisar equipamentos com materiais ao redor. Escolha um equipamento geral e gaste ação completa + 2 PE (mais 2 PE por categoria do item). Cria versão funcional que se torna inútil ao final da cena.' },
+    { nome:'Preparado para Tudo', trilha:'Técnico', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Livro Base',
+      desc:'Sempre que precisar de um item qualquer (exceto armas), pode gastar ação de movimento e 3 PE por categoria do item para lembrar que colocou ele no fundo da bolsa.' },
+
+    // ── ESPECIALISTA: BIBLIOTECÁRIO (SaH) ──
+    { nome:'Conhecimento Prático', trilha:'Bibliotecário', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror',
+      desc:'Quando faz um teste de perícia (exceto Luta e Pontaria), pode gastar 2 PE para mudar o atributo-base para Int. Com Conhecimento Aplicado, custo reduzido em –1 PE.' },
+    { nome:'Leitor Contumaz', trilha:'Bibliotecário', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Sobrevivendo ao Horror',
+      desc:'Cada dado de bônus da ação de interlúdio "ler" muda para 1d8 e pode ser aplicado em qualquer perícia. Ao usar o bônus, pode gastar 2 PE para aumentar em +1 dado.' },
+    { nome:'Rato de Biblioteca', trilha:'Bibliotecário', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Sobrevivendo ao Horror',
+      desc:'Sabe como extrair informações em ambientes repletos de livros. Pode fazer testes especiais de investigação com bônus quando em bibliotecas e locais similares.' },
+
+    // ── OCULTISTA: CONDUÍTE ──
+    { nome:'Ampliar Ritual', trilha:'Conduíte', classe:'Ocultista', tipo:'trilha', elem:'ENERGIA', nex:'10%', src:'Livro Base',
+      desc:'Quando lança um ritual, pode gastar +2 PE para aumentar seu alcance em um passo ou dobrar sua área de efeito.' },
+    { nome:'Acelerar Ritual', trilha:'Conduíte', classe:'Ocultista', tipo:'trilha', elem:'ENERGIA', nex:'40%', src:'Livro Base',
+      desc:'Uma vez por rodada, pode aumentar o custo de um ritual em 4 PE para conjurá-lo como uma ação livre.' },
+    { nome:'Anular Ritual', trilha:'Conduíte', classe:'Ocultista', tipo:'trilha', elem:'ENERGIA', nex:'65%', src:'Livro Base',
+      desc:'Quando for alvo de um ritual, pode gastar uma quantidade de PE igual ao custo pago por esse ritual e fazer um teste oposto de Ocultismo contra o conjurador. Se vencer, anula o ritual.' },
+
+    // ── OCULTISTA: FLAGELADOR ──
+    { nome:'Poder do Flagelo', trilha:'Flagelador', classe:'Ocultista', tipo:'trilha', elem:'SANGUE', nex:'10%', src:'Livro Base',
+      desc:'Ao conjurar um ritual, pode gastar seus próprios pontos de vida para pagar o custo em PE, à taxa de 2 PV por PE. PV gastos dessa forma só podem ser recuperados com descanso.' },
+    { nome:'Abraçar a Dor', trilha:'Flagelador', classe:'Ocultista', tipo:'trilha', elem:'SANGUE', nex:'40%', src:'Livro Base',
+      desc:'Sempre que sofrer dano não paranormal, pode gastar uma reação e 2 PE para reduzir esse dano à metade.' },
+    { nome:'Presença Poderosa', trilha:'Flagelador', classe:'Ocultista', tipo:'trilha', elem:'SANGUE', nex:'40%', src:'Livro Base',
+      desc:'Sua resiliência mental permite extrair mais do Outro Lado. Você adiciona sua Presença nos efeitos numéricos de seus rituais.' },
+
+    // ── OCULTISTA: GRADUADO ──
+    { nome:'Saber Ampliado', trilha:'Graduado', classe:'Ocultista', tipo:'trilha', elem:'CONHECIMENTO', nex:'10%', src:'Livro Base',
+      desc:'Você aprende um ritual de 1º círculo adicional. Toda vez que ganha acesso a um novo círculo, aprende um ritual adicional daquele círculo. Esses rituais não contam no limite.' },
+    { nome:'Grimório Ritualístico', trilha:'Graduado', classe:'Ocultista', tipo:'trilha', elem:'CONHECIMENTO', nex:'40%', src:'Livro Base',
+      desc:'Você cria um grimório especial que armazena rituais. Aprende uma quantidade de rituais de 1º ou 2º círculos igual ao seu Intelecto. Ao ganhar acesso a um novo círculo, pode incluir um ritual desse círculo.' },
+
+    // ── OCULTISTA: INTUITIVO ──
+    { nome:'Mente Sã', trilha:'Intuitivo', classe:'Ocultista', tipo:'trilha', elem:'CONHECIMENTO', nex:'10%', src:'Livro Base',
+      desc:'Você recebe resistência paranormal +5 (+5 em testes de resistência contra efeitos paranormais).' },
+
+    // ── OCULTISTA: LÂMINA PARANORMAL ──
+    { nome:'Lâmina Maldita', trilha:'Lâmina Paranormal', classe:'Ocultista', tipo:'trilha', elem:'MORTE', nex:'10%', src:'Livro Base',
+      desc:'Você aprende o ritual Amaldiçoar Arma. Quando conjura esse ritual, pode usar Ocultismo para testes de ataque.' },
+
+    // ── OCULTISTA: EXORCISTA (SaH) ──
+    { nome:'Revelação do Mal', trilha:'Exorcista', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror',
+      desc:'Recebe treinamento em Religião (ou +2 se já treinado). Pode usar Religião no lugar de Investigação e Percepção para notar pistas e rastros paranormais.' },
+
+    // ── OCULTISTA: MALEDICTÓLOGO (AS#1) ──
+    { nome:'Identificação Macabra', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Arquivos Secretos #1',
+      desc:'Quando faz teste para identificar item amaldiçoado ou ritual, pode gastar 1 PE para +1d10. Sofre apenas –5 para identificar itens amaldiçoados como ação completa.' },
+    { nome:'Compreensão de Maldições', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Arquivos Secretos #1',
+      desc:'Gaste ação de interlúdio e 3 PE para fazer leituras em item amaldiçoado (Ocultismo DT 10+5/cat.). Se contiver ritual: aprende o ritual. Se não: pode transferir a maldição para outro item ou tatuagem no corpo.' },
+    { nome:'Reproduzir Maldição', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Arquivos Secretos #1',
+      desc:'Pode memorizar uma maldição de item já manipulado e depois aplicá-la a outro item (Ocultismo DT 10+5/cat., perde 1d8+1 SAN se passar, 2d8+2 SAN se falhar). Maldições aumentam categorias de itens (máx Cat. IV).' },
+    { nome:'Maldição Suprema', trilha:'Maledictólogo', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Arquivos Secretos #1',
+      desc:'Ao usar Reproduzir Maldição, considera o item três categorias efetivas a menos, permitindo aplicar maldições em itens de categoria mais alta.' },
+  ],
+
+  // ══════════════════════════════════════════════
+  // PODERES PARANORMAIS
+  // ══════════════════════════════════════════════
+  paranormal: [
+    { nome:'Aprender Ritual', elemento:'NEUTRO', tipo:'paranormal', elem:'NEUTRO', nex:'—', src:'Livro Base',
+      desc:'Você aprende e pode conjurar um ritual de 1º círculo à sua escolha. A partir de 45% de NEX, aprende um ritual de até 2º círculo; a partir de 75%, de até 3º círculo. Pode substituir um ritual que já conhece.' },
+    { nome:'Resistir a <Elemento>', elemento:'NEUTRO', tipo:'paranormal', elem:'NEUTRO', nex:'—', src:'Livro Base',
+      desc:'Escolha entre Conhecimento, Energia, Morte ou Sangue. Você recebe resistência 10 contra esse elemento. Afinidade: aumenta a resistência para 20.' },
+
+    // CONHECIMENTO
+    { nome:'Expansão de Conhecimento', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', src:'Livro Base',
+      desc:'Você aprende um poder de classe que não pertença à sua classe (deve preencher os pré-requisitos). Pré-requisito: Conhecimento 1. Afinidade: aprende um segundo poder de classe que não pertença à sua classe.' },
+    { nome:'Percepção Paranormal', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', src:'Livro Base',
+      desc:'Em cenas de investigação, sempre que fizer um teste para procurar pistas, pode rolar novamente um dado com resultado menor que 10. Deve aceitar a segunda rolagem. Afinidade: pode rolar novamente até dois dados com resultado menor que 10.' },
+    { nome:'Precognição', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', src:'Livro Base',
+      desc:'Você possui um "sexto sentido" que o avisa do perigo. Você recebe +2 em Defesa e em testes de resistência. Pré-requisito: Conhecimento 1. Afinidade: você fica imune à condição desprevenido.' },
+    { nome:'Sensitivo', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', src:'Livro Base',
+      desc:'Você consegue sentir as emoções e intenções de outros personagens, recebendo +5 em testes de Diplomacia, Intimidação e Intuição. Afinidade: quando faz teste oposto usando essas perícias, o oponente sofre –5.' },
+    { nome:'Visão do Oculto', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', src:'Livro Base',
+      desc:'Você recebe +5 em testes de Percepção e enxerga no escuro. Afinidade: você ignora camuflagem.' },
+    { nome:'Conhecimento de Direção Precognitiva', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', src:'Arquivos Secretos #3',
+      desc:'Você recebe +5 em testes de Percepção ou Sobrevivência para se localizar até um local, mesmo nunca tendo visto ou sabendo onde fica. Afinidade: bônus aumenta para +10.' },
+
+    // ENERGIA
+    { nome:'Afortunado', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Livro Base',
+      desc:'Uma vez por rolagem, pode rolar novamente um resultado 1 em qualquer dado que não seja d20. Afinidade: além disso, uma vez por teste, pode rolar novamente um resultado 1 em d20.' },
+    { nome:'Campo Protetor', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Livro Base',
+      desc:'Quando usa a ação esquiva, pode gastar 1 PE para receber +5 em Defesa. Pré-requisito: Energia 1. Afinidade: também recebe +5 em Reflexo e, até o início do próximo turno, se passar em teste de Reflexo que reduziria o dano à metade, não sofre nenhum dano.' },
+    { nome:'Causalidade Fortuita', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Livro Base',
+      desc:'Em cenas de investigação, a DT para procurar pistas diminui em –5 para você até encontrar uma pista. Afinidade: a DT para procurar pistas sempre diminui em –5 para você.' },
+    { nome:'Golpe de Sorte', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Livro Base',
+      desc:'Seus ataques recebem +1 na margem de ameaça. Pré-requisito: Energia 1. Afinidade: seus ataques recebem +1 no multiplicador de crítico.' },
+    { nome:'Manipular Entropia', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Livro Base',
+      desc:'Pode gastar 2 PE para fazer um alvo em alcance curto (exceto você mesmo) rolar novamente um dos dados em um teste de perícia. Pré-requisito: Energia 1. Afinidade: o alvo rola novamente todos os dados que você escolher.' },
+    { nome:'Instrumento Elétrico de Combate', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Arquivos Secretos #3',
+      desc:'Transforma instrumento musical em arma de Energia (tática, 2 mãos, alcance curto, 2d8 dano de Energia, testes de ataque com Artes, soma Presença no dano, crítico 20/x2, Cat. II, 2 espaços). Se quebrar, pode ativar em novo instrumento.' },
+
+    // MORTE
+    { nome:'Encarar a Morte', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', src:'Livro Base',
+      desc:'Durante cenas de ação, seu limite de gasto de PE aumenta em +1. Afinidade: durante cenas de ação, o limite de gasto de PE aumenta em +2 (total +3).' },
+    { nome:'Escapar da Morte', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', src:'Livro Base',
+      desc:'Uma vez por cena, quando receber dano que o deixaria com 0 PV, você fica com 1 PV. Não funciona em caso de dano massivo. Pré-requisito: Morte 1. Afinidade: evita completamente o dano; em dano massivo, fica com 1 PV.' },
+    { nome:'Potencial Aprimorado', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', src:'Livro Base',
+      desc:'Você recebe +1 ponto de esforço por NEX. Afinidade: você recebe +1 PE adicional por NEX (total +2 PE por NEX).' },
+    { nome:'Potencial Reaproveitado', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', src:'Livro Base',
+      desc:'Uma vez por rodada, quando passa num teste de resistência, você ganha 2 PE temporários cumulativos. Desaparecem no final da cena. Afinidade: ganha 3 PE temporários em vez de 2.' },
+    { nome:'Surto Temporal', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', src:'Livro Base',
+      desc:'Uma vez por cena, durante seu turno, pode gastar 3 PE para realizar uma ação padrão adicional. Pré-requisito: Morte 2. Afinidade: em vez de uma vez por cena, pode usar uma vez por turno.' },
+
+    // SANGUE
+    { nome:'Anatomia Insana', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Livro Base',
+      desc:'Você tem 50% de chance (resultado par em 1d4) de ignorar o dano adicional de um acerto crítico ou ataque furtivo. Pré-requisito: Sangue 2. Afinidade: você é imune aos efeitos de acertos críticos e ataques furtivos.' },
+    { nome:'Arma de Sangue', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Livro Base',
+      desc:'Gaste ação de movimento e 2 PE para produzir garras ou lâmina de sangue cristalizado (arma simples leve, 1d6 de Sangue). Uma vez por turno ao agredir, gaste 1 PE para ataque adicional. Dura até o fim da cena. Afinidade: arma permanente causando 1d10 de Sangue.' },
+    { nome:'Sangue de Ferro', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Livro Base',
+      desc:'Você recebe +2 pontos de vida por NEX. Afinidade: você recebe +5 em Fortitude e se torna imune a venenos e doenças.' },
+    { nome:'Sangue Fervente', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Livro Base',
+      desc:'Enquanto estiver machucado, recebe +1 em Agilidade ou Força (escolha sempre que ativado). Pré-requisito: Sangue 2. Afinidade: o bônus aumenta para +2.' },
+    { nome:'Sangue Vivo', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Livro Base',
+      desc:'Na primeira vez que ficar machucado em uma cena, recebe cura acelerada 2 (nunca cura acima de metade dos PV máximos). Termina no fim da cena ou ao perder a condição machucado. Pré-requisito: Sangue 1. Afinidade: cura acelerada aumenta para 5.' },
+    // AS#1
+    { nome:'Ferro Maculado', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1',
+      desc:'Gaste ação de movimento e 2 PV para amaldiçoar 1 projétil de munição. O projétil causa +1d6 de dano de Sangue uma única vez. Afinidade: +1d8.' },
+    { nome:'Sangue Corrosivo', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1',
+      desc:'Gaste ação de movimento e 1 PE para tornar o sangue corrosivo até o fim da cena. Quando sofre dano de ser adjacente, causa 1d10 dano de Sangue nele. Afinidade: +2d10.' },
+    { nome:'Placas Sanguinolentas', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1',
+      desc:'Quando conjura um ritual de Sangue, recebe bônus na Defesa igual ao círculo do ritual até o início do próximo turno. Afinidade: bônus = círculo do ritual +2.' },
+    { nome:'Sangue Prazeroso', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #1',
+      desc:'Enquanto estiver machucado, recebe RD 5. Afinidade: também recebe +20 PV temporários (uma vez por cena).' },
+    // AS#2
+    { nome:'Predador de Sangue', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #2',
+      desc:'Gaste ação padrão e 3 PE para memorizar o odor de uma vítima, recebendo +1d20 em testes para rastreá-la, percebê-la e atacá-la. Só pode memorizar uma vítima por vez. Afinidade: até 3 vítimas simultaneamente.' },
+    { nome:'Engolir Sangue', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #2',
+      desc:'Gaste ação completa para consumir carne humana e recuperar 2d8+2 PV, mas perde 1d4 SAN. Afinidade: cura 4d8+4 PV.' },
+  ],
+
+  // ══════════════════════════════════════════════
+  // PODERES GERAIS
+  // ══════════════════════════════════════════════
+  poder_geral: [
+    { nome:'<Habilidade> Aprimorada', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1',
+      desc:'Escolha uma habilidade ou ritual que tenha DT. A DT para resistir aumenta em +2. Pode ser escolhido até duas vezes para a mesma habilidade/ritual (total +5). Pode ser escolhido para habilidades e rituais diferentes.' },
+    { nome:'Instintos Urbanos', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1',
+      desc:'Recebe treinamento em Crime (ou +2 se treinado). Quando entra em ambiente fechado, pode fazer Crime DT 20 para identificar saídas. Se passar: ação de movimento extra no primeiro turno da fuga e +2 na Defesa até fugir. Pré-req: Agi 2.' },
+    { nome:'Curiosidade Oculta', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1',
+      desc:'Recebe treinamento em Ocultismo (ou +2 se treinado). Quando faz teste de Vontade, pode gastar 2 PE para trocar a perícia por Ocultismo. Pré-req: Int 2.' },
+    { nome:'Cicatrizes Expostas', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #1',
+      desc:'Pode gastar ação de movimento para expor cicatriz, causando +1d8 dano do mesmo tipo, mas sofre –5 em Vontade e testes que exijam calma. Efeitos duram até o fim da cena. Pré-req: ter cicatrizes.' },
+    { nome:'Revidar Violento', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #2',
+      desc:'Você pode fazer uma segunda reação especial de defesa na mesma rodada, desde que ela seja um contra-ataque. Pré-req: For 2 ou Agi 2.' },
+    { nome:'Especialista em Correntes (Prender)', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #2',
+      desc:'Gaste ação completa para prender um item em corrente amarrada ao corpo. Não pode ser desarmado sem quebrar a corrente. +2 em testes de manobras com correntes, chicotes e armas presas. Pré-req: Agi 2.' },
+    { nome:'Especialista em Correntes (Puxar)', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #2',
+      desc:'Quando acerta ataque com corrente ou semelhante, pode gastar 2 PE para puxar o alvo adjacente. Se o alvo se afastar, sofre –5 em ataques contra outros alvos por 1 rodada. Pré-req: For 2 ou Agi 2, treinado em Luta.' },
+    { nome:'Ambidestria', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #3',
+      desc:'Se empunhando duas armas (pelo menos uma leve) e fizer agredir, pode fazer dois ataques. Sofre –1d20 em todos os ataques até o próximo turno. Com Combater com Duas Armas: sem penalidade. Pré-req: For 2 ou Agi 2, treinado em Luta.' },
+    { nome:'Entrada Triunfal', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #3',
+      desc:'Ao entrar em um ambiente, uma vez por sessão, pode anunciar chegada em voz alta para receber +1d20 no primeiro teste (exceto Furtividade). Pode transferir o bônus ao primeiro teste de aliado em alcance longo. Pré-req: Pre 2.' },
+    { nome:'Papinho Sedutor', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #3',
+      desc:'Quando faz teste de perícia baseado em Presença para seduzir, pode gastar 1 PE para +5. Se passar, o alvo fica apaixonado. Pré-req: Pre 2.' },
+  ],
+
+  // ══════════════════════════════════════════════
+  // PODERES DE SACRIFÍCIO (AS#3)
+  // ══════════════════════════════════════════════
   poder_sacrificio: [
-    { nome:'Causar Culpa', tipo:'poder_sacrificio', elem:'CONHECIMENTO', src:'Arquivos Secretos #3', desc:'Gasta ação padrão e 3 PE para causar culpa terrível em pessoa em alcance curto (Vontade DT Pre+5 evita). Se falhar, o alvo fica indefeso (pode resistir no início de seus turnos). Pré-req: ser o sacrifício da Culpa.' },
-    { nome:'Despertar Obsessão', tipo:'poder_sacrificio', elem:'SANGUE', src:'Arquivos Secretos #3', desc:'Gasta ação padrão e 3 PE para encarar alguém em alcance curto. Se desviar o olhar: fica desprevenido 1 rodada. Se encarar e falhar (Vontade DT Pre+5): deve gastar ações para se aproximar e adorar o conjurador, ou se automutila. Pré-req: ser o sacrifício da Obsessão.' },
-    { nome:'Arrogância Diabólica', tipo:'poder_sacrificio', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Gasta ação padrão e 3 PE para convencer alguém (alcance médio) de que pode fazer tudo. Vontade DT Pre+5; se falhar, faz ação imprudente no próximo turno. Se passar: sofre 2d6 dano mental (irresistível). Pré-req: ser o sacrifício do Orgulho.' },
-    { nome:'Ódio Suprimido', tipo:'poder_sacrificio', elem:'SANGUE', src:'Arquivos Secretos #3', desc:'Gasta ação completa e 3 PE para explodir de raiva. Seres em alcance curto fazem Fortitude e Reflexos (DT Pre+5). Falha em Fortitude: sofre dano corpo a corpo e cai. Falha em Reflexos: sofre dano à distância. Após, fica exausto até fim da cena. Pré-req: ser o sacrifício do Rancor.' },
-    { nome:'Estimular Hedonismo', tipo:'poder_sacrificio', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Gasta ação padrão e 3 PE para inundar alguém em alcance curto com prazer insano (Vontade DT Pre+5). Se falhar: fica indefeso 1 rodada (sem autopreservação). Pré-req: ser o sacrifício do Prazer.' },
-    { nome:'Fruto da Ambição', tipo:'poder_sacrificio', elem:'NEUTRO', src:'Arquivos Secretos #3', desc:'Escolha um poder ou ritual que conheça. Além do efeito normal, ele se torna um gatilho para assumir uma forma poderosa (funciona como As Máscaras do AS#2). Pré-req: ser o sacrifício do Desejo.' },
+    { nome:'Causar Culpa', tipo:'poder_sacrificio', elem:'CONHECIMENTO', src:'Arquivos Secretos #3',
+      desc:'Gaste ação padrão e 3 PE para causar culpa terrível em pessoa em alcance curto (Vontade DT Pre+5 evita). Se falhar, o alvo fica indefeso (pode resistir no início de seus turnos). Pré-req: ser o sacrifício da Culpa.' },
+    { nome:'Despertar Obsessão', tipo:'poder_sacrificio', elem:'SANGUE', src:'Arquivos Secretos #3',
+      desc:'Gaste ação padrão e 3 PE para encarar alguém em alcance curto. Se desviar o olhar: fica desprevenido 1 rodada. Se encarar e falhar (Vontade DT Pre+5): deve gastar ações para se aproximar e adorar o conjurador, ou se automutila. Pré-req: ser o sacrifício da Obsessão.' },
+    { nome:'Arrogância Diabólica', tipo:'poder_sacrificio', elem:'NEUTRO', src:'Arquivos Secretos #3',
+      desc:'Gaste ação padrão e 3 PE para convencer alguém (alcance médio) de que pode fazer tudo. Vontade DT Pre+5; se falhar, faz ação imprudente no próximo turno. Se passar: sofre 2d6 dano mental irresistível. Pré-req: ser o sacrifício do Orgulho.' },
+    { nome:'Ódio Suprimido', tipo:'poder_sacrificio', elem:'SANGUE', src:'Arquivos Secretos #3',
+      desc:'Gaste ação completa e 3 PE para explodir de raiva. Seres em alcance curto fazem Fortitude e Reflexos (DT Pre+5). Falha em Fortitude: sofre dano corpo a corpo e cai. Falha em Reflexos: sofre dano à distância. Após, fica exausto até fim da cena. Pré-req: ser o sacrifício do Rancor.' },
+    { nome:'Estimular Hedonismo', tipo:'poder_sacrificio', elem:'NEUTRO', src:'Arquivos Secretos #3',
+      desc:'Gaste ação padrão e 3 PE para inundar alguém em alcance curto com prazer insano (Vontade DT Pre+5). Se falhar: fica indefeso 1 rodada (sem autopreservação). Pré-req: ser o sacrifício do Prazer.' },
+    { nome:'Fruto da Ambição', tipo:'poder_sacrificio', elem:'NEUTRO', src:'Arquivos Secretos #3',
+      desc:'Escolha um poder ou ritual que conheça. Além do efeito normal, ele se torna um gatilho para assumir uma forma poderosa (funciona como As Máscaras do AS#2). Pré-req: ser o sacrifício do Desejo.' },
   ],
- 
+
+  // ══════════════════════════════════════════════
+  // PODERES DE INTENÇÃO (AS#2)
+  // ══════════════════════════════════════════════
   poder_intencao: [
-    { nome:'Provar-se Digno', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2', desc:'Gatilho: Obedecer a Ele (d\'Ele). Efeito: Ao fazer um teste, em vez de rolar, pode gastar reação para sucesso automático (como 20 natural). Uma vez por cena, apenas na mesma cena em que obedeceu uma vontade d\'Ele.' },
-    { nome:'Silêncio Assombroso', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2', desc:'Gatilho: Provar o sangue de ser adjacente machucado (ação padrão). Efeito: Ataques causam +1d8 e +2 na margem de ameaça. Acerto crítico: corta a boca do alvo, silenciando-o por 1d4 rodadas. Dura até fim da cena.' },
-    { nome:'Escudo da Dor', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2', desc:'Gatilho: Ser ferido 3 vezes (cada ferimento: mínimo 5 de dano). Efeito: Pode gastar reação para receber RD 25. Enquanto ativo, perde 5 PV no início dos turnos. Pode gastar reação para desativar.' },
-    { nome:'Vingança do Guardião', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2', desc:'Gatilho: Ouvir o grito de morte de aliado que tentou proteger (aliado morrendo em linha de visão/audição). Efeito: Pode gastar ação padrão para fazer ataque como reação contra quem deixou o aliado morrendo. Pode usar ao ficar inconsciente por inimigo.' },
-    { nome:'Labirinto de Intenções', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2', desc:'Gatilho: Testemunhar a morte de uma pessoa. Efeito: Pode gastar ação padrão para absorver as intenções de pessoa morta em alcance curto e recuperar PV de ser em alcance curto equivalentes a metade dos PV máximos do cadáver.' },
+    { nome:'Provar-se Digno', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2',
+      desc:"Gatilho: Obedecer a Ele (d'Ele). Efeito: Ao fazer um teste, em vez de rolar, pode gastar reação para sucesso automático (como 20 natural). Uma vez por cena, apenas na mesma cena em que obedeceu uma vontade d'Ele." },
+    { nome:'Silêncio Assombroso', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2',
+      desc:'Gatilho: Provar o sangue de ser adjacente machucado (ação padrão). Efeito: Ataques causam +1d8 e +2 na margem de ameaça. Acerto crítico: corta a boca do alvo, silenciando-o por 1d4 rodadas. Dura até fim da cena.' },
+    { nome:'Escudo da Dor', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2',
+      desc:'Gatilho: Ser ferido 3 vezes (mínimo 5 de dano cada). Efeito: Pode gastar reação para receber RD 25. Enquanto ativo, perde 5 PV no início dos turnos. Pode gastar reação para desativar.' },
+    { nome:'Vingança do Guardião', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2',
+      desc:'Gatilho: Ouvir o grito de morte de aliado que tentou proteger. Efeito: Pode gastar ação padrão para fazer ataque como reação contra quem deixou o aliado morrendo. Pode usar ao ficar inconsciente por inimigo.' },
+    { nome:'Labirinto de Intenções', tipo:'poder_intencao', elem:'INTENÇÃO', src:'Arquivos Secretos #2',
+      desc:'Gatilho: Testemunhar a morte de uma pessoa. Efeito: Pode gastar ação padrão para absorver as intenções de pessoa morta em alcance curto e recuperar PV de ser em alcance curto equivalentes a metade dos PV máximos do cadáver.' },
   ],
- 
+
+  // ══════════════════════════════════════════════
+  // ORIGENS
+  // ══════════════════════════════════════════════
   origem: [
-    // Originais
-    { nome:'Ingrediente Secreto', origem:'Chefe de Cozinha', tipo:'origem', elem:'NEUTRO', desc:'Você pode preparar refeições especiais que restauram 2d6 PV e 1d4 SAN por porção. Requer ingredientes e 1 hora de preparo.' },
-    { nome:'Técnicas Medicinais', origem:'Agente de Saúde', tipo:'origem', elem:'NEUTRO', desc:'Kits médicos nas suas mãos curam o dobro do normal. Você pode tratar lesões graves com um teste de Medicina bem-sucedido.' },
-    { nome:'Rede de Contatos', origem:'Policial / Detetive', tipo:'origem', elem:'NEUTRO', desc:'Possui contatos em delegacias e agências. Uma vez por sessão, pode obter informações privilegiadas ou acesso a locais restritos.' },
-    { nome:'Código de Combate', origem:'Militar', tipo:'origem', elem:'NEUTRO', desc:'+2 em Iniciativa e em testes de Atletismo. Você nunca entra em pânico em situações de combate.' },
-    { nome:'Hacker Iniciante', origem:'Programador / TI', tipo:'origem', elem:'NEUTRO', desc:'+3 em testes de Tecnologia. Pode invadir sistemas de segurança simples sem equipamento especial.' },
-    { nome:'Carisma Natural', origem:'Artista / Músico', tipo:'origem', elem:'NEUTRO', desc:'+3 em testes de Diplomacia e Artes. Uma vez por sessão, pode usar uma performance para distrair ou acalmar um grupo.' },
-    { nome:'Olho Clínico', origem:'Pesquisador / Cientista', tipo:'origem', elem:'NEUTRO', desc:'+3 em Ciências e Investigação. Você percebe detalhes que outros ignoram.' },
-    { nome:'Fé Inabalável', origem:'Religioso / Padre', tipo:'origem', elem:'NEUTRO', desc:'+2 em Sanidade. Criaturas de Medo e Morte têm desvantagem em ataques contra você quando você afirmar sua fé.' },
-    { nome:'Negociação Forçada', origem:'Advogado / Executivo', tipo:'origem', elem:'NEUTRO', desc:'+3 em Enganação e Diplomacia. Uma vez por sessão, pode exigir que um NPC releve uma informação verdadeira.' },
-    // SaH — Novas origens
-    { nome:'Companheiro Animal', origem:'Amigo dos Animais', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Adestramento e Percepção. Entende intenções de animais e usa Adestramento para mudar atitude deles. Possui um animal aliado (+2 em uma perícia a escolha). Em NEX 35%, fornece bônus de aliado. Em NEX 70%, fornece habilidade do tipo de aliado. Se morrer: –10 SAN permanente.' },
-    { nome:'Acostumado ao Extremo', origem:'Astronauta', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Ciências e Fortitude. Quando sofre dano de fogo, frio ou mental, pode gastar 1 PE para reduzir em 5. Cada uso adicional na mesma cena aumenta o custo em +1 PE.' },
-    { nome:'Fome do Outro Lado', origem:'Chef do Outro Lado', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Ocultismo e Profissão (cozinheiro). Pode usar partes de criaturas paranormais como ingredientes. Gastar ação de interlúdio e 1 ingrediente para preparar prato: Profissão DT 15+5 (mestre oculta resultado). Se passar: RD 10 contra tipo do elemento da criatura. Se falhar: vulnerabilidade. O personagem perde 1 SAN permanente por refeição consumida.' },
-    { nome:'Poder da Amizade', origem:'Nerd Entusiasta', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Atualidades e Tecnologia. Escolha um melhor amigo: +2 em todos os testes de perícia se em alcance médio e puderem se ver. Se ele morrer: –1 PE total para cada 5% de NEX até o fim da missão.' },
-    { nome:'Não É Fantasia, É Cosplay!', origem:'Cosplayer', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Artes e Vontade. Pode fazer testes de disfarce usando Artes em vez de Enganação. Se estiver com cosplay relacionado ao teste, recebe +2.' },
-    { nome:'Conexões', origem:'Diplomata', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Atualidades e Diplomacia. +2 em Diplomacia. Se puder contatar um NPC capaz de auxiliar, pode gastar 10 minutos e 2 PE para substituir um teste de perícia por um teste de Diplomacia até o fim da cena.' },
-    { nome:'Manual do Sobrevivente', origem:'Explorador', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Fortitude e Sobrevivência. Ao fazer teste para resistir a armadilhas, clima, doenças, fome, sede, fumaça, sono, sufocamento ou veneno, pode gastar 2 PE para +5 no teste. Em interlúdios, condições de sono precárias são consideradas normais.' },
-    { nome:'Mutação', origem:'Experimento', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Atletismo e Fortitude. Recebe RD 2/mental e +2 em uma perícia de Força, Agilidade ou Vigor. Sofre –5 em Diplomacia.' },
-    { nome:'Conhecimento Oculto', origem:'Fanático por Criaturas', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Investigação e Ocultismo. Pode fazer testes de Ocultismo para identificar criaturas a partir de pistas (sem saber identidade específica). Se passar, recebe +2 em todos os testes contra a criatura até o fim da missão.' },
-    { nome:'Através da Lente', origem:'Fotógrafo', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Artes e Percepção. Quando faz teste de Investigação ou Percepção olhando por câmera ou analisando fotos, pode gastar 2 PE para +5 (mas anda à metade do deslocamento enquanto olha pela lente).' },
-    { nome:'Invenção Paranormal', origem:'Inventor Paranormal', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Profissão (engenheiro) e Vontade. Possui invento paranormal (Cat. 0, 1 espaço) com um ritual de 1º círculo. Ativar: ação padrão + teste de Profissão DT 15+5 por ativação anterior. Se passar: executa o ritual sem custo em PE. Se falhar: enguiça. Ação de interlúdio para manutenção (conserta e redefine DT para 15).' },
-    { nome:'A Culpa é das Estrelas', origem:'Jovem Místico', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Ocultismo e Religião. Escolha um número da sorte (1-6). No início de cada cena, pode gastar 1 PE e rolar 1d6: se rolar seu número, recebe +2 em testes de perícia até o fim da cena. Caso contrário, escolhe mais um número da sorte (resetando ao rolar sucesso).' },
-    { nome:'Luto Habitual', origem:'Legista do Turno da Noite', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Ciências e Medicina. Sofre apenas metade do dano mental ao presenciar cenas típicas da rotina de um legista (mortes, cadáveres, órgãos). Quando faz teste de Medicina para primeiros socorros ou necropsia, pode gastar 2 PE para +5.' },
-    { nome:'Mãos no Volante', origem:'Motorista', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Pilotagem e Reflexos. Não sofre penalidades em testes de ataque por estar em veículo em movimento. Ao pilotar e precisar fazer teste de Pilotagem ou resistência, pode gastar 2 PE para +5.' },
-    { nome:'O Inteligentão', origem:'Nerd Entusiasta', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Ciências e Tecnologia. O bônus ao usar a ação de interlúdio "ler" aumenta em +1 dado (de +1d6 para +2d6).' },
-    { nome:'Terapia', origem:'Psicólogo', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Intuição e Profissão (psicólogo). Pode usar Profissão (psicólogo) como Diplomacia. Uma vez por rodada, quando você ou aliado em alcance curto falha em teste de resistência contra efeito de dano mental, pode gastar 2 PE para substituir o resultado pelo de um teste de Profissão (psicólogo).' },
-    { nome:'Luta ou Fuga', origem:'Profetizado', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Vontade e outra relacionada à premonição. Recebe +2 em Vontade. Quando surge referência à sua premonição em cena, recebe +2 PE temporários até o fim da cena.' },
-    { nome:'Encontrar a Verdade', origem:'Repórter Investigativo', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror', desc:'Perícias: Atualidades e Investigação. Pode usar Investigação no lugar de Diplomacia para persuadir e mudar atitude. Quando faz teste de Investigação, pode gastar 2 PE para +5.' },
-    // AS#1 — Novas origens
-    { nome:'Mácula Ritualística', origem:'Ferido por Ritual', tipo:'origem', elem:'NEUTRO', src:'Arquivos Secretos #1', desc:'Perícias: Ocultismo e 1 perícia do elemento (Fortitude=Sangue, Vontade=Morte/Conhecimento, Reflexos=Energia). Aprende e pode conjurar ritual de 1º círculo do elemento correspondente; uma vez por cena, pode conjurá-lo sem gastar PE (ainda gasta PE por formas avançadas). Não conta no limite de rituais. Sofre –5 em testes de resistência contra efeitos desse elemento.' },
-    { nome:'Sofrimento de Sangue', origem:'Transtornado Arrependido', tipo:'origem', elem:'SANGUE', src:'Arquivos Secretos #1', desc:'Perícias: Luta e Ocultismo. Recebe RD 2/mental, +1 para cada 2 rituais/poderes de Sangue que possua. Contudo, pesadelos impedem descanso tranquilo: condição de descanso é sempre 1 categoria pior.' },
+    // LIVRO BASE
+    { nome:'Saber é Poder', origem:'Acadêmico', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Ciências e Investigação. Quando faz um teste usando Intelecto, pode gastar 2 PE para receber +5 nesse teste.' },
+    { nome:'Técnica Medicinal', origem:'Agente de Saúde', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Intuição e Medicina. Sempre que cura um personagem, adiciona seu Intelecto no total de PV curados.' },
+    { nome:'Vislumbres do Passado', origem:'Amnésico', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Duas à escolha do mestre. Uma vez por sessão, pode fazer um teste de Intelecto (DT 10) para reconhecer pessoas ou lugares familiares. Se passar, recebe 1d4 PE temporários e, a critério do mestre, uma informação útil.' },
+    { nome:'Magnum Opus', origem:'Artista', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Artes e Enganação. Uma vez por missão, pode determinar que um personagem envolvido numa cena de interação o reconheça, recebendo +5 em testes de Presença e perícias baseadas em Presença contra aquele personagem.' },
+    { nome:'110%', origem:'Atleta', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Acrobacia e Atletismo. Quando faz um teste de perícia usando Força ou Agilidade (exceto Luta e Pontaria), pode gastar 2 PE para receber +5 nesse teste.' },
+    { nome:'Ingrediente Secreto', origem:'Chef', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Fortitude e Profissão (cozinheiro). Em cenas de interlúdio, pode fazer a ação alimentar-se para cozinhar um prato especial. Você e todos os membros do grupo que fizeram a ação alimentar-se recebem o benefício de dois pratos.' },
+    { nome:'O Crime Compensa', origem:'Criminoso', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Crime e Furtividade. No final de uma missão, escolha um item encontrado na missão. Em sua próxima missão, pode incluir esse item no inventário sem que ele conte em seu limite de itens por patente.' },
+    { nome:'Traços do Outro Lado', origem:'Cultista Arrependido', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Ocultismo e Religião. Você possui um poder paranormal à sua escolha. Porém, começa o jogo com metade da Sanidade normal para sua classe.' },
+    { nome:'Calejado', origem:'Desgarrado', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Fortitude e Sobrevivência. Você recebe +1 PV para cada 5% de NEX.' },
+    { nome:'Ferramenta Favorita', origem:'Engenheiro', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Profissão e Tecnologia. Um item a sua escolha (exceto armas) conta como uma categoria abaixo para você.' },
+    { nome:'Processo Otimizado', origem:'Executivo', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Diplomacia e Profissão. Sempre que faz um teste de perícia durante um teste estendido, ou uma ação para revisar documentos, pode pagar 2 PE para receber +5 nesse teste.' },
+    { nome:'Faro para Pistas', origem:'Investigador', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Investigação e Percepção. Uma vez por cena, quando fizer um teste para procurar pistas, pode gastar 1 PE para receber +5 nesse teste.' },
+    { nome:'Mão Pesada', origem:'Lutador', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Luta e Reflexos. Você recebe +2 em rolagens de dano com ataques corpo a corpo.' },
+    { nome:'Patrocinador da Ordem', origem:'Magnata', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Diplomacia e Pilotagem. Seu limite de crédito é sempre considerado um acima do atual.' },
+    { nome:'Posição de Combate', origem:'Mercenário', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Iniciativa e Intimidação. No primeiro turno de cada cena de ação, pode gastar 2 PE para receber uma ação de movimento adicional.' },
+    { nome:'Para Bellum', origem:'Militar', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Pontaria e Tática. Você recebe +2 em rolagens de dano com armas de fogo.' },
+    { nome:'Ferramenta de Trabalho', origem:'Operário', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Fortitude e Profissão. Escolha uma arma simples ou tática que poderia ser usada como ferramenta em sua profissão. Você sabe usar a arma e recebe +1 em testes de ataque, rolagens de dano e margem de ameaça com ela.' },
+    { nome:'Patrulha', origem:'Policial', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Percepção e Pontaria. Você recebe +2 em Defesa.' },
+    { nome:'Acalentar', origem:'Religioso', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Religião e Vontade. Você recebe +5 em testes de Religião para acalmar. Além disso, quando acalma uma pessoa, ela recebe 1d6 + Presença pontos de Sanidade.' },
+    { nome:'Espírito Cívico', origem:'Servidor Público', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Intuição e Vontade. Sempre que faz um teste para ajudar, pode gastar 1 PE para aumentar o bônus concedido em +2.' },
+    { nome:'Eu Já Sabia', origem:'Teórico da Conspiração', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Investigação e Ocultismo. Você não se abala tanto com entidades ou anomalias. Recebe resistência a dano mental igual ao seu Intelecto.' },
+    { nome:'Motor de Busca', origem:'T.I.', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Investigação e Tecnologia. A critério do mestre, sempre que tiver acesso à internet, pode gastar 2 PE para substituir um teste de perícia qualquer por um teste de Tecnologia.' },
+    { nome:'Desbravador', origem:'Trabalhador Rural', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Adestramento e Sobrevivência. Quando faz um teste de Adestramento ou Sobrevivência, pode gastar 2 PE para receber +5. Além disso, não sofre penalidade em deslocamento por terreno difícil.' },
+    { nome:'Impostor', origem:'Trambiqueiro', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Crime e Enganação. Uma vez por cena, pode gastar 2 PE para substituir um teste de perícia qualquer por um teste de Enganação.' },
+    { nome:'Dedicação', origem:'Universitário', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Atualidades e Investigação. Você recebe +1 PE, e mais 1 PE adicional a cada NEX ímpar (15%, 25%…). Seu limite de PE por turno aumenta em 1.' },
+    { nome:'Cicatrizes Psicológicas', origem:'Vítima', tipo:'origem', elem:'NEUTRO', src:'Livro Base',
+      desc:'Perícias: Reflexos e Vontade. Você recebe +1 de Sanidade para cada 5% de NEX.' },
+
+    // SOBREVIVENDO AO HORROR
+    { nome:'Companheiro Animal', origem:'Amigo dos Animais', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Adestramento e Percepção. Entende intenções de animais e usa Adestramento para mudar atitude deles. Possui um animal aliado (+2 em uma perícia a escolha). Em NEX 35%, fornece bônus de aliado. Em NEX 70%, fornece habilidade do tipo de aliado. Se morrer: –10 SAN permanente.' },
+    { nome:'Acostumado ao Extremo', origem:'Astronauta', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Ciências e Fortitude. Quando sofre dano de fogo, frio ou mental, pode gastar 1 PE para reduzir em 5. Cada uso adicional na mesma cena aumenta o custo em +1 PE.' },
+    { nome:'Fome do Outro Lado', origem:'Chef do Outro Lado', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Ocultismo e Profissão (cozinheiro). Pode usar partes de criaturas paranormais como ingredientes. Gastar ação de interlúdio e 1 ingrediente para preparar prato: Profissão DT 15+5. Se passar: RD 10 contra elemento da criatura. Se falhar: vulnerabilidade. Perde 1 SAN permanente por refeição consumida.' },
+    { nome:'Poder da Amizade', origem:'Nerd Entusiasta (Amizade)', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Atualidades e Tecnologia. Escolha um melhor amigo: +2 em todos os testes de perícia se em alcance médio e puderem se ver. Se ele morrer: –1 PE total para cada 5% de NEX até o fim da missão.' },
+    { nome:'Não É Fantasia, É Cosplay!', origem:'Cosplayer', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Artes e Vontade. Pode fazer testes de disfarce usando Artes em vez de Enganação. Se estiver com cosplay relacionado ao teste, recebe +2.' },
+    { nome:'Conexões', origem:'Diplomata', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Atualidades e Diplomacia. +2 em Diplomacia. Se puder contatar um NPC capaz de auxiliar, pode gastar 10 minutos e 2 PE para substituir um teste de perícia por Diplomacia até o fim da cena.' },
+    { nome:'Manual do Sobrevivente', origem:'Explorador', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Fortitude e Sobrevivência. Ao fazer teste para resistir a armadilhas, clima, doenças, fome, sede, fumaça, sono, sufocamento ou veneno, pode gastar 2 PE para +5 no teste. Em interlúdios, condições de sono precárias são consideradas normais.' },
+    { nome:'Mutação', origem:'Experimento', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Atletismo e Fortitude. Recebe RD 2/mental e +2 em uma perícia de Força, Agilidade ou Vigor. Sofre –5 em Diplomacia.' },
+    { nome:'Conhecimento Oculto', origem:'Fanático por Criaturas', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Investigação e Ocultismo. Pode fazer testes de Ocultismo para identificar criaturas a partir de pistas. Se passar, recebe +2 em todos os testes contra a criatura até o fim da missão.' },
+    { nome:'Através da Lente', origem:'Fotógrafo', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Artes e Percepção. Quando faz teste de Investigação ou Percepção olhando por câmera ou analisando fotos, pode gastar 2 PE para +5 (mas anda à metade do deslocamento enquanto olha pela lente).' },
+    { nome:'Invenção Paranormal', origem:'Inventor Paranormal', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Profissão (engenheiro) e Vontade. Possui invento paranormal (Cat. 0, 1 espaço) com um ritual de 1º círculo. Ativar: ação padrão + Profissão DT 15+5 por ativação anterior. Se passar: executa o ritual sem custo em PE. Se falhar: enguiça.' },
+    { nome:'A Culpa é das Estrelas', origem:'Jovem Místico', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Ocultismo e Religião. Escolha um número da sorte (1-6). No início de cada cena, pode gastar 1 PE e rolar 1d6: se rolar seu número, recebe +2 em testes de perícia até o fim da cena. Caso contrário, escolhe mais um número da sorte (resetando ao rolar sucesso).' },
+    { nome:'Luto Habitual', origem:'Legista do Turno da Noite', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Ciências e Medicina. Sofre apenas metade do dano mental ao presenciar cenas típicas de um legista. Quando faz teste de Medicina para primeiros socorros ou necropsia, pode gastar 2 PE para +5.' },
+    { nome:'Mãos no Volante', origem:'Motorista', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Pilotagem e Reflexos. Não sofre penalidades em testes de ataque por estar em veículo em movimento. Ao pilotar e precisar fazer teste de Pilotagem ou resistência, pode gastar 2 PE para +5.' },
+    { nome:'O Inteligentão', origem:'Nerd Entusiasta', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Ciências e Tecnologia. O bônus ao usar a ação de interlúdio "ler" aumenta em +1 dado (de +1d6 para +2d6).' },
+    { nome:'Terapia', origem:'Psicólogo', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Intuição e Profissão (psicólogo). Pode usar Profissão (psicólogo) como Diplomacia. Uma vez por rodada, quando você ou aliado em alcance curto falha em teste de resistência contra efeito de dano mental, pode gastar 2 PE para substituir o resultado pelo de um teste de Profissão (psicólogo).' },
+    { nome:'Luta ou Fuga', origem:'Profetizado', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Vontade e outra relacionada à premonição. Recebe +2 em Vontade. Quando surge referência à sua premonição em cena, recebe +2 PE temporários até o fim da cena.' },
+    { nome:'Encontrar a Verdade', origem:'Repórter Investigativo', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
+      desc:'Perícias: Atualidades e Investigação. Pode usar Investigação no lugar de Diplomacia para persuadir e mudar atitude. Quando faz teste de Investigação, pode gastar 2 PE para +5.' },
+    // AS#1
+    { nome:'Mácula Ritualística', origem:'Ferido por Ritual', tipo:'origem', elem:'NEUTRO', src:'Arquivos Secretos #1',
+      desc:'Perícias: Ocultismo e 1 perícia do elemento (Fortitude=Sangue, Vontade=Morte/Conhecimento, Reflexos=Energia). Aprende e pode conjurar ritual de 1º círculo do elemento correspondente; uma vez por cena, pode conjurá-lo sem gastar PE. Sofre –5 em testes de resistência contra efeitos desse elemento.' },
+    { nome:'Sofrimento de Sangue', origem:'Transtornado Arrependido', tipo:'origem', elem:'SANGUE', src:'Arquivos Secretos #1',
+      desc:'Perícias: Luta e Ocultismo. Recebe RD 2/mental, +1 para cada 2 rituais/poderes de Sangue que possua. Pesadelos impedem descanso tranquilo: condição de descanso é sempre 1 categoria pior.' },
   ],
 };
+
 
 // ══════════════════════════════════════════════
 // ESTADO
@@ -1313,6 +1727,21 @@ function carregarFicha() {
             estado.pericias[p] = { bonus: 0, outros: 0, treinada: true };
         });
     }
+    // Sincroniza o agente (dados base) no Firebase para outros poderem encontrar
+if (window._firebaseDB && ficha) {
+  const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${ficha.id}`);
+  window._firebaseSet(agenteRef, {
+    id:        ficha.id,
+    nome:      ficha.nome,
+    codinome:  ficha.codinome  || '',
+    classe:    ficha.classe    || '',
+    origem:    ficha.origem    || '',
+    nivel:     ficha.nivel     || 1,
+    atributos: ficha.atributos || {},
+    fotoCostum: estado.fotoCostum || ficha.fotoCostum || '',
+  });
+}
+
     renderFicha();
 }
 
@@ -1337,6 +1766,10 @@ function renderFicha() {
             document.getElementById(`bd-${a}`).textContent = bon > 0 ? `d20+${bon}` : 'd20';
         }
     });
+
+     const btnPortrait = document.getElementById('btn-portrait');
+    if (btnPortrait && ficha) btnPortrait.href = `portrait.html?id=${ficha.id}`;
+
     desenharRadar(atribs);
     const nivel = parseInt(ficha.nivel)||1;
     // PATCH: usa progressão salva se existir, senão calcula pelo nível
@@ -1529,7 +1962,18 @@ function trocarAba(nome,btnClicado) {
 // ══════════════════════════════════════════════
 // UTILITÁRIOS
 // ══════════════════════════════════════════════
-function salvarEstado() { if (!ficha) return; localStorage.setItem(`estado_ficha_${ficha.id}`,JSON.stringify(estado)); }
+function salvarEstado() {
+  if (!ficha) return;
+
+  // Continua salvando local (fallback)
+  localStorage.setItem(`estado_ficha_${ficha.id}`, JSON.stringify(estado));
+
+  // Salva no Firebase
+  if (window._firebaseDB) {
+    const dbRef = window._firebaseRef(window._firebaseDB, `fichas/${ficha.id}/estado`);
+    window._firebaseSet(dbRef, estado).catch(err => console.error('Firebase erro:', err));
+  }
+}
 function mostrarToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
 
 // ══════════════════════════════════════════════

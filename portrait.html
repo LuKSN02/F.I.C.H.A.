@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portrait – Ordem Paranormal</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple:      #8a2be2;
+    --purple-neon: #bc6ff1;
+    --purple-dark: #2a0050;
+    --purple-glow: rgba(138,43,226,0.5);
+    --red:         #e84040;
+    --red-dark:    #8b0000;
+    --orange:      #ff8c00;
+    --green:       #39d353;
+    --bg:          transparent;
+    --card:        rgba(10,0,18,0.92);
+    --border:      rgba(90,20,160,0.6);
+    --text-dim:    #777;
+    --w: 320px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: transparent;
+    font-family: 'Oswald', sans-serif;
+    width: var(--w);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  /* ── PORTRAIT CONTAINER ── */
+  .portrait {
+    width: var(--w);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    animation: slideIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(-40px); opacity: 0; }
+    to   { transform: translateX(0);     opacity: 1; }
+  }
+
+  /* ── FOTO + DECORAÇÃO ── */
+  .foto-wrap {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    border-top: 2px solid var(--purple);
+    border-left: 2px solid var(--purple);
+    border-right: 2px solid var(--purple);
+  }
+
+  .foto-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, var(--card) 100%);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* canto decorativo */
+  .corner-deco {
+    position: absolute;
+    width: 24px; height: 24px;
+    border-color: var(--purple-neon);
+    border-style: solid;
+    z-index: 3;
+  }
+  .corner-deco.tl { top: 6px; left: 6px;  border-width: 2px 0 0 2px; }
+  .corner-deco.tr { top: 6px; right: 6px; border-width: 2px 2px 0 0; }
+  .corner-deco.bl { bottom: 6px; left: 6px;  border-width: 0 0 2px 2px; }
+  .corner-deco.br { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; }
+
+  #foto-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    filter: saturate(1.1) contrast(1.05);
+  }
+
+  /* scan line */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.04) 2px,
+      rgba(0,0,0,0.04) 4px
+    );
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* nex badge on photo */
+  .nex-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 4;
+    background: rgba(10,0,20,0.85);
+    border: 1px solid var(--purple);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--purple-neon);
+    letter-spacing: 2px;
+    box-shadow: 0 0 10px var(--purple-glow);
+  }
+
+  /* ── PAINEL INFERIOR ── */
+  .info-panel {
+    background: var(--card);
+    border-left: 2px solid var(--purple);
+    border-right: 2px solid var(--purple);
+    border-bottom: 2px solid var(--purple);
+    padding: 10px 14px 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.8), 0 0 20px var(--purple-glow);
+    position: relative;
+  }
+
+  /* linha brilhante no topo do painel */
+  .info-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--purple-neon), transparent);
+  }
+
+  .nome-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+
+  .nome {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+    text-shadow: 0 0 12px var(--purple-glow);
+    line-height: 1;
+  }
+
+  .classe-tag {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--purple-neon);
+    background: rgba(138,43,226,0.15);
+    border: 1px solid rgba(138,43,226,0.4);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .origem-txt {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* ── BARRAS ── */
+  .barras-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .barra-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .barra-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.55rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .barra-label { color: var(--text-dim); }
+  .barra-val   { font-size: 0.75rem; font-weight: 700; }
+
+  .barra-track {
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .barra-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.22,1,0.36,1);
+    position: relative;
+  }
+
+  .barra-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 3px; height: 100%;
+    background: rgba(255,255,255,0.5);
+    border-radius: 0 2px 2px 0;
+    filter: blur(1px);
+  }
+
+  .barra-vida  { background: linear-gradient(90deg, #6b0000, #e84040); }
+  .barra-san   { background: linear-gradient(90deg, #2a0055, #bc6ff1); }
+  .barra-esf   { background: linear-gradient(90deg, #5c3a00, #ff8c00); }
+
+  .barra-vida-low { background: linear-gradient(90deg, #6b0000, #ff0000); animation: pulseRed 1s ease infinite; }
+  @keyframes pulseRed { 0%,100%{opacity:1} 50%{opacity:0.65} }
+
+  /* ── PE DOTS ── */
+  .pe-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(90,20,160,0.3);
+  }
+
+  .pe-label {
+    font-size: 0.55rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .pe-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--orange);
+    text-shadow: 0 0 8px rgba(255,140,0,0.5);
+  }
+
+  .pe-desl {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: #555;
+    letter-spacing: 1px;
+  }
+
+  /* ── BOTÃO FICHA ── */
+  .btn-ficha-wrap {
+    position: absolute;
+    bottom: 12px;
+    right: 14px;
+  }
+
+  .btn-ficha {
+    background: rgba(10,0,20,0.9);
+    border: 1px solid var(--border);
+    color: #555;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .btn-ficha:hover {
+    border-color: var(--purple);
+    color: var(--purple-neon);
+    box-shadow: 0 0 8px var(--purple-glow);
+  }
+
+  /* ── PULSE DE STATUS ── */
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    display: inline-block;
+    animation: pulseDot 2s ease infinite;
+  }
+
+  @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  /* ── GLITCH EFFECT (opcional, ativado ao hover) ── */
+  .nome:hover {
+    animation: glitch 0.3s steps(2) both;
+  }
+
+  @keyframes glitch {
+    0%   { text-shadow: 2px 0 var(--red), -2px 0 var(--purple-neon), 0 0 12px var(--purple-glow); }
+    33%  { text-shadow: -2px 0 var(--red), 2px 0 var(--purple-neon), 0 0 12px var(--purple-glow); }
+    66%  { text-shadow: 2px 2px var(--red), -2px -2px var(--purple-neon), 0 0 12px var(--purple-glow); }
+    100% { text-shadow: 0 0 12px var(--purple-glow); }
+  }
+
+  /* ── SELECTOR OVERLAY (quando clicado no botão ⊕) ── */
+  .selector-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    padding: 20px;
+    overflow-y: auto;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .selector-overlay.show { display: block; }
+
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  .selector-title {
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .btn-fechar-sel {
+    background: none;
+    border: 1px solid #333;
+    color: #666;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .btn-fechar-sel:hover { color: var(--red); border-color: var(--red); }
+
+  .agentes-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .agente-card-sel {
+    background: rgba(10,0,18,0.9);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: 0.2s;
+  }
+
+  .agente-card-sel:hover {
+    border-color: var(--purple);
+    background: rgba(40,0,80,0.5);
+    box-shadow: 0 0 12px var(--purple-glow);
+  }
+
+  .agente-card-sel.ativo {
+    border-color: var(--green);
+    background: rgba(0,40,0,0.3);
+  }
+
+  .sel-foto {
+    width: 44px; height: 44px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .sel-info { flex: 1; }
+  .sel-nome { font-size: 0.9rem; font-weight: 700; color: #fff; }
+  .sel-sub  { font-size: 0.65rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
+
+  .sel-vazio {
+    text-align: center;
+    color: #333;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    padding: 30px;
+    letter-spacing: 1px;
+  }
+
+  /* Mensagem OBS */
+  .obs-note {
+    font-size: 0.55rem;
+    color: #333;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-top: 20px;
+    line-height: 1.8;
+  }
+
+  .obs-note span { color: #555; }
+
+</style>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
+    authDomain: "ficha-op-c9df8.firebaseapp.com",
+    databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com", // ← ADICIONE ISSO
+    projectId: "ficha-op-c9df8",
+    storageBucket: "ficha-op-c9df8.firebasestorage.app",
+    messagingSenderId: "5463680704",
+    appId: "1:5463680704:web:3d6296c296699f4d41af25"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  window._firebaseDB      = db;
+  window._firebaseRef     = ref;
+  window._firebaseSet     = set;
+  window._firebaseOnValue = onValue;
+  window._firebaseGet     = get;
+
+  // ← DISPARA O INIT AQUI, depois que o Firebase estiver pronto
+  window._firebaseReady = true;
+  iniciarPortrait();
+</script>
+
+</head>
+<body>
+
+<div class="portrait" id="portrait">
+
+  <!-- FOTO -->
+  <div class="foto-wrap">
+    <div class="corner-deco tl"></div>
+    <div class="corner-deco tr"></div>
+    <div class="corner-deco bl"></div>
+    <div class="corner-deco br"></div>
+    <img id="foto-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Portrait">
+    <div class="scanlines"></div>
+    <div class="nex-badge" id="nex-badge">NEX 5%</div>
+  </div>
+
+  <!-- INFO PANEL -->
+  <div class="info-panel">
+    <div class="nome-row">
+      <div class="nome" id="nome-txt">Agente</div>
+      <div class="classe-tag" id="classe-txt">—</div>
+    </div>
+    <div class="origem-txt" id="origem-txt">—</div>
+
+    <div class="barras-wrap">
+      <!-- VIDA -->
+      <div class="barra-row">
+        <div class="barra-header">
+          <span class="barra-label" style="color:#e84040;">VIDA</span>
+          <span class="barra-val" id="vida-txt" style="color:#e84040;">20 / 20</span>
+        </div>
+        <div class="barra-track">
+          <div class="barra-fill barra-vida" id="barra-vida" style="width:100%"></div>
+        </div>
+      </div>
+
+      <!-- SANIDADE -->
+      <div class="barra-row">
+        <div class="barra-header">
+          <span class="barra-label" style="color:var(--purple-neon);">SANIDADE</span>
+          <span class="barra-val" id="san-txt" style="color:var(--purple-neon);">20 / 20</span>
+        </div>
+        <div class="barra-track">
+          <div class="barra-fill barra-san" id="barra-san" style="width:100%"></div>
+        </div>
+      </div>
+
+      <!-- ESFORÇO -->
+      <div class="barra-row">
+        <div class="barra-header">
+          <span class="barra-label" style="color:var(--orange);">ESFORÇO</span>
+          <span class="barra-val" id="esf-txt" style="color:var(--orange);">10 / 10</span>
+        </div>
+        <div class="barra-track">
+          <div class="barra-fill barra-esf" id="barra-esf" style="width:100%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PE / DESL -->
+    <div class="pe-row">
+      <div>
+        <div class="pe-label">PE / TURNO</div>
+        <div class="pe-val" id="pe-txt">3 PE</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="pe-label">DESLOCAMENTO</div>
+        <div class="pe-desl" id="desl-txt">9m</div>
+      </div>
+      <span class="status-dot" title="Ao vivo"></span>
+    </div>
+
+    <!-- botão ficha (canto inferior direito) -->
+    <div class="btn-ficha-wrap">
+      <button class="btn-ficha" onclick="abrirSelector()" title="Selecionar agente">⊕ FICHA</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- SELECTOR OVERLAY -->
+<div class="selector-overlay" id="selector-overlay">
+  <div class="selector-title">
+    <span>▸ SELECIONAR AGENTE</span>
+    <button class="btn-fechar-sel" onclick="fecharSelector()">✕ Fechar</button>
+  </div>
+  <div class="agentes-grid" id="agentes-grid"></div>
+  <!-- SUBSTITUA o obs-note por: -->
+<div class="obs-note">
+  ▸ Dados sincronizados via <span>Firebase em tempo real</span><br>
+  ▸ Funciona em qualquer navegador ou computador<br>
+  ▸ No OBS: Fonte de Navegador → URL desta página → Largura 320 px
+</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// ESTADO LOCAL
+// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// ESTADO LOCAL
+// ══════════════════════════════════════════════
+let agenteAtivo = null;
+
+// ══════════════════════════════════════════════
+// APLICAR DADOS NO PORTRAIT
+// ══════════════════════════════════════════════
+function aplicarAgente(ficha, est) {
+  if (!ficha) return;
+
+  const fotoSrc = est?.fotoCostum || ficha.fotoCostum ||
+    `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
+  document.getElementById('foto-img').src = fotoSrc;
+
+  document.getElementById('nome-txt').textContent   = (ficha.codinome ? `"${ficha.codinome}"` : ficha.nome) || 'Agente';
+  document.getElementById('classe-txt').textContent = ficha.classe || '—';
+  document.getElementById('origem-txt').textContent = ficha.origem || '—';
+
+  const nex  = est?.progressao?.nex  || '5%';
+  const pe   = est?.progressao?.pe   || (parseInt(ficha.nivel)||1) + 2;
+  const desl = est?.progressao?.desl || '9m';
+  document.getElementById('nex-badge').textContent = 'NEX ' + nex;
+  document.getElementById('pe-txt').textContent    = pe + ' PE';
+  document.getElementById('desl-txt').textContent  = desl;
+
+  if (est) {
+    const v = est.vida || {}; const s = est.san || {}; const e = est.esf || {};
+    atualizarBarra('vida', v.atual ?? 20, v.max ?? 20);
+    atualizarBarra('san',  s.atual ?? 20, s.max ?? 20);
+    atualizarBarra('esf',  e.atual ?? 10, e.max ?? 10);
+  }
+}
+
+function atualizarBarra(tipo, atual, max) {
+  const pct   = max > 0 ? Math.max(0, Math.min(100, (atual / max) * 100)) : 0;
+  const txtEl = document.getElementById(`${tipo}-txt`);
+  const barEl = document.getElementById(`barra-${tipo}`);
+  if (txtEl) txtEl.textContent = `${atual} / ${max}`;
+  if (barEl) {
+    barEl.style.width = pct + '%';
+    if (tipo === 'vida') {
+      barEl.className = pct <= 25 ? 'barra-fill barra-vida-low' : 'barra-fill barra-vida';
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+// SELECTOR
+// ══════════════════════════════════════════════
+function abrirSelector() {
+  renderSelector();
+  document.getElementById('selector-overlay').classList.add('show');
+}
+
+function fecharSelector() {
+  document.getElementById('selector-overlay').classList.remove('show');
+}
+
+function renderSelector() {
+  const grid = document.getElementById('agentes-grid');
+  grid.innerHTML = `<div class="sel-vazio" style="color:#555;">Carregando agentes...</div>`;
+
+  if (!window._firebaseDB) {
+    grid.innerHTML = `<div class="sel-vazio">Firebase não conectado.</div>`;
+    return;
+  }
+
+  const agentesRef = window._firebaseRef(window._firebaseDB, 'agentes');
+  window._firebaseGet(agentesRef).then(snap => {
+    if (!snap.exists()) {
+      grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.<br>Abra a ficha de um agente primeiro.</div>`;
+      return;
+    }
+    const agentes = Object.values(snap.val());
+    grid.innerHTML = agentes.map(ag => {
+      const ativo = agenteAtivo?.id === ag.id;
+      const foto  = ag.fotoCostum || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ag.nome)}`;
+      return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente('${ag.id}')">
+        <img class="sel-foto" src="${foto}" alt="">
+        <div class="sel-info">
+          <div class="sel-nome">${ag.codinome ? '"'+ag.codinome+'" ' : ''}${ag.nome}</div>
+          <div class="sel-sub">${ag.classe || '—'} · ${ag.origem || '—'}</div>
+        </div>
+        ${ativo ? '<span style="color:var(--green);font-family:\'Share Tech Mono\',monospace;font-size:0.7rem;">● ATIVO</span>' : ''}
+      </div>`;
+    }).join('');
+  });
+}
+
+function selecionarAgente(id) {
+  if (!window._firebaseDB) return;
+  localStorage.setItem('portrait_agente_ativo', String(id));
+
+  const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${id}`);
+  window._firebaseGet(agenteRef).then(snap => {
+    if (!snap.exists()) return;
+    agenteAtivo = snap.val();
+
+    const estadoRef = window._firebaseRef(window._firebaseDB, `fichas/${id}/estado`);
+    window._firebaseOnValue(estadoRef, snap => {
+      if (!snap.exists()) return;
+      aplicarAgente(agenteAtivo, snap.val());
+    });
+
+    fecharSelector();
+  });
+}
+
+// ══════════════════════════════════════════════
+// INIT — chamado pelo módulo Firebase quando pronto
+// ══════════════════════════════════════════════
+function iniciarPortrait() {
+  const params  = new URLSearchParams(window.location.search);
+  const idParam = params.get('id');
+  const idSalvo = idParam || localStorage.getItem('portrait_agente_ativo');
+  if (!idSalvo || !window._firebaseDB) return;
+
+  localStorage.setItem('portrait_agente_ativo', idSalvo);
+
+  const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${idSalvo}`);
+  window._firebaseGet(agenteRef).then(snap => {
+    if (!snap.exists()) return;
+    agenteAtivo = snap.val();
+    aplicarAgente(agenteAtivo, null);
+  });
+
+  const estadoRef = window._firebaseRef(window._firebaseDB, `fichas/${idSalvo}/estado`);
+  window._firebaseOnValue(estadoRef, snap => {
+    if (!snap.exists()) return;
+    aplicarAgente(agenteAtivo, snap.val());
+  });
+}
+
+// Fallback caso o módulo demore
+window.onload = function() {
+  if (!window._firebaseReady) setTimeout(iniciarPortrait, 1000);
+};
+</script>
+</body>
+</html>
