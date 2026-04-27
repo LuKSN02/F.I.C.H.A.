@@ -60,9 +60,162 @@
 
     .footer-link { color: #888; text-decoration: none; display: block; margin-bottom: 4px; }
     .footer-link:hover { color: #bc6ff1; }
+
+    /* ===== LOGIN STYLES ===== */
+    #modal-login-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(6px);
+        z-index: 9999;
+        display: flex; align-items: center; justify-content: center;
+    }
+    #modal-login-overlay.d-none { display: none !important; }
+
+    .login-box {
+        background: #0d0d0d;
+        border: 1px solid #3a0063;
+        border-radius: 12px;
+        padding: 40px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 0 40px rgba(138,43,226,0.3);
+    }
+    .login-box h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #bc6ff1;
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    .login-box .subtitle {
+        text-align: center;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 28px;
+        letter-spacing: 1px;
+    }
+    .login-tabs {
+        display: flex;
+        border-bottom: 2px solid #222;
+        margin-bottom: 24px;
+    }
+    .login-tab {
+        flex: 1; text-align: center; padding: 8px;
+        cursor: pointer; color: #666; font-weight: 600;
+        font-size: 0.95rem; border-bottom: 2px solid transparent;
+        margin-bottom: -2px; transition: 0.2s;
+    }
+    .login-tab.active { color: #bc6ff1; border-bottom-color: #8a2be2; }
+    .login-field {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 6px;
+        color: white;
+        padding: 10px 14px;
+        width: 100%;
+        font-family: 'Oswald', sans-serif;
+        font-size: 1rem;
+        margin-bottom: 14px;
+        transition: border-color 0.2s;
+    }
+    .login-field:focus { outline: none; border-color: #8a2be2; }
+    .btn-login {
+        width: 100%; padding: 12px;
+        background: #8a2be2; color: white;
+        border: none; border-radius: 6px;
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; font-weight: 700;
+        cursor: pointer; transition: 0.2s;
+        margin-top: 6px;
+    }
+    .btn-login:hover { background: #bc6ff1; }
+    .login-error {
+        color: #ff4444; font-size: 0.85rem;
+        text-align: center; margin-top: 10px;
+        min-height: 20px;
+    }
+
+    /* ===== AVATAR DE PERFIL ===== */
+    .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .avatar-circle {
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        border: 2px solid #8a2be2;
+        background: #1a0033;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; font-weight: 700; color: #bc6ff1;
+        overflow: hidden;
+        transition: 0.2s;
+        user-select: none;
+    }
+    .avatar-circle:hover { border-color: #bc6ff1; box-shadow: 0 0 10px rgba(138,43,226,0.5); }
+    .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+    .avatar-dropdown {
+        position: absolute; right: 0; top: 46px;
+        background: #0d0d0d;
+        border: 1px solid #3a0063;
+        border-radius: 10px;
+        min-width: 180px;
+        padding: 10px 0;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        z-index: 1000;
+        display: none;
+    }
+    .avatar-dropdown.open { display: block; }
+    .avatar-dropdown .dd-username {
+        padding: 8px 16px 6px;
+        color: #bc6ff1; font-weight: 700; font-size: 0.95rem;
+        border-bottom: 1px solid #222; margin-bottom: 6px;
+    }
+    .avatar-dropdown .dd-item {
+        padding: 8px 16px;
+        color: #ccc; font-size: 0.9rem;
+        cursor: pointer; transition: 0.15s;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .avatar-dropdown .dd-item:hover { background: #1a0033; color: #bc6ff1; }
+    .avatar-dropdown .dd-item.danger { color: #ff6666; }
+    .avatar-dropdown .dd-item.danger:hover { background: #2a0000; color: #ff4444; }
+    #input-foto-perfil { display: none; }
 </style>
 
 <body>
+
+    <!-- ===== MODAL DE LOGIN ===== -->
+    <div id="modal-login-overlay">
+        <div class="login-box">
+            <h2>⬡ F.I.C.H.A.</h2>
+            <p class="subtitle">SISTEMA DE AGENTES PARANORMAIS</p>
+            <div class="login-tabs">
+                <div class="login-tab active" id="tab-entrar" onclick="trocarAba('entrar')">Entrar</div>
+                <div class="login-tab" id="tab-cadastrar" onclick="trocarAba('cadastrar')">Cadastrar</div>
+            </div>
+
+            <!-- Formulário Entrar -->
+            <div id="form-entrar">
+                <input class="login-field" id="login-usuario" type="text" placeholder="Nome de usuário" autocomplete="username">
+                <input class="login-field" id="login-senha" type="password" placeholder="Senha" autocomplete="current-password">
+                <button class="btn-login" onclick="fazerLogin()">Entrar</button>
+            </div>
+
+            <!-- Formulário Cadastrar -->
+            <div id="form-cadastrar" style="display:none">
+                <input class="login-field" id="cad-usuario" type="text" placeholder="Nome de usuário" autocomplete="username">
+                <input class="login-field" id="cad-senha" type="password" placeholder="Senha" autocomplete="new-password">
+                <input class="login-field" id="cad-senha2" type="password" placeholder="Confirmar senha" autocomplete="new-password">
+                <button class="btn-login" onclick="fazerCadastro()">Criar conta</button>
+            </div>
+
+            <p class="login-error" id="login-erro"></p>
+        </div>
+    </div>
+
+    <!-- ===== NAVBAR ===== -->
     <nav class="navbar navbar-expand-lg custom-nav navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand fs-2" href="#" onclick="mostrarInicio()">
@@ -79,7 +232,25 @@
                     <a class="nav-link px-3" href="#">Homebrew</a>
                 </div>
             </div>
-            <div class="d-none d-lg-flex" style="width: 200px;"></div>
+
+            <!-- Avatar de perfil -->
+            <div class="d-none d-lg-flex align-items-center" style="min-width: 200px; justify-content: flex-end;">
+                <div class="avatar-wrapper" id="avatar-wrapper" onclick="toggleDropdown(event)">
+                    <div class="avatar-circle" id="avatar-circle">
+                        <span id="avatar-iniciais"></span>
+                    </div>
+                    <div class="avatar-dropdown" id="avatar-dropdown">
+                        <div class="dd-username" id="dd-username-label"></div>
+                        <div class="dd-item" onclick="abrirSeletorFoto(event)">
+                            📷 Alterar foto
+                        </div>
+                        <div class="dd-item danger" onclick="fazerLogout()">
+                            ✕ Sair
+                        </div>
+                    </div>
+                </div>
+                <input type="file" id="input-foto-perfil" accept="image/*" onchange="salvarFotoPerfil(event)">
+            </div>
         </div>
     </nav>
 
@@ -141,13 +312,114 @@
     </footer>
 
     <script>
-        window.onload = function () {
+        /* =============================================
+           SISTEMA DE AUTENTICAÇÃO — F.I.C.H.A.
+        ============================================= */
+
+        function getPrefix() {
+            const user = sessionStorage.getItem('ficha_user');
+            return user ? user + '_' : '';
+        }
+
+        function getUsuarioLogado() {
+            return sessionStorage.getItem('ficha_user');
+        }
+
+        function getContas() {
+            return JSON.parse(localStorage.getItem('ficha_contas')) || {};
+        }
+
+        function salvarContas(contas) {
+            localStorage.setItem('ficha_contas', JSON.stringify(contas));
+        }
+
+        function trocarAba(aba) {
+            document.getElementById('form-entrar').style.display    = aba === 'entrar'    ? '' : 'none';
+            document.getElementById('form-cadastrar').style.display = aba === 'cadastrar' ? '' : 'none';
+            document.getElementById('tab-entrar').classList.toggle('active', aba === 'entrar');
+            document.getElementById('tab-cadastrar').classList.toggle('active', aba === 'cadastrar');
+            document.getElementById('login-erro').textContent = '';
+        }
+
+        function setErro(msg) {
+            document.getElementById('login-erro').textContent = msg;
+        }
+
+        function normUser(u) { return u.trim().toLowerCase(); }
+
+        function fazerLogin() {
+            const usuario = normUser(document.getElementById('login-usuario').value);
+            const senha   = document.getElementById('login-senha').value;
+            if (!usuario || !senha) { setErro('Preencha todos os campos.'); return; }
+            const contas = getContas();
+            if (!contas[usuario]) { setErro('Usuário não encontrado.'); return; }
+            if (contas[usuario] !== senha) { setErro('Senha incorreta.'); return; }
+            entrarComUsuario(usuario);
+        }
+
+        function fazerCadastro() {
+            const usuario = normUser(document.getElementById('cad-usuario').value);
+            const senha   = document.getElementById('cad-senha').value;
+            const senha2  = document.getElementById('cad-senha2').value;
+            if (!usuario || !senha || !senha2) { setErro('Preencha todos os campos.'); return; }
+            if (usuario.length < 3) { setErro('Usuário precisa ter ao menos 3 caracteres.'); return; }
+            if (senha.length < 4)   { setErro('Senha precisa ter ao menos 4 caracteres.'); return; }
+            if (senha !== senha2)   { setErro('As senhas não coincidem.'); return; }
+            if (!/^[a-z0-9_]+$/.test(usuario)) { setErro('Usuário: apenas letras, números e _.'); return; }
+            const contas = getContas();
+            if (contas[usuario]) { setErro('Esse nome de usuário já está em uso.'); return; }
+            contas[usuario] = senha;
+            salvarContas(contas);
+            entrarComUsuario(usuario);
+        }
+
+        // ✅ CORRIGIDO: chama atualizarAvatar() no lugar de nav-username
+        function entrarComUsuario(usuario) {
+            sessionStorage.setItem('ficha_user', usuario);
+            document.getElementById('modal-login-overlay').classList.add('d-none');
+            atualizarAvatar();
             const params = new URLSearchParams(window.location.search);
             if (params.get('view') === 'agentes') mostrarAgentes();
-            else carregarAgentes();
+            else { mostrarInicio(); carregarAgentes(); }
+        }
+
+        // ✅ CORRIGIDO: limpa o avatar no logout
+        function fazerLogout() {
+            if (!confirm('Deseja sair da conta?')) return;
+            sessionStorage.removeItem('ficha_user');
+            ['login-usuario','login-senha','cad-usuario','cad-senha','cad-senha2']
+                .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+            setErro('');
+            trocarAba('entrar');
+            document.getElementById('modal-login-overlay').classList.remove('d-none');
+            // Limpa o avatar
+            const circle = document.getElementById('avatar-circle');
+            if (circle) circle.innerHTML = '';
+            document.getElementById('dd-username-label').textContent = '';
+            // Limpa a lista de agentes da tela
+            document.getElementById('lista-agentes').innerHTML = '';
+            document.getElementById('contador').textContent = '0';
+            mostrarInicio();
+        }
+
+        /* =============================================
+           NAVEGAÇÃO
+        ============================================= */
+
+        // ✅ CORRIGIDO: chama atualizarAvatar() no onload
+        window.onload = function () {
+            const usuario = getUsuarioLogado();
+            if (usuario) {
+                document.getElementById('modal-login-overlay').classList.add('d-none');
+                atualizarAvatar();
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('view') === 'agentes') mostrarAgentes();
+                else carregarAgentes();
+            }
         };
 
         function mostrarAgentes() {
+            if (!getUsuarioLogado()) return;
             document.getElementById('secao-inicio').classList.add('d-none');
             document.getElementById('secao-agentes').classList.remove('d-none');
             carregarAgentes();
@@ -158,11 +430,15 @@
             document.getElementById('secao-inicio').classList.remove('d-none');
         }
 
+        /* =============================================
+           AGENTES
+        ============================================= */
         function carregarAgentes() {
             const lista    = document.getElementById('lista-agentes');
             const contador = document.getElementById('contador');
-            const agentes  = JSON.parse(localStorage.getItem('lista_agentes')) || [];
-            contador.innerText = agentes.length;
+            const chave    = getPrefix() + 'lista_agentes';
+            const agentes  = JSON.parse(localStorage.getItem(chave)) || [];
+            contador.textContent = agentes.length;
 
             if (agentes.length === 0) {
                 lista.innerHTML = `
@@ -178,7 +454,7 @@
             agentes.forEach((agente, index) => {
                 let fotoSrc = agente.fotoCostum;
                 if (!fotoSrc) {
-                    const estadoSalvo = localStorage.getItem(`estado_ficha_${agente.id}`);
+                    const estadoSalvo = localStorage.getItem(getPrefix() + 'estado_ficha_' + agente.id);
                     if (estadoSalvo) {
                         const est = JSON.parse(estadoSalvo);
                         fotoSrc = est.fotoCostum || null;
@@ -206,13 +482,65 @@
 
         function deletarAgente(index) {
             if (!confirm('Remover este agente? Esta ação não pode ser desfeita.')) return;
-            const agentes = JSON.parse(localStorage.getItem('lista_agentes')) || [];
+            const chave   = getPrefix() + 'lista_agentes';
+            const agentes = JSON.parse(localStorage.getItem(chave)) || [];
             const agente  = agentes[index];
-            if (agente?.id) localStorage.removeItem(`estado_ficha_${agente.id}`);
+            if (agente?.id) localStorage.removeItem(getPrefix() + 'estado_ficha_' + agente.id);
             agentes.splice(index, 1);
-            localStorage.setItem('lista_agentes', JSON.stringify(agentes));
+            localStorage.setItem(chave, JSON.stringify(agentes));
             carregarAgentes();
         }
+
+        /* =============================================
+           AVATAR / FOTO DE PERFIL
+        ============================================= */
+
+        function getAvatarKey() {
+            return getPrefix() + 'foto_perfil';
+        }
+
+        function atualizarAvatar() {
+            const usuario = getUsuarioLogado();
+            if (!usuario) return;
+            const iniciais = usuario.substring(0, 2).toUpperCase();
+            document.getElementById('dd-username-label').textContent = usuario;
+
+            const fotoSalva = localStorage.getItem(getAvatarKey());
+            const circle = document.getElementById('avatar-circle');
+            if (fotoSalva) {
+                circle.innerHTML = `<img src="${fotoSalva}" alt="foto de perfil">`;
+            } else {
+                circle.innerHTML = `<span id="avatar-iniciais">${iniciais}</span>`;
+            }
+        }
+
+        function toggleDropdown(e) {
+            e.stopPropagation();
+            document.getElementById('avatar-dropdown').classList.toggle('open');
+        }
+
+        function abrirSeletorFoto(e) {
+            e.stopPropagation();
+            document.getElementById('avatar-dropdown').classList.remove('open');
+            document.getElementById('input-foto-perfil').click();
+        }
+
+        function salvarFotoPerfil(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem(getAvatarKey(), e.target.result);
+                atualizarAvatar();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Fecha dropdown ao clicar fora
+        document.addEventListener('click', function() {
+            const dd = document.getElementById('avatar-dropdown');
+            if (dd) dd.classList.remove('open');
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
