@@ -6,6 +6,7 @@
     <title>F.I.C.H.A. – Criar Agente</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
     <style>
         :root {
             --purple: #8a2be2;
@@ -399,10 +400,10 @@
 <div class="etapa-panel" id="etapa-1">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
         <h2 class="section-title mb-0">Atributos <span>Base</span></h2>
-        <div class="pontos-display">PONTOS RESTANTES: <span id="pontos-restantes">5</span></div>
+        <div class="pontos-display">PONTOS RESTANTES: <span id="pontos-restantes">4</span></div>
     </div>
     <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:8px;letter-spacing:1px;">
-        ▸ CADA ATRIBUTO COMEÇA EM 0. VOCÊ TEM 5 PONTOS PARA DISTRIBUIR.<br>
+        ▸ CADA ATRIBUTO COMEÇA EM 1. VOCÊ TEM 5 PONTOS PARA DISTRIBUIR.<br>
         ▸ CADA PONTO AUMENTA UM ATRIBUTO EM 1. MÁXIMO DE 5 POR ATRIBUTO.
     </p>
     <div class="sem-pontos" id="aviso-pontos">⚠ PONTOS INSUFICIENTES</div>
@@ -531,9 +532,9 @@ const ATRIBUTOS = [
     { id:'VIG', nome:'Vigor',     abrev:'VIG' },
 ];
 
-const BASE_ATRIB  = 0;  // atributos começam em 0
-const MAX_ATRIB   = 5;  // máximo de atributo na criação
-const TOTAL_PONTOS = 5; // pontos totais para distribuir
+const BASE_ATRIB  = 1;  // atributos começam em 0
+const MAX_ATRIB   = 3;  // máximo de atributo na criação
+const TOTAL_PONTOS = 4; // pontos totais para distribuir
 
 const PERICIAS = [
     { nome:'Acrobacia',     atrib:'AGI' }, { nome:'Adestramento',  atrib:'PRE' },
