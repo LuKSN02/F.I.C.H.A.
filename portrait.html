@@ -568,183 +568,160 @@ let agenteAtivo = null;
 let unsubEstado = null;
 
 function getUsuario() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('usuario')
-    || localStorage.getItem('ficha_user_ativo')
-    || sessionStorage.getItem('ficha_user')
-    || localStorage.getItem('portrait_usuario')
-    || '';
+    const params = new URLSearchParams(window.location.search);
+    return params.get('usuario')
+        || localStorage.getItem('ficha_user_ativo')
+        || sessionStorage.getItem('ficha_user')
+        || localStorage.getItem('portrait_usuario')
+        || '';
 }
 
 function salvarUsuario(u) {
-  localStorage.setItem('portrait_usuario', u.toLowerCase().trim());
+    localStorage.setItem('portrait_usuario', u.toLowerCase().trim());
 }
 
-// ══════════════════════════════════════════════
-// LOGIN
-// ══════════════════════════════════════════════
 function confirmarLoginPortrait() {
-  const val = (document.getElementById('login-usuario-portrait').value || '').trim().toLowerCase();
-  const erro = document.getElementById('login-portrait-erro');
-  if (!val) { erro.textContent = '⚠ Digite seu usuário.'; return; }
-  salvarUsuario(val);
-  fecharOverlays();
-  renderSelector(val);
-  document.getElementById('selector-overlay').classList.add('show');
+    const val = (document.getElementById('login-usuario-portrait').value || '').trim().toLowerCase();
+    const erro = document.getElementById('login-portrait-erro');
+    if (!val) { erro.textContent = '⚠ Digite seu usuário.'; return; }
+    salvarUsuario(val);
+    fecharOverlays();
+    renderSelector(val);
+    document.getElementById('selector-overlay').classList.add('show');
 }
 
-// ══════════════════════════════════════════════
-// APLICAR DADOS
-// ══════════════════════════════════════════════
 function aplicarAgente(ficha, est) {
-  if (!ficha) return;
-  const fotoSrc = est?.fotoCostum || ficha.fotoCostum ||
-    `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
-  document.getElementById('foto-img').src = fotoSrc;
-  document.getElementById('nome-txt').textContent   = (ficha.codinome ? `"${ficha.codinome}"` : ficha.nome) || 'Agente';
-  document.getElementById('classe-txt').textContent = ficha.classe || '—';
-  document.getElementById('origem-txt').textContent = ficha.origem || '—';
-  const nex  = est?.progressao?.nex  || '5%';
-  const pe   = est?.progressao?.pe   || '3';
-  const desl = est?.progressao?.desl || '9m';
-  document.getElementById('nex-badge').textContent = 'NEX ' + nex;
-  document.getElementById('pe-txt').textContent    = pe + ' PE';
-  document.getElementById('desl-txt').textContent  = desl;
-  if (est) {
-    const v = est.vida || {}, s = est.san || {}, e = est.esf || {};
-    atualizarBarra('vida', v.atual ?? 0, v.max ?? 20);
-    atualizarBarra('san',  s.atual ?? 0, s.max ?? 20);
-    atualizarBarra('esf',  e.atual ?? 0, e.max ?? 10);
-  }
+    if (!ficha) return;
+    const fotoSrc = est?.fotoCostum || ficha.fotoCostum ||
+        `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
+    document.getElementById('foto-img').src = fotoSrc;
+    document.getElementById('nome-txt').textContent   = (ficha.codinome ? `"${ficha.codinome}"` : ficha.nome) || 'Agente';
+    document.getElementById('classe-txt').textContent = ficha.classe || '—';
+    document.getElementById('origem-txt').textContent = ficha.origem || '—';
+    const nex  = est?.progressao?.nex  || '5%';
+    const pe   = est?.progressao?.pe   || '3';
+    const desl = est?.progressao?.desl || '9m';
+    document.getElementById('nex-badge').textContent = 'NEX ' + nex;
+    document.getElementById('pe-txt').textContent    = pe + ' PE';
+    document.getElementById('desl-txt').textContent  = desl;
+    if (est) {
+        const v = est.vida || {}, s = est.san || {}, e = est.esf || {};
+        atualizarBarra('vida', v.atual ?? 0, v.max ?? 20);
+        atualizarBarra('san',  s.atual ?? 0, s.max ?? 20);
+        atualizarBarra('esf',  e.atual ?? 0, e.max ?? 10);
+    }
 }
 
 function atualizarBarra(tipo, atual, max) {
-  const pct = max > 0 ? Math.max(0, Math.min(100, (atual / max) * 100)) : 0;
-  const txtEl = document.getElementById(`${tipo}-txt`);
-  const barEl = document.getElementById(`barra-${tipo}`);
-  if (txtEl) txtEl.textContent = `${atual} / ${max}`;
-  if (barEl) {
-    barEl.style.width = pct + '%';
-    if (tipo === 'vida') barEl.className = pct <= 25 ? 'barra-fill barra-vida-low' : 'barra-fill barra-vida';
-  }
-}
-
-// ══════════════════════════════════════════════
-// ESTADO EM TEMPO REAL
-// ══════════════════════════════════════════════
-function escutarEstado(fichaId) {
-  if (!window._firebaseDB) return;
-  if (unsubEstado) { unsubEstado(); unsubEstado = null; }
-
-  const estadoRef = window._firebaseRef(window._firebaseDB, `fichas/${fichaId}/estado`);
-  unsubEstado = window._firebaseOnValue(estadoRef, snap => {
-    if (!snap.exists()) return;
-    if (!agenteAtivo) {
-      window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${fichaId}`)).then(aSnap => {
-        if (!aSnap.exists()) return;
-        agenteAtivo = aSnap.val();
-        aplicarAgente(agenteAtivo, snap.val());
-      });
-    } else {
-      aplicarAgente(agenteAtivo, snap.val());
+    const pct = max > 0 ? Math.max(0, Math.min(100, (atual / max) * 100)) : 0;
+    const txtEl = document.getElementById(`${tipo}-txt`);
+    const barEl = document.getElementById(`barra-${tipo}`);
+    if (txtEl) txtEl.textContent = `${atual} / ${max}`;
+    if (barEl) {
+        barEl.style.width = pct + '%';
+        if (tipo === 'vida') barEl.className = pct <= 25 ? 'barra-fill barra-vida-low' : 'barra-fill barra-vida';
     }
-    const dot = document.getElementById('status-dot');
-    if (dot) { dot.classList.remove('offline'); dot.style.background='#fff'; setTimeout(()=>{dot.style.background='';},200); }
-  });
 }
 
-// ══════════════════════════════════════════════
-// SELECTOR — filtra agentes pelo nome do usuário
-// ══════════════════════════════════════════════
+function escutarEstado(fichaId) {
+    if (!window._firebaseDB) return;
+    if (unsubEstado) { unsubEstado(); unsubEstado = null; }
+    const estadoRef = window._firebaseRef(window._firebaseDB, `fichas/${fichaId}/estado`);
+    unsubEstado = window._firebaseOnValue(estadoRef, snap => {
+        if (!snap.exists()) return;
+        aplicarAgente(agenteAtivo, snap.val());
+        const dot = document.getElementById('status-dot');
+        if (dot) { dot.classList.remove('offline'); dot.style.background='#fff'; setTimeout(()=>{dot.style.background='';},200); }
+    });
+}
+
 function abrirSelector() {
-  const usuario = getUsuario();
-  if (!usuario) {
-    document.getElementById('login-usuario-portrait').value = '';
-    document.getElementById('login-portrait-erro').textContent = '';
-    document.getElementById('login-overlay').classList.add('show');
-    return;
-  }
-  renderSelector(usuario);
-  document.getElementById('selector-overlay').classList.add('show');
+    const usuario = getUsuario();
+    if (!usuario) {
+        document.getElementById('login-usuario-portrait').value = '';
+        document.getElementById('login-portrait-erro').textContent = '';
+        document.getElementById('login-overlay').classList.add('show');
+        return;
+    }
+    renderSelector(usuario);
+    document.getElementById('selector-overlay').classList.add('show');
 }
 
 function fecharOverlays() {
-  document.getElementById('selector-overlay').classList.remove('show');
-  document.getElementById('login-overlay').classList.remove('show');
+    document.getElementById('selector-overlay').classList.remove('show');
+    document.getElementById('login-overlay').classList.remove('show');
 }
 
 function renderSelector(usuario) {
-  const grid = document.getElementById('agentes-grid');
-  grid.innerHTML = `<div class="sel-vazio" style="color:#555;">Carregando agentes...</div>`;
-  if (!window._firebaseDB) { grid.innerHTML = `<div class="sel-vazio">Firebase não conectado.</div>`; return; }
+    const grid = document.getElementById('agentes-grid');
+    grid.innerHTML = `<div class="sel-vazio" style="color:#555;">Carregando agentes...</div>`;
+    if (!window._firebaseDB) { grid.innerHTML = `<div class="sel-vazio">Firebase não conectado.</div>`; return; }
 
-  // Busca todos os agentes e filtra pelo playerNome == usuario
-  window._firebaseGet(window._firebaseRef(window._firebaseDB, 'agentes')).then(snap => {
-    if (!snap.exists()) {
-      grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.<br><small style="color:#444;">Abra uma ficha no F.I.C.H.A. primeiro.</small></div>`;
-      return;
-    }
+    // CORRIGIDO: busca em agentes/{usuario} em vez de agentes/ raiz
+    window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}`)).then(snap => {
+        if (!snap.exists()) {
+            grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado para "${usuario}".<br><small style="color:#444;">Abra uma ficha no F.I.C.H.A. e tente novamente.</small></div>`;
+            return;
+        }
 
-    // Filtra apenas os agentes cujo playerNome bate com o usuário logado
-    const todos = Object.values(snap.val());
-    const meus  = todos.filter(ag =>
-      (ag.playerNome || '').toLowerCase() === usuario.toLowerCase()
-    );
+        const agentes = Object.entries(snap.val()).map(([id, ag]) => ({ ...ag, id }));
 
-    if (meus.length === 0) {
-      grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado para "${usuario}".<br><small style="color:#444;">Abra uma ficha no F.I.C.H.A. e tente novamente.</small></div>`;
-      return;
-    }
+        if (agentes.length === 0) {
+            grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.</div>`;
+            return;
+        }
 
-    grid.innerHTML = meus.map(ag => {
-      const ativo = agenteAtivo?.id === ag.id;
-      const foto  = ag.fotoCostum || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ag.nome)}`;
-      return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente('${ag.id}')">
-        <img class="sel-foto" src="${foto}" alt="">
-        <div class="sel-info">
-          <div class="sel-nome">${ag.codinome?'"'+ag.codinome+'" ':''}${ag.nome}</div>
-          <div class="sel-sub">${ag.classe||'—'} · ${ag.origem||'—'}</div>
-        </div>
-        ${ativo?'<span style="color:var(--green);font-family:\'Share Tech Mono\',monospace;font-size:0.7rem;">● ATIVO</span>':''}
-      </div>`;
-    }).join('');
-  });
+        grid.innerHTML = agentes.map(ag => {
+            const ativo = agenteAtivo?.id === ag.id;
+            const foto  = ag.fotoCostum || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ag.nome)}`;
+            return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente('${usuario}','${ag.id}')">
+                <img class="sel-foto" src="${foto}" alt="">
+                <div class="sel-info">
+                    <div class="sel-nome">${ag.codinome?'"'+ag.codinome+'" ':''}${ag.nome}</div>
+                    <div class="sel-sub">${ag.classe||'—'} · ${ag.origem||'—'}</div>
+                </div>
+                ${ativo?'<span style="color:var(--green);font-family:\'Share Tech Mono\',monospace;font-size:0.7rem;">● ATIVO</span>':''}
+            </div>`;
+        }).join('');
+    });
 }
 
-function selecionarAgente(id) {
-  if (!window._firebaseDB) return;
-  localStorage.setItem('portrait_agente_ativo', String(id));
+// CORRIGIDO: recebe usuario como parâmetro
+function selecionarAgente(usuario, id) {
+    if (!window._firebaseDB) return;
+    localStorage.setItem('portrait_agente_ativo', String(id));
+    localStorage.setItem('portrait_usuario', usuario);
 
-  window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${id}`)).then(snap => {
-    if (!snap.exists()) return;
-    agenteAtivo = snap.val();
-    aplicarAgente(agenteAtivo, null);
-    escutarEstado(id);
-    fecharOverlays();
-  });
+    window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`)).then(snap => {
+        if (!snap.exists()) return;
+        agenteAtivo = { ...snap.val(), id };
+        aplicarAgente(agenteAtivo, null);
+        escutarEstado(id);
+        fecharOverlays();
+    });
 }
 
-// ══════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════
 function iniciarPortrait() {
-  if (!window._firebaseDB) return;
-  const params  = new URLSearchParams(window.location.search);
-  const fichaId = params.get('id') || localStorage.getItem('portrait_agente_ativo');
-  if (!fichaId) return;
+    if (!window._firebaseDB) return;
+    const params   = new URLSearchParams(window.location.search);
+    const fichaId  = params.get('id') || localStorage.getItem('portrait_agente_ativo');
+    const usuario  = getUsuario();
+    if (!fichaId || !usuario) return;
 
-  localStorage.setItem('portrait_agente_ativo', fichaId);
-  window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${fichaId}`)).then(snap => {
-    if (snap.exists()) {
-      agenteAtivo = snap.val();
-      aplicarAgente(agenteAtivo, null);
-    }
-    escutarEstado(fichaId);
-  });
+    localStorage.setItem('portrait_agente_ativo', fichaId);
+
+    // CORRIGIDO: busca em agentes/{usuario}/{id}
+    window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${fichaId}`)).then(snap => {
+        if (snap.exists()) {
+            agenteAtivo = { ...snap.val(), id: fichaId };
+            aplicarAgente(agenteAtivo, null);
+        }
+        escutarEstado(fichaId);
+    });
 }
 
 window.onload = function() {
-  if (!window._firebaseReady) setTimeout(iniciarPortrait, 1000);
+    if (!window._firebaseReady) setTimeout(iniciarPortrait, 1000);
 };
 </script>
 </body>
