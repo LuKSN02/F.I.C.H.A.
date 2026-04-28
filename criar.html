@@ -597,7 +597,7 @@ const HABILIDADES_CLASSE = {
 // PREFIXO DE USUÁRIO (mesmo que index.html)
 // ══════════════════════════════════════════════
 function getPrefix() {
-    const user = sessionStorage.getItem('ficha_user');
+    const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
     return user ? user + '_' : '';
 }
 
