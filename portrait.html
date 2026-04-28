@@ -527,11 +527,33 @@
   </div>
 </div>
 
+<!-- OVERLAY DE LOGIN -->
+<div class="selector-overlay" id="login-overlay">
+  <div class="selector-title">
+    <span>▸ IDENTIFICAR AGENTE</span>
+    <button class="btn-fechar-sel" onclick="fecharOverlays()">✕ Fechar</button>
+  </div>
+  <p style="font-size:0.7rem;color:#555;font-family:'Share Tech Mono',monospace;letter-spacing:1px;margin-bottom:16px;line-height:1.8;">
+    Digite seu nome de usuário do F.I.C.H.A.<br>para carregar seus agentes.
+  </p>
+  <input id="login-usuario-portrait" type="text" placeholder="Nome de usuário..."
+    style="background:#0d0010;border:1px solid #3a0063;color:white;font-family:'Oswald',sans-serif;
+    font-size:1rem;padding:10px 14px;border-radius:6px;width:100%;margin-bottom:12px;outline:none;"
+    onkeydown="if(event.key==='Enter') confirmarLoginPortrait()">
+  <button onclick="confirmarLoginPortrait()"
+    style="width:100%;padding:10px;background:#3a0063;border:1px solid #8a2be2;color:white;
+    font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;border-radius:6px;cursor:pointer;transition:0.2s;"
+    onmouseover="this.style.background='#8a2be2'" onmouseout="this.style.background='#3a0063'">
+    ▸ Confirmar
+  </button>
+  <p id="login-portrait-erro" style="color:#e84040;font-size:0.75rem;font-family:'Share Tech Mono',monospace;margin-top:10px;min-height:16px;letter-spacing:1px;"></p>
+</div>
+
 <!-- SELECTOR OVERLAY -->
 <div class="selector-overlay" id="selector-overlay">
   <div class="selector-title">
     <span>▸ SELECIONAR AGENTE</span>
-    <button class="btn-fechar-sel" onclick="fecharSelector()">✕ Fechar</button>
+    <button class="btn-fechar-sel" onclick="fecharOverlays()">✕ Fechar</button>
   </div>
   <div class="agentes-grid" id="agentes-grid"></div>
   <div class="obs-note">
@@ -542,41 +564,67 @@
 </div>
 
 <script>
+let agenteAtivo = null;
+let unsubEstado = null;
+
 // ══════════════════════════════════════════════
-// ESTADO
+// USUÁRIO ATIVO — lê de todas as fontes possíveis
 // ══════════════════════════════════════════════
-let agenteAtivo    = null;   // dados base do agente (nome, classe, etc.)
-let unsubEstado    = null;   // função para cancelar o listener anterior
+function getUsuario() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('usuario')
+    || localStorage.getItem('ficha_user_ativo')
+    || sessionStorage.getItem('ficha_user')
+    || localStorage.getItem('portrait_usuario')
+    || '';
+}
+
+function salvarUsuario(u) {
+  localStorage.setItem('portrait_usuario', u);
+}
+
+// ══════════════════════════════════════════════
+// LOGIN NO PORTRAIT
+// ══════════════════════════════════════════════
+function confirmarLoginPortrait() {
+  const val = (document.getElementById('login-usuario-portrait').value || '').trim().toLowerCase();
+  const erro = document.getElementById('login-portrait-erro');
+  if (!val) { erro.textContent = '⚠ Digite seu usuário.'; return; }
+  if (!window._firebaseDB) { erro.textContent = '⚠ Firebase não conectado.'; return; }
+
+  erro.textContent = 'Verificando...';
+  const r = window._firebaseRef(window._firebaseDB, `agentes/${val}`);
+  window._firebaseGet(r).then(snap => {
+    if (!snap.exists()) {
+      erro.textContent = '⚠ Usuário não encontrado ou sem agentes salvos.';
+      return;
+    }
+    salvarUsuario(val);
+    fecharOverlays();
+    renderSelector(val);
+    document.getElementById('selector-overlay').classList.add('show');
+  }).catch(() => { erro.textContent = '⚠ Erro ao conectar. Tente novamente.'; });
+}
 
 // ══════════════════════════════════════════════
 // APLICAR DADOS NO PORTRAIT
 // ══════════════════════════════════════════════
 function aplicarAgente(ficha, est) {
   if (!ficha) return;
-
-  // Foto — prioridade: estado > ficha > dicebear
   const fotoSrc = est?.fotoCostum || ficha.fotoCostum ||
     `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
   document.getElementById('foto-img').src = fotoSrc;
-
-  // Nome / classe / origem
   document.getElementById('nome-txt').textContent   = (ficha.codinome ? `"${ficha.codinome}"` : ficha.nome) || 'Agente';
   document.getElementById('classe-txt').textContent = ficha.classe || '—';
   document.getElementById('origem-txt').textContent = ficha.origem || '—';
-
-  // NEX / PE / Desl
   const nex  = est?.progressao?.nex  || '5%';
   const pe   = est?.progressao?.pe   || '3';
   const desl = est?.progressao?.desl || '9m';
   document.getElementById('nex-badge').textContent = 'NEX ' + nex;
   document.getElementById('pe-txt').textContent    = pe + ' PE';
   document.getElementById('desl-txt').textContent  = desl;
-
-  // Barras — só atualiza se tiver estado
   if (est) {
-    const v = est.vida || {}; 
-    const s = est.san  || {}; 
-    const e = est.esf  || {};
+    const v = est.vida || {}, s = est.san || {}, e = est.esf || {};
     atualizarBarra('vida', v.atual ?? 0, v.max ?? 20);
     atualizarBarra('san',  s.atual ?? 0, s.max ?? 20);
     atualizarBarra('esf',  e.atual ?? 0, e.max ?? 10);
@@ -584,40 +632,29 @@ function aplicarAgente(ficha, est) {
 }
 
 function atualizarBarra(tipo, atual, max) {
-  const pct   = max > 0 ? Math.max(0, Math.min(100, (atual / max) * 100)) : 0;
+  const pct = max > 0 ? Math.max(0, Math.min(100, (atual / max) * 100)) : 0;
   const txtEl = document.getElementById(`${tipo}-txt`);
   const barEl = document.getElementById(`barra-${tipo}`);
   if (txtEl) txtEl.textContent = `${atual} / ${max}`;
   if (barEl) {
     barEl.style.width = pct + '%';
-    if (tipo === 'vida') {
-      barEl.className = pct <= 25
-        ? 'barra-fill barra-vida-low'
-        : 'barra-fill barra-vida';
-    }
+    if (tipo === 'vida') barEl.className = pct <= 25 ? 'barra-fill barra-vida-low' : 'barra-fill barra-vida';
   }
 }
 
 // ══════════════════════════════════════════════
 // ESCUTAR ESTADO EM TEMPO REAL
 // ══════════════════════════════════════════════
-function escutarEstado(id) {
+function escutarEstado(fichaId, usuario) {
   if (!window._firebaseDB) return;
-
-  // Cancela listener anterior se existir
   if (unsubEstado) { unsubEstado(); unsubEstado = null; }
 
-  const estadoRef = window._firebaseRef(window._firebaseDB, `fichas/${id}/estado`);
-
-  // ✅ onValue dispara imediatamente com o valor atual E toda vez que mudar
+  const estadoRef = window._firebaseRef(window._firebaseDB, `fichas/${fichaId}/estado`);
   unsubEstado = window._firebaseOnValue(estadoRef, snap => {
     if (!snap.exists()) return;
-
-    // ✅ Garante que agenteAtivo existe antes de aplicar
-    // (pode ter chegado antes do get do agente terminar)
     if (!agenteAtivo) {
-      const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${id}`);
-      window._firebaseGet(agenteRef).then(aSnap => {
+      const aRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${fichaId}`);
+      window._firebaseGet(aRef).then(aSnap => {
         if (!aSnap.exists()) return;
         agenteAtivo = aSnap.val();
         aplicarAgente(agenteAtivo, snap.val());
@@ -625,12 +662,9 @@ function escutarEstado(id) {
     } else {
       aplicarAgente(agenteAtivo, snap.val());
     }
-
-    // Dot verde = recebendo dados
     const dot = document.getElementById('status-dot');
     if (dot) {
       dot.classList.remove('offline');
-      // Pisca para indicar atualização
       dot.style.background = '#fff';
       setTimeout(() => { dot.style.background = ''; }, 200);
     }
@@ -641,46 +675,44 @@ function escutarEstado(id) {
 // SELECTOR
 // ══════════════════════════════════════════════
 function abrirSelector() {
-  renderSelector();
+  const usuario = getUsuario();
+  if (!usuario) {
+    // Sem usuário conhecido — mostra tela de login
+    document.getElementById('login-usuario-portrait').value = '';
+    document.getElementById('login-portrait-erro').textContent = '';
+    document.getElementById('login-overlay').classList.add('show');
+    return;
+  }
+  renderSelector(usuario);
   document.getElementById('selector-overlay').classList.add('show');
 }
 
-function fecharSelector() {
+function fecharOverlays() {
   document.getElementById('selector-overlay').classList.remove('show');
+  document.getElementById('login-overlay').classList.remove('show');
 }
 
-function renderSelector() {
+function renderSelector(usuario) {
   const grid = document.getElementById('agentes-grid');
   grid.innerHTML = `<div class="sel-vazio" style="color:#555;">Carregando agentes...</div>`;
+  if (!window._firebaseDB) { grid.innerHTML = `<div class="sel-vazio">Firebase não conectado.</div>`; return; }
 
-  if (!window._firebaseDB) {
-    grid.innerHTML = `<div class="sel-vazio">Firebase não conectado.</div>`;
-    return;
-  }
-
-  // Lê o usuário logado — localStorage persiste entre abas (sessionStorage não)
-  const usuario = localStorage.getItem('ficha_user_ativo') || sessionStorage.getItem('ficha_user') || '';
-  if (!usuario) {
-    grid.innerHTML = `<div class="sel-vazio">⚠ Faça login primeiro no<br><a href="index.html" style="color:var(--purple-neon);">F.I.C.H.A.</a> para ver seus agentes.</div>`;
-    return;
-  }
-
-  // Busca apenas os agentes DO usuário logado
+  // ✅ Busca SOMENTE os agentes do usuário logado: agentes/{usuario}/
   const agentesRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}`);
   window._firebaseGet(agentesRef).then(snap => {
     if (!snap.exists()) {
-      grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.<br>Abra a ficha de um agente primeiro.</div>`;
+      grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.<br><small style="color:#444;">Abra uma ficha no F.I.C.H.A. primeiro.</small></div>`;
       return;
     }
     const agentes = Object.values(snap.val());
     grid.innerHTML = agentes.map(ag => {
       const ativo = agenteAtivo?.id === ag.id;
       const foto  = ag.fotoCostum || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ag.nome)}`;
-      return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente('${ag.id}', '${usuario}')">
+      return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente('${ag.id}','${usuario}')">
         <img class="sel-foto" src="${foto}" alt="">
         <div class="sel-info">
           <div class="sel-nome">${ag.codinome ? '"'+ag.codinome+'" ' : ''}${ag.nome}</div>
-          <div class="sel-sub">${ag.classe || '—'} · ${ag.origem || '—'}</div>
+          <div class="sel-sub">${ag.classe||'—'} · ${ag.origem||'—'}</div>
         </div>
         ${ativo ? '<span style="color:var(--green);font-family:\'Share Tech Mono\',monospace;font-size:0.7rem;">● ATIVO</span>' : ''}
       </div>`;
@@ -688,22 +720,19 @@ function renderSelector() {
   });
 }
 
-function selecionarAgente(id, usuario) {
+function selecionarAgente(fichaId, usuario) {
   if (!window._firebaseDB) return;
-  if (!usuario) usuario = localStorage.getItem('ficha_user_ativo') || sessionStorage.getItem('ficha_user') || '';
-  localStorage.setItem('portrait_agente_ativo', String(id));
-  localStorage.setItem('portrait_agente_usuario', usuario);
+  localStorage.setItem('portrait_agente_ativo', String(fichaId));
+  salvarUsuario(usuario);
 
-  // Busca dados base do agente no path do usuário
-  const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`);
-  window._firebaseGet(agenteRef).then(snap => {
+  // Busca do path do usuário: agentes/{usuario}/{fichaId}
+  const aRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${fichaId}`);
+  window._firebaseGet(aRef).then(snap => {
     if (!snap.exists()) return;
     agenteAtivo = snap.val();
-    // Aplica dados base (sem estado ainda)
     aplicarAgente(agenteAtivo, null);
-    // Inicia escuta em tempo real do estado
-    escutarEstado(id);
-    fecharSelector();
+    escutarEstado(fichaId, usuario);
+    fecharOverlays();
   });
 }
 
@@ -714,45 +743,26 @@ function iniciarPortrait() {
   if (!window._firebaseDB) return;
 
   const params   = new URLSearchParams(window.location.search);
-  const idParam  = params.get('id');
-  const idSalvo  = idParam || localStorage.getItem('portrait_agente_ativo');
-  if (!idSalvo) return;
+  const fichaId  = params.get('id') || localStorage.getItem('portrait_agente_ativo');
+  const usuario  = getUsuario();
 
-  // Lê o usuário — pode vir da URL (?usuario=xxx) ou do localStorage (persiste entre abas)
-  const usuarioParam = params.get('usuario');
-  const usuario = usuarioParam
-    || localStorage.getItem('ficha_user_ativo')
-    || sessionStorage.getItem('ficha_user')
-    || localStorage.getItem('portrait_agente_usuario')
-    || '';
+  // Sem agente salvo E sem usuário: não faz nada, espera o usuário clicar em ⊕ FICHA
+  if (!fichaId || !usuario) return;
 
-  if (!usuario) {
-    // Sem usuário: mostra mensagem no portrait em vez de buscar tudo
-    document.getElementById('nome-txt').textContent = 'Faça login no F.I.C.H.A.';
-    document.getElementById('status-dot').classList.add('offline');
-    return;
-  }
+  localStorage.setItem('portrait_agente_ativo', fichaId);
 
-  localStorage.setItem('portrait_agente_ativo', idSalvo);
-  localStorage.setItem('portrait_agente_usuario', usuario);
-
-  // Busca dados base do agente no path do usuário
-  const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${idSalvo}`);
-  window._firebaseGet(agenteRef).then(snap => {
+  const aRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${fichaId}`);
+  window._firebaseGet(aRef).then(snap => {
     if (snap.exists()) {
       agenteAtivo = snap.val();
-      aplicarAgente(agenteAtivo, null); // mostra dados base imediatamente
+      aplicarAgente(agenteAtivo, null);
     }
-    // Inicia escuta em tempo real independente de ter achado o agente
-    escutarEstado(idSalvo);
+    escutarEstado(fichaId, usuario);
   });
 }
 
-// Fallback caso o módulo Firebase demore
 window.onload = function() {
-  if (!window._firebaseReady) {
-    setTimeout(iniciarPortrait, 1000);
-  }
+  if (!window._firebaseReady) setTimeout(iniciarPortrait, 1000);
 };
 </script>
 </body>
