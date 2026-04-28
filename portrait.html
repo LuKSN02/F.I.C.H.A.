@@ -658,8 +658,8 @@ function renderSelector() {
     return;
   }
 
-  // Lê o usuário logado (salvo pelo index.html no sessionStorage)
-  const usuario = sessionStorage.getItem('ficha_user') || '';
+  // Lê o usuário logado — localStorage persiste entre abas (sessionStorage não)
+  const usuario = localStorage.getItem('ficha_user_ativo') || sessionStorage.getItem('ficha_user') || '';
   if (!usuario) {
     grid.innerHTML = `<div class="sel-vazio">⚠ Faça login primeiro no<br><a href="index.html" style="color:var(--purple-neon);">F.I.C.H.A.</a> para ver seus agentes.</div>`;
     return;
@@ -690,7 +690,7 @@ function renderSelector() {
 
 function selecionarAgente(id, usuario) {
   if (!window._firebaseDB) return;
-  if (!usuario) usuario = sessionStorage.getItem('ficha_user') || '';
+  if (!usuario) usuario = localStorage.getItem('ficha_user_ativo') || sessionStorage.getItem('ficha_user') || '';
   localStorage.setItem('portrait_agente_ativo', String(id));
   localStorage.setItem('portrait_agente_usuario', usuario);
 
@@ -718,9 +718,10 @@ function iniciarPortrait() {
   const idSalvo  = idParam || localStorage.getItem('portrait_agente_ativo');
   if (!idSalvo) return;
 
-  // Lê o usuário — pode vir da URL (?usuario=xxx) ou do cache/sessionStorage
+  // Lê o usuário — pode vir da URL (?usuario=xxx) ou do localStorage (persiste entre abas)
   const usuarioParam = params.get('usuario');
   const usuario = usuarioParam
+    || localStorage.getItem('ficha_user_ativo')
     || sessionStorage.getItem('ficha_user')
     || localStorage.getItem('portrait_agente_usuario')
     || '';

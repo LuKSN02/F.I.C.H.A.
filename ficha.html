@@ -2232,7 +2232,7 @@ const HABILIDADES_DB = {
 // PREFIXO DE USUÁRIO (mesmo que index.html)
 // ══════════════════════════════════════════════
 function getPrefix() {
-    const user = sessionStorage.getItem('ficha_user');
+    const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
     return user ? user + '_' : '';
 }
 
@@ -2284,7 +2284,7 @@ window.onload = function() {
 async function carregarFicha() {
     const params  = new URLSearchParams(window.location.search);
     const id      = params.get('id');
-    const usuario = sessionStorage.getItem('ficha_user') || '';
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
 
     // 1) Tenta carregar agente do localStorage (cache local)
     const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
@@ -2368,7 +2368,7 @@ async function carregarFicha() {
 }
 
 function sincronizarAgenteFirebase() {
-  const usuario = sessionStorage.getItem('ficha_user') || '';
+  const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
   if (window._firebaseDB && ficha && usuario) {
     // Path com usuário: agentes/{usuario}/{id} — evita mistura entre jogadores
     const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${ficha.id}`);

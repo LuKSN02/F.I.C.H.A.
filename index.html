@@ -317,12 +317,12 @@
         ============================================= */
 
         function getPrefix() {
-            const user = sessionStorage.getItem('ficha_user');
+            const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
             return user ? user + '_' : '';
         }
 
         function getUsuarioLogado() {
-            return sessionStorage.getItem('ficha_user');
+            return sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
         }
 
         function getContas() {
@@ -376,6 +376,7 @@
         // ✅ CORRIGIDO: chama atualizarAvatar() no lugar de nav-username
         function entrarComUsuario(usuario) {
             sessionStorage.setItem('ficha_user', usuario);
+            localStorage.setItem('ficha_user_ativo', usuario); // persiste entre abas para o portrait
             document.getElementById('modal-login-overlay').classList.add('d-none');
             atualizarAvatar();
             const params = new URLSearchParams(window.location.search);
@@ -387,6 +388,7 @@
         function fazerLogout() {
             if (!confirm('Deseja sair da conta?')) return;
             sessionStorage.removeItem('ficha_user');
+            localStorage.removeItem('ficha_user_ativo');
             ['login-usuario','login-senha','cad-usuario','cad-senha','cad-senha2']
                 .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
             setErro('');
