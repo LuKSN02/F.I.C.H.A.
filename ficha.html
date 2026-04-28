@@ -2281,15 +2281,62 @@ window.onload = function() {
 // ══════════════════════════════════════════════
 // FICHA — CARREGAR
 // ══════════════════════════════════════════════
-function carregarFicha() {
+async function carregarFicha() {
     const params  = new URLSearchParams(window.location.search);
     const id      = params.get('id');
-    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-    if (id) ficha = agentes.find(a => String(a.id) === String(id));
-    if (!ficha && agentes.length > 0) ficha = agentes[agentes.length - 1];
+    const usuario = sessionStorage.getItem('ficha_user') || '';
+
+    // 1) Tenta carregar agente do localStorage (cache local)
+    const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+    if (id) ficha = agentesLocal.find(a => String(a.id) === String(id));
+    if (!ficha && agentesLocal.length > 0) ficha = agentesLocal[agentesLocal.length - 1];
+
+    // 2) Se não achou localmente, busca no Firebase
+    if (!ficha && id && window._firebaseDB && usuario) {
+        try {
+            const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`));
+            if (snap.exists()) {
+                ficha = snap.val();
+                // Re-sincroniza cache local
+                const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+                if (!agentes.find(a => String(a.id) === String(id))) {
+                    agentes.push(ficha);
+                    localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes));
+                }
+            }
+        } catch(e) { console.error('Erro ao buscar agente no Firebase:', e); }
+    }
+
     if (!ficha) { document.getElementById('display-nome').textContent = 'Agente não encontrado'; return; }
 
+    // 3) Tenta carregar estado do localStorage (cache)
     const estadoSalvo = localStorage.getItem(getPrefix() + `estado_ficha_${ficha.id}`);
+
+    // 4) Se não tem local, busca no Firebase
+    if (!estadoSalvo && window._firebaseDB) {
+        try {
+            const snapE = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `fichas/${ficha.id}/estado`));
+            if (snapE.exists()) {
+                const parsed = snapE.val();
+                estado = {
+                    ...estado, ...parsed,
+                    vida: { ...estado.vida, ...(parsed.vida || {}) },
+                    san:  { ...estado.san,  ...(parsed.san  || {}) },
+                    esf:  { ...estado.esf,  ...(parsed.esf  || {}) },
+                };
+                if (!estado.logRolagens)           estado.logRolagens = [];
+                if (!estado.rituaisPersonagem)     estado.rituaisPersonagem = [];
+                if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
+                if (!estado.progressao)            estado.progressao = {};
+                // Guarda no cache local
+                localStorage.setItem(getPrefix() + `estado_ficha_${ficha.id}`, JSON.stringify(estado));
+                sincronizarAgenteFirebase();
+                renderFicha();
+                return;
+            }
+        } catch(e) { console.error('Erro ao buscar estado no Firebase:', e); }
+    }
+
     if (estadoSalvo) {
         const parsed = JSON.parse(estadoSalvo);
         // Merge profundo para preservar os sub-objetos (vida, san, esf)
@@ -2316,22 +2363,26 @@ function carregarFicha() {
             estado.pericias[p] = { bonus: 0, outros: 0, treinada: true };
         });
     }
-    // Sincroniza o agente (dados base) no Firebase para outros poderem encontrar
-if (window._firebaseDB && ficha) {
-  const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${ficha.id}`);
-  window._firebaseSet(agenteRef, {
-    id:        ficha.id,
-    nome:      ficha.nome,
-    codinome:  ficha.codinome  || '',
-    classe:    ficha.classe    || '',
-    origem:    ficha.origem    || '',
-    nivel:     ficha.nivel     || 1,
-    atributos: ficha.atributos || {},
-    fotoCostum: estado.fotoCostum || ficha.fotoCostum || '',
-  });
+    sincronizarAgenteFirebase();
+    renderFicha();
 }
 
-    renderFicha();
+function sincronizarAgenteFirebase() {
+  const usuario = sessionStorage.getItem('ficha_user') || '';
+  if (window._firebaseDB && ficha && usuario) {
+    // Path com usuário: agentes/{usuario}/{id} — evita mistura entre jogadores
+    const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${ficha.id}`);
+    window._firebaseSet(agenteRef, {
+      id:        ficha.id,
+      nome:      ficha.nome,
+      codinome:  ficha.codinome  || '',
+      classe:    ficha.classe    || '',
+      origem:    ficha.origem    || '',
+      nivel:     ficha.nivel     || 1,
+      atributos: ficha.atributos || {},
+      fotoCostum: estado.fotoCostum || ficha.fotoCostum || '',
+    });
+  }
 }
 
 // ══════════════════════════════════════════════

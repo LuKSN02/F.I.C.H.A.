@@ -658,7 +658,15 @@ function renderSelector() {
     return;
   }
 
-  const agentesRef = window._firebaseRef(window._firebaseDB, 'agentes');
+  // Lê o usuário logado (salvo pelo index.html no sessionStorage)
+  const usuario = sessionStorage.getItem('ficha_user') || '';
+  if (!usuario) {
+    grid.innerHTML = `<div class="sel-vazio">⚠ Faça login primeiro no<br><a href="index.html" style="color:var(--purple-neon);">F.I.C.H.A.</a> para ver seus agentes.</div>`;
+    return;
+  }
+
+  // Busca apenas os agentes DO usuário logado
+  const agentesRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}`);
   window._firebaseGet(agentesRef).then(snap => {
     if (!snap.exists()) {
       grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.<br>Abra a ficha de um agente primeiro.</div>`;
@@ -668,7 +676,7 @@ function renderSelector() {
     grid.innerHTML = agentes.map(ag => {
       const ativo = agenteAtivo?.id === ag.id;
       const foto  = ag.fotoCostum || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ag.nome)}`;
-      return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente('${ag.id}')">
+      return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente('${ag.id}', '${usuario}')">
         <img class="sel-foto" src="${foto}" alt="">
         <div class="sel-info">
           <div class="sel-nome">${ag.codinome ? '"'+ag.codinome+'" ' : ''}${ag.nome}</div>
@@ -680,12 +688,14 @@ function renderSelector() {
   });
 }
 
-function selecionarAgente(id) {
+function selecionarAgente(id, usuario) {
   if (!window._firebaseDB) return;
+  if (!usuario) usuario = sessionStorage.getItem('ficha_user') || '';
   localStorage.setItem('portrait_agente_ativo', String(id));
+  localStorage.setItem('portrait_agente_usuario', usuario);
 
-  // Busca dados base do agente
-  const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${id}`);
+  // Busca dados base do agente no path do usuário
+  const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`);
   window._firebaseGet(agenteRef).then(snap => {
     if (!snap.exists()) return;
     agenteAtivo = snap.val();
@@ -703,22 +713,36 @@ function selecionarAgente(id) {
 function iniciarPortrait() {
   if (!window._firebaseDB) return;
 
-  const params  = new URLSearchParams(window.location.search);
-  const idParam = params.get('id');
-  const idSalvo = idParam || localStorage.getItem('portrait_agente_ativo');
+  const params   = new URLSearchParams(window.location.search);
+  const idParam  = params.get('id');
+  const idSalvo  = idParam || localStorage.getItem('portrait_agente_ativo');
   if (!idSalvo) return;
 
-  localStorage.setItem('portrait_agente_ativo', idSalvo);
+  // Lê o usuário — pode vir da URL (?usuario=xxx) ou do cache/sessionStorage
+  const usuarioParam = params.get('usuario');
+  const usuario = usuarioParam
+    || sessionStorage.getItem('ficha_user')
+    || localStorage.getItem('portrait_agente_usuario')
+    || '';
 
-  // ✅ Busca dados base do agente primeiro, DEPOIS inicia o listener de estado
-  const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${idSalvo}`);
+  if (!usuario) {
+    // Sem usuário: mostra mensagem no portrait em vez de buscar tudo
+    document.getElementById('nome-txt').textContent = 'Faça login no F.I.C.H.A.';
+    document.getElementById('status-dot').classList.add('offline');
+    return;
+  }
+
+  localStorage.setItem('portrait_agente_ativo', idSalvo);
+  localStorage.setItem('portrait_agente_usuario', usuario);
+
+  // Busca dados base do agente no path do usuário
+  const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${idSalvo}`);
   window._firebaseGet(agenteRef).then(snap => {
     if (snap.exists()) {
       agenteAtivo = snap.val();
       aplicarAgente(agenteAtivo, null); // mostra dados base imediatamente
     }
     // Inicia escuta em tempo real independente de ter achado o agente
-    // (o listener trata o caso de agenteAtivo ser null)
     escutarEstado(idSalvo);
   });
 }
