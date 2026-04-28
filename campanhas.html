@@ -410,12 +410,13 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // ══ CONFIG FIREBASE ══
 const firebaseConfig = {
-    apiKey: "AIzaSyBr7WKKd8HvcaBO140icAlqSDERxNOp6io",  // ← corrigida
+    apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
     authDomain: "ficha-op-c9df8.firebaseapp.com",
+    databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com",
     projectId: "ficha-op-c9df8",
     storageBucket: "ficha-op-c9df8.firebasestorage.app",
     messagingSenderId: "5463680704",
@@ -432,51 +433,46 @@ let campanhaAtual = null;
 let unsubListeners = [];
 let agentesSelecionados = new Set();
 
-// ══ AUTH ══
+// ══ AUTH — usa o mesmo login do index.html ══
 onAuthStateChanged(auth, async user => {
     if (user) {
         currentUser = user;
-        document.getElementById('status-dot').className = 'status-dot online';
-        document.getElementById('status-txt').textContent = `UID: ${user.uid.slice(0,8)}...`;
 
-        // Salva UID no localStorage para associar agentes
+        // Salva o UID permanente para referência
         localStorage.setItem('ficha_uid', user.uid);
+        localStorage.setItem('ficha_uid_firebase', user.uid);
+
+        const nomeUsuario = user.displayName || user.email.replace('@ficha.local', '');
+        document.getElementById('status-dot').className = 'status-dot online';
+        document.getElementById('status-txt').textContent = nomeUsuario;
 
         // Checa se veio de link de convite
         const params = new URLSearchParams(window.location.search);
         const conviteId = params.get('convite');
-        if (conviteId) {
-            await processarConvite(conviteId);
-        }
+        if (conviteId) await processarConvite(conviteId);
 
         await carregarCampanhas();
         document.getElementById('loading-screen').style.display = 'none';
+    } else {
+        // Não está logado — redireciona para o index
+        window.location.href = 'index.html';
     }
-});
-
-signInAnonymously(auth).catch(err => {
-    console.error('Auth error:', err);
-    document.getElementById('loading-screen').innerHTML = `
-        <div style="color:var(--red);font-family:'Share Tech Mono',monospace;text-align:center;padding:20px;">
-            ⚠ Erro ao conectar ao Firebase.<br>
-            <small style="color:#666;font-size:0.7rem;">Verifique sua conexão e as regras do Firestore.</small>
-        </div>`;
 });
 
 // ══ CARREGAR CAMPANHAS ══
 async function carregarCampanhas() {
     const lista = document.getElementById('lista-campanhas');
     try {
-        // Campanhas onde sou mestre
-        const qMestre = query(collection(db, 'campanhas'), where('mestreUid', '==', currentUser.uid));
-        // Campanhas onde sou jogador
+        const qMestre  = query(collection(db, 'campanhas'), where('mestreUid', '==', currentUser.uid));
         const qJogador = query(collection(db, 'campanhas'), where('jogadoresUids', 'array-contains', currentUser.uid));
 
         const [snapMestre, snapJogador] = await Promise.all([getDocs(qMestre), getDocs(qJogador)]);
 
         const campanhas = [];
-        snapMestre.forEach(d  => campanhas.push({ id: d.id, ...d.data(), meuPapel: 'mestre' }));
-        snapJogador.forEach(d => campanhas.push({ id: d.id, ...d.data(), meuPapel: 'jogador' }));
+        // Evita duplicatas (mestre também está em jogadoresUids)
+        const ids = new Set();
+        snapMestre.forEach(d  => { campanhas.push({ id: d.id, ...d.data(), meuPapel: 'mestre'  }); ids.add(d.id); });
+        snapJogador.forEach(d => { if (!ids.has(d.id)) campanhas.push({ id: d.id, ...d.data(), meuPapel: 'jogador' }); });
 
         if (campanhas.length === 0) {
             lista.innerHTML = `
@@ -504,7 +500,6 @@ async function carregarCampanhas() {
                 </div>
             </div>`).join('');
 
-        // Carrega stats async
         campanhas.forEach(async c => {
             const snapA = await getDocs(collection(db, 'campanhas', c.id, 'agentes'));
             const snapJ = await getDocs(collection(db, 'campanhas', c.id, 'jogadores'));
@@ -526,11 +521,9 @@ window.abrirCampanha = async function(id) {
     document.getElementById('view-lista').style.display = 'none';
     document.getElementById('view-detalhe').classList.add('show');
 
-    // Cancela listeners anteriores
     unsubListeners.forEach(u => u());
     unsubListeners = [];
 
-    // Carrega dados da campanha
     const snap = await getDoc(doc(db, 'campanhas', id));
     if (!snap.exists()) { mostrarToast('⚠ Campanha não encontrada'); voltarLista(); return; }
     const camp = snap.data();
@@ -539,14 +532,12 @@ window.abrirCampanha = async function(id) {
     document.getElementById('camp-header-desc').textContent = camp.descricao || '';
 
     const isMestre = camp.mestreUid === currentUser.uid;
-    document.getElementById('btn-bar-mestre').style.display = isMestre ? 'flex' : 'none';
+    document.getElementById('btn-bar-mestre').style.display  = isMestre ? 'flex' : 'none';
     document.getElementById('btn-bar-jogador').style.display = isMestre ? 'none' : 'flex';
 
-    // Listener em tempo real — Agentes
     const unsubA = onSnapshot(collection(db, 'campanhas', id, 'agentes'), snap => {
         renderAgentes(snap.docs.map(d => ({ id: d.id, ...d.data() })), isMestre);
     });
-    // Listener em tempo real — Jogadores
     const unsubJ = onSnapshot(collection(db, 'campanhas', id, 'jogadores'), snap => {
         renderJogadores(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     });
@@ -560,6 +551,7 @@ function renderAgentes(agentes, isMestre) {
         el.innerHTML = `<div class="empty-state"><div class="icon">👤</div><div>Nenhum agente na campanha ainda.</div></div>`;
         return;
     }
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
     el.innerHTML = agentes.map(a => `
         <div class="agente-camp-card">
             <img class="agente-camp-foto" src="${a.foto || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(a.nome)}`}" alt="${a.nome}">
@@ -569,7 +561,9 @@ function renderAgentes(agentes, isMestre) {
                 <div class="agente-camp-player">▸ ${a.playerNome || 'Jogador'} ${a.playerUid === currentUser.uid ? '(você)' : ''}</div>
             </div>
             <div style="display:flex;gap:6px;align-items:center;">
-<a href="${a.playerNome === sessionStorage.getItem('ficha_user') ? `ficha.html?id=${a.fichaLocalId}&campanha=${campanhaAtual}` : `ficha-view.html?agenteDoc=${a.id}&campanha=${campanhaAtual}`}" style="background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:4px;text-decoration:none;transition:0.2s;" onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">Ver Ficha</a>
+                <a href="${a.playerUid === currentUser.uid ? `ficha.html?id=${a.fichaLocalId}&campanha=${campanhaAtual}` : `ficha-view.html?agenteDoc=${a.id}&campanha=${campanhaAtual}`}"
+                   style="background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:4px;text-decoration:none;transition:0.2s;"
+                   onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">Ver Ficha</a>
                 ${(isMestre || a.playerUid === currentUser.uid) ? `<button onclick="removerAgente('${a.id}')" style="background:none;border:none;color:#444;cursor:pointer;font-size:0.85rem;" title="Remover" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#444'">🗑</button>` : ''}
             </div>
         </div>`).join('');
@@ -586,7 +580,7 @@ function renderJogadores(jogadores) {
         <div class="jogador-row">
             <div>
                 <div class="jogador-nome">${j.nome || 'Agente Anônimo'}</div>
-                <div class="jogador-meta">UID: ${j.uid?.slice(0,12)}... • Entrou: ${j.entradoEm?.toDate ? j.entradoEm.toDate().toLocaleDateString('pt-BR') : '—'}</div>
+                <div class="jogador-meta">Entrou: ${j.entradoEm?.toDate ? j.entradoEm.toDate().toLocaleDateString('pt-BR') : '—'}</div>
             </div>
             <span class="jogador-badge ${j.papel || 'jogador'}">${j.papel === 'mestre' ? '★ MESTRE' : '◆ JOGADOR'}</span>
         </div>`).join('');
@@ -606,7 +600,6 @@ window.criarCampanha = async function() {
             criadoEm: serverTimestamp(),
         });
 
-        // Adiciona mestre como jogador
         await setDoc(doc(db, 'campanhas', ref.id, 'jogadores', currentUser.uid), {
             uid: currentUser.uid,
             nome: getNomeLocal(),
@@ -633,14 +626,12 @@ async function processarConvite(campanhaId) {
         if (!snap.exists()) { mostrarToast('⚠ Campanha não encontrada'); return; }
         const camp = snap.data();
 
-        // Já é membro?
         if (camp.jogadoresUids?.includes(currentUser.uid)) {
             mostrarToast('✦ Você já está nesta campanha!');
             setTimeout(() => abrirCampanha(campanhaId), 500);
             return;
         }
 
-        // Adiciona como jogador
         await updateDoc(doc(db, 'campanhas', campanhaId), {
             jogadoresUids: arrayUnion(currentUser.uid)
         });
@@ -652,7 +643,6 @@ async function processarConvite(campanhaId) {
         });
 
         mostrarToast(`✦ ENTROU EM: ${camp.nome}`);
-        // Limpa a URL
         window.history.replaceState({}, '', 'campanhas.html');
         setTimeout(() => abrirCampanha(campanhaId), 800);
     } catch(e) {
@@ -666,7 +656,6 @@ window.entrarCampanha = async function() {
     let valor = document.getElementById('entrar-codigo').value.trim();
     if (!valor) { mostrarToast('⚠ Cole o link ou código'); return; }
 
-    // Extrai ID do link ou usa como ID direto
     let campanhaId = valor;
     try {
         const url = new URL(valor);
@@ -688,8 +677,8 @@ window.copiarConvite = function() {
 
 // ══ VINCULAR AGENTE ══
 window.abrirModalVincularAgente = function() {
-    const usuario = sessionStorage.getItem('ficha_user');
-    const prefix = usuario ? usuario + '_' : '';
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const prefix  = usuario ? usuario + '_' : '';
     const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
     const lista   = document.getElementById('lista-agentes-locais');
     agentesSelecionados.clear();
@@ -716,37 +705,31 @@ window.toggleSelecionarAgente = function(i) {
     const el = document.getElementById(`sel-${i}`);
     const ch = document.getElementById(`check-${i}`);
     if (agentesSelecionados.has(i)) {
-        agentesSelecionados.delete(i);
-        el.classList.remove('selected');
-        ch.textContent = '';
+        agentesSelecionados.delete(i); el.classList.remove('selected'); ch.textContent = '';
     } else {
-        agentesSelecionados.add(i);
-        el.classList.add('selected');
-        ch.textContent = '✓';
+        agentesSelecionados.add(i); el.classList.add('selected'); ch.textContent = '✓';
     }
 };
 
 window.vincularAgentes = async function() {
     if (agentesSelecionados.size === 0) { mostrarToast('⚠ Selecione ao menos um agente'); return; }
-    const usuario = sessionStorage.getItem('ficha_user');
-    const prefix = usuario ? usuario + '_' : '';
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const prefix  = usuario ? usuario + '_' : '';
     const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
-    const playerNome = getNomeLocal();
 
     try {
         for (const i of agentesSelecionados) {
             const a = agentes[i];
-            const foto = a.fotoCostum || null;
             await setDoc(doc(db, 'campanhas', campanhaAtual, 'agentes', `${currentUser.uid}_${a.id}`), {
                 fichaLocalId: a.id,
-                playerUid: currentUser.uid,
-                playerNome,
-                nome: a.nome,
+                playerUid:    currentUser.uid,
+                playerNome:   getNomeLocal(),
+                nome:     a.nome,
                 codinome: a.codinome || '',
-                classe: a.classe || '',
-                origem: a.origem || '',
-                nivel: a.nivel || 1,
-                foto: foto || '',
+                classe:   a.classe  || '',
+                origem:   a.origem  || '',
+                nivel:    a.nivel   || 1,
+                foto:     a.fotoCostum || '',
                 adicionadoEm: serverTimestamp(),
             });
         }
@@ -815,16 +798,14 @@ window.sairCampanha = async function() {
 
 // ══ UTILITÁRIOS ══
 function getNomeLocal() {
-    const usuario = sessionStorage.getItem('ficha_user');
-    const prefix = usuario ? usuario + '_' : '';
-    const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
-    return usuario || agentes[0]?.nome || `Agente_${currentUser.uid.slice(0,6)}`;
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    return usuario || `Agente_${currentUser.uid.slice(0,6)}`;
 }
 
 window.voltarLista = function() {
     unsubListeners.forEach(u => u());
     unsubListeners = [];
-    campanhaAtual = null;
+    campanhaAtual  = null;
     document.getElementById('view-detalhe').classList.remove('show');
     document.getElementById('view-lista').style.display = 'block';
     carregarCampanhas();
@@ -837,9 +818,9 @@ window.trocarAba = function(nome, btn) {
     btn.classList.add('active');
 };
 
-window.abrirModalCriar   = () => document.getElementById('modal-criar').classList.add('show');
-window.abrirModalEntrar  = () => document.getElementById('modal-entrar').classList.add('show');
-window.fecharModal       = (id) => document.getElementById(id).classList.remove('show');
+window.abrirModalCriar  = () => document.getElementById('modal-criar').classList.add('show');
+window.abrirModalEntrar = () => document.getElementById('modal-entrar').classList.add('show');
+window.fecharModal      = (id) => document.getElementById(id).classList.remove('show');
 
 function mostrarToast(msg) {
     const t = document.getElementById('toast');
@@ -847,7 +828,6 @@ function mostrarToast(msg) {
     setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// Fecha modal clicando fora
 document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
 });

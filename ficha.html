@@ -71,18 +71,19 @@
             background: var(--card); border: 1px solid var(--border); border-radius: 10px;
             padding: 16px; display: flex; flex-direction: column; align-items: center;
         }
-        .radar-container { position: relative; width: 220px; height: 220px; margin: 8px auto; }
+        .radar-container { position: relative; width: 240px; height: 240px; margin: 12px auto; }
         #radar-svg { width: 100%; height: 100%; }
-        .atrib-bubble { position: absolute; display: flex; flex-direction: column; align-items: center; cursor: default; }
-        .atrib-label { font-size: 0.5rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
-        .atrib-val { font-size: 1.3rem; font-weight: 700; color: white; line-height: 1; }
-        .bubble-FOR { top: 44%; left: -2%; transform: translate(-50%,-50%); }
-        .bubble-AGI { top: 13%; left: 50%; transform: translate(-50%,-50%); }
-        .bubble-INT { top: 44%; right: -2%; transform: translate(50%,-50%); }
-        .bubble-PRE { bottom: 5%; left: 30%; transform: translate(-50%, 50%); }
-        .bubble-VIG { bottom: 5%; right: 30%; transform: translate(50%, 50%); }
-        .bubble-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 0.55rem; letter-spacing: 2px; color: var(--text-dim); text-align: center; text-transform: uppercase; }
 
+        .atrib-bubble { position: absolute; display: flex; flex-direction: column; align-items: center; cursor: default; }
+        .atrib-label { font-size: 0.52rem; letter-spacing: 2px; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-bottom: 1px; }
+        .atrib-val { font-size: 1.4rem; font-weight: 700; color: white; line-height: 1; }
+
+        .bubble-FOR { top: 50%; left: -4%;  transform: translate(-50%,-50%); }
+        .bubble-AGI { top: 6%;  left: 50%;  transform: translate(-50%,-50%); }
+        .bubble-INT { top: 50%; right: -4%; transform: translate(50%,-50%); }
+        .bubble-PRE { bottom: 2%; left: 28%; transform: translate(-50%,50%); }
+        .bubble-VIG { bottom: 2%; right: 28%; transform: translate(50%,50%); }
+        .bubble-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 0.5rem; letter-spacing: 2px; color: rgba(255,255,255,0.2); text-align: center; text-transform: uppercase; pointer-events: none; }
         .atrib-dados-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; width: 100%; margin-top: 10px; }
         .atrib-dado-btn {
             background: #0d0010; border: 1px solid var(--border); border-radius: 6px;
@@ -169,13 +170,13 @@
 
         .card-pericias { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
         .pericias-header {
-            display: grid; grid-template-columns: 1fr 50px 55px 55px 55px 70px;
+            display: grid; grid-template-columns: 1fr 55px 55px 55px 70px;
             padding: 8px 16px; background: #0d0010; border-bottom: 1px solid var(--border);
             font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; text-align: center;
         }
         .pericias-header div:first-child { text-align: left; }
         .pericia-row {
-            display: grid; grid-template-columns: 1fr 50px 55px 55px 55px 70px;
+            display: grid; grid-template-columns: 1fr 55px 55px 55px 70px;
             padding: 5px 16px; border-bottom: 1px solid #150025; align-items: center; transition: 0.15s;
         }
         .pericia-row:hover { background: #150025; }
@@ -873,8 +874,8 @@
     <!-- ABA PERÍCIAS -->
     <div class="aba-panel card-pericias" id="aba-pericias">
       <div class="pericias-header">
-        <div>Perícia</div><div>Atrib</div><div>Bônus</div><div>Treino</div><div>Outros</div><div>Rolar</div>
-      </div>
+        <div>Perícia</div><div>Bônus</div><div>Treino</div><div>Outros</div><div>Rolar</div>
+    </div>
       <div id="lista-pericias"></div>
     </div>
 
@@ -1128,7 +1129,7 @@
         <div class="atrib-edit-label">FOR</div>
         <div class="atrib-edit-controls">
           <button class="atrib-spin-btn" onclick="stepAtrib('FOR',-1)">−</button>
-          <input type="number" class="atrib-edit-val" id="ae-FOR" min="-1" max="5" value="0">
+          <input type="number" class="atrib-edit-val" id="ae-FOR" min="-1" max="20" value="0">
           <button class="atrib-spin-btn" onclick="stepAtrib('FOR',1)">+</button>
         </div>
       </div>
@@ -1136,7 +1137,7 @@
         <div class="atrib-edit-label">AGI</div>
         <div class="atrib-edit-controls">
           <button class="atrib-spin-btn" onclick="stepAtrib('AGI',-1)">−</button>
-          <input type="number" class="atrib-edit-val" id="ae-AGI" min="-1" max="5" value="0">
+          <input type="number" class="atrib-edit-val" id="ae-AGI" min="-1" max="20" value="0">
           <button class="atrib-spin-btn" onclick="stepAtrib('AGI',1)">+</button>
         </div>
       </div>
@@ -1144,7 +1145,7 @@
         <div class="atrib-edit-label">INT</div>
         <div class="atrib-edit-controls">
           <button class="atrib-spin-btn" onclick="stepAtrib('INT',-1)">−</button>
-          <input type="number" class="atrib-edit-val" id="ae-INT" min="-1" max="5" value="0">
+          <input type="number" class="atrib-edit-val" id="ae-INT" min="-1" max="20" value="0">
           <button class="atrib-spin-btn" onclick="stepAtrib('INT',1)">+</button>
         </div>
       </div>
@@ -1152,7 +1153,7 @@
         <div class="atrib-edit-label">PRE</div>
         <div class="atrib-edit-controls">
           <button class="atrib-spin-btn" onclick="stepAtrib('PRE',-1)">−</button>
-          <input type="number" class="atrib-edit-val" id="ae-PRE" min="-1" max="5" value="0">
+          <input type="number" class="atrib-edit-val" id="ae-PRE" min="-1" max="20" value="0">
           <button class="atrib-spin-btn" onclick="stepAtrib('PRE',1)">+</button>
         </div>
       </div>
@@ -1160,7 +1161,7 @@
         <div class="atrib-edit-label">VIG</div>
         <div class="atrib-edit-controls">
           <button class="atrib-spin-btn" onclick="stepAtrib('VIG',-1)">−</button>
-          <input type="number" class="atrib-edit-val" id="ae-VIG" min="-1" max="5" value="0">
+          <input type="number" class="atrib-edit-val" id="ae-VIG" min="-1" max="20" value="0">
           <button class="atrib-spin-btn" onclick="stepAtrib('VIG',1)">+</button>
         </div>
       </div>
@@ -2399,13 +2400,18 @@ function renderFicha() {
     document.title = `F.I.C.H.A. – ${ficha.nome}`;
     const atribs = ficha.atributos || {};
     ['FOR','AGI','INT','PRE','VIG'].forEach(a => {
-        const v = atribs[a]??0, bon = bonusAtrib(v);
-        document.getElementById(`b-${a}`).textContent  = v;
-        if (document.getElementById(`bv-${a}`)) {
-            document.getElementById(`bv-${a}`).textContent = v;
-            document.getElementById(`bd-${a}`).textContent = bon > 0 ? `d20+${bon}` : 'd20';
-        }
-    });
+    const v = atribs[a] ?? 0, bon = bonusAtrib(v);
+    document.getElementById(`b-${a}`).textContent  = v;
+    if (document.getElementById(`bv-${a}`)) {
+        document.getElementById(`bv-${a}`).textContent = v;
+        // Mostrar modo de rolagem em vez de +bônus
+        let modoStr;
+        if (v <= 0)      modoStr = '2d20 pior';
+        else if (v === 1) modoStr = '1d20';
+        else             modoStr = `${v}d20 melhor`;
+        document.getElementById(`bd-${a}`).textContent = modoStr;
+    }
+});
 
      const btnPortrait = document.getElementById('btn-portrait');
     if (btnPortrait && ficha) btnPortrait.href = `portrait.html?id=${ficha.id}`;
@@ -2435,36 +2441,118 @@ function renderFicha() {
 }
 
 function desenharRadar(atribs) {
-    const cx=110,cy=110,maxR=80,MAX=5;
-    const ang=[-Math.PI/2+Math.PI,-Math.PI/2,-Math.PI/2+Math.PI*2/5*2,-Math.PI/2+Math.PI*2/5*3,-Math.PI/2+Math.PI*2/5*4];
-    const ord=['FOR','AGI','INT','PRE','VIG'];
-    document.getElementById('radar-bg').setAttribute('points', ang.map(a=>`${cx+maxR*Math.cos(a)},${cy+maxR*Math.sin(a)}`).join(' '));
-    const axesG=document.getElementById('radar-axes'); axesG.innerHTML='';
-    ang.forEach(a=>{ const l=document.createElementNS('http://www.w3.org/2000/svg','line'); l.setAttribute('x1',cx);l.setAttribute('y1',cy);l.setAttribute('x2',cx+maxR*Math.cos(a));l.setAttribute('y2',cy+maxR*Math.sin(a)); axesG.appendChild(l); });
-    document.getElementById('radar-val').setAttribute('points', ang.map((a,i)=>{ const v=atribs[ord[i]]||0,r=(v/MAX)*maxR; return `${cx+r*Math.cos(a)},${cy+r*Math.sin(a)}`; }).join(' '));
+    const cx=120,cy=120,maxR=88;
+    const N=5;
+    const angBase = -Math.PI/2;
+    const angs = Array.from({length:N},(_,i)=>angBase + (Math.PI*2/N)*i);
+    const ord=['AGI','INT','VIG','PRE','FOR'];
+
+    const allVals = ord.map(k => atribs[k] ?? 0);
+    const MAX = Math.max(5, ...allVals);
+
+    const svgEl = document.getElementById('radar-svg');
+    svgEl.setAttribute('viewBox','0 0 240 240');
+    svgEl.innerHTML = '';
+
+    // Círculos concêntricos
+    const rings=[0.2,0.4,0.6,0.8,1.0];
+    rings.forEach(r=>{
+        const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',maxR*r);
+        c.setAttribute('fill','none');c.setAttribute('stroke','rgba(255,255,255,0.07)');c.setAttribute('stroke-width','1');
+        svgEl.appendChild(c);
+    });
+
+    // Polígono de fundo
+    const bgPts = angs.map(a=>`${cx+maxR*Math.cos(a)},${cy+maxR*Math.sin(a)}`).join(' ');
+    const bgPoly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    bgPoly.setAttribute('points',bgPts);
+    bgPoly.setAttribute('fill','rgba(138,43,226,0.06)');
+    bgPoly.setAttribute('stroke','rgba(255,255,255,0.15)');
+    bgPoly.setAttribute('stroke-width','1');
+    svgEl.appendChild(bgPoly);
+
+    // Eixos
+    angs.forEach(a=>{
+        const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+        l.setAttribute('x1',cx);l.setAttribute('y1',cy);
+        l.setAttribute('x2',cx+maxR*Math.cos(a));l.setAttribute('y2',cy+maxR*Math.sin(a));
+        l.setAttribute('stroke','rgba(255,255,255,0.12)');l.setAttribute('stroke-width','1');
+        svgEl.appendChild(l);
+    });
+
+    // Polígono dos valores (mínimo de 6px de raio para não colapsar no 0)
+    const valPts = angs.map((a,i)=>{
+        const v = atribs[ord[i]] ?? 0;
+        const r = Math.max(6, (v / MAX) * maxR);
+        return `${cx+r*Math.cos(a)},${cy+r*Math.sin(a)}`;
+    }).join(' ');
+    const valPoly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    valPoly.setAttribute('points',valPts);
+    valPoly.setAttribute('fill','rgba(120,60,220,0.35)');
+    valPoly.setAttribute('stroke','rgba(180,100,255,0.9)');
+    valPoly.setAttribute('stroke-width','1.5');
+    svgEl.appendChild(valPoly);
+
+    // Pontos nos vértices
+    angs.forEach((a,i)=>{
+        const v = atribs[ord[i]] ?? 0;
+        const r = Math.max(6, (v / MAX) * maxR);
+        const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        dot.setAttribute('cx',cx+r*Math.cos(a));
+        dot.setAttribute('cy',cy+r*Math.sin(a));
+        dot.setAttribute('r','3');
+        dot.setAttribute('fill','rgba(200,130,255,1)');
+        svgEl.appendChild(dot);
+    });
 }
 
 // ══════════════════════════════════════════════
 // ATRIBUTOS — ROLAR
 // ══════════════════════════════════════════════
-function rolarAtributo(atrib) {
-    if (!ficha) return;
-    const v=ficha.atributos?.[atrib]||0, bon=bonusAtrib(v);
-    const dado=Math.floor(Math.random()*20)+1, total=dado+bon;
-    const btn=document.getElementById(`btn-${atrib}`);
-    if (btn){ btn.classList.add('dice-spinning'); setTimeout(()=>btn.classList.remove('dice-spinning'),400); }
-    document.getElementById('atrib-res-nome').textContent=`Teste de ${atrib}`;
-    document.getElementById('atrib-res-num').textContent=total;
-    let det=`d20(${dado})`; if(bon>0) det+=` +${bon} (${atrib}) = ${total}`; else det+=` = ${total}`;
-    document.getElementById('atrib-res-det').textContent=det;
-    const tag=document.getElementById('atrib-res-tag'); let tipo='normal';
-    if(dado===20){ tag.textContent='CRÍTICO!';tag.style.background='#003300';tag.style.color='var(--green)';tipo='critico'; }
-    else if(dado===1){ tag.textContent='FALHA!';tag.style.background='#330000';tag.style.color='var(--red)';tipo='falha'; }
-    else{ tag.textContent='';tag.style.background='transparent'; }
-    document.getElementById('atrib-resultado').classList.add('show');
-    adicionarAoLog(`Atrib. ${atrib}`, bon>0?`d20(${dado}) +${bon} ${atrib}`:`d20(${dado})`, total, tipo);
+function rolarSistemaOP(v) {
+    // v = valor do atributo (-1 a 5+)
+    // ≤0: 2d20 pega pior | 1: 1d20 | ≥2: vd20 pega melhor
+    const qtd = v <= 0 ? 2 : Math.max(1, v);
+    const rolls = Array.from({ length: qtd }, () => Math.floor(Math.random() * 20) + 1);
+    
+    let chosen;
+    if (v <= 0) {
+        chosen = Math.min(...rolls); // pior
+    } else {
+        chosen = Math.max(...rolls); // melhor
+    }
+
+    const modoLabel = v <= 0 ? 'pior' : v >= 2 ? 'melhor' : '';
+    const rollStr = rolls.length > 1
+        ? `${qtd}d20[${rolls.join(', ')}] → ${modoLabel} = ${chosen}`
+        : `d20[${chosen}]`;
+
+    let tipo = 'normal';
+    if (chosen === 20) tipo = 'critico';
+    else if (chosen === 1) tipo = 'falha';
+
+    return { total: chosen, detalhe: rollStr, tipo };
 }
 
+function rolarAtributo(atrib) {
+    if (!ficha) return;
+    const v = ficha.atributos?.[atrib] ?? 0;
+    const btn = document.getElementById(`btn-${atrib}`);
+    if (btn){ btn.classList.add('dice-spinning'); setTimeout(()=>btn.classList.remove('dice-spinning'),400); }
+
+    const { total, detalhe, tipo } = rolarSistemaOP(v);
+
+    document.getElementById('atrib-res-nome').textContent = `Teste de ${atrib}`;
+    document.getElementById('atrib-res-num').textContent = total;
+    document.getElementById('atrib-res-det').textContent = detalhe;
+    const tag = document.getElementById('atrib-res-tag');
+    if (tipo === 'critico'){ tag.textContent='CRÍTICO!'; tag.style.background='#003300'; tag.style.color='var(--green)'; }
+    else if (tipo === 'falha'){ tag.textContent='FALHA!'; tag.style.background='#330000'; tag.style.color='var(--red)'; }
+    else { tag.textContent=''; tag.style.background='transparent'; }
+    document.getElementById('atrib-resultado').classList.add('show');
+    adicionarAoLog(`Atrib. ${atrib}`, detalhe, total, tipo);
+}
 // ══════════════════════════════════════════════
 // LOG DE ROLAGENS
 // ══════════════════════════════════════════════
@@ -2502,24 +2590,33 @@ function renderPericias() {
         const est=estado.pericias[p.nome]||{bonus:0,outros:0,treinada:false};
         const bon=bonusAtrib(atribs[p.atrib]||0), treino=est.treinada?5:0;
         const row=document.createElement('div'); row.className='pericia-row'; row.id=`prow-${p.nome.replace(/\s/g,'_')}`;
-        row.innerHTML=`<div class="pericia-nome-col">${est.treinada?'<div class="treinada-dot"></div>':'<div style="width:8px"></div>'}<span class="pericia-nome-txt ${est.treinada?'pericia-treinada':''}">${p.nome}</span><span class="pericia-atrib-badge">${p.atrib}</span></div><div class="pericia-cell">${bon>0?'+'+bon:bon}</div><div class="pericia-cell"><input type="number" class="pericia-input" value="${est.bonus||0}" onchange="atualizarPericia('${p.nome}','bonus',this.value)"></div><div class="pericia-cell" style="color:${est.treinada?'var(--green)':'var(--text-dim)'}">${treino>0?'+'+treino:'0'}</div><div class="pericia-cell"><input type="number" class="pericia-input" value="${est.outros||0}" onchange="atualizarPericia('${p.nome}','outros',this.value)"></div><div class="pericia-cell"><button class="btn-rolar-pericia" onclick="rolarPericia('${p.nome}','${p.atrib}')">🎲 Rolar</button></div>`;
+        row.innerHTML=`<div class="pericia-nome-col">${est.treinada?'<div class="treinada-dot"></div>':'<div style="width:8px"></div>'}<span class="pericia-nome-txt ${est.treinada?'pericia-treinada':''}">${p.nome}</span><span class="pericia-atrib-badge">${p.atrib}</span></div><div class="pericia-cell"><input type="number" class="pericia-input" value="${est.bonus||0}" onchange="atualizarPericia('${p.nome}','bonus',this.value)"></div><div class="pericia-cell" style="color:${est.treinada?'var(--green)':'var(--text-dim)'}">${treino>0?'+'+treino:'0'}</div><div class="pericia-cell"><input type="number" class="pericia-input" value="${est.outros||0}" onchange="atualizarPericia('${p.nome}','outros',this.value)"></div><div class="pericia-cell"><button class="btn-rolar-pericia" onclick="rolarPericia('${p.nome}','${p.atrib}')">🎲 Rolar</button></div>`;
         lista.appendChild(row);
     });
 }
 
 function atualizarPericia(nome,campo,valor){ if (!estado.pericias[nome]) estado.pericias[nome]={bonus:0,outros:0,treinada:false}; estado.pericias[nome][campo]=parseInt(valor)||0; salvarEstado(); }
 
-function rolarPericia(nome,atrib) {
+function rolarPericia(nome, atrib) {
     if (!ficha) return;
-    const atribs=ficha.atributos||{}, est=estado.pericias[nome]||{bonus:0,outros:0,treinada:false};
-    const bon=bonusAtrib(atribs[atrib]||0), treino=est.treinada?5:0, extras=(est.bonus||0)+(est.outros||0);
-    const dado=Math.floor(Math.random()*20)+1, total=dado+bon+treino+extras;
-    const rowEl=document.getElementById(`prow-${nome.replace(/\s/g,'_')}`);
-    if (rowEl){ rowEl.classList.remove('row-critico','row-falha'); void rowEl.offsetWidth; if(dado===20)rowEl.classList.add('row-critico'); else if(dado===1)rowEl.classList.add('row-falha'); setTimeout(()=>rowEl.classList.remove('row-critico','row-falha'),700); }
-    let partes=[`d20(${dado})`]; if(bon!==0)partes.push(`${bon>=0?'+':''}${bon} ${atrib}`); if(treino>0)partes.push(`+${treino} treino`); if(extras!==0)partes.push(`${extras>=0?'+':''}${extras} bônus`);
-    let tipo='normal'; if(dado===20)tipo='critico'; else if(dado===1)tipo='falha';
-    adicionarAoLog(nome,partes.join(' '),total,tipo);
-    trocarAba('combate',document.querySelector('.aba-btn[data-aba="combate"]'));
+    const atribs = ficha.atributos || {};
+    const v = atribs[atrib] ?? 0;
+    const est = estado.pericias[nome] || { bonus: 0, outros: 0, treinada: false };
+    const treino = est.treinada ? 5 : 0;
+    const extras = (est.bonus || 0) + (est.outros || 0);
+
+    const { total: baseRoll, detalhe: baseDetalhe, tipo } = rolarSistemaOP(v);
+    const total = baseRoll + treino + extras;
+
+    const rowEl = document.getElementById(`prow-${nome.replace(/\s/g,'_')}`);
+    if (rowEl){ rowEl.classList.remove('row-critico','row-falha'); void rowEl.offsetWidth; if(tipo==='critico')rowEl.classList.add('row-critico'); else if(tipo==='falha')rowEl.classList.add('row-falha'); setTimeout(()=>rowEl.classList.remove('row-critico','row-falha'),700); }
+
+    let partes = [baseDetalhe];
+    if (treino > 0) partes.push(`+${treino} treino`);
+    if (extras !== 0) partes.push(`${extras >= 0 ? '+' : ''}${extras} bônus`);
+
+    adicionarAoLog(nome, partes.join(' '), total, tipo);
+    trocarAba('combate', document.querySelector('.aba-btn[data-aba="combate"]'));
 }
 
 // ══════════════════════════════════════════════
@@ -2975,7 +3072,7 @@ function fecharModalAtributos() {
 
 function stepAtrib(key, delta) {
     const el = document.getElementById('ae-' + key); if (!el) return;
-    el.value = Math.min(5, Math.max(-1, (parseInt(el.value) || 0) + delta));
+    el.value = Math.max(-1, (parseInt(el.value) || 0) + delta);
 }
 
 function salvarAtributos() {
@@ -2983,7 +3080,7 @@ function salvarAtributos() {
     if (!ficha.atributos) ficha.atributos = {};
     ['FOR','AGI','INT','PRE','VIG'].forEach(k => {
         const el = document.getElementById('ae-' + k);
-        if (el) ficha.atributos[k] = Math.min(5, Math.max(-1, parseInt(el.value) || 0));
+        if (el) ficha.atributos[k] = Math.max(-1, parseInt(el.value) || 0);
     });
     // Persistir no localStorage
     const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
