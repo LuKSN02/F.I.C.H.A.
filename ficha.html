@@ -2413,8 +2413,13 @@ function renderFicha() {
     }
 });
 
-     const btnPortrait = document.getElementById('btn-portrait');
-    if (btnPortrait && ficha) btnPortrait.href = `portrait.html?id=${ficha.id}`;
+    const btnPortrait = document.getElementById('btn-portrait');
+if (btnPortrait && ficha) {
+    const usuario = localStorage.getItem('ficha_user_ativo') 
+                 || sessionStorage.getItem('ficha_user') 
+                 || '';
+    btnPortrait.href = `portrait.html?id=${ficha.id}&usuario=${usuario}`;
+}
 
     desenharRadar(atribs);
     const nivel = parseInt(ficha.nivel)||1;

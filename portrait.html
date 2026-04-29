@@ -454,7 +454,8 @@
   window._firebaseGet     = get;
   window._firebaseReady   = true;
 
-  iniciarPortrait();
+  window.dispatchEvent(new Event('firebaseReady'));
+  // ← SEM iniciarPortrait() aqui
 </script>
 </head>
 <body>
@@ -720,9 +721,18 @@ function iniciarPortrait() {
     });
 }
 
-window.onload = function() {
-    if (!window._firebaseReady) setTimeout(iniciarPortrait, 1000);
-};
+window.addEventListener('firebaseReady', function() {
+    iniciarPortrait();
+});
+
+// Fallback caso o evento já tenha disparado antes deste script carregar
+function tentarIniciar() {
+    if (window._firebaseReady) iniciarPortrait();
+    else window.addEventListener('firebaseReady', iniciarPortrait, { once: true });
+}
+
+if (document.readyState === 'complete') tentarIniciar();
+else window.addEventListener('load', tentarIniciar);
 </script>
 </body>
 </html>
