@@ -6,6 +6,8 @@
     <title>F.I.C.H.A.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 </head>
 
 <style>
@@ -182,6 +184,79 @@
     .avatar-dropdown .dd-item.danger { color: #ff6666; }
     .avatar-dropdown .dd-item.danger:hover { background: #2a0000; color: #ff4444; }
     #input-foto-perfil { display: none; }
+    /* ── MODAL CROPPER ── */
+  .crop-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.97);
+    z-index: 99999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .crop-overlay.show { display: flex; }
+
+  .crop-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #666;
+    align-self: flex-start;
+  }
+
+    .crop-area {
+        width: 100%;
+        max-width: 420px;
+        height: 420px;
+        overflow: hidden;
+        border: 1px solid #8a2be2;
+        background: #000;
+    }
+
+    .crop-area img {
+        display: block;
+        max-width: 100%;
+    }
+
+    .cropper-container {
+        max-width: 100% !important;
+    }
+
+  .crop-btns {
+    display: flex;
+    gap: 10px;
+  }
+
+  .crop-btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    padding: 8px 20px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1px solid;
+  }
+
+  .crop-btn-ok {
+    background: rgba(60,0,0,0.6);
+    border-color: var(--red);
+    color: var(--red-bright);
+  }
+  .crop-btn-ok:hover { background: var(--red-dark); box-shadow: 0 0 10px var(--red-glow); }
+
+  .crop-btn-cancel {
+    background: transparent;
+    border-color: #333;
+    color: #555;
+  }
+  .crop-btn-cancel:hover { border-color: #666; color: #888; }
+  
 </style>
 
 <body>
@@ -214,6 +289,20 @@
             <p class="login-error" id="login-erro"></p>
         </div>
     </div>
+            <!-- MODAL CROPPER -->
+        <div class="crop-overlay" id="crop-overlay">
+        <div class="crop-title">▸ AJUSTAR FOTO DE PERFIL</div>
+        <div class="crop-area">
+            <img id="crop-img" src="" alt="crop">
+        </div>
+        <div class="crop-btns">
+            <button class="crop-btn crop-btn-ok" onclick="confirmarCrop()">✔ Confirmar</button>
+            <button class="crop-btn crop-btn-cancel" onclick="cancelarCrop()">✕ Cancelar</button>
+        </div>
+        </div>
+
+        <!-- input oculto para upload -->
+        <input type="file" id="file-foto" accept="image/*" style="display:none" onchange="abrirCropper(event)">
 
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar navbar-expand-lg custom-nav navbar-dark">
@@ -310,6 +399,7 @@
             <p class="text-center text-secondary small mb-0">Desenvolvido por luka_00000.</p>
         </div>
     </footer>
+    
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -585,27 +675,62 @@
             document.getElementById('avatar-dropdown').classList.toggle('open');
         }
 
-        function abrirSeletorFoto(e) {
-            e.stopPropagation();
-            document.getElementById('avatar-dropdown').classList.remove('open');
-            document.getElementById('input-foto-perfil').click();
-        }
+function abrirSeletorFoto(e) {
+    e.stopPropagation();
+    document.getElementById('avatar-dropdown').classList.remove('open');
+    document.getElementById('input-foto-perfil').click();
+}
 
-        function salvarFotoPerfil(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                localStorage.setItem(getAvatarKey(), e.target.result);
-                atualizarAvatar();
-            };
-            reader.readAsDataURL(file);
-        }
+let cropperInstance = null;
 
-        document.addEventListener('click', function() {
-            const dd = document.getElementById('avatar-dropdown');
-            if (dd) dd.classList.remove('open');
-        });
+function salvarFotoPerfil(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const cropImg = document.getElementById('crop-img');
+
+        if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+
+        cropImg.src = e.target.result;
+        document.getElementById('crop-overlay').classList.add('show');
+
+        cropImg.onload = function() {
+            cropperInstance = new Cropper(cropImg, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 0.85,
+                guides: true,
+                center: true,
+                highlight: true,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+                minContainerWidth: 300,
+                minContainerHeight: 300,
+            });
+        };
+    };
+    reader.readAsDataURL(file);
+}
+
+function confirmarCrop() {
+    if (!cropperInstance) return;
+    const canvas = cropperInstance.getCroppedCanvas({ width: 300, height: 300 });
+    if (!canvas) return;
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    localStorage.setItem(getAvatarKey(), dataUrl);
+    atualizarAvatar();
+    cancelarCrop();
+}
+
+function cancelarCrop() {
+    document.getElementById('crop-overlay').classList.remove('show');
+    if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+    document.getElementById('input-foto-perfil').value = '';
+}
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
