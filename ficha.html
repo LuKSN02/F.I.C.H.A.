@@ -667,8 +667,8 @@
     <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
       <div class="navbar-nav">
         <a class="nav-link px-3" href="index.html?view=agentes">Agentes</a>
-        <a class="nav-link px-3" href="#">Campanhas</a>
-        <a class="nav-link px-3" href="#">Homebrew</a>
+        <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
+        <a class="nav-link px-3" href="homebrew.html">Homebrew</a>
       </div>
     </div>
     <div class="d-none d-lg-flex pe-3 gap-2">
@@ -1395,6 +1395,9 @@ const RITUAIS_DATA = [
   { nome:"Ritual de Imersão", elem:"CONHECIMENTO", src:"Enigma do Medo", exec:"Ritual", alcance:"Lápide marcada", dur:"Duração da memória", conjuracao:"Aplicar Lodo em uma lápide do Perímetro, desenhar o símbolo ao redor e se concentrar nele.", desc:"Permite ao conjurador acessar vividamente uma memória específica do dono da Marca da lápide." },
   { nome:"Ritual de Invocação da Dama de Sangue", elem:"SANGUE", src:"Livro de Regras", exec:"Ritual longo", alcance:"Local do ritual", dur:"Permanente", conjuracao:"Fazer o Símbolo da Orquídea entrar em contato com 7 sacrifícios em 7 condições diferentes.", desc:"Invoca a Dama de Sangue na Realidade." },
   { nome:"Ritual de Forma Monstruosa", elem:"SANGUE", src:"Vendeta Oculta", exec:"Ritual", alcance:"Animais / Pessoal", dur:"Permanente", conjuracao:"Acender uma vela e matar um animal afogado em uma tina.", desc:"Infecta animais da mesma espécie usada no sacrifício. Após 7 transformações, transforma o próprio conjurador em uma criatura." },
+  { nome:"Backup", elem:"ENERGIA", src:"Suplemento", exec:"Padrão", alcance:"Curto", dur:"24 horas", conjuracao:"Energia 2º círculo.",
+    desc:"Cria um chamariz com sua aparência em espaço vazio dentro do alcance. A cópia realiza movimentos simples em repetição e pode pronunciar uma única frase à sua escolha. Tem uma conexão com você num raio de 50km. Dentro da área de conexão, pode gastar uma reação para trocar de lugar com o chamariz, perdendo 2d4 SAN. O ritual se dissipa se qualquer dano for causado à cópia ou se você deixar a área de conexão. Discente (+2 PE): duração permanente. Pode cobrir os olhos e ouvidos para alternar percepção entre corpo e cópia (fica cego, surdo e pasmo enquanto faz isso). Requer 2º círculo. Verdadeiro (+5 PE): como na versão discente; também pode falar através da cópia e escolher a aparência dela com base em alguém visto. Ao trocar de lugar, pode dissipar o ritual causando 6d6 de dano de Energia (Reflexos reduz à metade) em todos os seres em alcance curto de onde saiu e onde aparece. Requer 3º círculo.",
+    dadosSugeridos:["2d4","6d6"] },
  
   // ── SOBREVIVENDO AO HORROR ─────────────────────────────────────────────────
   { nome:"Esfolar", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", dur:"Instantânea", conjuracao:"Sangue 1º círculo.", desc:"Projeta agulhas e lâminas rubras no alvo. Causa 3d4+3 dano de corte e sangrando. Resistência: metade do dano, evita condição. Discente (+2 PE, 2º círculo): médio, 5d4+5, explosão 6m. Verdadeiro (+5 PE, 3º círculo): longo, 10d4+10, explosão 6m.", dadosSugeridos:["3d4+3","5d4+5","10d4+10"] },
@@ -1560,6 +1563,13 @@ const HABILIDADES_DB = {
       desc:'Seus PV iniciais e a cada nível de exposição mudam para 24+Vigor e 6 PV (+Vig), respectivamente. Aplica-se retroativamente. Pré-req: Ataque Especial.' },
       { nome:'Predador Perfeito', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'60%', src:'Arquivos Secretos #3',
     desc:'Uma vez por rodada, você pode gastar 5 PE para fazer uma ação padrão adicional. Essa ação precisa ter intenção de causar dano (ataque, ritual de dano, armadilha etc.). Pré-requisitos: veterano em Luta ou Pontaria e Sobrevivência.' },
+    // SaH
+    { nome:'Chuva de Balas', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Suplemento',
+      desc:'Todos os pacotes de munição no inventário têm duração dobrada por cena. Ao atacar com arma de fogo (antes de rolar o dano), pode sacrificar completamente um ou mais pacotes de munição para causar +2 dados do mesmo tipo de dano no ataque por pacote sacrificado. Se estiver usando a regra opcional de contagem de munição, cada pacote tem +10 balas.' },
+    { nome:'Combatente Esforçado', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Suplemento',
+      desc:'Você recebe +1 PE para cada NEX. Pré-requisitos: For 3 ou Vig 3.' },
+    { nome:'Treinamento Militarizado', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Suplemento',
+      desc:'O bônus recebido por exercitar-se em cena de interlúdio muda para +1d8 e pode ser gasto em rolagens de dano, mas só pode usar um bônus por rolagem.' },
 
     // ── ESPECIALISTA ──
     { nome:'Artista Marcial (Especialista)', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
@@ -1599,6 +1609,15 @@ const HABILIDADES_DB = {
     desc:'Quando faz um ataque, pode gastar 2 PE para +4 no teste de ataque ou na rolagem de dano. A cada avanço de NEX pode gastar +1 PE para mais +4 (NEX 25%: 3 PE/+8; NEX 55%: 4 PE/+12; NEX 85%: 5 PE/+16). Cada bônus pode ser aplicado em ataque ou dano. Pré-requisitos: Agi 2 ou For 2, treinado em Luta ou Pontaria.' },
   { nome:'Golpes de Arena', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #2',
     desc:'Quando acerta um ataque corpo a corpo, pode gastar 2 PE para fazer um ataque corpo a corpo adicional ou uma manobra de combate contra o mesmo alvo. Pré-requisito: treinado em Luta.' },
+    // SaH ()
+    { nome:'Análise Conturbada', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Suplemento',
+      desc:'Durante uma cena de investigação, pode gastar uma ação padrão para trazer teorias e análises obscuras, implantando paranoia em quem puder ouvir. Agentes voluntários presentes (incluindo você) podem escolher dar ouvidos; se o fizerem, rolam 1d6 e recebem o resultado em bônus para testes de Intelecto e Presença até o fim da cena, mas também perdem o valor da rolagem em pontos de sanidade.' },
+    { nome:'Profissão Perigo', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Suplemento',
+      desc:'Pode gastar uma ação completa e 4 PE para desmontar seus equipamentos e construir novo utilizando seus materiais. Ao fazer isso, se desfaz de um item qualquer do inventário e recebe um novo item operacional à sua escolha em seu lugar. O item escolhido não deve ultrapassar a categoria e os espaços do item sacrificado. Pode fazer isso uma vez por missão.' },
+    { nome:'Quase Novo', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Suplemento',
+      desc:'Ao fazer uma ação de manutenção durante uma cena de interlúdio, o item reparado recebe +10 PV adicionais. Além disso, pode usar a mesma ação para adicionar ao equipamento uma nova modificação temporária de uma categoria que possa acessar. A modificação dura até o início da próxima cena de interlúdio.' },
+    { nome:'Uma Última Olhada', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Suplemento',
+      desc:'Na última rodada de uma cena de investigação, pode gastar 2 PE, uma vez por cena, para se esforçar mais, aproveitando o pouco tempo para analisar tudo rapidamente com o grupo. O número de rodadas disponíveis aumenta em +1.' },
 
     // ── OCULTISTA ──
     { nome:'Camuflar Ocultismo', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
@@ -1825,6 +1844,16 @@ const HABILIDADES_DB = {
     desc:'Treinamento adicional em Profissão (armeiro, engenheiro ou químico), ou +5 se já treinado. Além disso, pode usar fabricação em campo para fabricar e consertar itens paranormais (fabricar exige três ações de interlúdio não consecutivas).' },
   { nome:'Achado Conveniente', trilha:'Muambeiro', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Sobrevivendo ao Horror',
     desc:'Gaste ação completa e 5 PE para "produzir" um item de até categoria III (exceto paranormais). O item pode ser um protótipo, algo encontrado na missão, ou justificativa aprovada pelo mestre. Funciona até o fim da cena.' },
+    
+    // ── ESPECIALISTA: GRANADEIRO BLASTER ──
+    { nome:'Meus Bebês', trilha:'Granadeiro Blaster', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Suplemento',
+      desc:'Recebe treinamento em Profissão (químico); se já treinado, recebe +5. Começa a missão com 1 explosivo autoral (não conta para o limite de itens). O número de explosivos autorais no início da missão aumenta em +1 nos NEX 40%, 65% e 99%. Explosivos autorais são fabricados por você; pode produzir mais com as regras de Fabricação em Campo.' },
+    { nome:'Fogo Amigo', trilha:'Granadeiro Blaster', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Suplemento',
+      desc:'Recebe o poder Perito em Explosivos. Se já o tiver (ou o adquirir novamente, permitido uma única vez), dobra o valor adicionado para resistir aos próprios explosivos e a quantidade de alvos que pode excluir dos efeitos. A área afetada pelos explosivos aumenta em +6m (uma granada passa de raio 6m para 12m; uma mina antipessoal passa a afetar um cone de 12m).' },
+    { nome:'O Calor do Momento', trilha:'Granadeiro Blaster', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Suplemento',
+      desc:'Pode gastar uma ação completa e 4 PE para fabricar um explosivo autoral apressadamente. Ele conta com todos os bônus de um explosivo autoral normal, porém tem 25% de chance (1 a 25 em 1d100) de explodir na mão quando tentar usá-lo (mesmo em lança-granadas).' },
+    { nome:'Memória Muscular', trilha:'Granadeiro Blaster', classe:'Especialista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Suplemento',
+      desc:'Explosivos autorais fabricados por você podem ser empunhados por qualquer pessoa como ação livre, e pode gastar 4 PE para usar um explosivo autoral como ação de movimento (mesmo em lança-granadas). Além disso, seus explosivos autorais causam o dobro dos dados de dano.' },
  
  // ── COMBATENTE/ESPECIALISTA/OCULTISTA: MONSTRUOSO ──
   { nome:'Ser Amaldiçoado', trilha:'Monstruoso', classe:'Combatente', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Sobrevivendo ao Horror',
@@ -1960,6 +1989,13 @@ const HABILIDADES_DB = {
     desc:'Quando acerta um ataque corpo a corpo em alvo agarrado, pode gastar 3 PE para causar +1d10 de Energia e deixar o alvo atordoado por uma rodada (Fort DT For evita a condição). Um mesmo ser só pode ser atordoado por essa habilidade uma vez por cena. Afinidade: o alvo também fica caído e sangrando (sem resistência).' },
   { nome:'Disparo da Morte', elemento:'MORTE', tipo:'paranormal', elem:'MORTE', nex:'—', src:'Arquivos Secretos #2',
     desc:'Antes de fazer um teste de ataque com arma de fogo ou de disparo, pode gastar 3 PE para receber +2 na margem de ameaça. Afinidade: o ataque ignora cobertura e 10 pontos de RD do alvo.' },
+    // SaH
+    { nome:'Foco Gravitacional', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Suplemento',
+      desc:'Escolha um equipamento. Ele passa a ocupar 0 espaços enquanto guardado com você, porém toda vez que for empunhado, tem 25% de chance (1 a 25 em 1d100) de sair voando descontroladamente e parar em espaço em alcance curto à escolha do mestre. Se for destruído ou consumido, escolha outro equipamento. Afinidade: aumenta a quantidade de equipamentos para três.' },
+    { nome:'Sobrepor Imprevisível', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Suplemento',
+      desc:'Uma vez por rodada, apenas no início dela, pode gastar 2 PE para rolar 1d20. Se o resultado for par, soma ele ao valor de iniciativa; se for ímpar, subtrai. Sua posição na ordem de iniciativa é mudada de acordo com o novo resultado. Afinidade: pode rolar 2d20 e escolher o resultado preferido em um dos dados.' },
+    { nome:'Traço de Inconsistência', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Suplemento',
+      desc:'Pode gastar 2 PE, como reação, para esconder sua identidade em imagens digitais capturadas por câmeras de segurança ou fotográficas no momento em que é fotografado/filmado. Afinidade: sua presença se torna incapaz de ser capturada por imagens digitais permanentemente. Além disso, sua voz também se torna distorcida em gravações.' },
       
 
     // CONHECIMENTO
@@ -2079,6 +2115,11 @@ const HABILIDADES_DB = {
     desc:'Se você se mover em direção a uma cobertura ou inimigo, pode gastar 1 PE para percorrer o dobro do seu deslocamento. Pré-requisitos: For 2, treinado em Atletismo e Tática.' },
   { nome:'Sentido Tático Apurado', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #2',
     desc:'Você fica imune à condição desprevenido e, quando causar dano em um alvo, pode gastar 2 PE para que ele falhe automaticamente em testes de Furtividade contra você por 1 rodada. Pré-requisitos: Pre 2, treinado em Percepção e Tática.' },
+    // SaH
+    { nome:'Gororoba', tipo:'poder_geral', elem:'NEUTRO', src:'Suplemento',
+      desc:'Em uma cena de interlúdio, pode alimentar-se uma vez sem gastar uma ação e sem precisar ter acesso à refeição (improvisa com os restos que encontra).' },
+    { nome:'Ruído Branco', tipo:'poder_geral', elem:'NEUTRO', src:'Suplemento',
+      desc:'Enquanto estiver em um ambiente movimentado ou com muitas conversas paralelas, recebe +1d6 em testes de Investigação e Percepção. Além disso, a critério do mestre, pode gastar 1 PE, uma vez por cena, para ouvir entre as vozes uma conversa que forneça informação útil para a missão.' },
   ],
 
   // ══════════════════════════════════════════════
@@ -2220,6 +2261,11 @@ const HABILIDADES_DB = {
       desc:'Perícias: Vontade e outra relacionada à premonição. Recebe +2 em Vontade. Quando surge referência à sua premonição em cena, recebe +2 PE temporários até o fim da cena.' },
     { nome:'Encontrar a Verdade', origem:'Repórter Investigativo', tipo:'origem', elem:'NEUTRO', src:'Sobrevivendo ao Horror',
       desc:'Perícias: Atualidades e Investigação. Pode usar Investigação no lugar de Diplomacia para persuadir e mudar atitude. Quando faz teste de Investigação, pode gastar 2 PE para +5.' },
+      // SUPLEMENTO (Enigma do Medo)
+    { nome:'Registrar o Paranormal', origem:'Influencer Paranormal', tipo:'origem', elem:'NEUTRO', src:'Suplemento',
+      desc:'Perícias treinadas: Enganação e Tecnologia. Uma vez por cena, pode gastar uma ação padrão e 2 PE para criar um registro (foto, vídeo) de uma criatura paranormal ou ritual conjurado na mesma cena (a ação padrão tira a foto/vídeo). Recebe +5 em testes contra presença perturbadora de criaturas registradas. Pode gastar ação de interlúdio para memorizar um único ritual registrado e conjurá-lo como se o conhecesse até a próxima cena de interlúdio, desde que tenha o NEX necessário (1º círculo a partir de NEX 5%, 2º a partir de 25%, 3º a partir de 55% e 4º a partir de 85%).' },
+    { nome:'Quem Não Arrisca, Não Petisca', origem:'Caçador de Recompensas', tipo:'origem', elem:'NEUTRO', src:'Suplemento',
+      desc:'Perícias treinadas: Crime e Investigação. Recebe +2 em testes para resistir a condições mentais e de medo. Além disso, caso falhe em algum desses testes, recebe +1d20 no próximo teste que fizer. Esse bônus termina no fim da cena e não é cumulativo com ele mesmo.' },
     // AS#1
     { nome:'Mácula Ritualística', origem:'Ferido por Ritual', tipo:'origem', elem:'NEUTRO', src:'Arquivos Secretos #1',
       desc:'Perícias: Ocultismo e 1 perícia do elemento (Fortitude=Sangue, Vontade=Morte/Conhecimento, Reflexos=Energia). Aprende e pode conjurar ritual de 1º círculo do elemento correspondente; uma vez por cena, pode conjurá-lo sem gastar PE. Sofre –5 em testes de resistência contra efeitos desse elemento.' },
@@ -2425,7 +2471,7 @@ if (btnPortrait && ficha) {
     const nivel = parseInt(ficha.nivel)||1;
     // PATCH: usa progressão salva se existir, senão calcula pelo nível
     const prog = estado.progressao || {};
-    const nexDisplay  = prog.nex  || (nivel<=1?'5%':nivel<=2?'15%':nivel<=3?'30%':nivel<=4?'50%':'99%');
+    const nexDisplay  = prog.nex  || '5%';
     const peDisplay   = prog.pe   || (nivel+2);
     const deslDisplay = prog.desl || '9m';
     document.getElementById('nex-val').textContent  = nexDisplay;
@@ -3114,8 +3160,18 @@ function salvarAtributos() {
 // PATCH — MODAL NEX / PROGRESSÃO
 // ══════════════════════════════════════════════
 function abrirModalNex() {
-    const nexAtual = document.getElementById('nex-val')?.textContent || '5%';
-    document.getElementById('ne-nex').value   = nexAtual;
+    const nexAtual = (document.getElementById('nex-val')?.textContent || '5%').trim();
+    const selectNex = document.getElementById('ne-nex');
+    // Percorre as options e seleciona a que bater com o valor atual
+    let encontrado = false;
+    for (let i = 0; i < selectNex.options.length; i++) {
+        if (selectNex.options[i].text.trim() === nexAtual) {
+            selectNex.selectedIndex = i;
+            encontrado = true;
+            break;
+        }
+    }
+    if (!encontrado) selectNex.selectedIndex = 0; // fallback para 5%
     document.getElementById('ne-pe').value    = document.getElementById('pe-val')?.textContent || '3';
     document.getElementById('ne-desl').value  = document.getElementById('desl-val')?.textContent || '9m';
 

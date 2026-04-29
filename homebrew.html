@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homebrew – F.I.C.H.A.</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple:      #8a2be2;
+  --purple-neon: #bc6ff1;
+  --purple-dark: #2a0050;
+  --purple-glow: rgba(138,43,226,0.4);
+  --red:         #e84040;
+  --bg:          #0a0010;
+  --card:        #111118;
+  --card2:       #16161e;
+  --border:      #2a1a40;
+  --border2:     #3a0063;
+  --text-dim:    #666;
+  --text-mid:    #aaa;
+  --white:       #f0eaf8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Oswald', sans-serif;
+  background: linear-gradient(135deg, #1a0033 0%, #000000 100%);
+  background-attachment: fixed;
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── NAVBAR ── */
+.custom-nav { background-color: black; border-bottom: 2px solid #333; }
+.nav-link { font-weight: 700; }
+.nav-link:hover { color: #ff0000 !important; }
+.navbar-brand { font-weight: 700; }
+.text-purple-neon { color: var(--purple-neon); }
+
+/* ── MAIN TABS (AMEAÇAS / HABILIDADES / RITUAIS / ITENS) ── */
+.main-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border2);
+  background: #0a000f;
+  padding: 0 24px;
+  gap: 0;
+}
+
+.main-tab {
+  padding: 16px 24px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: 0.2s;
+  text-transform: uppercase;
+}
+
+.main-tab:hover { color: var(--purple-neon); }
+.main-tab.active { color: var(--white); border-bottom-color: var(--purple); }
+
+/* ── CONTEÚDO ── */
+.tab-content-area {
+  flex: 1;
+  padding: 28px 24px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── SUBTABS (rituais/itens) ── */
+.sub-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.sub-tab {
+  padding: 6px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-mid);
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sub-tab:hover { border-color: var(--purple); color: var(--purple-neon); }
+.sub-tab.active { background: var(--purple); border-color: var(--purple); color: white; }
+
+/* ── HEADER DA LISTA ── */
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.list-count {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.btn-adicionar {
+  background: var(--purple);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 5px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-adicionar:hover { background: var(--purple-neon); box-shadow: 0 0 12px var(--purple-glow); }
+
+.empty-msg {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  margin-top: 80px;
+}
+
+/* ── CARDS DA LISTA ── */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.item-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  transition: 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.item-card:hover { border-color: var(--purple); box-shadow: 0 4px 20px var(--purple-glow); }
+
+.item-card-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.item-card-sub {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 1px;
+}
+
+.item-card-img {
+  width: 48px; height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  float: right;
+  margin-left: 10px;
+}
+
+.btn-del-card {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: none;
+  border: none;
+  color: #444;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.2s;
+  padding: 2px 6px;
+}
+.btn-del-card:hover { color: var(--red); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9999;
+  overflow-y: auto;
+  padding: 24px;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.show { display: flex; align-items: flex-start; justify-content: center; }
+
+.modal-box {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 28px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 0 40px var(--purple-glow);
+  animation: fadeUp 0.25s ease;
+  margin: auto;
+}
+
+@keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform:none; } }
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--purple-neon);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── CAMPOS DO FORMULÁRIO ── */
+.field-group {
+  margin-bottom: 14px;
+}
+
+.field-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.field-label span { color: var(--text-dim); font-weight: 400; font-size: 0.7rem; }
+
+.field-input, .field-select, .field-textarea {
+  width: 100%;
+  background: #0d000e;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--white);
+  padding: 8px 12px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.field-input:focus, .field-select:focus, .field-textarea:focus {
+  outline: none;
+  border-color: var(--purple);
+  box-shadow: 0 0 0 2px rgba(138,43,226,0.15);
+}
+
+.field-select option { background: #1a0033; }
+
+.field-textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.fields-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fields-row .field-group { flex: 1; min-width: 80px; }
+
+/* ── RICH TEXT EDITOR ── */
+.editor-toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #1a0033;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+}
+
+.editor-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-mid);
+  font-size: 0.85rem;
+  padding: 2px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: 0.15s;
+}
+
+.editor-btn:hover { border-color: var(--purple); color: var(--purple-neon); }
+
+.editor-area {
+  min-height: 100px;
+  background: #0d000e;
+  border: 1px solid var(--border);
+  border-radius: 0 0 5px 5px;
+  padding: 10px 12px;
+  color: var(--white);
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  line-height: 1.6;
+}
+
+.editor-area b, .editor-area strong { color: var(--purple-neon); }
+
+/* ── IMAGEM UPLOAD ── */
+.img-upload-box {
+  width: 80px; height: 80px;
+  border: 2px dashed var(--border);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+  overflow: hidden;
+  background: #0d000e;
+}
+
+.img-upload-box:hover { border-color: var(--purple); }
+.img-upload-box img { width: 100%; height: 100%; object-fit: cover; }
+.img-upload-box .img-placeholder { color: #333; font-size: 2rem; }
+
+/* ── SECTION TITLE ── */
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 18px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ── RESISTÊNCIAS GRID ── */
+.resist-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.resist-item label {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: capitalize;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.resist-item input {
+  width: 100%;
+  background: #0d000e;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--white);
+  padding: 5px 8px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.85rem;
+}
+
+.resist-item input:focus { outline: none; border-color: var(--purple); }
+
+/* ── BOTÕES DO MODAL ── */
+.modal-footer-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid #333;
+  color: #666;
+  padding: 8px 20px;
+  border-radius: 5px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-cancel:hover { border-color: var(--red); color: var(--red); }
+
+.btn-salvar {
+  background: var(--purple);
+  border: none;
+  color: white;
+  padding: 8px 24px;
+  border-radius: 5px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-salvar:hover { background: var(--purple-neon); box-shadow: 0 0 12px var(--purple-glow); }
+
+/* ── DYNAMIC LIST (deslocamento alt, perícias adicionais, melhorias) ── */
+.dyn-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+
+.dyn-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dyn-item input {
+  flex: 1;
+  background: #0d000e;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--white);
+  padding: 6px 10px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.9rem;
+}
+.dyn-item input:focus { outline: none; border-color: var(--purple); }
+
+.btn-dyn-remove {
+  background: none;
+  border: 1px solid #333;
+  color: #444;
+  border-radius: 4px;
+  width: 28px; height: 28px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.15s;
+  flex-shrink: 0;
+}
+.btn-dyn-remove:hover { border-color: var(--red); color: var(--red); }
+
+.btn-dyn-add {
+  background: none;
+  border: 1px dashed var(--border);
+  color: var(--text-dim);
+  border-radius: 4px;
+  padding: 5px 12px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+.btn-dyn-add:hover { border-color: var(--purple); color: var(--purple-neon); }
+
+/* ── AVATAR ── */
+.avatar-wrapper { position: relative; display: inline-block; cursor: pointer; }
+.avatar-circle {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 2px solid #8a2be2; background: #1a0033;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; font-weight: 700; color: #bc6ff1;
+  overflow: hidden; transition: 0.2s; user-select: none;
+}
+.avatar-circle:hover { border-color: #bc6ff1; box-shadow: 0 0 10px rgba(138,43,226,0.5); }
+.avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-dropdown {
+  position: absolute; right: 0; top: 46px;
+  background: #0d0d0d; border: 1px solid #3a0063;
+  border-radius: 10px; min-width: 180px; padding: 10px 0;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 1000; display: none;
+}
+.avatar-dropdown.open { display: block; }
+.avatar-dropdown .dd-username { padding: 8px 16px 6px; color: #bc6ff1; font-weight: 700; font-size: 0.95rem; border-bottom: 1px solid #222; margin-bottom: 6px; }
+.avatar-dropdown .dd-item { padding: 8px 16px; color: #ccc; font-size: 0.9rem; cursor: pointer; transition: 0.15s; display: flex; align-items: center; gap: 8px; }
+.avatar-dropdown .dd-item:hover { background: #1a0033; color: #bc6ff1; }
+.avatar-dropdown .dd-item.danger { color: #ff6666; }
+.avatar-dropdown .dd-item.danger:hover { background: #2a0000; color: #ff4444; }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg custom-nav navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand fs-2" href="index.html">
+      <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="72" height="72" class="d-inline-block align-text-center">
+      F.I.C.H.A.
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <div class="navbar-nav">
+        <a class="nav-link px-3" href="index.html?view=agentes">Agentes</a>
+        <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
+        <a class="nav-link px-3 active" href="homebrew.html">Homebrew</a>
+      </div>
+    </div>
+    <div class="d-none d-lg-flex align-items-center" style="min-width:200px;justify-content:flex-end;">
+      <div class="avatar-wrapper" id="avatar-wrapper" onclick="toggleDropdown(event)">
+        <div class="avatar-circle" id="avatar-circle"><span id="avatar-iniciais"></span></div>
+        <div class="avatar-dropdown" id="avatar-dropdown">
+          <div class="dd-username" id="dd-username-label"></div>
+          <div class="dd-item danger" onclick="fazerLogout()">✕ Sair</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN TABS -->
+<div class="main-tabs">
+  <div class="main-tab active" onclick="trocarMainTab('ameacas')">Ameaças</div>
+  <div class="main-tab" onclick="trocarMainTab('habilidades')">Habilidades</div>
+  <div class="main-tab" onclick="trocarMainTab('rituais')">Rituais</div>
+  <div class="main-tab" onclick="trocarMainTab('itens')">Itens</div>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="tab-content-area">
+
+  <!-- ══════════ AMEAÇAS ══════════ -->
+  <div class="tab-pane active" id="pane-ameacas">
+    <div class="list-header">
+      <span class="list-count">Homebrew <span id="count-ameacas">0</span>/50</span>
+      <button class="btn-adicionar" onclick="abrirModal('ameaca')">Adicionar</button>
+    </div>
+    <div id="lista-ameacas" class="items-grid"></div>
+    <div id="empty-ameacas" class="empty-msg">Você ainda não criou novas ameaças</div>
+  </div>
+
+  <!-- ══════════ HABILIDADES ══════════ -->
+  <div class="tab-pane" id="pane-habilidades">
+    <div class="list-header">
+      <span class="list-count">Homebrew <span id="count-habilidades">0</span>/50</span>
+      <button class="btn-adicionar" onclick="abrirModal('habilidade')">Adicionar</button>
+    </div>
+    <div id="lista-habilidades" class="items-grid"></div>
+    <div id="empty-habilidades" class="empty-msg">Você ainda não criou novas habilidades</div>
+  </div>
+
+  <!-- ══════════ RITUAIS ══════════ -->
+  <div class="tab-pane" id="pane-rituais">
+    <div class="sub-tabs" id="subtabs-rituais-elem">
+      <button class="sub-tab active" onclick="filtrarRituais('elem','Todos')">Todos</button>
+      <button class="sub-tab" onclick="filtrarRituais('elem','Conhecimento')">Conhecimento</button>
+      <button class="sub-tab" onclick="filtrarRituais('elem','Energia')">Energia</button>
+      <button class="sub-tab" onclick="filtrarRituais('elem','Morte')">Morte</button>
+      <button class="sub-tab" onclick="filtrarRituais('elem','Sangue')">Sangue</button>
+      <button class="sub-tab" onclick="filtrarRituais('elem','Medo')">Medo</button>
+      <button class="sub-tab" onclick="filtrarRituais('elem','Varia')">Varia</button>
+    </div>
+    <div class="sub-tabs" id="subtabs-rituais-circ">
+      <button class="sub-tab active" onclick="filtrarRituais('circ','Todos')">Todos</button>
+      <button class="sub-tab" onclick="filtrarRituais('circ','1')">1º Círculo</button>
+      <button class="sub-tab" onclick="filtrarRituais('circ','2')">2º Círculo</button>
+      <button class="sub-tab" onclick="filtrarRituais('circ','3')">3º Círculo</button>
+      <button class="sub-tab" onclick="filtrarRituais('circ','4')">4º Círculo</button>
+    </div>
+    <div class="list-header">
+      <span class="list-count">Homebrew <span id="count-rituais">0</span>/50</span>
+      <button class="btn-adicionar" onclick="abrirModal('ritual')">Adicionar</button>
+    </div>
+    <div id="lista-rituais" class="items-grid"></div>
+    <div id="empty-rituais" class="empty-msg">Você ainda não criou novos rituais</div>
+  </div>
+
+  <!-- ══════════ ITENS ══════════ -->
+  <div class="tab-pane" id="pane-itens">
+    <div class="sub-tabs">
+      <button class="sub-tab active" onclick="trocarSubItens('Armas')">Armas</button>
+      <button class="sub-tab" onclick="trocarSubItens('Municoes')">Munições</button>
+      <button class="sub-tab" onclick="trocarSubItens('Protecoes')">Proteções</button>
+      <button class="sub-tab" onclick="trocarSubItens('Geral')">Geral</button>
+      <button class="sub-tab" onclick="trocarSubItens('Amaldicoados')">Itens Amaldiçoados</button>
+    </div>
+    <div class="list-header">
+      <span class="list-count">Homebrew <span id="count-itens">0</span>/50</span>
+      <button class="btn-adicionar" id="btn-add-item" onclick="abrirModalItem()">Adicionar Arma</button>
+    </div>
+    <div id="lista-itens" class="items-grid"></div>
+    <div id="empty-itens" class="empty-msg">Você ainda não criou novas armas</div>
+  </div>
+
+</div><!-- /tab-content-area -->
+
+
+<!-- ══════════════════════════════════════════
+     MODAL AMEAÇA
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-ameaca">
+  <div class="modal-box" style="max-width:780px;">
+    <div class="modal-title">▸ Nova Ameaça</div>
+
+    <div class="field-group">
+      <label class="field-label">Nome *</label>
+      <input class="field-input" id="a-nome" type="text" placeholder="Nova Ameaça">
+    </div>
+
+    <div class="fields-row">
+      <div class="field-group">
+        <label class="field-label">Tipo *</label>
+        <select class="field-select" id="a-tipo">
+          <option>criatura</option><option>aberração</option><option>construto</option>
+          <option>espírito</option><option>humanoide</option><option>morto-vivo</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Tamanho *</label>
+        <select class="field-select" id="a-tamanho">
+          <option>minúsculo</option><option>pequeno</option><option selected>médio</option>
+          <option>grande</option><option>enorme</option><option>colossal</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Elemento *</label>
+        <input class="field-input" id="a-elemento" type="text">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Elementos secundários</label>
+      <input class="field-input" id="a-elem-sec" type="text">
+    </div>
+
+    <div class="fields-row">
+      <div class="field-group">
+        <label class="field-label">VD *</label>
+        <input class="field-input" id="a-vd" type="number" value="20">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Vida atual *</label>
+        <input class="field-input" id="a-vida-atual" type="number" value="40">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Vida máxima *</label>
+        <input class="field-input" id="a-vida-max" type="number" value="40">
+      </div>
+    </div>
+
+    <div class="section-title">Atributos</div>
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">AGI</label><input class="field-input" id="a-agi" type="number" value="1"></div>
+      <div class="field-group"><label class="field-label">FOR</label><input class="field-input" id="a-for" type="number" value="1"></div>
+      <div class="field-group"><label class="field-label">INT</label><input class="field-input" id="a-int" type="number" value="1"></div>
+      <div class="field-group"><label class="field-label">PRE</label><input class="field-input" id="a-pre" type="number" value="1"></div>
+      <div class="field-group"><label class="field-label">VIG</label><input class="field-input" id="a-vig" type="number" value="1"></div>
+    </div>
+
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">Defesa *</label><input class="field-input" id="a-defesa" type="number" value="10"></div>
+      <div class="field-group"><label class="field-label">Deslocamento *</label><input class="field-input" id="a-deslocamento" type="number" value="9"></div>
+    </div>
+
+    <div class="section-title">
+      Deslocamento Alternativo
+      <button class="btn-dyn-add" onclick="addDynItem('a-deslocalt-list')">+ Adicionar</button>
+    </div>
+    <div class="dyn-list" id="a-deslocalt-list"></div>
+
+    <div class="field-group" style="margin-top:12px;">
+      <label class="field-label">Sentidos</label>
+      <input class="field-input" id="a-sentidos" type="text">
+    </div>
+
+    <div class="section-title">Perícias</div>
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">Percepção – Dados</label><input class="field-input" id="a-per-d" type="number" value="1"></div>
+      <div class="field-group"><label class="field-label">Percepção – Bônus</label><input class="field-input" id="a-per-b" type="number" value="0"></div>
+    </div>
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">Iniciativa – Dados</label><input class="field-input" id="a-ini-d" type="number" value="1"></div>
+      <div class="field-group"><label class="field-label">Iniciativa – Bônus</label><input class="field-input" id="a-ini-b" type="number" value="0"></div>
+    </div>
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">Fortitude – Dados</label><input class="field-input" id="a-fort-d" type="number" value="1"></div>
+      <div class="field-group"><label class="field-label">Fortitude – Bônus</label><input class="field-input" id="a-fort-b" type="number" value="0"></div>
+    </div>
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">Reflexos – Dados</label><input class="field-input" id="a-ref-d" type="number" value="1"></div>
+      <div class="field-group"><label class="field-label">Reflexos – Bônus</label><input class="field-input" id="a-ref-b" type="number" value="0"></div>
+    </div>
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">Vontade – Dados</label><input class="field-input" id="a-vont-d" type="number" value="1"></div>
+      <div class="field-group"><label class="field-label">Vontade – Bônus</label><input class="field-input" id="a-vont-b" type="number" value="0"></div>
+    </div>
+
+    <div class="section-title">
+      Perícias adicionais
+      <button class="btn-dyn-add" onclick="addDynItem('a-pericias-list')">+ Adicionar</button>
+    </div>
+    <div class="dyn-list" id="a-pericias-list"></div>
+
+    <div class="fields-row" style="margin-top:12px;">
+      <div class="field-group"><label class="field-label">Imunidades</label><input class="field-input" id="a-imun" type="text"></div>
+      <div class="field-group"><label class="field-label">Imunidades adicionais</label><input class="field-input" id="a-imun2" type="text"></div>
+    </div>
+
+    <div class="section-title">Resistências</div>
+    <div class="resist-grid">
+      <div class="resist-item"><label>dano</label><input type="text" id="r-dano"></div>
+      <div class="resist-item"><label>balístico</label><input type="text" id="r-balistico"></div>
+      <div class="resist-item"><label>corte</label><input type="text" id="r-corte"></div>
+      <div class="resist-item"><label>eletricidade</label><input type="text" id="r-eletricidade"></div>
+      <div class="resist-item"><label>fogo</label><input type="text" id="r-fogo"></div>
+      <div class="resist-item"><label>frio</label><input type="text" id="r-frio"></div>
+      <div class="resist-item"><label>impacto</label><input type="text" id="r-impacto"></div>
+      <div class="resist-item"><label>mental</label><input type="text" id="r-mental"></div>
+      <div class="resist-item"><label>conhecimento</label><input type="text" id="r-conhecimento"></div>
+      <div class="resist-item"><label>energia</label><input type="text" id="r-energia"></div>
+      <div class="resist-item"><label>medo</label><input type="text" id="r-medo"></div>
+      <div class="resist-item"><label>morte</label><input type="text" id="r-morte"></div>
+      <div class="resist-item"><label>sangue</label><input type="text" id="r-sangue"></div>
+      <div class="resist-item"><label>perfuração</label><input type="text" id="r-perfuracao"></div>
+      <div class="resist-item"><label>químico</label><input type="text" id="r-quimico"></div>
+    </div>
+
+    <div class="field-group" style="margin-top:12px;">
+      <label class="field-label">Vulnerabilidades</label>
+      <input class="field-input" id="a-vuln" type="text">
+    </div>
+
+    <div class="section-title">Presença Perturbadora</div>
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">DT</label><input class="field-input" id="a-pp-dt" type="text"></div>
+      <div class="field-group" style="flex:2"><label class="field-label">Dano</label><input class="field-input" id="a-pp-dano" type="text"></div>
+      <div class="field-group"><label class="field-label">NEX imune</label><input class="field-input" id="a-pp-nex" type="text"></div>
+    </div>
+
+    <div class="field-group" style="margin-top:12px;">
+      <label class="field-label">Descrição <span>(negrito = cor roxa)</span></label>
+      <div class="editor-toolbar">
+        <button class="editor-btn" onclick="editorCmd('a-desc','bold')"><b>B</b></button>
+        <button class="editor-btn" onclick="editorCmd('a-desc','italic')"><i>I</i></button>
+        <button class="editor-btn" onclick="editorCmd('a-desc','underline')"><u>U</u></button>
+      </div>
+      <div class="editor-area" id="a-desc" contenteditable="true"></div>
+    </div>
+
+    <div class="modal-footer-btns">
+      <button class="btn-cancel" onclick="fecharModal('modal-ameaca')">Cancelar</button>
+      <button class="btn-salvar" onclick="salvarAmeaca()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     MODAL HABILIDADE
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-habilidade">
+  <div class="modal-box">
+    <div class="modal-title">▸ Nova Habilidade</div>
+
+    <div class="field-group">
+      <label class="field-label">Nome *</label>
+      <input class="field-input" id="h-nome" type="text" placeholder="Nova Habilidade">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Imagem</label>
+      <div class="img-upload-box" onclick="document.getElementById('h-img-input').click()">
+        <img id="h-img-preview" src="" alt="" style="display:none">
+        <span class="img-placeholder" id="h-img-placeholder">🖼</span>
+      </div>
+      <input type="file" id="h-img-input" accept="image/*" style="display:none" onchange="previewImg('h-img-input','h-img-preview','h-img-placeholder')">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Descrição * <span>(negrito = cor roxa)</span></label>
+      <div class="editor-toolbar">
+        <button class="editor-btn" onclick="editorCmd('h-desc','bold')"><b>B</b></button>
+        <button class="editor-btn" onclick="editorCmd('h-desc','italic')"><i>I</i></button>
+        <button class="editor-btn" onclick="editorCmd('h-desc','underline')"><u>U</u></button>
+      </div>
+      <div class="editor-area" id="h-desc" contenteditable="true">Minha nova habilidade</div>
+    </div>
+
+    <div class="modal-footer-btns">
+      <button class="btn-cancel" onclick="fecharModal('modal-habilidade')">Cancelar</button>
+      <button class="btn-salvar" onclick="salvarHabilidade()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     MODAL RITUAL
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-ritual">
+  <div class="modal-box" style="max-width:780px;">
+    <div class="modal-title">▸ Novo Ritual</div>
+
+    <div class="field-group">
+      <label class="field-label">Nome *</label>
+      <input class="field-input" id="rit-nome" type="text" placeholder="Novo Ritual">
+    </div>
+
+    <div class="fields-row">
+      <div class="field-group">
+        <label class="field-label">Elemento</label>
+        <select class="field-select" id="rit-elemento">
+          <option>Conhecimento</option><option>Energia</option><option>Morte</option>
+          <option>Sangue</option><option>Medo</option><option>Varia</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Círculo</label>
+        <select class="field-select" id="rit-circulo">
+          <option value="1">1</option><option value="2">2</option>
+          <option value="3">3</option><option value="4">4</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Execução</label>
+        <select class="field-select" id="rit-execucao">
+          <option>Padrão</option><option>Movimento</option><option>Completa</option>
+          <option>Livre</option><option>Reação</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Alcance</label>
+        <select class="field-select" id="rit-alcance">
+          <option>Pessoal</option><option>Curto</option><option>Médio</option>
+          <option>Longo</option><option>Extremo</option><option>Ilimitado</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">Área</label><input class="field-input" id="rit-area" type="text"></div>
+      <div class="field-group"><label class="field-label">Alvo</label><input class="field-input" id="rit-alvo" type="text"></div>
+      <div class="field-group"><label class="field-label">Duração</label><input class="field-input" id="rit-duracao" type="text"></div>
+    </div>
+
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">Efeito</label><input class="field-input" id="rit-efeito" type="text"></div>
+      <div class="field-group"><label class="field-label">Resistência</label><input class="field-input" id="rit-resist" type="text"></div>
+    </div>
+
+    <div class="fields-row">
+      <div class="field-group"><label class="field-label">Dados</label><input class="field-input" id="rit-dados" type="text"></div>
+      <div class="field-group"><label class="field-label">Dados Discente</label><input class="field-input" id="rit-dados-disc" type="text"></div>
+      <div class="field-group"><label class="field-label">Dados Verdadeiro</label><input class="field-input" id="rit-dados-verd" type="text"></div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Imagem</label>
+      <div class="img-upload-box" onclick="document.getElementById('rit-img-input').click()">
+        <img id="rit-img-preview" src="" alt="" style="display:none">
+        <span class="img-placeholder" id="rit-img-placeholder">🖼</span>
+      </div>
+      <input type="file" id="rit-img-input" accept="image/*" style="display:none" onchange="previewImg('rit-img-input','rit-img-preview','rit-img-placeholder')">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Descrição * <span>(negrito = cor roxa)</span></label>
+      <div class="editor-toolbar">
+        <button class="editor-btn" onclick="editorCmd('rit-desc','bold')"><b>B</b></button>
+        <button class="editor-btn" onclick="editorCmd('rit-desc','italic')"><i>I</i></button>
+        <button class="editor-btn" onclick="editorCmd('rit-desc','underline')"><u>U</u></button>
+      </div>
+      <div class="editor-area" id="rit-desc" contenteditable="true">Meu novo ritual</div>
+    </div>
+
+    <div class="modal-footer-btns">
+      <button class="btn-cancel" onclick="fecharModal('modal-ritual')">Cancelar</button>
+      <button class="btn-salvar" onclick="salvarRitual()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     MODAL ITEM (ARMA / GENÉRICO)
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-item">
+  <div class="modal-box" style="max-width:780px;">
+    <div class="modal-title" id="modal-item-title">▸ Nova Arma</div>
+
+    <!-- CAMPOS ARMA -->
+    <div id="campos-arma">
+      <div class="field-group">
+        <label class="field-label">Nome *</label>
+        <input class="field-input" id="arm-nome" type="text" placeholder="Nova Arma">
+      </div>
+      <div class="fields-row">
+        <div class="field-group">
+          <label class="field-label">Proficiência</label>
+          <select class="field-select" id="arm-prof">
+            <option>Armas Simples</option><option>Armas Táticas</option><option>Armas Pesadas</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Tipo</label>
+          <select class="field-select" id="arm-tipo">
+            <option>Corpo a Corpo</option><option>À Distância</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Empunhadura</label>
+          <select class="field-select" id="arm-empun">
+            <option>Leve</option><option>Uma mão</option><option>Duas mãos</option>
+          </select>
+        </div>
+      </div>
+      <div class="fields-row">
+        <div class="field-group"><label class="field-label">Dano *</label><input class="field-input" id="arm-dano" type="text" value="1d4"></div>
+        <div class="field-group"><label class="field-label">Dano secundário</label><input class="field-input" id="arm-dano2" type="text"></div>
+        <div class="field-group"><label class="field-label">Crítico *</label><input class="field-input" id="arm-crit" type="number" value="20"></div>
+        <div class="field-group"><label class="field-label">Multiplicador *</label><input class="field-input" id="arm-mult" type="number" value="2"></div>
+        <div class="field-group">
+          <label class="field-label">Tipo de Dano</label>
+          <select class="field-select" id="arm-tipodano">
+            <option>Balístico</option><option>Corte</option><option>Impacto</option>
+            <option>Perfuração</option><option>Fogo</option><option>Frio</option>
+            <option>Eletricidade</option><option>Mental</option>
+          </select>
+        </div>
+      </div>
+      <div class="fields-row">
+        <div class="field-group"><label class="field-label">Alcance</label><input class="field-input" id="arm-alcance" type="text" value="-"></div>
+        <div class="field-group"><label class="field-label">Categoria</label><input class="field-input" id="arm-cat" type="number" value="0"></div>
+        <div class="field-group"><label class="field-label">Espaços *</label><input class="field-input" id="arm-espacos" type="number" value="1"></div>
+      </div>
+      <div class="section-title">
+        Melhorias
+        <button class="btn-dyn-add" onclick="addDynItem('arm-melhorias-list')">+ Adicionar</button>
+      </div>
+      <div class="dyn-list" id="arm-melhorias-list"></div>
+    </div>
+
+    <!-- CAMPOS GENÉRICO (Munições, Proteções, Geral, Amaldiçoados) -->
+    <div id="campos-generico" style="display:none">
+      <div class="field-group">
+        <label class="field-label">Nome *</label>
+        <input class="field-input" id="gen-nome" type="text" placeholder="Novo Item">
+      </div>
+      <div class="fields-row">
+        <div class="field-group"><label class="field-label">Categoria</label><input class="field-input" id="gen-cat" type="text"></div>
+        <div class="field-group"><label class="field-label">Espaços</label><input class="field-input" id="gen-espacos" type="number" value="1"></div>
+        <div class="field-group"><label class="field-label">Bônus / Efeito</label><input class="field-input" id="gen-bonus" type="text"></div>
+      </div>
+    </div>
+
+    <!-- IMAGEM E DESCRIÇÃO (compartilhados) -->
+    <div class="field-group" style="margin-top:14px;">
+      <label class="field-label">Imagem</label>
+      <div class="img-upload-box" onclick="document.getElementById('item-img-input').click()">
+        <img id="item-img-preview" src="" alt="" style="display:none">
+        <span class="img-placeholder" id="item-img-placeholder">🖼</span>
+      </div>
+      <input type="file" id="item-img-input" accept="image/*" style="display:none" onchange="previewImg('item-img-input','item-img-preview','item-img-placeholder')">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Descrição <span>(negrito = cor roxa)</span></label>
+      <div class="editor-toolbar">
+        <button class="editor-btn" onclick="editorCmd('item-desc','bold')"><b>B</b></button>
+        <button class="editor-btn" onclick="editorCmd('item-desc','italic')"><i>I</i></button>
+        <button class="editor-btn" onclick="editorCmd('item-desc','underline')"><u>U</u></button>
+      </div>
+      <div class="editor-area" id="item-desc" contenteditable="true">Meu novo item</div>
+    </div>
+
+    <div class="modal-footer-btns">
+      <button class="btn-cancel" onclick="fecharModal('modal-item')">Cancelar</button>
+      <button class="btn-salvar" onclick="salvarItem()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ═══════════════════════════════════════════════
+   UTILITÁRIOS
+═══════════════════════════════════════════════ */
+function getPrefix() {
+  return (sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'guest') + '_';
+}
+
+function storageKey(tipo) { return getPrefix() + 'homebrew_' + tipo; }
+
+function carregar(tipo) {
+  return JSON.parse(localStorage.getItem(storageKey(tipo)) || '[]');
+}
+
+function salvar(tipo, lista) {
+  localStorage.setItem(storageKey(tipo), JSON.stringify(lista));
+}
+
+function gerarId() { return Date.now() + Math.random().toString(36).substr(2,5); }
+
+function editorCmd(id, cmd) {
+  document.getElementById(id).focus();
+  document.execCommand(cmd, false, null);
+}
+
+function previewImg(inputId, previewId, placeholderId) {
+  const file = document.getElementById(inputId).files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById(previewId);
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById(placeholderId).style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function getImgData(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input.files[0]) return '';
+  // já lido no preview; buscamos da tag img
+  const preview = document.getElementById(inputId.replace('input','preview'));
+  return preview ? preview.src : '';
+}
+
+/* ═══════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════ */
+function trocarMainTab(tab) {
+  document.querySelectorAll('.main-tab').forEach((t,i) => {
+    const tabs = ['ameacas','habilidades','rituais','itens'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-' + tab).classList.add('active');
+}
+
+/* ═══════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════ */
+function abrirModal(tipo) {
+  document.getElementById('modal-' + tipo).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharModal(id) {
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+/* ═══════════════════════════════════════════════
+   DYNAMIC LISTS
+═══════════════════════════════════════════════ */
+function addDynItem(listId, value='') {
+  const list = document.getElementById(listId);
+  const div = document.createElement('div');
+  div.className = 'dyn-item';
+  div.innerHTML = `<input type="text" placeholder="..." value="${value}">
+    <button class="btn-dyn-remove" onclick="this.parentElement.remove()">✕</button>`;
+  list.appendChild(div);
+}
+
+function getDynValues(listId) {
+  return [...document.querySelectorAll(`#${listId} input`)].map(i => i.value).filter(v => v);
+}
+
+/* ═══════════════════════════════════════════════
+   RENDERIZAR LISTAS
+═══════════════════════════════════════════════ */
+function renderLista(tipo, itens) {
+  const lista = document.getElementById('lista-' + tipo);
+  const empty = document.getElementById('empty-' + tipo);
+  const count = document.getElementById('count-' + tipo);
+  count.textContent = itens.length;
+
+  if (itens.length === 0) {
+    lista.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+  lista.innerHTML = itens.map((item, i) => `
+    <div class="item-card" onclick="verItem('${tipo}',${i})">
+      ${item.img ? `<img class="item-card-img" src="${item.img}" alt="">` : ''}
+      <button class="btn-del-card" onclick="event.stopPropagation();deletarItem('${tipo}',${i})">✕</button>
+      <div class="item-card-name">${item.nome || '—'}</div>
+      <div class="item-card-sub">${item.sub || ''}</div>
+    </div>`).join('');
+}
+
+function deletarItem(tipo, i) {
+  if (!confirm('Remover este item?')) return;
+  const lista = carregar(tipo);
+  lista.splice(i, 1);
+  salvar(tipo, lista);
+  renderLista(tipo, lista);
+  if (tipo === 'itens') renderItensAtivos();
+}
+
+function verItem(tipo, i) { /* futura expansão: modal de visualização */ }
+
+/* ═══════════════════════════════════════════════
+   AMEAÇAS
+═══════════════════════════════════════════════ */
+function salvarAmeaca() {
+  const nome = document.getElementById('a-nome').value.trim();
+  if (!nome) { alert('Nome é obrigatório.'); return; }
+
+  const item = {
+    id: gerarId(), nome,
+    tipo: document.getElementById('a-tipo').value,
+    tamanho: document.getElementById('a-tamanho').value,
+    elemento: document.getElementById('a-elemento').value,
+    elemSec: document.getElementById('a-elem-sec').value,
+    vd: document.getElementById('a-vd').value,
+    vidaAtual: document.getElementById('a-vida-atual').value,
+    vidaMax: document.getElementById('a-vida-max').value,
+    agi: document.getElementById('a-agi').value,
+    for: document.getElementById('a-for').value,
+    int: document.getElementById('a-int').value,
+    pre: document.getElementById('a-pre').value,
+    vig: document.getElementById('a-vig').value,
+    defesa: document.getElementById('a-defesa').value,
+    deslocamento: document.getElementById('a-deslocamento').value,
+    deslocAlt: getDynValues('a-deslocalt-list'),
+    sentidos: document.getElementById('a-sentidos').value,
+    pericias: {
+      perc:  { d: document.getElementById('a-per-d').value,  b: document.getElementById('a-per-b').value },
+      ini:   { d: document.getElementById('a-ini-d').value,  b: document.getElementById('a-ini-b').value },
+      fort:  { d: document.getElementById('a-fort-d').value, b: document.getElementById('a-fort-b').value },
+      ref:   { d: document.getElementById('a-ref-d').value,  b: document.getElementById('a-ref-b').value },
+      vont:  { d: document.getElementById('a-vont-d').value, b: document.getElementById('a-vont-b').value },
+    },
+    periciasAdic: getDynValues('a-pericias-list'),
+    imun: document.getElementById('a-imun').value,
+    imun2: document.getElementById('a-imun2').value,
+    resistencias: {
+      dano: document.getElementById('r-dano').value,
+      balistico: document.getElementById('r-balistico').value,
+      corte: document.getElementById('r-corte').value,
+      eletricidade: document.getElementById('r-eletricidade').value,
+      fogo: document.getElementById('r-fogo').value,
+      frio: document.getElementById('r-frio').value,
+      impacto: document.getElementById('r-impacto').value,
+      mental: document.getElementById('r-mental').value,
+      conhecimento: document.getElementById('r-conhecimento').value,
+      energia: document.getElementById('r-energia').value,
+      medo: document.getElementById('r-medo').value,
+      morte: document.getElementById('r-morte').value,
+      sangue: document.getElementById('r-sangue').value,
+      perfuracao: document.getElementById('r-perfuracao').value,
+      quimico: document.getElementById('r-quimico').value,
+    },
+    vuln: document.getElementById('a-vuln').value,
+    ppDt: document.getElementById('a-pp-dt').value,
+    ppDano: document.getElementById('a-pp-dano').value,
+    ppNex: document.getElementById('a-pp-nex').value,
+    descricao: document.getElementById('a-desc').innerHTML,
+    sub: document.getElementById('a-tipo').value + ' · ' + document.getElementById('a-tamanho').value,
+  };
+
+  const lista = carregar('ameacas');
+  lista.push(item);
+  salvar('ameacas', lista);
+  renderLista('ameacas', lista);
+  fecharModal('modal-ameaca');
+}
+
+/* ═══════════════════════════════════════════════
+   HABILIDADES
+═══════════════════════════════════════════════ */
+function salvarHabilidade() {
+  const nome = document.getElementById('h-nome').value.trim();
+  if (!nome) { alert('Nome é obrigatório.'); return; }
+
+  const item = {
+    id: gerarId(), nome,
+    img: document.getElementById('h-img-preview').src || '',
+    descricao: document.getElementById('h-desc').innerHTML,
+    sub: 'Habilidade',
+  };
+
+  const lista = carregar('habilidades');
+  lista.push(item);
+  salvar('habilidades', lista);
+  renderLista('habilidades', lista);
+  fecharModal('modal-habilidade');
+}
+
+/* ═══════════════════════════════════════════════
+   RITUAIS
+═══════════════════════════════════════════════ */
+let filtroRituaisElem = 'Todos';
+let filtroRituaisCirc = 'Todos';
+
+function filtrarRituais(tipo, valor) {
+  if (tipo === 'elem') {
+    filtroRituaisElem = valor;
+    document.querySelectorAll('#subtabs-rituais-elem .sub-tab').forEach(b => b.classList.toggle('active', b.textContent === valor));
+  } else {
+    filtroRituaisCirc = valor;
+    document.querySelectorAll('#subtabs-rituais-circ .sub-tab').forEach(b => b.classList.toggle('active', b.textContent.replace('º Círculo','') === valor || (valor==='Todos' && b.textContent==='Todos')));
+  }
+  const todos = carregar('rituais');
+  const filtrados = todos.filter(r => {
+    const elemOk = filtroRituaisElem === 'Todos' || r.elemento === filtroRituaisElem;
+    const circOk = filtroRituaisCirc === 'Todos' || r.circulo === filtroRituaisCirc;
+    return elemOk && circOk;
+  });
+  renderLista('rituais', filtrados);
+}
+
+function salvarRitual() {
+  const nome = document.getElementById('rit-nome').value.trim();
+  if (!nome) { alert('Nome é obrigatório.'); return; }
+
+  const item = {
+    id: gerarId(), nome,
+    elemento: document.getElementById('rit-elemento').value,
+    circulo: document.getElementById('rit-circulo').value,
+    execucao: document.getElementById('rit-execucao').value,
+    alcance: document.getElementById('rit-alcance').value,
+    area: document.getElementById('rit-area').value,
+    alvo: document.getElementById('rit-alvo').value,
+    duracao: document.getElementById('rit-duracao').value,
+    efeito: document.getElementById('rit-efeito').value,
+    resist: document.getElementById('rit-resist').value,
+    dados: document.getElementById('rit-dados').value,
+    dadosDisc: document.getElementById('rit-dados-disc').value,
+    dadosVerd: document.getElementById('rit-dados-verd').value,
+    img: document.getElementById('rit-img-preview').src || '',
+    descricao: document.getElementById('rit-desc').innerHTML,
+    sub: document.getElementById('rit-elemento').value + ' · ' + document.getElementById('rit-circulo').value + 'º Círculo',
+  };
+
+  const lista = carregar('rituais');
+  lista.push(item);
+  salvar('rituais', lista);
+  renderLista('rituais', lista);
+  fecharModal('modal-ritual');
+}
+
+/* ═══════════════════════════════════════════════
+   ITENS
+═══════════════════════════════════════════════ */
+let subItenAtivo = 'Armas';
+
+function trocarSubItens(sub) {
+  subItenAtivo = sub;
+  document.querySelectorAll('#pane-itens .sub-tab').forEach((b,i) => {
+    b.classList.toggle('active', b.textContent === sub);
+  });
+  const labels = { Armas:'Arma', Municoes:'Munição', Protecoes:'Proteção', Geral:'Item Geral', Amaldicoados:'Item Amaldiçoado' };
+  document.getElementById('btn-add-item').textContent = 'Adicionar ' + (labels[sub] || sub);
+
+  const emptyMsgs = { Armas:'armas', Municoes:'munições', Protecoes:'proteções', Geral:'itens gerais', Amaldicoados:'itens amaldiçoados' };
+  document.getElementById('empty-itens').textContent = 'Você ainda não criou novas ' + (emptyMsgs[sub] || sub);
+
+  renderItensAtivos();
+}
+
+function renderItensAtivos() {
+  const todos = carregar('itens');
+  const filtrados = todos.filter(i => i.subTipo === subItenAtivo);
+  renderLista('itens', filtrados);
+}
+
+function abrirModalItem() {
+  document.getElementById('modal-item-title').textContent = '▸ Novo Item — ' + subItenAtivo;
+  const isArma = subItenAtivo === 'Armas';
+  document.getElementById('campos-arma').style.display = isArma ? '' : 'none';
+  document.getElementById('campos-generico').style.display = isArma ? 'none' : '';
+  // reset img
+  document.getElementById('item-img-preview').style.display = 'none';
+  document.getElementById('item-img-placeholder').style.display = '';
+  document.getElementById('item-img-input').value = '';
+  document.getElementById('item-desc').innerHTML = 'Meu novo item';
+  abrirModal('item');
+}
+
+function salvarItem() {
+  const isArma = subItenAtivo === 'Armas';
+  const nome = document.getElementById(isArma ? 'arm-nome' : 'gen-nome').value.trim();
+  if (!nome) { alert('Nome é obrigatório.'); return; }
+
+  let item = { id: gerarId(), nome, subTipo: subItenAtivo };
+
+  if (isArma) {
+    item = { ...item,
+      prof: document.getElementById('arm-prof').value,
+      tipo: document.getElementById('arm-tipo').value,
+      empun: document.getElementById('arm-empun').value,
+      dano: document.getElementById('arm-dano').value,
+      dano2: document.getElementById('arm-dano2').value,
+      crit: document.getElementById('arm-crit').value,
+      mult: document.getElementById('arm-mult').value,
+      tipoDano: document.getElementById('arm-tipodano').value,
+      alcance: document.getElementById('arm-alcance').value,
+      cat: document.getElementById('arm-cat').value,
+      espacos: document.getElementById('arm-espacos').value,
+      melhorias: getDynValues('arm-melhorias-list'),
+      sub: document.getElementById('arm-tipo').value + ' · ' + document.getElementById('arm-tipodano').value,
+    };
+  } else {
+    item = { ...item,
+      cat: document.getElementById('gen-cat').value,
+      espacos: document.getElementById('gen-espacos').value,
+      bonus: document.getElementById('gen-bonus').value,
+      sub: subItenAtivo,
+    };
+  }
+
+  item.img = document.getElementById('item-img-preview').src || '';
+  item.descricao = document.getElementById('item-desc').innerHTML;
+
+  const lista = carregar('itens');
+  lista.push(item);
+  salvar('itens', lista);
+  renderItensAtivos();
+  fecharModal('modal-item');
+}
+
+/* ═══════════════════════════════════════════════
+   AVATAR / AUTH
+═══════════════════════════════════════════════ */
+function atualizarAvatar() {
+  const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
+  if (!usuario) { window.location.href = 'index.html'; return; }
+  document.getElementById('dd-username-label').textContent = usuario;
+  const fotoSalva = localStorage.getItem(usuario + '_foto_perfil');
+  const circle = document.getElementById('avatar-circle');
+  if (fotoSalva) {
+    circle.innerHTML = `<img src="${fotoSalva}" alt="">`;
+  } else {
+    circle.innerHTML = `<span>${usuario.substring(0,2).toUpperCase()}</span>`;
+  }
+}
+
+function toggleDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('avatar-dropdown').classList.toggle('open');
+}
+
+document.addEventListener('click', () => {
+  const dd = document.getElementById('avatar-dropdown');
+  if (dd) dd.classList.remove('open');
+});
+
+async function fazerLogout() {
+  if (!confirm('Deseja sair?')) return;
+  sessionStorage.removeItem('ficha_user');
+  localStorage.removeItem('ficha_user_ativo');
+  window.location.href = 'index.html';
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+window.addEventListener('load', () => {
+  const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
+  if (!usuario) { window.location.href = 'index.html'; return; }
+  atualizarAvatar();
+  renderLista('ameacas', carregar('ameacas'));
+  renderLista('habilidades', carregar('habilidades'));
+  renderLista('rituais', carregar('rituais'));
+  renderItensAtivos();
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
