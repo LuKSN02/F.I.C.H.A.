@@ -658,24 +658,16 @@ function renderSelector(usuario) {
     grid.innerHTML = `<div class="sel-vazio" style="color:#555;">Carregando agentes...</div>`;
     if (!window._firebaseDB) { grid.innerHTML = `<div class="sel-vazio">Firebase não conectado.</div>`; return; }
 
-    // CORRIGIDO: busca em agentes/{usuario} em vez de agentes/ raiz
-    window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}`)).then(snap => {
-        if (!snap.exists()) {
-            grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado para "${usuario}".<br><small style="color:#444;">Abra uma ficha no F.I.C.H.A. e tente novamente.</small></div>`;
-            return;
-        }
-
-        const agentes = Object.entries(snap.val()).map(([id, ag]) => ({ ...ag, id }));
-
-        if (agentes.length === 0) {
+    const renderLista = (agentes, usandoUsuario) => {
+        if (!agentes || agentes.length === 0) {
             grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.</div>`;
             return;
         }
-
         grid.innerHTML = agentes.map(ag => {
             const ativo = agenteAtivo?.id === ag.id;
             const foto  = ag.fotoCostum || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ag.nome)}`;
-            return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente('${usuario}','${ag.id}')">
+            const path  = usandoUsuario ? `'${usuario}','${ag.id}'` : `null,'${ag.id}'`;
+            return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente(${path})">
                 <img class="sel-foto" src="${foto}" alt="">
                 <div class="sel-info">
                     <div class="sel-nome">${ag.codinome?'"'+ag.codinome+'" ':''}${ag.nome}</div>
@@ -684,6 +676,32 @@ function renderSelector(usuario) {
                 ${ativo?'<span style="color:var(--green);font-family:\'Share Tech Mono\',monospace;font-size:0.7rem;">● ATIVO</span>':''}
             </div>`;
         }).join('');
+    };
+
+    // Tenta com usuario primeiro
+    window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}`)).then(snap => {
+        if (snap.exists()) {
+            const val = snap.val();
+            // Verifica se é lista de agentes ou um agente único (estrutura raiz)
+            const primeiroVal = Object.values(val)[0];
+            if (primeiroVal && primeiroVal.nome) {
+                renderLista(Object.entries(val).map(([id, ag]) => ({ ...ag, id })), true);
+            } else {
+                // Fallback: busca na raiz
+                window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes`)).then(snap2 => {
+                    if (!snap2.exists()) { grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.</div>`; return; }
+                    const todos = Object.entries(snap2.val()).map(([id, ag]) => ({ ...ag, id })).filter(ag => ag.nome);
+                    renderLista(todos, false);
+                });
+            }
+        } else {
+            // Fallback direto na raiz
+            window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes`)).then(snap2 => {
+                if (!snap2.exists()) { grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.</div>`; return; }
+                const todos = Object.entries(snap2.val()).map(([id, ag]) => ({ ...ag, id })).filter(ag => ag.nome);
+                renderLista(todos, false);
+            });
+        }
     });
 }
 
@@ -691,9 +709,10 @@ function renderSelector(usuario) {
 function selecionarAgente(usuario, id) {
     if (!window._firebaseDB) return;
     localStorage.setItem('portrait_agente_ativo', String(id));
-    localStorage.setItem('portrait_usuario', usuario);
+    if (usuario) localStorage.setItem('portrait_usuario', usuario);
 
-    window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`)).then(snap => {
+    const path = usuario ? `agentes/${usuario}/${id}` : `agentes/${id}`;
+    window._firebaseGet(window._firebaseRef(window._firebaseDB, path)).then(snap => {
         if (!snap.exists()) return;
         agenteAtivo = { ...snap.val(), id };
         aplicarAgente(agenteAtivo, null);
@@ -704,21 +723,32 @@ function selecionarAgente(usuario, id) {
 
 function iniciarPortrait() {
     if (!window._firebaseDB) return;
-    const params   = new URLSearchParams(window.location.search);
-    const fichaId  = params.get('id') || localStorage.getItem('portrait_agente_ativo');
-    const usuario  = getUsuario();
-    if (!fichaId || !usuario) return;
+    const params  = new URLSearchParams(window.location.search);
+    const fichaId = params.get('id') || localStorage.getItem('portrait_agente_ativo');
+    const usuario = getUsuario();
+    if (!fichaId) return;
 
     localStorage.setItem('portrait_agente_ativo', fichaId);
 
-    // CORRIGIDO: busca em agentes/{usuario}/{id}
-    window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${fichaId}`)).then(snap => {
-        if (snap.exists()) {
-            agenteAtivo = { ...snap.val(), id: fichaId };
-            aplicarAgente(agenteAtivo, null);
-        }
-        escutarEstado(fichaId);
-    });
+    // Tenta novo caminho (com usuario) primeiro, depois fallback para raiz
+    const tentarCarregar = (path) => {
+        window._firebaseGet(window._firebaseRef(window._firebaseDB, path)).then(snap => {
+            if (snap.exists()) {
+                agenteAtivo = { ...snap.val(), id: fichaId };
+                aplicarAgente(agenteAtivo, null);
+                escutarEstado(fichaId);
+            } else if (path.includes(usuario)) {
+                // Fallback: busca direto em agentes/{id}
+                tentarCarregar(`agentes/${fichaId}`);
+            }
+        });
+    };
+
+    if (usuario) {
+        tentarCarregar(`agentes/${usuario}/${fichaId}`);
+    } else {
+        tentarCarregar(`agentes/${fichaId}`);
+    }
 }
 
 window.addEventListener('firebaseReady', function() {
