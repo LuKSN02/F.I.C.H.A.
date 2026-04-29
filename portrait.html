@@ -6,20 +6,21 @@
 <title>Portrait – Ordem Paranormal</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --purple:      #8a2be2;
-    --purple-neon: #bc6ff1;
-    --purple-dark: #2a0050;
-    --purple-glow: rgba(138,43,226,0.5);
-    --red:         #e84040;
-    --red-dark:    #8b0000;
-    --orange:      #ff8c00;
-    --green:       #39d353;
-    --bg:          transparent;
-    --card:        rgba(10,0,18,0.92);
-    --border:      rgba(90,20,160,0.6);
-    --text-dim:    #777;
-    --w: 320px;
+:root {
+    --red:         #c0392b;
+    --red-bright:  #e74c3c;
+    --red-dark:    #7b0000;
+    --red-glow:    rgba(192,57,43,0.5);
+    --gold:        #b8860b;
+    --gold-light:  #d4a017;
+    --grey-light:  #a0a0a0;
+    --grey-mid:    #555;
+    --grey-dark:   #1a1a1a;
+    --card:        rgba(8,4,4,0.95);
+    --border:      rgba(120,20,20,0.7);
+    --text-dim:    #666;
+    --white:       #e8e0d8;
+    --w: 520px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -50,36 +51,43 @@
     to   { transform: translateX(0);     opacity: 1; }
   }
 
+  /* ── TOPO ── */
+  .topo-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    position: relative;
+  }
+
+  .topo-info {
+    flex: 1;
+    background: var(--card);
+    border-top: 2px solid var(--red);
+    border-right: 2px solid var(--red);
+    padding: 14px 16px 12px 24px;
+    margin-left: -18px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    box-shadow: 0 0 20px var(--red-glow);
+  }
+
+  /* ── FOTO CIRCULAR ── */
   .foto-wrap {
     position: relative;
-    width: 100%;
-    height: 240px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
     overflow: hidden;
-    border-top: 2px solid var(--purple);
-    border-left: 2px solid var(--purple);
-    border-right: 2px solid var(--purple);
-  }
-
-  .foto-wrap::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 40%, var(--card) 100%);
+    border: 3px solid var(--red);
+    box-shadow: 0 0 28px var(--red-glow), 0 0 8px var(--red-dark);
+    flex-shrink: 0;
     z-index: 2;
-    pointer-events: none;
   }
 
-  .corner-deco {
-    position: absolute;
-    width: 24px; height: 24px;
-    border-color: var(--purple-neon);
-    border-style: solid;
-    z-index: 3;
-  }
-  .corner-deco.tl { top: 6px; left: 6px;  border-width: 2px 0 0 2px; }
-  .corner-deco.tr { top: 6px; right: 6px; border-width: 2px 2px 0 0; }
-  .corner-deco.bl { bottom: 6px; left: 6px;  border-width: 0 0 2px 2px; }
-  .corner-deco.br { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; }
+  .foto-wrap::before { display: none; }
+  .corner-deco { display: none; }
 
   #foto-img {
     width: 100%;
@@ -87,7 +95,7 @@
     object-fit: cover;
     object-position: center top;
     display: block;
-    filter: saturate(1.1) contrast(1.05);
+    filter: saturate(0.8) contrast(1.15) brightness(0.9);
   }
 
   .scanlines {
@@ -97,36 +105,79 @@
       0deg,
       transparent,
       transparent 2px,
-      rgba(0,0,0,0.04) 2px,
-      rgba(0,0,0,0.04) 4px
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
     );
     z-index: 2;
     pointer-events: none;
+    border-radius: 50%;
   }
 
+  /* ── NEX BADGE ── */
   .nex-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 4;
-    background: rgba(10,0,20,0.85);
-    border: 1px solid var(--purple);
-    border-radius: 4px;
+    display: inline-block;
+    background: rgba(8,4,4,0.9);
+    border: 1px solid var(--red);
+    border-radius: 2px;
     padding: 3px 8px;
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.7rem;
-    color: var(--purple-neon);
+    color: var(--red-bright);
     letter-spacing: 2px;
-    box-shadow: 0 0 10px var(--purple-glow);
+    box-shadow: 0 0 8px var(--red-glow);
+    margin-bottom: 6px;
+    align-self: flex-start;
+    text-transform: uppercase;
   }
 
+  /* ── NOME / CLASSE ── */
+  .nome-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .nome {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 2px;
+    text-shadow: 0 0 14px var(--red-glow), 1px 1px 0 #000;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .classe-tag {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    background: rgba(180,120,0,0.1);
+    border: 1px solid rgba(180,120,0,0.4);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .origem-txt {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* ── PAINEL INFERIOR ── */
   .info-panel {
     background: var(--card);
-    border-left: 2px solid var(--purple);
-    border-right: 2px solid var(--purple);
-    border-bottom: 2px solid var(--purple);
-    padding: 10px 14px 12px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.8), 0 0 20px var(--purple-glow);
+    border-left: 2px solid var(--red);
+    border-right: 2px solid var(--red);
+    border-bottom: 2px solid var(--red);
+    padding: 12px 16px 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.9), 0 0 20px var(--red-glow);
     position: relative;
   }
 
@@ -135,77 +186,46 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--purple-neon), transparent);
+    background: linear-gradient(90deg, transparent, var(--red-bright), transparent);
   }
 
-  .nome-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 2px;
-  }
-
-  .nome {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 1px;
-    text-shadow: 0 0 12px var(--purple-glow);
-    line-height: 1;
-  }
-
-  .classe-tag {
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--purple-neon);
-    background: rgba(138,43,226,0.15);
-    border: 1px solid rgba(138,43,226,0.4);
-    padding: 2px 6px;
-    border-radius: 3px;
-  }
-
-  .origem-txt {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    font-family: 'Share Tech Mono', monospace;
-  }
-
+  /* ── BARRAS ── */
   .barras-wrap {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 7px;
   }
 
   .barra-row {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 3px;
   }
 
   .barra-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.55rem;
+    font-size: 0.6rem;
     letter-spacing: 2px;
     text-transform: uppercase;
     font-family: 'Share Tech Mono', monospace;
   }
 
   .barra-label { color: var(--text-dim); }
-  .barra-val   { font-size: 0.75rem; font-weight: 700; }
+
+  .barra-val {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
 
   .barra-track {
-    height: 8px;
-    background: rgba(255,255,255,0.06);
+    height: 20px;
+    background: rgba(255,255,255,0.04);
     border-radius: 2px;
     overflow: hidden;
     position: relative;
+    border: 1px solid rgba(100,0,0,0.3);
   }
 
   .barra-fill {
@@ -219,29 +239,35 @@
     content: '';
     position: absolute;
     top: 0; right: 0;
-    width: 3px; height: 100%;
-    background: rgba(255,255,255,0.5);
+    width: 4px; height: 100%;
+    background: rgba(255,255,255,0.3);
     border-radius: 0 2px 2px 0;
     filter: blur(1px);
   }
 
-  .barra-vida  { background: linear-gradient(90deg, #6b0000, #e84040); }
-  .barra-san   { background: linear-gradient(90deg, #2a0055, #bc6ff1); }
-  .barra-esf   { background: linear-gradient(90deg, #5c3a00, #ff8c00); }
+  /* Vida: vermelho sangue */
+  .barra-vida { background: linear-gradient(90deg, #3a0000, #c0392b); }
+
+  /* Sanidade: cinza aço */
+  .barra-san  { background: linear-gradient(90deg, #1a1a1a, #560296); }
+
+  /* Esforço: dourado enferrujado */
+  .barra-esf  { background: linear-gradient(90deg, #2a1a00, #b8860b); }
 
   .barra-vida-low {
-    background: linear-gradient(90deg, #6b0000, #ff0000);
+    background: linear-gradient(90deg, #3a0000, #ff0000);
     animation: pulseRed 1s ease infinite;
   }
-  @keyframes pulseRed { 0%,100%{opacity:1} 50%{opacity:0.65} }
+  @keyframes pulseRed { 0%,100%{opacity:1} 50%{opacity:0.6} }
 
+  /* ── PE / DESLOCAMENTO ── */
   .pe-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 6px;
-    padding-top: 6px;
-    border-top: 1px solid rgba(90,20,160,0.3);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(120,20,20,0.4);
   }
 
   .pe-label {
@@ -254,34 +280,35 @@
 
   .pe-val {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 700;
-    color: var(--orange);
-    text-shadow: 0 0 8px rgba(255,140,0,0.5);
+    color: var(--gold-light);
+    text-shadow: 0 0 8px rgba(180,130,0,0.5);
   }
 
   .pe-desl {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.8rem;
     color: #555;
     letter-spacing: 1px;
   }
 
+  /* ── BOTÃO FICHA ── */
   .btn-ficha-wrap {
     position: absolute;
-    bottom: 12px;
-    right: 14px;
+    bottom: 14px;
+    right: 16px;
   }
 
   .btn-ficha {
-    background: rgba(10,0,20,0.9);
+    background: rgba(8,4,4,0.9);
     border: 1px solid var(--border);
     color: #555;
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.6rem;
     letter-spacing: 1px;
     padding: 4px 8px;
-    border-radius: 3px;
+    border-radius: 2px;
     cursor: pointer;
     transition: 0.2s;
     text-decoration: none;
@@ -291,23 +318,23 @@
   }
 
   .btn-ficha:hover {
-    border-color: var(--purple);
-    color: var(--purple-neon);
-    box-shadow: 0 0 8px var(--purple-glow);
+    border-color: var(--red);
+    color: var(--red-bright);
+    box-shadow: 0 0 8px var(--red-glow);
   }
 
-  /* dot verde = conectado, vermelho = desconectado */
+  /* ── STATUS DOT ── */
   .status-dot {
-    width: 6px; height: 6px;
+    width: 8px; height: 8px;
     border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 6px var(--green);
+    background: #c0392b;
+    box-shadow: 0 0 6px #c0392b;
     display: inline-block;
     animation: pulseDot 2s ease infinite;
   }
   .status-dot.offline {
-    background: var(--red);
-    box-shadow: 0 0 6px var(--red);
+    background: #444;
+    box-shadow: 0 0 6px #444;
     animation: none;
   }
 
@@ -318,17 +345,18 @@
   }
 
   @keyframes glitch {
-    0%   { text-shadow: 2px 0 var(--red), -2px 0 var(--purple-neon), 0 0 12px var(--purple-glow); }
-    33%  { text-shadow: -2px 0 var(--red), 2px 0 var(--purple-neon), 0 0 12px var(--purple-glow); }
-    66%  { text-shadow: 2px 2px var(--red), -2px -2px var(--purple-neon), 0 0 12px var(--purple-glow); }
-    100% { text-shadow: 0 0 12px var(--purple-glow); }
+    0%   { text-shadow: 2px 0 #ff0000, -2px 0 #888, 0 0 14px var(--red-glow); }
+    33%  { text-shadow: -2px 0 #ff0000, 2px 0 #888, 0 0 14px var(--red-glow); }
+    66%  { text-shadow: 2px 2px #ff0000, -2px -2px #888, 0 0 14px var(--red-glow); }
+    100% { text-shadow: 0 0 14px var(--red-glow); }
   }
 
+  /* ── OVERLAYS ── */
   .selector-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.95);
+    background: rgba(0,0,0,0.97);
     z-index: 9999;
     padding: 20px;
     overflow-y: auto;
@@ -360,12 +388,12 @@
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.7rem;
     padding: 3px 10px;
-    border-radius: 3px;
+    border-radius: 2px;
     cursor: pointer;
     transition: 0.2s;
   }
 
-  .btn-fechar-sel:hover { color: var(--red); border-color: var(--red); }
+  .btn-fechar-sel:hover { color: var(--red-bright); border-color: var(--red); }
 
   .agentes-grid {
     display: flex;
@@ -374,9 +402,9 @@
   }
 
   .agente-card-sel {
-    background: rgba(10,0,18,0.9);
+    background: rgba(8,4,4,0.9);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 4px;
     padding: 10px 14px;
     cursor: pointer;
     display: flex;
@@ -386,26 +414,26 @@
   }
 
   .agente-card-sel:hover {
-    border-color: var(--purple);
-    background: rgba(40,0,80,0.5);
-    box-shadow: 0 0 12px var(--purple-glow);
+    border-color: var(--red);
+    background: rgba(60,0,0,0.4);
+    box-shadow: 0 0 12px var(--red-glow);
   }
 
   .agente-card-sel.ativo {
-    border-color: var(--green);
-    background: rgba(0,40,0,0.3);
+    border-color: var(--gold);
+    background: rgba(40,25,0,0.4);
   }
 
   .sel-foto {
     width: 44px; height: 44px;
-    border-radius: 6px;
+    border-radius: 4px;
     object-fit: cover;
     border: 1px solid var(--border);
     flex-shrink: 0;
   }
 
   .sel-info { flex: 1; }
-  .sel-nome { font-size: 0.9rem; font-weight: 700; color: #fff; }
+  .sel-nome { font-size: 0.9rem; font-weight: 700; color: var(--white); }
   .sel-sub  { font-size: 0.65rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
 
   .sel-vazio {
@@ -461,23 +489,22 @@
 <body>
 
 <div class="portrait" id="portrait">
-  <div class="foto-wrap">
-    <div class="corner-deco tl"></div>
-    <div class="corner-deco tr"></div>
-    <div class="corner-deco bl"></div>
-    <div class="corner-deco br"></div>
-    <img id="foto-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Portrait">
-    <div class="scanlines"></div>
-    <div class="nex-badge" id="nex-badge">NEX 5%</div>
+  <div class="topo-row">
+    <div class="foto-wrap">
+      <img id="foto-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Portrait">
+      <div class="scanlines"></div>
+    </div>
+    <div class="topo-info">
+      <div class="nex-badge" id="nex-badge">NEX 5%</div>
+      <div class="nome-row">
+        <div class="nome" id="nome-txt">Agente</div>
+        <div class="classe-tag" id="classe-txt">—</div>
+      </div>
+      <div class="origem-txt" id="origem-txt">—</div>
+    </div>
   </div>
 
   <div class="info-panel">
-    <div class="nome-row">
-      <div class="nome" id="nome-txt">Agente</div>
-      <div class="classe-tag" id="classe-txt">—</div>
-    </div>
-    <div class="origem-txt" id="origem-txt">—</div>
-
     <div class="barras-wrap">
       <div class="barra-row">
         <div class="barra-header">
@@ -491,8 +518,8 @@
 
       <div class="barra-row">
         <div class="barra-header">
-          <span class="barra-label" style="color:var(--purple-neon);">SANIDADE</span>
-          <span class="barra-val" id="san-txt" style="color:var(--purple-neon);">20 / 20</span>
+          <span class="barra-label" style="color:#7a42e2;">SANIDADE</span>
+          <span class="barra-val" id="san-txt" style="color:#c8c8c8;">20 / 20</span>
         </div>
         <div class="barra-track">
           <div class="barra-fill barra-san" id="barra-san" style="width:100%"></div>
@@ -501,8 +528,8 @@
 
       <div class="barra-row">
         <div class="barra-header">
-          <span class="barra-label" style="color:var(--orange);">ESFORÇO</span>
-          <span class="barra-val" id="esf-txt" style="color:var(--orange);">10 / 10</span>
+          <span class="barra-label" style="color:#ebc548;">ESFORÇO</span>
+          <span class="barra-val" id="esf-txt" style="color:#d4a017;">10 / 10</span>
         </div>
         <div class="barra-track">
           <div class="barra-fill barra-esf" id="barra-esf" style="width:100%"></div>
@@ -560,7 +587,7 @@
   <div class="obs-note">
     ▸ Dados sincronizados via <span>Firebase em tempo real</span><br>
     ▸ Funciona em qualquer navegador ou computador<br>
-    ▸ No OBS: Fonte de Navegador → URL desta página → Largura 320 px
+    ▸ No OBS: Fonte de Navegador → URL desta página → Largura 520 px
   </div>
 </div>
 
@@ -599,9 +626,9 @@ function aplicarAgente(ficha, est) {
     document.getElementById('nome-txt').textContent   = (ficha.codinome ? `"${ficha.codinome}"` : ficha.nome) || 'Agente';
     document.getElementById('classe-txt').textContent = ficha.classe || '—';
     document.getElementById('origem-txt').textContent = ficha.origem || '—';
-    const nex  = est?.progressao?.nex  || '5%';
-    const pe   = est?.progressao?.pe   || '3';
-    const desl = est?.progressao?.desl || '9m';
+    const nex  = est?.progressao?.nex  || ficha.progressao?.nex  || '5%';
+    const pe   = est?.progressao?.pe   || ficha.progressao?.pe   || '3';
+    const desl = est?.progressao?.desl || ficha.progressao?.desl || '9m';
     document.getElementById('nex-badge').textContent = 'NEX ' + nex;
     document.getElementById('pe-txt').textContent    = pe + ' PE';
     document.getElementById('desl-txt').textContent  = desl;
@@ -678,16 +705,13 @@ function renderSelector(usuario) {
         }).join('');
     };
 
-    // Tenta com usuario primeiro
     window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}`)).then(snap => {
         if (snap.exists()) {
             const val = snap.val();
-            // Verifica se é lista de agentes ou um agente único (estrutura raiz)
             const primeiroVal = Object.values(val)[0];
             if (primeiroVal && primeiroVal.nome) {
                 renderLista(Object.entries(val).map(([id, ag]) => ({ ...ag, id })), true);
             } else {
-                // Fallback: busca na raiz
                 window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes`)).then(snap2 => {
                     if (!snap2.exists()) { grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.</div>`; return; }
                     const todos = Object.entries(snap2.val()).map(([id, ag]) => ({ ...ag, id })).filter(ag => ag.nome);
@@ -695,7 +719,6 @@ function renderSelector(usuario) {
                 });
             }
         } else {
-            // Fallback direto na raiz
             window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes`)).then(snap2 => {
                 if (!snap2.exists()) { grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.</div>`; return; }
                 const todos = Object.entries(snap2.val()).map(([id, ag]) => ({ ...ag, id })).filter(ag => ag.nome);
@@ -705,7 +728,6 @@ function renderSelector(usuario) {
     });
 }
 
-// CORRIGIDO: recebe usuario como parâmetro
 function selecionarAgente(usuario, id) {
     if (!window._firebaseDB) return;
     localStorage.setItem('portrait_agente_ativo', String(id));
@@ -730,7 +752,6 @@ function iniciarPortrait() {
 
     localStorage.setItem('portrait_agente_ativo', fichaId);
 
-    // Tenta novo caminho (com usuario) primeiro, depois fallback para raiz
     const tentarCarregar = (path) => {
         window._firebaseGet(window._firebaseRef(window._firebaseDB, path)).then(snap => {
             if (snap.exists()) {
@@ -738,7 +759,6 @@ function iniciarPortrait() {
                 aplicarAgente(agenteAtivo, null);
                 escutarEstado(fichaId);
             } else if (path.includes(usuario)) {
-                // Fallback: busca direto em agentes/{id}
                 tentarCarregar(`agentes/${fichaId}`);
             }
         });
@@ -755,7 +775,6 @@ window.addEventListener('firebaseReady', function() {
     iniciarPortrait();
 });
 
-// Fallback caso o evento já tenha disparado antes deste script carregar
 function tentarIniciar() {
     if (window._firebaseReady) iniciarPortrait();
     else window.addEventListener('firebaseReady', iniciarPortrait, { once: true });
