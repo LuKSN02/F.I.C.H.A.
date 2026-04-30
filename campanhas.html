@@ -563,7 +563,7 @@ function renderAgentes(agentes, isMestre) {
             <div style="display:flex;gap:6px;align-items:center;">
                 <a href="${a.playerUid === currentUser.uid
                     ? `ficha.html?id=${a.fichaLocalId}&campanha=${campanhaAtual}`
-                    : `ficha-view.html?fichaId=${a.fichaLocalId}&campanha=${campanhaAtual}`}"
+                    : `ficha-view.html?fichaId=${a.fichaLocalId}&playerNome=${a.playerNome}&campanha=${campanhaAtual}`}"
                    style="background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:4px;text-decoration:none;transition:0.2s;"
                    onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">Ver Ficha</a>
                 ${(isMestre || a.playerUid === currentUser.uid) ? `<button onclick="removerAgente('${a.id}')" style="background:none;border:none;color:#444;cursor:pointer;font-size:0.85rem;" title="Remover" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#444'">🗑</button>` : ''}

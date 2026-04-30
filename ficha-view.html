@@ -387,6 +387,7 @@ const params     = new URLSearchParams(window.location.search);
 const agenteDoc  = params.get('agenteDoc');
 const campanhaId = params.get('campanha');
 const fichaId    = params.get('fichaId');
+const playerNome = params.get('playerNome'); 
 
 // Botão voltar
 const btnVoltar = document.getElementById('btn-voltar-camp');
@@ -419,8 +420,8 @@ async function init() {
         if (btnPortrait) btnPortrait.href = portraitUrl;
 
         // Carrega dados do Firebase
-        const agenteSnap = await get(ref(db, `agentes/${fichaIdFinal}`));
-        const estadoSnap = await get(ref(db, `fichas/${fichaIdFinal}/estado`));
+        const agenteSnap = await get(ref(db, `agentes/${playerNome}/${fichaIdFinal}`));
+        const estadoSnap = await get(ref(db, `fichas/${playerNome}/${fichaIdFinal}/estado`));
 
         if (!estadoSnap.exists()) {
             mostrarErro('Esta ficha ainda não foi sincronizada. O jogador precisa abrir a ficha pelo menos uma vez.');
