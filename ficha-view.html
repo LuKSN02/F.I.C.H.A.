@@ -421,8 +421,8 @@ async function init() {
 
         // Carrega dados do Firebase
         const agenteSnap = await get(ref(db, `agentes/${playerNome}/${fichaIdFinal}`));
-        const estadoSnap = await get(ref(db, `fichas/${playerNome}/${fichaIdFinal}/estado`));
-
+        const estadoSnap = await get(ref(db, `fichas/${fichaIdFinal}/estado`));
+        
         if (!estadoSnap.exists()) {
             mostrarErro('Esta ficha ainda não foi sincronizada. O jogador precisa abrir a ficha pelo menos uma vez.');
             return;
