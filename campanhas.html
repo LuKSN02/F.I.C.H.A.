@@ -561,8 +561,7 @@ function renderAgentes(agentes, isMestre) {
                 <div class="agente-camp-player">▸ ${a.playerNome || 'Jogador'} ${a.playerUid === currentUser.uid ? '(você)' : ''}</div>
             </div>
             <div style="display:flex;gap:6px;align-items:center;">
-                // LINHA 564 — substitua o href por:
-                    href="${a.playerUid === currentUser.uid
+                <a href="${a.playerUid === currentUser.uid
                     ? `ficha.html?id=${a.fichaLocalId}&campanha=${campanhaAtual}`
                     : `ficha-view.html?fichaId=${a.fichaLocalId}&campanha=${campanhaAtual}`}"
                    style="background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:4px;text-decoration:none;transition:0.2s;"
