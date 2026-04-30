@@ -414,7 +414,7 @@ async function init() {
         }
 
         // ✅ Configura links do portrait DENTRO do init(), onde fichaIdFinal existe
-        const portraitUrl = `portrait.html?id=${fichaIdFinal}`;
+        const portraitUrl = `portrait.html?id=${fichaIdFinal}&usuario=${playerNome}`;
         window._portraitUrl = portraitUrl;
         const btnPortrait = document.getElementById('btn-portrait-view');
         if (btnPortrait) btnPortrait.href = portraitUrl;
@@ -422,7 +422,7 @@ async function init() {
         // Carrega dados do Firebase
         const agenteSnap = await get(ref(db, `agentes/${playerNome}/${fichaIdFinal}`));
         const estadoSnap = await get(ref(db, `fichas/${fichaIdFinal}/estado`));
-        
+
         if (!estadoSnap.exists()) {
             mostrarErro('Esta ficha ainda não foi sincronizada. O jogador precisa abrir a ficha pelo menos uma vez.');
             return;
