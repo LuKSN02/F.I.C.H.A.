@@ -13,9 +13,6 @@
     --red-glow:    rgba(192,57,43,0.5);
     --gold:        #b8860b;
     --gold-light:  #d4a017;
-    --grey-light:  #a0a0a0;
-    --grey-mid:    #555;
-    --grey-dark:   #1a1a1a;
     --card:        rgba(8,4,4,0.95);
     --border:      rgba(120,20,20,0.7);
     --text-dim:    #666;
@@ -42,7 +39,6 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 0;
     animation: slideIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
   }
 
@@ -51,43 +47,14 @@
     to   { transform: translateX(0);     opacity: 1; }
   }
 
-  /* ── TOPO ── */
-  .topo-row {
-    display: flex;
-    align-items: flex-end;
-    gap: 0;
-    position: relative;
-  }
-
-  .topo-info {
-    flex: 1;
-    background: var(--card);
-    border-top: 2px solid var(--red);
-    border-right: 2px solid var(--red);
-    padding: 14px 16px 12px 24px;
-    margin-left: -18px;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    box-shadow: 0 0 20px var(--red-glow);
-  }
-
-  /* ── FOTO CIRCULAR ── */
+  /* FOTO QUADRADA */
   .foto-wrap {
     position: relative;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
+    width: var(--w);
+    height: 340px;
     overflow: hidden;
-    border: 3px solid var(--red);
-    box-shadow: 0 0 28px var(--red-glow), 0 0 8px var(--red-dark);
     flex-shrink: 0;
-    z-index: 2;
   }
-
-  .foto-wrap::before { display: none; }
-  .corner-deco { display: none; }
 
   #foto-img {
     width: 100%;
@@ -95,90 +62,83 @@
     object-fit: cover;
     object-position: center top;
     display: block;
-    filter: saturate(0.8) contrast(1.15) brightness(0.9);
   }
 
-  .scanlines {
+  /* gradiente escuro no lado direito para legibilidade dos números */
+  .foto-wrap::after {
+    content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.08) 2px,
-      rgba(0,0,0,0.08) 4px
+    background: linear-gradient(
+      to right,
+      transparent 38%,
+      rgba(0,0,0,0.45) 60%,
+      rgba(0,0,0,0.72) 100%
     );
-    z-index: 2;
     pointer-events: none;
-    border-radius: 50%;
   }
 
-  /* ── NEX BADGE ── */
-  .nex-badge {
-    display: inline-block;
-    background: rgba(8,4,4,0.9);
-    border: 1px solid var(--red);
-    border-radius: 2px;
-    padding: 3px 8px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--red-bright);
-    letter-spacing: 2px;
-    box-shadow: 0 0 8px var(--red-glow);
-    margin-bottom: 6px;
-    align-self: flex-start;
-    text-transform: uppercase;
+  /* STATS SOBREPOSTAS (canto direito, verticalmente centralizadas) */
+  .stats-overlay {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
   }
 
-  /* ── NOME / CLASSE ── */
-  .nome-row {
+  .stat-item {
     display: flex;
     align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 2px;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .nome {
-    font-size: 1.9rem;
-    font-weight: 700;
-    color: var(--white);
-    letter-spacing: 2px;
-    text-shadow: 0 0 14px var(--red-glow), 1px 1px 0 #000;
     line-height: 1;
-    text-transform: uppercase;
   }
 
-  .classe-tag {
-    font-size: 0.6rem;
+  .stat-val {
+    font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--gold-light);
-    background: rgba(180,120,0,0.1);
-    border: 1px solid rgba(180,120,0,0.4);
-    padding: 3px 8px;
-    border-radius: 2px;
-  }
-
-  .origem-txt {
-    font-size: 0.65rem;
-    color: var(--text-dim);
+    font-size: 2.8rem;
+    line-height: 1;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.9), 0 0 24px currentColor;
     letter-spacing: 1px;
-    text-transform: uppercase;
-    font-family: 'Share Tech Mono', monospace;
   }
 
-  /* ── PAINEL INFERIOR ── */
+  .stat-sep {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 300;
+    font-size: 2.2rem;
+    opacity: 0.6;
+    margin: 0 1px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.9);
+  }
+
+  .stat-max {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 2.8rem;
+    line-height: 1;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.9), 0 0 24px currentColor;
+    letter-spacing: 1px;
+  }
+
+  .stat-vida  { color: #e84040; }
+  .stat-san   { color: #4db8f0; }
+  .stat-esf   { color: #f0c030; }
+
+  /* PAINEL INFERIOR */
   .info-panel {
     background: var(--card);
-    border-left: 2px solid var(--red);
-    border-right: 2px solid var(--red);
-    border-bottom: 2px solid var(--red);
-    padding: 12px 16px 16px;
+    border: 2px solid var(--red);
+    padding: 10px 16px 12px;
     box-shadow: 0 8px 40px rgba(0,0,0,0.9), 0 0 20px var(--red-glow);
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
   }
 
   .info-panel::before {
@@ -189,160 +149,36 @@
     background: linear-gradient(90deg, transparent, var(--red-bright), transparent);
   }
 
-  /* ── BARRAS ── */
-  .barras-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-  }
-
-  .barra-row {
+  .nome-group {
     display: flex;
     flex-direction: column;
     gap: 3px;
+    flex: 1;
+    min-width: 0;
   }
 
-  .barra-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.6rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+  .nome-label-small {
     font-family: 'Share Tech Mono', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 3px;
+    color: #444;
+    text-transform: uppercase;
   }
 
-  .barra-label { color: var(--text-dim); }
-
-  .barra-val {
-    font-size: 1.1rem;
+  .nome {
+    font-size: 2rem;
     font-weight: 700;
-  }
-
-  .barra-track {
-    height: 20px;
-    background: rgba(255,255,255,0.04);
-    border-radius: 2px;
+    color: #fff;
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px var(--red-glow), 1px 1px 0 #000;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
     overflow: hidden;
-    position: relative;
-    border: 1px solid rgba(100,0,0,0.3);
+    text-overflow: ellipsis;
   }
 
-  .barra-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.5s cubic-bezier(0.22,1,0.36,1);
-    position: relative;
-  }
-
-  .barra-fill::after {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 4px; height: 100%;
-    background: rgba(255,255,255,0.3);
-    border-radius: 0 2px 2px 0;
-    filter: blur(1px);
-  }
-
-  /* Vida: vermelho sangue */
-  .barra-vida { background: linear-gradient(90deg, #3a0000, #c0392b); }
-
-  /* Sanidade: cinza aço */
-  .barra-san  { background: linear-gradient(90deg, #1a1a1a, #560296); }
-
-  /* Esforço: dourado enferrujado */
-  .barra-esf  { background: linear-gradient(90deg, #2a1a00, #b8860b); }
-
-  .barra-vida-low {
-    background: linear-gradient(90deg, #3a0000, #ff0000);
-    animation: pulseRed 1s ease infinite;
-  }
-  @keyframes pulseRed { 0%,100%{opacity:1} 50%{opacity:0.6} }
-
-  /* ── PE / DESLOCAMENTO ── */
-  .pe-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(120,20,20,0.4);
-  }
-
-  .pe-label {
-    font-size: 0.55rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-family: 'Share Tech Mono', monospace;
-  }
-
-  .pe-val {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--gold-light);
-    text-shadow: 0 0 8px rgba(180,130,0,0.5);
-  }
-
-  .pe-desl {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    color: #555;
-    letter-spacing: 1px;
-  }
-
-  /* ── BOTÃO FICHA ── */
-  .btn-ficha-wrap {
-    position: absolute;
-    bottom: 14px;
-    right: 16px;
-  }
-
-  .btn-ficha {
-    background: rgba(8,4,4,0.9);
-    border: 1px solid var(--border);
-    color: #555;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 1px;
-    padding: 4px 8px;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: 0.2s;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .btn-ficha:hover {
-    border-color: var(--red);
-    color: var(--red-bright);
-    box-shadow: 0 0 8px var(--red-glow);
-  }
-
-  /* ── STATUS DOT ── */
-  .status-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: #c0392b;
-    box-shadow: 0 0 6px #c0392b;
-    display: inline-block;
-    animation: pulseDot 2s ease infinite;
-  }
-  .status-dot.offline {
-    background: #444;
-    box-shadow: 0 0 6px #444;
-    animation: none;
-  }
-
-  @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
-
-  .nome:hover {
-    animation: glitch 0.3s steps(2) both;
-  }
+  .nome:hover { animation: glitch 0.3s steps(2) both; }
 
   @keyframes glitch {
     0%   { text-shadow: 2px 0 #ff0000, -2px 0 #888, 0 0 14px var(--red-glow); }
@@ -351,7 +187,124 @@
     100% { text-shadow: 0 0 14px var(--red-glow); }
   }
 
-  /* ── OVERLAYS ── */
+  .sub-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .nex-badge {
+    display: inline-block;
+    background: rgba(8,4,4,0.9);
+    border: 1px solid var(--red);
+    border-radius: 2px;
+    padding: 2px 7px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--red-bright);
+    letter-spacing: 2px;
+    box-shadow: 0 0 8px var(--red-glow);
+    text-transform: uppercase;
+  }
+
+  .classe-tag {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    background: rgba(180,120,0,0.1);
+    border: 1px solid rgba(180,120,0,0.4);
+    padding: 2px 7px;
+    border-radius: 2px;
+  }
+
+  .origem-txt {
+    font-size: 0.55rem;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .right-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .pe-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+  }
+
+  .pe-item { text-align: right; }
+
+  .pe-label {
+    font-size: 0.46rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .pe-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    text-shadow: 0 0 8px rgba(180,130,0,0.5);
+  }
+
+  .pe-desl {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    color: #555;
+    letter-spacing: 1px;
+  }
+
+  .btn-ficha {
+    background: rgba(120,10,10,0.25);
+    border: 1px solid var(--red);
+    color: var(--red-bright);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 0 8px var(--red-glow);
+    text-transform: uppercase;
+  }
+
+  .btn-ficha:hover {
+    background: rgba(192,57,43,0.35);
+    border-color: var(--red-bright);
+    color: #fff;
+    box-shadow: 0 0 16px var(--red-glow);
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #c0392b;
+    box-shadow: 0 0 6px #c0392b;
+    display: inline-block;
+    animation: pulseDot 2s ease infinite;
+    align-self: center;
+  }
+  .status-dot.offline { background: #444; box-shadow: 0 0 6px #444; animation: none; }
+  @keyframes pulseDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  /* OVERLAYS */
   .selector-overlay {
     display: none;
     position: fixed;
@@ -362,9 +315,7 @@
     overflow-y: auto;
     animation: fadeIn 0.2s ease;
   }
-
   .selector-overlay.show { display: block; }
-
   @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
   .selector-title {
@@ -392,14 +343,9 @@
     cursor: pointer;
     transition: 0.2s;
   }
-
   .btn-fechar-sel:hover { color: var(--red-bright); border-color: var(--red); }
 
-  .agentes-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+  .agentes-grid { display: flex; flex-direction: column; gap: 8px; }
 
   .agente-card-sel {
     background: rgba(8,4,4,0.9);
@@ -412,49 +358,15 @@
     gap: 12px;
     transition: 0.2s;
   }
+  .agente-card-sel:hover { border-color: var(--red); background: rgba(60,0,0,0.4); box-shadow: 0 0 12px var(--red-glow); }
+  .agente-card-sel.ativo { border-color: var(--gold); background: rgba(40,25,0,0.4); }
 
-  .agente-card-sel:hover {
-    border-color: var(--red);
-    background: rgba(60,0,0,0.4);
-    box-shadow: 0 0 12px var(--red-glow);
-  }
-
-  .agente-card-sel.ativo {
-    border-color: var(--gold);
-    background: rgba(40,25,0,0.4);
-  }
-
-  .sel-foto {
-    width: 44px; height: 44px;
-    border-radius: 4px;
-    object-fit: cover;
-    border: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
+  .sel-foto { width: 44px; height: 44px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
   .sel-info { flex: 1; }
   .sel-nome { font-size: 0.9rem; font-weight: 700; color: var(--white); }
   .sel-sub  { font-size: 0.65rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
-
-  .sel-vazio {
-    text-align: center;
-    color: #333;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    padding: 30px;
-    letter-spacing: 1px;
-  }
-
-  .obs-note {
-    font-size: 0.55rem;
-    color: #333;
-    font-family: 'Share Tech Mono', monospace;
-    letter-spacing: 1px;
-    text-align: center;
-    margin-top: 20px;
-    line-height: 1.8;
-  }
-
+  .sel-vazio { text-align: center; color: #333; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; padding: 30px; letter-spacing: 1px; }
+  .obs-note { font-size: 0.55rem; color: #333; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; text-align: center; margin-top: 20px; line-height: 1.8; }
   .obs-note span { color: #555; }
 </style>
 
@@ -483,73 +395,60 @@
   window._firebaseReady   = true;
 
   window.dispatchEvent(new Event('firebaseReady'));
-  // ← SEM iniciarPortrait() aqui
 </script>
 </head>
 <body>
 
 <div class="portrait" id="portrait">
-  <div class="topo-row">
-    <div class="foto-wrap">
-      <img id="foto-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Portrait">
-      <div class="scanlines"></div>
-    </div>
-    <div class="topo-info">
-      <div class="nex-badge" id="nex-badge">NEX 5%</div>
-      <div class="nome-row">
-        <div class="nome" id="nome-txt">Agente</div>
-        <div class="classe-tag" id="classe-txt">—</div>
+
+  <!-- FOTO QUADRADA COM STATS SOBREPOSTOS -->
+  <div class="foto-wrap">
+    <img id="foto-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Portrait">
+
+    <!-- Stats flutuantes no lado direito -->
+    <div class="stats-overlay">
+      <div class="stat-item">
+        <span class="stat-val stat-vida" id="vida-atual-txt">20</span>
+        <span class="stat-sep stat-vida">/</span>
+        <span class="stat-max stat-vida" id="vida-max-txt">20</span>
       </div>
-      <div class="origem-txt" id="origem-txt">—</div>
+      <div class="stat-item">
+        <span class="stat-val stat-san" id="san-atual-txt">20</span>
+        <span class="stat-sep stat-san">/</span>
+        <span class="stat-max stat-san" id="san-max-txt">20</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-val stat-esf" id="esf-atual-txt">10</span>
+        <span class="stat-sep stat-esf">/</span>
+        <span class="stat-max stat-esf" id="esf-max-txt">10</span>
+      </div>
     </div>
   </div>
 
+  <!-- PAINEL INFERIOR: nome + botão -->
   <div class="info-panel">
-    <div class="barras-wrap">
-      <div class="barra-row">
-        <div class="barra-header">
-          <span class="barra-label" style="color:#e84040;">VIDA</span>
-          <span class="barra-val" id="vida-txt" style="color:#e84040;">20 / 20</span>
-        </div>
-        <div class="barra-track">
-          <div class="barra-fill barra-vida" id="barra-vida" style="width:100%"></div>
-        </div>
-      </div>
-
-      <div class="barra-row">
-        <div class="barra-header">
-          <span class="barra-label" style="color:#7a42e2;">SANIDADE</span>
-          <span class="barra-val" id="san-txt" style="color:#c8c8c8;">20 / 20</span>
-        </div>
-        <div class="barra-track">
-          <div class="barra-fill barra-san" id="barra-san" style="width:100%"></div>
-        </div>
-      </div>
-
-      <div class="barra-row">
-        <div class="barra-header">
-          <span class="barra-label" style="color:#ebc548;">ESFORÇO</span>
-          <span class="barra-val" id="esf-txt" style="color:#d4a017;">10 / 10</span>
-        </div>
-        <div class="barra-track">
-          <div class="barra-fill barra-esf" id="barra-esf" style="width:100%"></div>
-        </div>
+    <div class="nome-group">
+      <div class="nome-label-small">▸ AGENTE</div>
+      <div class="nome" id="nome-txt">Agente</div>
+      <div class="sub-row">
+        <div class="nex-badge" id="nex-badge">NEX 5%</div>
+        <div class="classe-tag" id="classe-txt">—</div>
+        <div class="origem-txt" id="origem-txt">—</div>
       </div>
     </div>
 
-    <div class="pe-row">
-      <div>
-        <div class="pe-label">PE / TURNO</div>
-        <div class="pe-val" id="pe-txt">3 PE</div>
+    <div class="right-group">
+      <div class="pe-row">
+        <div class="pe-item">
+          <div class="pe-label">PE / TURNO</div>
+          <div class="pe-val" id="pe-txt">3 PE</div>
+        </div>
+        <div class="pe-item">
+          <div class="pe-label">DESLOCAMENTO</div>
+          <div class="pe-desl" id="desl-txt">9m</div>
+        </div>
+        <span class="status-dot" id="status-dot" title="Conectado"></span>
       </div>
-      <div style="text-align:right;">
-        <div class="pe-label">DESLOCAMENTO</div>
-        <div class="pe-desl" id="desl-txt">9m</div>
-      </div>
-      <span class="status-dot" id="status-dot" title="Conectado"></span>
-    </div>
-
-    <div class="btn-ficha-wrap">
       <button class="btn-ficha" onclick="abrirSelector()" title="Selecionar agente">⊕ FICHA</button>
     </div>
   </div>
@@ -634,20 +533,23 @@ function aplicarAgente(ficha, est) {
     document.getElementById('desl-txt').textContent  = desl;
     if (est) {
         const v = est.vida || {}, s = est.san || {}, e = est.esf || {};
-        atualizarBarra('vida', v.atual ?? 0, v.max ?? 20);
-        atualizarBarra('san',  s.atual ?? 0, s.max ?? 20);
-        atualizarBarra('esf',  e.atual ?? 0, e.max ?? 10);
+        atualizarStat('vida', v.atual ?? 0, v.max ?? 20);
+        atualizarStat('san',  s.atual ?? 0, s.max ?? 20);
+        atualizarStat('esf',  e.atual ?? 0, e.max ?? 10);
     }
 }
 
-function atualizarBarra(tipo, atual, max) {
-    const pct = max > 0 ? Math.max(0, Math.min(100, (atual / max) * 100)) : 0;
-    const txtEl = document.getElementById(`${tipo}-txt`);
-    const barEl = document.getElementById(`barra-${tipo}`);
-    if (txtEl) txtEl.textContent = `${atual} / ${max}`;
-    if (barEl) {
-        barEl.style.width = pct + '%';
-        if (tipo === 'vida') barEl.className = pct <= 25 ? 'barra-fill barra-vida-low' : 'barra-fill barra-vida';
+function atualizarStat(tipo, atual, max) {
+    const atualEl = document.getElementById(`${tipo}-atual-txt`);
+    const maxEl   = document.getElementById(`${tipo}-max-txt`);
+    if (atualEl) atualEl.textContent = atual;
+    if (maxEl)   maxEl.textContent   = max;
+    if (tipo === 'vida') {
+        const pct = max > 0 ? (atual / max) * 100 : 0;
+        const els = [atualEl, maxEl, document.querySelector('.stat-sep.stat-vida')];
+        els.forEach(el => {
+            if (el) el.style.animation = pct <= 25 ? 'pulseRed 1s ease infinite' : '';
+        });
     }
 }
 
@@ -700,7 +602,7 @@ function renderSelector(usuario) {
                     <div class="sel-nome">${ag.codinome?'"'+ag.codinome+'" ':''}${ag.nome}</div>
                     <div class="sel-sub">${ag.classe||'—'} · ${ag.origem||'—'}</div>
                 </div>
-                ${ativo?'<span style="color:var(--green);font-family:\'Share Tech Mono\',monospace;font-size:0.7rem;">● ATIVO</span>':''}
+                ${ativo?'<span style="color:#4caf50;font-family:\'Share Tech Mono\',monospace;font-size:0.7rem;">● ATIVO</span>':''}
             </div>`;
         }).join('');
     };
