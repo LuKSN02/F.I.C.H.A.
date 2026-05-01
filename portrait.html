@@ -152,27 +152,27 @@
   .nome-group {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
     flex: 1;
     min-width: 0;
   }
 
   .nome-label-small {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.48rem;
+    font-size: 0.46rem;
     letter-spacing: 3px;
     color: #444;
     text-transform: uppercase;
   }
 
+  /* Nome entre aspas — igual ao print: "JUJU" */
   .nome {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: #fff;
-    letter-spacing: 3px;
-    text-shadow: 0 0 20px var(--red-glow), 1px 1px 0 #000;
-    line-height: 1;
-    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 18px var(--red-glow), 1px 1px 0 #000;
+    line-height: 1.1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -190,10 +190,12 @@
   .sub-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     flex-wrap: wrap;
+    margin-top: 1px;
   }
 
+  /* NEX ESTÁGIO badge — borda vermelha, texto vermelho */
   .nex-badge {
     display: inline-block;
     background: rgba(8,4,4,0.9);
@@ -201,29 +203,31 @@
     border-radius: 2px;
     padding: 2px 7px;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     color: var(--red-bright);
-    letter-spacing: 2px;
-    box-shadow: 0 0 8px var(--red-glow);
+    letter-spacing: 1.5px;
+    box-shadow: 0 0 6px var(--red-glow);
     text-transform: uppercase;
   }
 
+  /* Classe com destaque em amarelo sólido — como "SOBREVIVENTE" no print */
   .classe-tag {
     font-size: 0.58rem;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--gold-light);
-    background: rgba(180,120,0,0.1);
-    border: 1px solid rgba(180,120,0,0.4);
-    padding: 2px 7px;
+    color: #111;
+    background: #e8c000;
+    border: none;
+    padding: 2px 8px;
     border-radius: 2px;
   }
 
+  /* Origem sem destaque — texto simples, como "EXPERIMENTO" no print */
   .origem-txt {
-    font-size: 0.55rem;
+    font-size: 0.56rem;
     color: var(--text-dim);
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     font-family: 'Share Tech Mono', monospace;
   }
