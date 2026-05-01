@@ -7,17 +7,238 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root {
-    --red:         #c0392b;
-    --red-bright:  #e74c3c;
-    --red-dark:    #7b0000;
-    --red-glow:    rgba(192,57,43,0.5);
-    --gold:        #b8860b;
-    --gold-light:  #d4a017;
-    --card:        rgba(8,4,4,0.95);
-    --border:      rgba(120,20,20,0.7);
-    --text-dim:    #666;
-    --white:       #e8e0d8;
+    --green:        #2d7a3a;
+    --green-bright: #3eb554;
+    --green-dark:   #0d2e14;
+    --green-glow:   rgba(45,122,58,0.55);
+    --gold:         #b8860b;
+    --gold-light:   #d4a017;
+    --card:         rgba(4,10,5,0.96);
+    --border:       rgba(20,90,30,0.75);
+    --text-dim:     #556655;
+    --white:        #d8e8d8;
     --w: 520px;
+  }
+
+  /* ===== TEMAS RPG ===== */
+  /* Tema: Ordem Paranormal (padrão) */
+  body.tema-paranormal {
+    --green:        #2d7a3a;
+    --green-bright: #3eb554;
+    --green-dark:   #0d2e14;
+    --green-glow:   rgba(45,122,58,0.55);
+    --gold:         #b8860b;
+    --gold-light:   #d4a017;
+    --card:         rgba(4,10,5,0.96);
+    --border:       rgba(20,90,30,0.75);
+    --text-dim:     #556655;
+    --white:        #d8e8d8;
+    --accent1: #e84040; --accent2: #4db8f0; --accent3: #f0c030;
+    --panel-bg:     rgba(4,10,5,0.96);
+    --nome-glow:    rgba(45,122,58,0.55);
+    --btn-bg:       rgba(4,10,5,0.85);
+    --btn-border:   #2d7a3a;
+    --foto-overlay: linear-gradient(to right, transparent 38%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.72) 100%);
+    --classe-bg:    #e8c000;
+    --classe-color: #111;
+  }
+
+  /* Tema: Fantasia Medieval */
+  body.tema-fantasia {
+    --green:        #7a4e1a;
+    --green-bright: #c8891e;
+    --green-dark:   #1a0d05;
+    --green-glow:   rgba(180,100,20,0.55);
+    --gold:         #b8860b;
+    --gold-light:   #e8a820;
+    --card:         rgba(12,6,2,0.96);
+    --border:       rgba(120,70,15,0.75);
+    --text-dim:     #6b5030;
+    --white:        #f0dfc0;
+    --accent1: #e84040; --accent2: #4de8a0; --accent3: #f0c030;
+    --panel-bg:     rgba(12,6,2,0.96);
+    --nome-glow:    rgba(180,100,20,0.55);
+    --btn-bg:       rgba(12,6,2,0.85);
+    --btn-border:   #7a4e1a;
+    --foto-overlay: linear-gradient(to right, transparent 38%, rgba(10,4,0,0.45) 60%, rgba(10,4,0,0.72) 100%);
+    --classe-bg:    #7a4e1a;
+    --classe-color: #f0dfc0;
+  }
+
+  /* Tema: Cyberpunk */
+  body.tema-cyberpunk {
+    --green:        #cc00ff;
+    --green-bright: #ee44ff;
+    --green-dark:   #0a0012;
+    --green-glow:   rgba(200,0,255,0.55);
+    --gold:         #00ffcc;
+    --gold-light:   #00eecc;
+    --card:         rgba(5,0,14,0.96);
+    --border:       rgba(160,0,220,0.75);
+    --text-dim:     #553366;
+    --white:        #eeccff;
+    --accent1: #ff0055; --accent2: #00ffcc; --accent3: #ffee00;
+    --panel-bg:     rgba(5,0,14,0.96);
+    --nome-glow:    rgba(200,0,255,0.55);
+    --btn-bg:       rgba(5,0,14,0.85);
+    --btn-border:   #cc00ff;
+    --foto-overlay: linear-gradient(to right, transparent 38%, rgba(5,0,14,0.45) 60%, rgba(5,0,14,0.72) 100%);
+    --classe-bg:    #cc00ff;
+    --classe-color: #fff;
+  }
+
+  /* Tema: Horror / Vampírico */
+  body.tema-horror {
+    --green:        #8b0000;
+    --green-bright: #cc2200;
+    --green-dark:   #0d0005;
+    --green-glow:   rgba(140,0,0,0.55);
+    --gold:         #880000;
+    --gold-light:   #aa2200;
+    --card:         rgba(8,0,3,0.97);
+    --border:       rgba(120,0,0,0.75);
+    --text-dim:     #552233;
+    --white:        #e8c8c8;
+    --accent1: #cc0000; --accent2: #880066; --accent3: #cc6600;
+    --panel-bg:     rgba(8,0,3,0.97);
+    --nome-glow:    rgba(140,0,0,0.6);
+    --btn-bg:       rgba(8,0,3,0.85);
+    --btn-border:   #8b0000;
+    --foto-overlay: linear-gradient(to right, transparent 38%, rgba(8,0,3,0.5) 60%, rgba(8,0,3,0.75) 100%);
+    --classe-bg:    #8b0000;
+    --classe-color: #e8c8c8;
+  }
+
+  /* Tema: Pós-Apocalíptico */
+  body.tema-posapoc {
+    --green:        #7a7020;
+    --green-bright: #aaaa00;
+    --green-dark:   #0d0c00;
+    --green-glow:   rgba(120,110,0,0.55);
+    --gold:         #888800;
+    --gold-light:   #aaaa00;
+    --card:         rgba(10,9,2,0.97);
+    --border:       rgba(100,90,10,0.75);
+    --text-dim:     #555530;
+    --white:        #d8d090;
+    --accent1: #cc8800; --accent2: #aabb00; --accent3: #dd6600;
+    --panel-bg:     rgba(10,9,2,0.97);
+    --nome-glow:    rgba(120,110,0,0.55);
+    --btn-bg:       rgba(10,9,2,0.85);
+    --btn-border:   #7a7020;
+    --foto-overlay: linear-gradient(to right, transparent 38%, rgba(10,9,2,0.45) 60%, rgba(10,9,2,0.72) 100%);
+    --classe-bg:    #7a7020;
+    --classe-color: #d8d090;
+  }
+
+  /* Tema: Espacial / Sci-Fi */
+  body.tema-scifi {
+    --green:        #005599;
+    --green-bright: #0088dd;
+    --green-dark:   #000510;
+    --green-glow:   rgba(0,80,160,0.55);
+    --gold:         #004488;
+    --gold-light:   #0066cc;
+    --card:         rgba(0,3,12,0.97);
+    --border:       rgba(0,60,140,0.75);
+    --text-dim:     #223355;
+    --white:        #cce4ff;
+    --accent1: #0088ff; --accent2: #00ccff; --accent3: #ff8800;
+    --panel-bg:     rgba(0,3,12,0.97);
+    --nome-glow:    rgba(0,80,160,0.55);
+    --btn-bg:       rgba(0,3,12,0.85);
+    --btn-border:   #005599;
+    --foto-overlay: linear-gradient(to right, transparent 38%, rgba(0,3,12,0.45) 60%, rgba(0,3,12,0.72) 100%);
+    --classe-bg:    #005599;
+    --classe-color: #cce4ff;
+  }
+
+  /* ===== SELETOR DE TEMA ===== */
+  .theme-switcher {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 99999;
+  }
+
+  .theme-toggle-btn {
+    background: var(--card);
+    border: 1.5px solid var(--green);
+    color: var(--white);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    padding: 7px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-transform: uppercase;
+    box-shadow: 0 0 12px var(--green-glow);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .theme-toggle-btn:hover {
+    background: rgba(45,122,58,0.2);
+    border-color: var(--green-bright);
+    box-shadow: 0 0 22px var(--green-glow);
+  }
+
+  .theme-panel {
+    display: none;
+    position: absolute;
+    bottom: 44px;
+    right: 0;
+    background: rgba(2,6,3,0.98);
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    padding: 10px;
+    width: 200px;
+    box-shadow: 0 0 30px var(--green-glow);
+    animation: fadeIn 0.15s ease;
+  }
+  .theme-panel.open { display: block; }
+
+  .theme-panel-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+
+  .theme-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .theme-opt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.15s;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 1px;
+    color: #aaa;
+    text-transform: uppercase;
+  }
+  .theme-opt:hover { background: rgba(255,255,255,0.05); border-color: #333; color: #fff; }
+  .theme-opt.active { border-color: var(--green); color: var(--white); background: rgba(45,122,58,0.1); }
+
+  .theme-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.2);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -69,12 +290,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to right,
-      transparent 38%,
-      rgba(0,0,0,0.45) 60%,
-      rgba(0,0,0,0.72) 100%
-    );
+    background: var(--foto-overlay);
     pointer-events: none;
   }
 
@@ -124,16 +340,16 @@
     letter-spacing: 1px;
   }
 
-  .stat-vida  { color: #e84040; }
-  .stat-san   { color: #4db8f0; }
-  .stat-esf   { color: #f0c030; }
+  .stat-vida  { color: var(--accent1); }
+  .stat-san   { color: var(--accent2); }
+  .stat-esf   { color: var(--accent3); }
 
   /* PAINEL INFERIOR */
   .info-panel {
     background: var(--card);
-    border: 2px solid var(--red);
+    border: 2px solid var(--green);
     padding: 10px 16px 12px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.9), 0 0 20px var(--red-glow);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.9), 0 0 20px var(--green-glow);
     position: relative;
     display: flex;
     align-items: center;
@@ -146,7 +362,7 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--red-bright), transparent);
+    background: linear-gradient(90deg, transparent, var(--green-bright), transparent);
   }
 
   .nome-group {
@@ -161,7 +377,7 @@
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.46rem;
     letter-spacing: 3px;
-    color: #444;
+    color: #2a4a2a;
     text-transform: uppercase;
   }
 
@@ -171,7 +387,7 @@
     font-weight: 700;
     color: #fff;
     letter-spacing: 2px;
-    text-shadow: 0 0 18px var(--red-glow), 1px 1px 0 #000;
+    text-shadow: 0 0 18px var(--green-glow), 1px 1px 0 #000;
     line-height: 1.1;
     white-space: nowrap;
     overflow: hidden;
@@ -181,10 +397,10 @@
   .nome:hover { animation: glitch 0.3s steps(2) both; }
 
   @keyframes glitch {
-    0%   { text-shadow: 2px 0 #ff0000, -2px 0 #888, 0 0 14px var(--red-glow); }
-    33%  { text-shadow: -2px 0 #ff0000, 2px 0 #888, 0 0 14px var(--red-glow); }
-    66%  { text-shadow: 2px 2px #ff0000, -2px -2px #888, 0 0 14px var(--red-glow); }
-    100% { text-shadow: 0 0 14px var(--red-glow); }
+    0%   { text-shadow: 2px 0 #00ff44, -2px 0 #888, 0 0 14px var(--green-glow); }
+    33%  { text-shadow: -2px 0 #00ff44, 2px 0 #888, 0 0 14px var(--green-glow); }
+    66%  { text-shadow: 2px 2px #00ff44, -2px -2px #888, 0 0 14px var(--green-glow); }
+    100% { text-shadow: 0 0 14px var(--green-glow); }
   }
 
   .sub-row {
@@ -198,26 +414,26 @@
   /* NEX ESTÁGIO badge — borda vermelha, texto vermelho */
   .nex-badge {
     display: inline-block;
-    background: rgba(8,4,4,0.9);
-    border: 1px solid var(--red);
+    background: rgba(4,10,5,0.9);
+    border: 1px solid var(--green);
     border-radius: 2px;
     padding: 2px 7px;
     font-family: 'Share Tech Mono', monospace;
     font-size: 0.58rem;
-    color: var(--red-bright);
+    color: var(--green-bright);
     letter-spacing: 1.5px;
-    box-shadow: 0 0 6px var(--red-glow);
+    box-shadow: 0 0 6px var(--green-glow);
     text-transform: uppercase;
   }
 
-  /* Classe com destaque em amarelo sólido — como "SOBREVIVENTE" no print */
+  /* Classe com destaque — como "SOBREVIVENTE" no print */
   .classe-tag {
     font-size: 0.58rem;
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: #111;
-    background: #e8c000;
+    color: var(--classe-color);
+    background: var(--classe-bg);
     border: none;
     padding: 2px 8px;
     border-radius: 2px;
@@ -272,35 +488,34 @@
   }
 
   .btn-ficha {
-    background: rgba(120,10,10,0.25);
-    border: 1px solid var(--red);
-    color: var(--red-bright);
+    background: rgba(4,10,5,0.85);
+    border: 1.5px solid var(--green);
+    color: #fff;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     letter-spacing: 2px;
-    padding: 5px 14px;
-    border-radius: 2px;
+    padding: 6px 16px;
+    border-radius: 3px;
     cursor: pointer;
     transition: 0.2s;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    box-shadow: 0 0 8px var(--red-glow);
+    gap: 6px;
+    box-shadow: 0 0 10px var(--green-glow), inset 0 0 8px rgba(192,57,43,0.1);
     text-transform: uppercase;
   }
 
   .btn-ficha:hover {
-    background: rgba(192,57,43,0.35);
-    border-color: var(--red-bright);
-    color: #fff;
-    box-shadow: 0 0 16px var(--red-glow);
+    background: rgba(45,122,58,0.3);
+    border-color: var(--green-bright);
+    box-shadow: 0 0 20px var(--green-glow);
   }
 
   .status-dot {
     width: 7px; height: 7px;
     border-radius: 50%;
-    background: #c0392b;
-    box-shadow: 0 0 6px #c0392b;
+    background: #3eb554;
+    box-shadow: 0 0 6px #3eb554;
     display: inline-block;
     animation: pulseDot 2s ease infinite;
     align-self: center;
@@ -313,7 +528,7 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.97);
+    background: rgba(0,5,2,0.97);
     z-index: 9999;
     padding: 20px;
     overflow-y: auto;
@@ -347,12 +562,12 @@
     cursor: pointer;
     transition: 0.2s;
   }
-  .btn-fechar-sel:hover { color: var(--red-bright); border-color: var(--red); }
+  .btn-fechar-sel:hover { color: var(--green-bright); border-color: var(--green); }
 
   .agentes-grid { display: flex; flex-direction: column; gap: 8px; }
 
   .agente-card-sel {
-    background: rgba(8,4,4,0.9);
+    background: rgba(4,10,5,0.9);
     border: 1px solid var(--border);
     border-radius: 4px;
     padding: 10px 14px;
@@ -362,8 +577,8 @@
     gap: 12px;
     transition: 0.2s;
   }
-  .agente-card-sel:hover { border-color: var(--red); background: rgba(60,0,0,0.4); box-shadow: 0 0 12px var(--red-glow); }
-  .agente-card-sel.ativo { border-color: var(--gold); background: rgba(40,25,0,0.4); }
+  .agente-card-sel:hover { border-color: var(--green); background: rgba(0,40,10,0.4); box-shadow: 0 0 12px var(--green-glow); }
+  .agente-card-sel.ativo { border-color: var(--gold); background: rgba(10,30,15,0.4); }
 
   .sel-foto { width: 44px; height: 44px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
   .sel-info { flex: 1; }
@@ -401,7 +616,7 @@
   window.dispatchEvent(new Event('firebaseReady'));
 </script>
 </head>
-<body>
+<body class="tema-paranormal">
 
 <div class="portrait" id="portrait">
 
@@ -453,9 +668,45 @@
         </div>
         <span class="status-dot" id="status-dot" title="Conectado"></span>
       </div>
-      <button class="btn-ficha" onclick="abrirSelector()" title="Selecionar agente">⊕ FICHA</button>
+      <button class="btn-ficha" onclick="abrirSelector()" title="Selecionar agente">◎ FICHA</button>
     </div>
   </div>
+</div>
+
+<!-- SELETOR DE TEMA -->
+<div class="theme-switcher" id="theme-switcher">
+  <div class="theme-panel" id="theme-panel">
+    <div class="theme-panel-title">▸ Tema Visual</div>
+    <div class="theme-list">
+      <div class="theme-opt active" data-tema="paranormal" onclick="aplicarTema('paranormal')">
+        <span class="theme-dot" style="background:#3eb554;box-shadow:0 0 6px #3eb554"></span>
+        Ordem Paranormal
+      </div>
+      <div class="theme-opt" data-tema="fantasia" onclick="aplicarTema('fantasia')">
+        <span class="theme-dot" style="background:#c8891e;box-shadow:0 0 6px #c8891e"></span>
+        Fantasia Medieval
+      </div>
+      <div class="theme-opt" data-tema="cyberpunk" onclick="aplicarTema('cyberpunk')">
+        <span class="theme-dot" style="background:#ee44ff;box-shadow:0 0 6px #ee44ff"></span>
+        Cyberpunk
+      </div>
+      <div class="theme-opt" data-tema="horror" onclick="aplicarTema('horror')">
+        <span class="theme-dot" style="background:#cc2200;box-shadow:0 0 6px #cc2200"></span>
+        Horror / Vampírico
+      </div>
+      <div class="theme-opt" data-tema="posapoc" onclick="aplicarTema('posapoc')">
+        <span class="theme-dot" style="background:#aaaa00;box-shadow:0 0 6px #aaaa00"></span>
+        Pós-Apocalíptico
+      </div>
+      <div class="theme-opt" data-tema="scifi" onclick="aplicarTema('scifi')">
+        <span class="theme-dot" style="background:#0088dd;box-shadow:0 0 6px #0088dd"></span>
+        Espacial / Sci-Fi
+      </div>
+    </div>
+  </div>
+  <button class="theme-toggle-btn" onclick="toggleThemePanel()" title="Mudar tema visual">
+    🎨 <span>TEMA</span>
+  </button>
 </div>
 
 <!-- OVERLAY DE LOGIN -->
@@ -468,16 +719,16 @@
     Digite seu nome de usuário do F.I.C.H.A.<br>para filtrar seus agentes.
   </p>
   <input id="login-usuario-portrait" type="text" placeholder="Nome de usuário..."
-    style="background:#0d0010;border:1px solid #3a0063;color:white;font-family:'Oswald',sans-serif;
+    style="background:#020d04;border:1px solid #0a3018;color:white;font-family:'Oswald',sans-serif;
     font-size:1rem;padding:10px 14px;border-radius:6px;width:100%;margin-bottom:12px;outline:none;"
     onkeydown="if(event.key==='Enter') confirmarLoginPortrait()">
   <button onclick="confirmarLoginPortrait()"
-    style="width:100%;padding:10px;background:#3a0063;border:1px solid #8a2be2;color:white;
+    style="width:100%;padding:10px;background:#0a3018;border:1px solid #2d7a3a;color:white;
     font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;border-radius:6px;cursor:pointer;"
-    onmouseover="this.style.background='#8a2be2'" onmouseout="this.style.background='#3a0063'">
+    onmouseover="this.style.background='#2d7a3a'" onmouseout="this.style.background='#0a3018'">
     ▸ Confirmar
   </button>
-  <p id="login-portrait-erro" style="color:#e84040;font-size:0.75rem;font-family:'Share Tech Mono',monospace;margin-top:10px;min-height:16px;letter-spacing:1px;"></p>
+  <p id="login-portrait-erro" style="color:#3eb554;font-size:0.75rem;font-family:'Share Tech Mono',monospace;margin-top:10px;min-height:16px;letter-spacing:1px;"></p>
 </div>
 
 <!-- SELECTOR OVERLAY -->
@@ -526,7 +777,8 @@ function aplicarAgente(ficha, est) {
     const fotoSrc = est?.fotoCostum || ficha.fotoCostum ||
         `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
     document.getElementById('foto-img').src = fotoSrc;
-    document.getElementById('nome-txt').textContent   = (ficha.codinome ? `"${ficha.codinome}"` : ficha.nome) || 'Agente';
+    const nomeExibir = ficha.codinome || ficha.nome || 'Agente';
+    document.getElementById('nome-txt').textContent   = `"${nomeExibir.toUpperCase()}"`;
     document.getElementById('classe-txt').textContent = ficha.classe || '—';
     document.getElementById('origem-txt').textContent = ficha.origem || '—';
     const nex  = est?.progressao?.nex  || ficha.progressao?.nex  || '5%';
@@ -688,6 +940,55 @@ function tentarIniciar() {
 
 if (document.readyState === 'complete') tentarIniciar();
 else window.addEventListener('load', tentarIniciar);
+</script>
+<!-- Init tema padrão -->
+<script>
+(function() {
+  const temaLabels = {
+    paranormal: 'Ordem Paranormal',
+    fantasia:   'Fantasia Medieval',
+    cyberpunk:  'Cyberpunk',
+    horror:     'Horror / Vampírico',
+    posapoc:    'Pós-Apocalíptico',
+    scifi:      'Espacial / Sci-Fi'
+  };
+
+  const temaAtivo = localStorage.getItem('portrait_tema') || 'paranormal';
+  document.body.className = 'tema-' + temaAtivo;
+
+  // Atualizar estado visual do painel ao carregar
+  document.querySelectorAll('.theme-opt').forEach(opt => {
+    opt.classList.toggle('active', opt.dataset.tema === temaAtivo);
+  });
+
+  window.toggleThemePanel = function() {
+    document.getElementById('theme-panel').classList.toggle('open');
+  };
+
+  window.aplicarTema = function(tema) {
+    document.body.className = 'tema-' + tema;
+    localStorage.setItem('portrait_tema', tema);
+    document.querySelectorAll('.theme-opt').forEach(opt => {
+      opt.classList.toggle('active', opt.dataset.tema === tema);
+    });
+    // Fechar painel após selecionar
+    document.getElementById('theme-panel').classList.remove('open');
+    // Atualizar label do botão
+    document.querySelector('.theme-toggle-btn span').textContent = temaLabels[tema].toUpperCase().split(' ')[0];
+  };
+
+  // Atualizar label do botão com tema atual
+  const label = (temaLabels[temaAtivo] || 'TEMA').toUpperCase().split(' ')[0];
+  document.querySelector('.theme-toggle-btn span').textContent = label;
+
+  // Fechar painel clicando fora
+  document.addEventListener('click', function(e) {
+    const switcher = document.getElementById('theme-switcher');
+    if (switcher && !switcher.contains(e.target)) {
+      document.getElementById('theme-panel').classList.remove('open');
+    }
+  });
+})();
 </script>
 </body>
 </html>
