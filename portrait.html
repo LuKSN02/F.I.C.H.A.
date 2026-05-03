@@ -259,8 +259,11 @@
     width: var(--w);
     position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: flex-end;
+    height: 300px;
     animation: slideIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+    padding: 10px 0 0 10px;
   }
 
   @keyframes slideIn {
@@ -268,13 +271,21 @@
     to   { transform: translateX(0);     opacity: 1; }
   }
 
-  /* FOTO QUADRADA */
+  /* ── MEDALHÃO CIRCULAR ── */
   .foto-wrap {
     position: relative;
-    width: var(--w);
-    height: 340px;
-    overflow: hidden;
+    width: 220px;
+    height: 220px;
     flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #1a1a1a;
+    box-shadow:
+      0 0 0 2px rgba(255,255,255,0.06),
+      0 8px 40px rgba(0,0,0,0.8),
+      inset 0 0 30px rgba(0,0,0,0.5);
+    align-self: center;
+    z-index: 2;
   }
 
   #foto-img {
@@ -285,76 +296,229 @@
     display: block;
   }
 
-  /* gradiente escuro no lado direito para legibilidade dos números */
-  .foto-wrap::after {
-    content: '';
+  /* OVERLAY DE MORTE */
+  #death-overlay {
     position: absolute;
     inset: 0;
-    background: var(--foto-overlay);
+    background: #000;
+    opacity: 0;
     pointer-events: none;
+    z-index: 5;
+    transition: opacity 2s ease;
+    border-radius: 50%;
   }
+  #death-overlay.morto { opacity: 1; }
 
-  /* STATS SOBREPOSTAS (canto direito, verticalmente centralizadas) */
-  .stats-overlay {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
+  .foto-wrap::after { display: none; }
+
+  /* ── PAINEL DIREITO ── */
+  .stats-col {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
+    justify-content: flex-end;
+    height: 100%;
+    padding-left: 14px;
+    gap: 0;
+  }
+
+  /* Nome ghostado grande — estética do print */
+  .nome-ghost {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 3.2rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.08);
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    margin-bottom: 4px;
+    user-select: none;
+    pointer-events: none;
+    text-shadow: none;
+  }
+
+  /* ── BARRAS DE STAT COMPACTAS ── */
+  .bars-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 8px;
+  }
+
+  .stat-bar {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 3px;
+    transition: filter 2s ease;
+  }
+  .stat-bar.morto-bar { filter: brightness(0.08) grayscale(1); }
+
+  .stat-bar-vida { background: rgba(100,0,0,0.4); }
+  .stat-bar-san  { background: rgba(0,30,100,0.4); }
+  .stat-bar-esf  { background: rgba(100,75,0,0.4); }
+
+  .stat-fill {
+    position: absolute;
+    inset: 0;
+    right: auto;
+    width: 100%;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+    border-radius: 3px;
+  }
+  .stat-bar-vida .stat-fill { background: var(--accent1); }
+  .stat-bar-san  .stat-fill { background: var(--accent2); }
+  .stat-bar-esf  .stat-fill { background: var(--accent3); }
+
+  .stat-label {
+    position: relative;
+    z-index: 2;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
   }
 
   .stat-item {
     display: flex;
     align-items: baseline;
+    gap: 1px;
     line-height: 1;
+    position: relative;
+    z-index: 2;
+    flex: 1;
   }
 
-  .stat-val {
+  .stat-val, .stat-max {
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 2.8rem;
+    font-size: 1.15rem;
     line-height: 1;
-    text-shadow: 3px 3px 0 rgba(0,0,0,0.9), 0 0 24px currentColor;
-    letter-spacing: 1px;
+    color: #fff;
+    text-shadow: 1px 2px 6px rgba(0,0,0,0.7);
   }
 
   .stat-sep {
     font-family: 'Oswald', sans-serif;
     font-weight: 300;
-    font-size: 2.2rem;
-    opacity: 0.6;
-    margin: 0 1px;
-    text-shadow: 2px 2px 0 rgba(0,0,0,0.9);
+    font-size: 1rem;
+    color: rgba(255,255,255,0.55);
+    margin: 0 2px;
   }
 
-  .stat-max {
-    font-family: 'Oswald', sans-serif;
-    font-weight: 700;
-    font-size: 2.8rem;
-    line-height: 1;
-    text-shadow: 3px 3px 0 rgba(0,0,0,0.9), 0 0 24px currentColor;
-    letter-spacing: 1px;
+  /* ── PE: BOLINHAS ── */
+  .pe-orbs-wrap {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 0 4px;
+    gap: 2px;
+    transition: filter 2s ease;
+    border-radius: 3px;
+    background: rgba(100,75,0,0.18);
+  }
+  .pe-orbs-wrap.morto-bar { filter: brightness(0.08) grayscale(1); }
+
+  .pe-orbs-label {
+    position: relative;
+    z-index: 2;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .pe-orbs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+  }
+
+  .pe-orb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent3);
+    box-shadow: 0 0 6px var(--accent3), 0 0 12px rgba(240,192,48,0.4);
+    transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  /* bolinha gasta — apagada */
+  .pe-orb.gasto {
+    background: rgba(80,60,0,0.35);
+    box-shadow: none;
+  }
+
+  /* animação de fumaça ao gastar */
+  .pe-orb.smoke::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(80,80,80,0.7) 0%, transparent 70%);
+    animation: smokeOut 0.6s ease forwards;
+    pointer-events: none;
+  }
+
+  @keyframes smokeOut {
+    0%   { opacity: 1; transform: scale(0.8); }
+    40%  { opacity: 0.8; transform: scale(1.8); }
+    100% { opacity: 0; transform: scale(2.8); }
+  }
+
+  /* bolinha recarregando */
+  .pe-orb.recharge {
+    animation: rechargeOrb 0.4s ease forwards;
+  }
+  @keyframes rechargeOrb {
+    0%   { transform: scale(0); opacity: 0; }
+    60%  { transform: scale(1.25); opacity: 1; }
+    100% { transform: scale(1); }
   }
 
   .stat-vida  { color: var(--accent1); }
   .stat-san   { color: var(--accent2); }
   .stat-esf   { color: var(--accent3); }
 
-  /* PAINEL INFERIOR */
+  @keyframes pulseBar {
+    0%,100% { filter: brightness(1); }
+    50%     { filter: brightness(0.55); }
+  }
+
+  /* ── PAINEL DE INFO ── */
   .info-panel {
-    background: var(--card);
-    border: 2px solid var(--green);
-    padding: 10px 16px 12px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.9), 0 0 20px var(--green-glow);
+    background: rgba(0,0,0,0.82);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 4px;
+    padding: 6px 10px 7px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-bottom: 2px;
   }
 
   .info-panel::before {
@@ -363,6 +527,7 @@
     top: 0; left: 0; right: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--green-bright), transparent);
+    border-radius: 4px 4px 0 0;
   }
 
   .nome-group {
@@ -371,27 +536,31 @@
     gap: 2px;
     flex: 1;
     min-width: 0;
+    overflow: hidden;
   }
 
   .nome-label-small {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.46rem;
+    font-size: 0.42rem;
     letter-spacing: 3px;
     color: #2a4a2a;
     text-transform: uppercase;
   }
 
-  /* Nome entre aspas — igual ao print: "JUJU" */
+  /* Nome real (menor, no painel) */
   .nome {
-    font-size: 1.75rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: #fff;
-    letter-spacing: 2px;
-    text-shadow: 0 0 18px var(--green-glow), 1px 1px 0 #000;
+    letter-spacing: 1px;
+    text-shadow: 0 0 14px var(--green-glow), 1px 1px 0 #000;
     line-height: 1.1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
+    max-width: 100%;
+    display: block;
   }
 
   .nome:hover { animation: glitch 0.3s steps(2) both; }
@@ -406,42 +575,39 @@
   .sub-row {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     flex-wrap: wrap;
     margin-top: 1px;
   }
 
-  /* NEX ESTÁGIO badge — borda vermelha, texto vermelho */
   .nex-badge {
     display: inline-block;
     background: rgba(4,10,5,0.9);
     border: 1px solid var(--green);
     border-radius: 2px;
-    padding: 2px 7px;
+    padding: 1px 5px;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.58rem;
+    font-size: 0.5rem;
     color: var(--green-bright);
     letter-spacing: 1.5px;
     box-shadow: 0 0 6px var(--green-glow);
     text-transform: uppercase;
   }
 
-  /* Classe com destaque — como "SOBREVIVENTE" no print */
   .classe-tag {
-    font-size: 0.58rem;
+    font-size: 0.5rem;
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--classe-color);
     background: var(--classe-bg);
     border: none;
-    padding: 2px 8px;
+    padding: 1px 6px;
     border-radius: 2px;
   }
 
-  /* Origem sem destaque — texto simples, como "EXPERIMENTO" no print */
   .origem-txt {
-    font-size: 0.56rem;
+    font-size: 0.48rem;
     color: var(--text-dim);
     letter-spacing: 1.5px;
     text-transform: uppercase;
@@ -452,20 +618,20 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 6px;
+    gap: 4px;
     flex-shrink: 0;
   }
 
   .pe-row {
     display: flex;
-    gap: 14px;
+    gap: 10px;
     align-items: flex-end;
   }
 
   .pe-item { text-align: right; }
 
   .pe-label {
-    font-size: 0.46rem;
+    font-size: 0.4rem;
     letter-spacing: 2px;
     text-transform: uppercase;
     color: var(--text-dim);
@@ -474,7 +640,7 @@
 
   .pe-val {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: var(--gold-light);
     text-shadow: 0 0 8px rgba(180,130,0,0.5);
@@ -482,7 +648,7 @@
 
   .pe-desl {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.72rem;
+    font-size: 0.65rem;
     color: #555;
     letter-spacing: 1px;
   }
@@ -492,16 +658,16 @@
     border: 1.5px solid var(--green);
     color: #fff;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.62rem;
+    font-size: 0.55rem;
     letter-spacing: 2px;
-    padding: 6px 16px;
+    padding: 4px 12px;
     border-radius: 3px;
     cursor: pointer;
     transition: 0.2s;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    box-shadow: 0 0 10px var(--green-glow), inset 0 0 8px rgba(192,57,43,0.1);
+    gap: 5px;
+    box-shadow: 0 0 10px var(--green-glow);
     text-transform: uppercase;
   }
 
@@ -620,57 +786,72 @@
 
 <div class="portrait" id="portrait">
 
-  <!-- FOTO QUADRADA COM STATS SOBREPOSTOS -->
+  <!-- MEDALHÃO CIRCULAR -->
   <div class="foto-wrap">
     <img id="foto-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Portrait">
-
-    <!-- Stats flutuantes no lado direito -->
-    <div class="stats-overlay">
-      <div class="stat-item">
-        <span class="stat-val stat-vida" id="vida-atual-txt">20</span>
-        <span class="stat-sep stat-vida">/</span>
-        <span class="stat-max stat-vida" id="vida-max-txt">20</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-val stat-san" id="san-atual-txt">20</span>
-        <span class="stat-sep stat-san">/</span>
-        <span class="stat-max stat-san" id="san-max-txt">20</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-val stat-esf" id="esf-atual-txt">10</span>
-        <span class="stat-sep stat-esf">/</span>
-        <span class="stat-max stat-esf" id="esf-max-txt">10</span>
-      </div>
-    </div>
+    <div id="death-overlay"></div>
   </div>
 
-  <!-- PAINEL INFERIOR: nome + botão -->
-  <div class="info-panel">
-    <div class="nome-group">
-      <div class="nome-label-small">▸ AGENTE</div>
-      <div class="nome" id="nome-txt">Agente</div>
-      <div class="sub-row">
-        <div class="nex-badge" id="nex-badge">NEX 5%</div>
-        <div class="classe-tag" id="classe-txt">—</div>
-        <div class="origem-txt" id="origem-txt">—</div>
+  <!-- COLUNA DIREITA -->
+  <div class="stats-col">
+
+    <!-- Nome ghostado grande -->
+    <div class="nome-ghost" id="nome-ghost-txt">AGENTE</div>
+
+    <!-- Barras de stat compactas -->
+    <div class="bars-wrap">
+      <div class="stat-bar stat-bar-vida" id="bar-vida">
+        <div class="stat-fill" id="fill-vida"></div>
+        <span class="stat-label">PV</span>
+        <div class="stat-item">
+          <span class="stat-val" id="vida-atual-txt">20</span>
+          <span class="stat-sep">/</span>
+          <span class="stat-max" id="vida-max-txt">20</span>
+        </div>
+      </div>
+      <div class="stat-bar stat-bar-san" id="bar-san">
+        <div class="stat-fill" id="fill-san"></div>
+        <span class="stat-label">PS</span>
+        <div class="stat-item">
+          <span class="stat-val" id="san-atual-txt">20</span>
+          <span class="stat-sep">/</span>
+          <span class="stat-max" id="san-max-txt">20</span>
+        </div>
+      </div>
+      <!-- PE: bolinhas individuais -->
+      <div class="pe-orbs-wrap" id="bar-esf">
+        <span class="stat-label pe-orbs-label">PE</span>
+        <div class="pe-orbs" id="pe-orbs-container"></div>
+      </div>    </div>
+
+    <!-- Painel de info -->
+    <div class="info-panel">
+      <div class="nome-group">
+        <div class="nome-label-small">▸ AGENTE</div>
+        <div class="nome" id="nome-txt">Agente</div>
+        <div class="sub-row">
+          <div class="nex-badge" id="nex-badge">NEX 5%</div>
+          <div class="classe-tag" id="classe-txt">—</div>
+          <div class="origem-txt" id="origem-txt">—</div>
+        </div>
+      </div>
+      <div class="right-group">
+        <div class="pe-row">
+          <div class="pe-item">
+            <div class="pe-label">PE / TURNO</div>
+            <div class="pe-val" id="pe-txt">3 PE</div>
+          </div>
+          <div class="pe-item">
+            <div class="pe-label">DESL.</div>
+            <div class="pe-desl" id="desl-txt">9m</div>
+          </div>
+          <span class="status-dot" id="status-dot" title="Conectado"></span>
+        </div>
+        <button class="btn-ficha" onclick="abrirSelector()" title="Selecionar agente">◎ FICHA</button>
       </div>
     </div>
 
-    <div class="right-group">
-      <div class="pe-row">
-        <div class="pe-item">
-          <div class="pe-label">PE / TURNO</div>
-          <div class="pe-val" id="pe-txt">3 PE</div>
-        </div>
-        <div class="pe-item">
-          <div class="pe-label">DESLOCAMENTO</div>
-          <div class="pe-desl" id="desl-txt">9m</div>
-        </div>
-        <span class="status-dot" id="status-dot" title="Conectado"></span>
-      </div>
-      <button class="btn-ficha" onclick="abrirSelector()" title="Selecionar agente">◎ FICHA</button>
-    </div>
-  </div>
+  </div><!-- /stats-col -->
 </div>
 
 <!-- SELETOR DE TEMA -->
@@ -772,6 +953,18 @@ function confirmarLoginPortrait() {
     document.getElementById('selector-overlay').classList.add('show');
 }
 
+// Encolhe o nome automaticamente até caber no container
+function fitNome() {
+    const el = document.getElementById('nome-txt');
+    if (!el) return;
+    el.style.fontSize = '1.3rem';
+    let size = 1.3;
+    while (el.scrollWidth > el.offsetWidth && size > 0.6) {
+        size -= 0.05;
+        el.style.fontSize = size + 'rem';
+    }
+}
+
 function aplicarAgente(ficha, est) {
     if (!ficha) return;
     const fotoSrc = est?.fotoCostum || ficha.fotoCostum ||
@@ -779,6 +972,8 @@ function aplicarAgente(ficha, est) {
     document.getElementById('foto-img').src = fotoSrc;
     const nomeExibir = ficha.codinome || ficha.nome || 'Agente';
     document.getElementById('nome-txt').textContent   = `"${nomeExibir.toUpperCase()}"`;
+    const ghostEl = document.getElementById('nome-ghost-txt');
+    if (ghostEl) ghostEl.textContent = nomeExibir.toUpperCase();
     document.getElementById('classe-txt').textContent = ficha.classe || '—';
     document.getElementById('origem-txt').textContent = ficha.origem || '—';
     const nex  = est?.progressao?.nex  || ficha.progressao?.nex  || '5%';
@@ -787,6 +982,7 @@ function aplicarAgente(ficha, est) {
     document.getElementById('nex-badge').textContent = 'NEX ' + nex;
     document.getElementById('pe-txt').textContent    = pe + ' PE';
     document.getElementById('desl-txt').textContent  = desl;
+    requestAnimationFrame(fitNome);
     if (est) {
         const v = est.vida || {}, s = est.san || {}, e = est.esf || {};
         atualizarStat('vida', v.atual ?? 0, v.max ?? 20);
@@ -800,13 +996,80 @@ function atualizarStat(tipo, atual, max) {
     const maxEl   = document.getElementById(`${tipo}-max-txt`);
     if (atualEl) atualEl.textContent = atual;
     if (maxEl)   maxEl.textContent   = max;
+
+    if (tipo === 'esf') {
+        // Renderiza bolinhas de PE
+        renderPeOrbs(atual, max);
+    } else {
+        // Atualiza fill das outras barras
+        const fillMap = { vida: 'fill-vida', san: 'fill-san' };
+        const fill = document.getElementById(fillMap[tipo]);
+        if (fill) {
+            const pct = max > 0 ? Math.max(0, Math.min(100, (atual / max) * 100)) : 0;
+            fill.style.width = pct + '%';
+        }
+    }
+
     if (tipo === 'vida') {
         const pct = max > 0 ? (atual / max) * 100 : 0;
-        const els = [atualEl, maxEl, document.querySelector('.stat-sep.stat-vida')];
-        els.forEach(el => {
-            if (el) el.style.animation = pct <= 25 ? 'pulseRed 1s ease infinite' : '';
-        });
+        const bar = document.getElementById('bar-vida');
+        if (bar) bar.style.animation = pct <= 25 && atual > 0 ? 'pulseBar 1s ease infinite' : '';
+
+        const overlay = document.getElementById('death-overlay');
+        const bars = document.querySelectorAll('.stat-bar, .pe-orbs-wrap');
+        if (atual <= 0) {
+            if (overlay) overlay.classList.add('morto');
+            bars.forEach(b => b.classList.add('morto-bar'));
+        } else {
+            if (overlay) overlay.classList.remove('morto');
+            bars.forEach(b => b.classList.remove('morto-bar'));
+        }
     }
+}
+
+let _peAnterior = -1;
+
+function renderPeOrbs(atual, max) {
+    const container = document.getElementById('pe-orbs-container');
+    if (!container) return;
+
+    const existentes = container.querySelectorAll('.pe-orb');
+    const prevMax = existentes.length;
+
+    // Recria se o máximo mudou
+    if (prevMax !== max) {
+        container.innerHTML = '';
+        for (let i = 0; i < max; i++) {
+            const orb = document.createElement('div');
+            orb.className = 'pe-orb' + (i >= atual ? ' gasto' : '');
+            orb.dataset.idx = i;
+            container.appendChild(orb);
+        }
+        _peAnterior = atual;
+        return;
+    }
+
+    // Atualiza animando as que mudaram
+    const orbs = container.querySelectorAll('.pe-orb');
+    orbs.forEach((orb, i) => {
+        const deveEstarAtivo = i < atual;
+        const estaAtivo = !orb.classList.contains('gasto');
+
+        if (estaAtivo && !deveEstarAtivo) {
+            // gastando — fumaça
+            orb.classList.add('smoke');
+            setTimeout(() => {
+                orb.classList.remove('smoke');
+                orb.classList.add('gasto');
+            }, 500);
+        } else if (!estaAtivo && deveEstarAtivo) {
+            // recuperando
+            orb.classList.remove('gasto');
+            orb.classList.add('recharge');
+            setTimeout(() => orb.classList.remove('recharge'), 400);
+        }
+    });
+    _peAnterior = atual;
 }
 
 function escutarEstado(fichaId) {
