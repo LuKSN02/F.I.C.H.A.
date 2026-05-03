@@ -416,86 +416,8 @@
     margin: 0 2px;
   }
 
-  /* ── PE: BOLINHAS ── */
-  .pe-orbs-wrap {
-    height: 28px;
-    display: flex;
-    align-items: center;
-    position: relative;
-    padding: 0 4px;
-    gap: 2px;
-    transition: filter 2s ease;
-    border-radius: 3px;
-    background: rgba(100,75,0,0.18);
-  }
-  .pe-orbs-wrap.morto-bar { filter: brightness(0.08) grayscale(1); }
-
-  .pe-orbs-label {
-    position: relative;
-    z-index: 2;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 0.48rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-    width: 22px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  .pe-orbs {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 4px;
-    flex: 1;
-    position: relative;
-    z-index: 2;
-  }
-
-  .pe-orb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--accent3);
-    box-shadow: 0 0 6px var(--accent3), 0 0 12px rgba(240,192,48,0.4);
-    transition: background 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
-    flex-shrink: 0;
-    position: relative;
-  }
-
-  /* bolinha gasta — apagada */
-  .pe-orb.gasto {
-    background: rgba(80,60,0,0.35);
-    box-shadow: none;
-  }
-
-  /* animação de fumaça ao gastar */
-  .pe-orb.smoke::before {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(80,80,80,0.7) 0%, transparent 70%);
-    animation: smokeOut 0.6s ease forwards;
-    pointer-events: none;
-  }
-
-  @keyframes smokeOut {
-    0%   { opacity: 1; transform: scale(0.8); }
-    40%  { opacity: 0.8; transform: scale(1.8); }
-    100% { opacity: 0; transform: scale(2.8); }
-  }
-
-  /* bolinha recarregando */
-  .pe-orb.recharge {
-    animation: rechargeOrb 0.4s ease forwards;
-  }
-  @keyframes rechargeOrb {
-    0%   { transform: scale(0); opacity: 0; }
-    60%  { transform: scale(1.25); opacity: 1; }
-    100% { transform: scale(1); }
-  }
+  /* ── PE: BARRA ── */
+  .stat-bar-esf { background: rgba(100,75,0,0.4); }
 
   .stat-vida  { color: var(--accent1); }
   .stat-san   { color: var(--accent2); }
@@ -818,11 +740,17 @@
           <span class="stat-max" id="san-max-txt">20</span>
         </div>
       </div>
-      <!-- PE: bolinhas individuais -->
-      <div class="pe-orbs-wrap" id="bar-esf">
-        <span class="stat-label pe-orbs-label">PE</span>
-        <div class="pe-orbs" id="pe-orbs-container"></div>
-      </div>    </div>
+      <!-- PE: barra -->
+      <div class="stat-bar stat-bar-esf" id="bar-esf">
+        <div class="stat-fill" id="fill-esf"></div>
+        <span class="stat-label">PE</span>
+        <div class="stat-item">
+          <span class="stat-val" id="esf-atual-txt">10</span>
+          <span class="stat-sep">/</span>
+          <span class="stat-max" id="esf-max-txt">10</span>
+        </div>
+      </div>
+    </div>
 
     <!-- Painel de info -->
     <div class="info-panel">
@@ -998,8 +926,15 @@ function atualizarStat(tipo, atual, max) {
     if (maxEl)   maxEl.textContent   = max;
 
     if (tipo === 'esf') {
-        // Renderiza bolinhas de PE
-        renderPeOrbs(atual, max);
+        const fill = document.getElementById('fill-esf');
+        if (fill) {
+            const pct = max > 0 ? Math.max(0, Math.min(100, (atual / max) * 100)) : 0;
+            fill.style.width = pct + '%';
+        }
+        const atualEl2 = document.getElementById('esf-atual-txt');
+        const maxEl2   = document.getElementById('esf-max-txt');
+        if (atualEl2) atualEl2.textContent = atual;
+        if (maxEl2)   maxEl2.textContent   = max;
     } else {
         // Atualiza fill das outras barras
         const fillMap = { vida: 'fill-vida', san: 'fill-san' };
@@ -1016,7 +951,7 @@ function atualizarStat(tipo, atual, max) {
         if (bar) bar.style.animation = pct <= 25 && atual > 0 ? 'pulseBar 1s ease infinite' : '';
 
         const overlay = document.getElementById('death-overlay');
-        const bars = document.querySelectorAll('.stat-bar, .pe-orbs-wrap');
+        const bars = document.querySelectorAll('.stat-bar');
         if (atual <= 0) {
             if (overlay) overlay.classList.add('morto');
             bars.forEach(b => b.classList.add('morto-bar'));
@@ -1027,50 +962,6 @@ function atualizarStat(tipo, atual, max) {
     }
 }
 
-let _peAnterior = -1;
-
-function renderPeOrbs(atual, max) {
-    const container = document.getElementById('pe-orbs-container');
-    if (!container) return;
-
-    const existentes = container.querySelectorAll('.pe-orb');
-    const prevMax = existentes.length;
-
-    // Recria se o máximo mudou
-    if (prevMax !== max) {
-        container.innerHTML = '';
-        for (let i = 0; i < max; i++) {
-            const orb = document.createElement('div');
-            orb.className = 'pe-orb' + (i >= atual ? ' gasto' : '');
-            orb.dataset.idx = i;
-            container.appendChild(orb);
-        }
-        _peAnterior = atual;
-        return;
-    }
-
-    // Atualiza animando as que mudaram
-    const orbs = container.querySelectorAll('.pe-orb');
-    orbs.forEach((orb, i) => {
-        const deveEstarAtivo = i < atual;
-        const estaAtivo = !orb.classList.contains('gasto');
-
-        if (estaAtivo && !deveEstarAtivo) {
-            // gastando — fumaça
-            orb.classList.add('smoke');
-            setTimeout(() => {
-                orb.classList.remove('smoke');
-                orb.classList.add('gasto');
-            }, 500);
-        } else if (!estaAtivo && deveEstarAtivo) {
-            // recuperando
-            orb.classList.remove('gasto');
-            orb.classList.add('recharge');
-            setTimeout(() => orb.classList.remove('recharge'), 400);
-        }
-    });
-    _peAnterior = atual;
-}
 
 function escutarEstado(fichaId) {
     if (!window._firebaseDB) return;
