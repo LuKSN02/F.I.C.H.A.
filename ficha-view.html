@@ -172,6 +172,43 @@
         .btn-voltar:hover { border-color:var(--purple); color:var(--purple-neon); }
 
         @media (max-width:768px) { .ficha-wrapper { grid-template-columns:1fr; } }
+
+        /* ===== RESPONSIVIDADE MOBILE ===== */
+@media (max-width: 576px) {
+    /* Navbar: logo menor */
+    .navbar-brand { font-size: 1.3rem !important; }
+    .navbar-brand img { width: 48px !important; height: 48px !important; }
+
+    /* Textos grandes demais em telas pequenas */
+    h1 { font-size: 1.8rem !important; }
+    h2 { font-size: 1.4rem !important; }
+}
+
+@media (max-width: 576px) {
+    /* Já existente no arquivo — adicione DENTRO dele: */
+
+    /* Radar menor */
+    .radar-container { width: 180px; height: 180px; }
+
+    /* Perícias: esconde colunas menos essenciais */
+    .pericias-header,
+    .pericia-row {
+        grid-template-columns: 1fr 50px 60px;
+    }
+    .pericias-header div:nth-child(3),
+    .pericias-header div:nth-child(4),
+    .pericia-row .pericia-cell:nth-child(3),
+    .pericia-row .pericia-cell:nth-child(4) {
+        display: none;
+    }
+
+    /* Abas: fonte menor para caber todas */
+    .aba-btn { font-size: 0.6rem; padding: 6px 2px; }
+
+    /* Wrapper: sem padding lateral excessivo */
+    .ficha-wrapper { padding: 0 8px 60px; margin-top: 12px; }
+}
+
     </style>
 </head>
 <body>
@@ -187,18 +224,36 @@
             <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="52" height="52" class="d-inline-block align-text-center">
             F.I.C.H.A.
         </a>
-        <div class="collapse navbar-collapse justify-content-center">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarViewNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarViewNav">
             <div class="navbar-nav">
                 <a class="nav-link px-3" href="index.html?view=agentes">Agentes</a>
                 <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
                 <a class="nav-link px-3" href="homebrew.html">Homebrew</a>
             </div>
+            <!-- Botões exclusivos para mobile, dentro do hambúrguer -->
+            <div class="d-lg-none px-3 pb-3 pt-2 d-flex flex-column gap-2">
+                <a id="btn-portrait-mobile" href="#" target="_blank"
+                   style="border:1px solid var(--purple);color:var(--purple-neon);padding:8px 16px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:2px;text-decoration:none;text-align:center;">
+                    🎭 Ver Portrait
+                </a>
+                <a id="btn-voltar-mobile" href="campanhas.html"
+                   style="border:1px solid var(--border);color:var(--text-dim);padding:8px 16px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:2px;text-decoration:none;text-align:center;">
+                    ← Voltar para Campanhas
+                </a>
+                <span style="border:1px solid #440020;background:#1a0010;color:#e84040;font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:2px;padding:6px 12px;border-radius:99px;text-align:center;">
+                    👁 SOMENTE LEITURA
+                </span>
+            </div>
         </div>
         <!-- ✅ NAV: botão Portrait + Voltar -->
+        <!-- Botões visíveis no desktop (fora do collapse) -->
         <div class="d-none d-lg-flex pe-3 gap-2 align-items-center">
             <span class="readonly-badge">👁 SOMENTE LEITURA</span>
             <a id="btn-portrait-view" href="#" class="btn-voltar"
-               style="border-color:var(--purple);color:var(--purple-neon);" target="_blank">
+            style="border-color:var(--purple);color:var(--purple-neon);" target="_blank">
                 🎭 Portrait
             </a>
             <a id="btn-voltar-camp" href="campanhas.html" class="btn-voltar">← Voltar</a>
@@ -418,6 +473,9 @@ async function init() {
         window._portraitUrl = portraitUrl;
         const btnPortrait = document.getElementById('btn-portrait-view');
         if (btnPortrait) btnPortrait.href = portraitUrl;
+        // ✅ Vincula também o botão mobile
+        const btnPortraitMobile = document.getElementById('btn-portrait-mobile');
+        if (btnPortraitMobile) btnPortraitMobile.href = portraitUrl;
 
         // Carrega dados do Firebase
         const agenteSnap = await get(ref(db, `agentes/${playerNome}/${fichaIdFinal}`));
@@ -497,9 +555,10 @@ function pct(atual, max) {
 }
 
 function desenharRadar(atribs) {
-    const cx=110, cy=110, maxR=80, MAX=5;
-    const ang = [-Math.PI/2+Math.PI, -Math.PI/2, -Math.PI/2+Math.PI*2/5*2, -Math.PI/2+Math.PI*2/5*3, -Math.PI/2+Math.PI*2/5*4];
-    const ord = ['FOR','AGI','INT','PRE','VIG'];
+    const cx=110, cy=110, maxR=80, MAX=5, N=5;
+    const angBase = -Math.PI/2;
+    const ang = Array.from({length:N}, (_,i) => angBase + (Math.PI*2/N)*i);
+    const ord = ['AGI','INT','VIG','PRE','FOR'];
     document.getElementById('radar-bg').setAttribute('points', ang.map(a=>`${cx+maxR*Math.cos(a)},${cy+maxR*Math.sin(a)}`).join(' '));
     const axesG = document.getElementById('radar-axes'); axesG.innerHTML='';
     ang.forEach(a=>{ const l=document.createElementNS('http://www.w3.org/2000/svg','line'); l.setAttribute('x1',cx);l.setAttribute('y1',cy);l.setAttribute('x2',cx+maxR*Math.cos(a));l.setAttribute('y2',cy+maxR*Math.sin(a)); axesG.appendChild(l); });

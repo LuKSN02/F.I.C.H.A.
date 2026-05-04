@@ -256,6 +256,29 @@
 
         .sem-pontos { color: #ff6644; font-size: 0.7rem; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; margin-top: 6px; display: none; }
         .sem-pontos.show { display: block; }
+
+        /* ===== RESPONSIVIDADE MOBILE ===== */
+@media (max-width: 576px) {
+    /* Navbar: logo menor */
+    .navbar-brand { font-size: 1.3rem !important; }
+    .navbar-brand img { width: 48px !important; height: 48px !important; }
+
+    /* Textos grandes demais em telas pequenas */
+    h1 { font-size: 1.8rem !important; }
+    h2 { font-size: 1.4rem !important; }
+}
+
+@media (max-width: 576px) {
+    .form-hero h1 { font-size: 1.8rem; letter-spacing: 2px; }
+
+    /* Stepper: esconde os labels de texto, mantém só os números */
+    .step-label { display: none; }
+    .step-circle { width: 34px; height: 34px; font-size: 0.85rem; }
+    .stepper { margin: 20px auto; }
+
+    /* Botões de navegação lado a lado */
+    .d-flex.gap-3 { gap: 8px !important; }
+}
     </style>
 </head>
 <body>

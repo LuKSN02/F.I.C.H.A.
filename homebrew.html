@@ -195,6 +195,25 @@ body {
 }
 .btn-del-card:hover { color: var(--red); }
 
+.btn-add-ficha {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background: transparent;
+  border: 1px solid var(--purple);
+  color: var(--purple-neon);
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 5px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-add-ficha:hover { background: var(--purple); color: white; }
+
 /* ── MODAL ── */
 .modal-overlay {
   display: none;
@@ -492,6 +511,51 @@ body {
 .avatar-dropdown .dd-item:hover { background: #1a0033; color: #bc6ff1; }
 .avatar-dropdown .dd-item.danger { color: #ff6666; }
 .avatar-dropdown .dd-item.danger:hover { background: #2a0000; color: #ff4444; }
+
+/* ===== RESPONSIVIDADE MOBILE ===== */
+@media (max-width: 576px) {
+    /* Navbar: logo menor */
+    .navbar-brand { font-size: 1.3rem !important; }
+    .navbar-brand img { width: 48px !important; height: 48px !important; }
+
+    /* Textos grandes demais em telas pequenas */
+    h1 { font-size: 1.8rem !important; }
+    h2 { font-size: 1.4rem !important; }
+}
+
+@media (max-width: 576px) {
+    /* Tabs principais: scroll horizontal em vez de quebrar */
+    .main-tabs {
+        padding: 0 8px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+    .main-tab {
+        padding: 14px 14px;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    /* Conteúdo: menos padding lateral */
+    .tab-content-area { padding: 16px 12px; }
+
+    /* Header da lista: empilha verticalmente */
+    .list-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .btn-adicionar { width: 100%; }
+
+    /* Grid de cards: força 1 coluna */
+    .items-grid { grid-template-columns: 1fr; }
+
+    /* Modal: padding menor */
+    .modal-overlay { padding: 10px; }
+}
+
 </style>
 </head>
 <body>
@@ -586,10 +650,10 @@ body {
   <div class="tab-pane" id="pane-itens">
     <div class="sub-tabs">
       <button class="sub-tab active" onclick="trocarSubItens('Armas')">Armas</button>
-      <button class="sub-tab" onclick="trocarSubItens('Municoes')">Munições</button>
-      <button class="sub-tab" onclick="trocarSubItens('Protecoes')">Proteções</button>
+      <button class="sub-tab" onclick="trocarSubItens('Munições')">Munições</button>
+      <button class="sub-tab" onclick="trocarSubItens('Proteções')">Proteções</button>
       <button class="sub-tab" onclick="trocarSubItens('Geral')">Geral</button>
-      <button class="sub-tab" onclick="trocarSubItens('Amaldicoados')">Itens Amaldiçoados</button>
+      <button class="sub-tab" onclick="trocarSubItens('Itens Amaldiçoados')">Itens Amaldiçoados</button>
     </div>
     <div class="list-header">
       <span class="list-count">Homebrew <span id="count-itens">0</span>/50</span>
@@ -1096,6 +1160,7 @@ function renderLista(tipo, itens) {
       <button class="btn-del-card" onclick="event.stopPropagation();deletarItem('${tipo}',${i})">✕</button>
       <div class="item-card-name">${item.nome || '—'}</div>
       <div class="item-card-sub">${item.sub || ''}</div>
+      ${tipo === 'itens' ? `<button class="btn-add-ficha" onclick="event.stopPropagation();abrirModalAdicionarFicha(${i})" title="Adicionar à ficha">+ Ficha</button>` : ''}
     </div>`).join('');
 }
 
@@ -1258,13 +1323,13 @@ let subItenAtivo = 'Armas';
 
 function trocarSubItens(sub) {
   subItenAtivo = sub;
-  document.querySelectorAll('#pane-itens .sub-tab').forEach((b,i) => {
-    b.classList.toggle('active', b.textContent === sub);
+  document.querySelectorAll('#pane-itens .sub-tab').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === sub);
   });
-  const labels = { Armas:'Arma', Municoes:'Munição', Protecoes:'Proteção', Geral:'Item Geral', Amaldicoados:'Item Amaldiçoado' };
+  const labels = { Armas:'Arma', 'Munições':'Munição', 'Proteções':'Proteção', Geral:'Item Geral', 'Itens Amaldiçoados':'Item Amaldiçoado' };
   document.getElementById('btn-add-item').textContent = 'Adicionar ' + (labels[sub] || sub);
 
-  const emptyMsgs = { Armas:'armas', Municoes:'munições', Protecoes:'proteções', Geral:'itens gerais', Amaldicoados:'itens amaldiçoados' };
+  const emptyMsgs = { Armas:'armas', 'Munições':'munições', 'Proteções':'proteções', Geral:'itens gerais', 'Itens Amaldiçoados':'itens amaldiçoados' };
   document.getElementById('empty-itens').textContent = 'Você ainda não criou novas ' + (emptyMsgs[sub] || sub);
 
   renderItensAtivos();
@@ -1279,8 +1344,25 @@ function renderItensAtivos() {
 function abrirModalItem() {
   document.getElementById('modal-item-title').textContent = '▸ Novo Item — ' + subItenAtivo;
   const isArma = subItenAtivo === 'Armas';
-  document.getElementById('campos-arma').style.display = isArma ? '' : 'none';
+  document.getElementById('campos-arma').style.display    = isArma ? '' : 'none';
   document.getElementById('campos-generico').style.display = isArma ? 'none' : '';
+  // reset campos arma
+  if (isArma) {
+    document.getElementById('arm-nome').value  = '';
+    document.getElementById('arm-dano').value  = '1d4';
+    document.getElementById('arm-crit').value  = '20';
+    document.getElementById('arm-mult').value  = '2';
+    document.getElementById('arm-alcance').value = '-';
+    document.getElementById('arm-cat').value   = '0';
+    document.getElementById('arm-espacos').value = '1';
+    document.getElementById('arm-dano2').value = '';
+    document.getElementById('arm-melhorias-list').innerHTML = '';
+  } else {
+    document.getElementById('gen-nome').value   = '';
+    document.getElementById('gen-cat').value    = '';
+    document.getElementById('gen-espacos').value = '1';
+    document.getElementById('gen-bonus').value  = '';
+  }
   // reset img
   document.getElementById('item-img-preview').style.display = 'none';
   document.getElementById('item-img-placeholder').style.display = '';
@@ -1367,6 +1449,120 @@ async function fazerLogout() {
 /* ═══════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   ADICIONAR ITEM À FICHA (a partir do Homebrew)
+═══════════════════════════════════════════════ */
+
+const HB_SUBTIPO_CAT_MAP = {
+    'Armas':               'ARMA',
+    'Munições':            'MUNICAO',
+    'Proteções':           'PROTECAO',
+    'Geral':               'GERAL',
+    'Itens Amaldiçoados':  'ITEM_AMALD',
+};
+
+let _hbItemParaAdicionar = null;
+
+function abrirModalAdicionarFicha(indexFiltrado) {
+    // Pega o item pelos itens filtrados ativos
+    const todos     = carregar('itens');
+    const filtrados = todos.filter(i => i.subTipo === subItenAtivo);
+    const item      = filtrados[indexFiltrado];
+    if (!item) return;
+
+    _hbItemParaAdicionar = item;
+
+    // Descobre fichas do usuário a partir do localStorage
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const fichas  = [];
+    for (let k of Object.keys(localStorage)) {
+        // As fichas são salvas como "{usuario}_ficha_{fichaId}_estado" no localStorage
+        // OU simplesmente como "ficha_estado_{fichaId}" dependendo da implementação
+        // Vamos procurar qualquer chave que tenha "estado" e pertença ao usuário
+        if (k.startsWith(usuario + '_ficha_') && k.endsWith('_estado')) {
+            const fichaId = k.replace(usuario + '_ficha_', '').replace('_estado', '');
+            try {
+                const est = JSON.parse(localStorage.getItem(k));
+                const nome = est?.nomePersonagem || est?.nome || fichaId;
+                fichas.push({ fichaId, nome, key: k });
+            } catch(e) {
+                fichas.push({ fichaId, nome: fichaId, key: k });
+            }
+        }
+    }
+
+    const sel   = document.getElementById('modal-add-ficha-select');
+    const aviso = document.getElementById('modal-add-ficha-aviso');
+    const btn   = document.getElementById('btn-confirmar-add-ficha');
+
+    document.getElementById('modal-add-ficha-nome').textContent = `Item: ${item.nome} · ${item.subTipo}`;
+
+    if (fichas.length === 0) {
+        sel.style.display   = 'none';
+        aviso.style.display = '';
+        btn.disabled        = true;
+        btn.style.opacity   = '0.4';
+    } else {
+        sel.style.display   = '';
+        aviso.style.display = 'none';
+        btn.disabled        = false;
+        btn.style.opacity   = '1';
+        sel.innerHTML = fichas.map(f => `<option value="${f.key}">${f.nome}</option>`).join('');
+    }
+
+    document.getElementById('modal-add-ficha').style.display = 'flex';
+}
+
+function fecharModalAddFicha() {
+    document.getElementById('modal-add-ficha').style.display = 'none';
+    _hbItemParaAdicionar = null;
+}
+
+function confirmarAddFicha() {
+    if (!_hbItemParaAdicionar) return;
+    const item   = _hbItemParaAdicionar;
+    const selKey = document.getElementById('modal-add-ficha-select').value;
+    if (!selKey) return;
+
+    let estado = {};
+    try { estado = JSON.parse(localStorage.getItem(selKey) || '{}'); } catch(e) {}
+
+    const catInv  = HB_SUBTIPO_CAT_MAP[item.subTipo] || 'GERAL';
+    const isArma  = item.subTipo === 'Armas';
+    const descParts = [];
+    if (isArma) {
+        if (item.dano)     descParts.push(`Dano: ${item.dano}`);
+        if (item.tipoDano) descParts.push(item.tipoDano);
+        if (item.tipo)     descParts.push(item.tipo);
+        if (item.empun)    descParts.push(item.empun);
+        if (item.alcance && item.alcance !== '-') descParts.push(`Alcance: ${item.alcance}`);
+        if (item.melhorias?.length) descParts.push(`Melhorias: ${item.melhorias.join(', ')}`);
+    } else {
+        if (item.bonus) descParts.push(item.bonus);
+    }
+    const descTexto = item.descricao ? item.descricao.replace(/<[^>]+>/g,'').trim() : '';
+    if (descTexto) descParts.push(descTexto);
+
+    if (!estado.inventario) estado.inventario = [];
+    estado.inventario.push({ nome: item.nome, cat: catInv, qtd: 1, desc: descParts.join(' · '), homebrew: true });
+    localStorage.setItem(selKey, JSON.stringify(estado));
+
+    fecharModalAddFicha();
+
+    // Toast simples
+    const t = document.createElement('div');
+    t.textContent = `✦ ${item.nome} adicionado à ficha!`;
+    Object.assign(t.style, {
+        position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)',
+        background:'#1a0033', border:'1px solid var(--purple)', color:'var(--purple-neon)',
+        fontFamily:"'Oswald',sans-serif", fontSize:'0.8rem', letterSpacing:'2px',
+        padding:'10px 24px', borderRadius:'8px', zIndex:'99999',
+        boxShadow:'0 0 20px rgba(138,43,226,0.4)', transition:'opacity 0.4s'
+    });
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 400); }, 2500);
+}
+
 window.addEventListener('load', () => {
   const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
   if (!usuario) { window.location.href = 'index.html'; return; }
@@ -1377,6 +1573,36 @@ window.addEventListener('load', () => {
   renderItensAtivos();
 });
 </script>
+
+<!-- Modal: Adicionar Item à Ficha -->
+<div id="modal-add-ficha" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:#0d0010;border:1px solid var(--purple);border-radius:12px;padding:28px;max-width:420px;width:92%;box-shadow:0 0 40px rgba(138,43,226,0.4);">
+    <div style="font-size:1.1rem;letter-spacing:3px;font-weight:700;color:var(--purple-neon);margin-bottom:6px;">📋 ADICIONAR À FICHA</div>
+    <div id="modal-add-ficha-nome" style="font-size:0.8rem;color:#888;font-family:'Share Tech Mono',monospace;margin-bottom:20px;"></div>
+
+    <div style="margin-bottom:12px;">
+        <label style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:6px;text-transform:uppercase;">Selecione sua ficha</label>
+        <select id="modal-add-ficha-select"
+                style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:10px;border-radius:6px;font-size:0.9rem;">
+        </select>
+    </div>
+
+    <div id="modal-add-ficha-aviso" style="font-size:0.7rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-bottom:14px;display:none;">
+        ▸ Nenhuma ficha encontrada. Acesse sua ficha ao menos uma vez para ela aparecer aqui.
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="fecharModalAddFicha()"
+                style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">
+            Cancelar
+        </button>
+        <button id="btn-confirmar-add-ficha" onclick="confirmarAddFicha()"
+                style="background:var(--purple);border:none;color:white;font-family:'Oswald',sans-serif;font-weight:700;padding:8px 20px;border-radius:4px;cursor:pointer;">
+            ✦ Adicionar
+        </button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -277,7 +277,46 @@
 
         @keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
 
-        @media (max-width: 768px) { .ficha-wrapper { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+    .ficha-wrapper {
+        grid-template-columns: 1fr;
+        padding: 0 10px 60px;
+    }
+
+    /* Radar de atributos menor */
+    .radar-container { width: 180px; height: 180px; }
+
+    /* Perícias: esconde colunas menos importantes */
+    .pericias-header,
+    .pericia-row {
+        grid-template-columns: 1fr 50px 60px;
+    }
+    /* Esconde coluna de bônus e dado em mobile */
+    .pericias-header div:nth-child(3),
+    .pericias-header div:nth-child(4),
+    .pericia-row .pericia-cell:nth-child(3),
+    .pericia-row .pericia-cell:nth-child(4) {
+        display: none;
+    }
+
+    /* Ataques: empilha verticalmente */
+    .ataque-row {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+    }
+    .ataque-nome { grid-column: 1 / -1; }
+
+    /* Abas: fonte menor para caber todas */
+    .aba-btn { font-size: 0.6rem; padding: 6px 2px; }
+
+    /* Toast no centro em vez de canto */
+    .toast-msg {
+        right: 50%;
+        transform: translateX(50%);
+        bottom: 16px;
+        text-align: center;
+    }
+}
         .footer-link { color: #888; text-decoration: none; }
         .footer-link:hover { color: var(--purple-neon); }
 
@@ -625,6 +664,18 @@
     width: 92%;
     box-shadow: 0 0 40px var(--purple-glow);
 }
+
+/* ===== RESPONSIVIDADE MOBILE ===== */
+@media (max-width: 576px) {
+    /* Navbar: logo menor */
+    .navbar-brand { font-size: 1.3rem !important; }
+    .navbar-brand img { width: 48px !important; height: 48px !important; }
+
+    /* Textos grandes demais em telas pequenas */
+    h1 { font-size: 1.8rem !important; }
+    h2 { font-size: 1.4rem !important; }
+}
+
     </style>
     <!-- Firebase -->
 <script type="module">
@@ -908,7 +959,13 @@
     <div class="aba-panel card-combate" id="aba-inventario">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <div class="sec-title" style="margin-bottom:0;">Inventário</div>
-        <button class="btn-add-item" onclick="abrirModalNovoItem()" style="font-size:0.75rem;padding:6px 14px;">+ Adicionar</button>
+        <div style="display:flex;gap:6px;">
+            <button class="btn-add-item" onclick="abrirModalHomebrew()"
+                    style="font-size:0.75rem;padding:6px 14px;background:transparent;border:1px solid var(--purple);color:var(--purple-neon);">
+                🧪 Homebrew
+            </button>
+            <button class="btn-add-item" onclick="abrirModalNovoItem()" style="font-size:0.75rem;padding:6px 14px;">+ Adicionar</button>
+        </div>
     </div>
 
     <!-- ESTATÍSTICAS DO INVENTÁRIO -->
@@ -1042,6 +1099,42 @@
       <button class="btn-novo-ataque" onclick="salvarDescricao()">💾 Salvar Descrição</button>
     </div>
   </div>
+</div>
+
+<!-- Modal: Adicionar Item do Homebrew -->
+<div id="modal-homebrew-inv" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#0d0010;border:1px solid var(--purple);border-radius:12px;padding:28px;max-width:560px;width:92%;box-shadow:0 0 40px var(--purple-glow);max-height:85vh;display:flex;flex-direction:column;gap:0;">
+
+        <!-- Header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+            <div>
+                <div style="font-size:1.1rem;letter-spacing:3px;font-weight:700;color:var(--purple-neon);">🧪 ITENS HOMEBREW</div>
+                <div style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);margin-top:2px;">Selecione um item para adicionar ao inventário</div>
+            </div>
+            <button onclick="fecharModalHomebrew()" style="background:none;border:none;color:var(--text-dim);font-size:1.2rem;cursor:pointer;line-height:1;">✕</button>
+        </div>
+
+        <!-- Filtro de subtipo -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;" id="hb-sub-filtros"></div>
+
+        <!-- Busca -->
+        <div style="margin-bottom:12px;">
+            <input id="hb-busca" placeholder="Buscar item..."
+                   style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px 12px;border-radius:6px;font-size:0.85rem;"
+                   oninput="renderHomebrewLista()">
+        </div>
+
+        <!-- Lista de itens -->
+        <div id="hb-lista" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;max-height:340px;padding-right:4px;"></div>
+
+        <!-- Rodapé -->
+        <div style="display:flex;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
+            <button onclick="fecharModalHomebrew()"
+                    style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:0.85rem;">
+                Fechar
+            </button>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Adicionar Ritual -->
@@ -2815,10 +2908,11 @@ function renderInventario() {
         const cat    = item.cat || 'GERAL';
         const catLbl = INV_CAT_LABELS[cat] || cat;
         const desc   = item.desc ? `<div style="font-size:0.72rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-top:3px;">${item.desc}</div>` : '';
+        const hbBadge = item.homebrew ? `<span style="font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;padding:1px 6px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;background:#001a00;color:#39d353;border:1px solid #004400;margin-left:4px;">HOMEBREW</span>` : '';
         return `
         <div class="inv-item-card">
             <div>
-                <div class="inv-item-nome">${item.nome}</div>
+                <div class="inv-item-nome">${item.nome}${hbBadge}</div>
                 <span class="inv-item-cat inv-cat-${cat}">${catLbl}</span>
                 ${desc}
             </div>
@@ -2863,6 +2957,155 @@ function carregarInvStats() {
     set('inv-carga-max',  s.cargaMax   ?? 20);
     if (s.limites) s.limites.forEach((v, i) => set('inv-limite-' + (i+1), v));
     if (s.slots)   s.slots.forEach((v, i)   => set('inv-slot-'   + (i+1), v));
+}
+
+
+// ══════════════════════════════════════════════
+// HOMEBREW → INVENTÁRIO
+// ══════════════════════════════════════════════
+
+let hbSubFiltro = 'Todos';
+
+const HB_SUBTIPO_CAT = {
+    'Armas':               'ARMA',
+    'Munições':            'MUNICAO',
+    'Proteções':           'PROTECAO',
+    'Geral':               'GERAL',
+    'Itens Amaldiçoados':  'ITEM_AMALD',
+};
+
+function getHbPrefix() {
+    return (sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'guest') + '_';
+}
+
+function carregarItensHomebrew() {
+    try {
+        return JSON.parse(localStorage.getItem(getHbPrefix() + 'homebrew_itens') || '[]');
+    } catch(e) { return []; }
+}
+
+function abrirModalHomebrew() {
+    hbSubFiltro = 'Todos';
+    document.getElementById('hb-busca').value = '';
+    renderHomebrewSubFiltros();
+    renderHomebrewLista();
+    document.getElementById('modal-homebrew-inv').style.display = 'flex';
+}
+
+function fecharModalHomebrew() {
+    document.getElementById('modal-homebrew-inv').style.display = 'none';
+}
+
+function renderHomebrewSubFiltros() {
+    const todos = carregarItensHomebrew();
+    const subtipos = ['Todos', ...new Set(todos.map(i => i.subTipo).filter(Boolean))];
+    const el = document.getElementById('hb-sub-filtros');
+    el.innerHTML = subtipos.map(s => {
+        const ativo = s === hbSubFiltro;
+        return `<button onclick="setHbFiltro('${s}')"
+            style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;
+                   padding:4px 12px;border-radius:99px;cursor:pointer;transition:0.2s;
+                   background:${ativo ? 'var(--purple-dark)' : 'transparent'};
+                   border:1px solid ${ativo ? 'var(--purple)' : 'var(--border)'};
+                   color:${ativo ? 'var(--purple-neon)' : 'var(--text-dim)'};">
+            ${s}
+        </button>`;
+    }).join('');
+}
+
+function setHbFiltro(sub) {
+    hbSubFiltro = sub;
+    renderHomebrewSubFiltros();
+    renderHomebrewLista();
+}
+
+function renderHomebrewLista() {
+    const todos  = carregarItensHomebrew();
+    const busca  = (document.getElementById('hb-busca')?.value || '').toLowerCase();
+    const filtrados = todos.filter(item => {
+        const subOk  = hbSubFiltro === 'Todos' || item.subTipo === hbSubFiltro;
+        const buscaOk = !busca || (item.nome || '').toLowerCase().includes(busca);
+        return subOk && buscaOk;
+    });
+
+    const el = document.getElementById('hb-lista');
+    if (filtrados.length === 0) {
+        el.innerHTML = `<div style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;padding:16px;text-align:center;">
+            ${todos.length === 0 ? '▸ Nenhum item criado no Homebrew ainda.' : '▸ Nenhum item encontrado.'}
+        </div>`;
+        return;
+    }
+
+    el.innerHTML = filtrados.map((item, i) => {
+        const isArma = item.subTipo === 'Armas';
+        const detalhe = isArma
+            ? `${item.dano || '?'} · ${item.tipoDano || ''} · ${item.tipo || ''}`
+            : item.bonus ? `Efeito: ${item.bonus}` : (item.sub || item.subTipo || '');
+        const catInv = HB_SUBTIPO_CAT[item.subTipo] || 'GERAL';
+        const descHtml = item.descricao
+            ? `<div style="font-size:0.7rem;color:#666;font-family:'Share Tech Mono',monospace;margin-top:3px;max-height:36px;overflow:hidden;">${item.descricao.replace(/<[^>]+>/g,'')}</div>`
+            : '';
+        return `
+        <div style="background:#0a0015;border:1px solid var(--border);border-radius:8px;padding:12px 14px;
+                    display:flex;align-items:center;gap:12px;transition:0.2s;cursor:default;"
+             onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
+            ${item.img ? `<img src="${item.img}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--border);flex-shrink:0;">` : `<div style="width:44px;height:44px;border-radius:6px;border:1px solid var(--border);background:#0d0010;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">${isArma ? '⚔️' : '📦'}</div>`}
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:0.9rem;font-weight:700;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.nome}</div>
+                <div style="font-size:0.65rem;color:var(--purple-neon);font-family:'Share Tech Mono',monospace;margin-top:1px;">${detalhe}</div>
+                ${descHtml}
+            </div>
+            <button onclick="adicionarItemHomebrew(${i},'${busca}','${hbSubFiltro}')"
+                    style="background:var(--purple-dark);border:1px solid var(--purple);color:var(--purple-neon);
+                           font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:1px;
+                           padding:6px 14px;border-radius:6px;cursor:pointer;white-space:nowrap;transition:0.2s;flex-shrink:0;"
+                    onmouseover="this.style.background='var(--purple)';this.style.color='white'"
+                    onmouseout="this.style.background='var(--purple-dark)';this.style.color='var(--purple-neon)'">
+                + Inv
+            </button>
+        </div>`;
+    }).join('');
+}
+
+function adicionarItemHomebrew(indexFiltrado, buscaAtual, subFiltroAtual) {
+    // Recalcula o item pelo índice atual da lista filtrada
+    const todos = carregarItensHomebrew();
+    const filtrados = todos.filter(item => {
+        const subOk  = subFiltroAtual === 'Todos' || item.subTipo === subFiltroAtual;
+        const buscaOk = !buscaAtual || (item.nome || '').toLowerCase().includes(buscaAtual);
+        return subOk && buscaOk;
+    });
+    const item = filtrados[indexFiltrado];
+    if (!item) return;
+
+    const catInv = HB_SUBTIPO_CAT[item.subTipo] || 'GERAL';
+    const isArma = item.subTipo === 'Armas';
+
+    // Monta descrição compacta com os stats relevantes
+    let descParts = [];
+    if (isArma) {
+        if (item.dano)     descParts.push(`Dano: ${item.dano}`);
+        if (item.tipoDano) descParts.push(item.tipoDano);
+        if (item.tipo)     descParts.push(item.tipo);
+        if (item.empun)    descParts.push(item.empun);
+        if (item.crit && item.crit != 20) descParts.push(`Crít: ${item.crit}`);
+        if (item.alcance && item.alcance !== '-') descParts.push(`Alcance: ${item.alcance}`);
+        if (item.melhorias?.length) descParts.push(`Melhorias: ${item.melhorias.join(', ')}`);
+    } else {
+        if (item.bonus)  descParts.push(item.bonus);
+        if (item.cat)    descParts.push(`Cat. ${item.cat}`);
+    }
+    // Appenda texto da descrição (sem HTML)
+    const descTexto = item.descricao ? item.descricao.replace(/<[^>]+>/g, '').trim() : '';
+    if (descTexto) descParts.push(descTexto);
+
+    const desc = descParts.join(' · ');
+
+    if (!estado.inventario) estado.inventario = [];
+    estado.inventario.push({ nome: item.nome, cat: catInv, qtd: 1, desc, homebrew: true });
+    salvarEstado();
+    renderInventario();
+    mostrarToast(`✦ ${item.nome} ADICIONADO AO INVENTÁRIO`);
 }
 
 // ══════════════════════════════════════════════

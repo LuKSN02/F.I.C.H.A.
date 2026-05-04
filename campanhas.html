@@ -237,6 +237,41 @@
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
         .status-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
         .status-dot.offline { background: #444; }
+
+        /* ===== RESPONSIVIDADE MOBILE ===== */
+@media (max-width: 576px) {
+    /* Navbar: logo menor */
+    .navbar-brand { font-size: 1.3rem !important; }
+    .navbar-brand img { width: 48px !important; height: 48px !important; }
+
+    /* Textos grandes demais em telas pequenas */
+    h1 { font-size: 1.8rem !important; }
+    h2 { font-size: 1.4rem !important; }
+}
+
+@media (max-width: 576px) {
+    /* Header da campanha: título grande demais */
+    .camp-header-nome { font-size: 1.3rem; }
+
+    /* Link de convite: empilha ao invés de horizontal */
+    .invite-box {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .invite-url { width: 100%; }
+    .btn-copy { width: 100%; text-align: center; }
+
+    /* Barra de botões da campanha: centraliza */
+    .btn-bar { justify-content: center; }
+    .btn-bar-item { font-size: 0.7rem; padding: 7px 10px; }
+
+    /* Abas internas: fonte menor para caber */
+    .aba-btn { font-size: 0.62rem; padding: 6px 2px; }
+
+    /* Modal: ocupa tela toda em mobile */
+    .modal-box { padding: 20px 16px; }
+}
     </style>
 </head>
 <body>

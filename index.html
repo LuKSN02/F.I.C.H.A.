@@ -257,6 +257,34 @@
   }
   .crop-btn-cancel:hover { border-color: #666; color: #888; }
   
+  /* ===== RESPONSIVIDADE MOBILE ===== */
+@media (max-width: 576px) {
+    /* Navbar: logo menor */
+    .navbar-brand { font-size: 1.3rem !important; }
+    .navbar-brand img { width: 48px !important; height: 48px !important; }
+
+    /* Textos grandes demais em telas pequenas */
+    h1 { font-size: 1.8rem !important; }
+    h2 { font-size: 1.4rem !important; }
+}
+
+@media (max-width: 576px) {
+    .card-agente {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .img-agente {
+        width: 100%;
+        height: 160px;
+        border-right: none;
+        border-bottom: 1px solid #333;
+    }
+    .btn-criar-ficha {
+        font-size: 1.1rem;
+        padding: 10px 24px;
+    }
+}
+
 </style>
 
 <body>
