@@ -8,16 +8,170 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
     <style>
-        :root {
-            --purple: #8a2be2; --purple-neon: #bc6ff1; --purple-dark: #3a0063;
-            --purple-glow: rgba(138,43,226,0.45); --red: #e84040; --green: #39d353;
-            --orange: #ff8c00; --bg: #0a000f; --card: #110018; --border: #2a0050;
-            --text-dim: #888;
-        }
+
+    /* ===== SISTEMA DE TEMAS - ORDEM PARANORMAL ===== */
+
+    /* MEDO — Azul translúcido/etéreo */
+    :root[data-tema="medo"] {
+        --tema-primary:        #3a7bd5;
+        --tema-primary-light:  #7ab3f5;
+        --tema-primary-dark:   #0d2a5e;
+        --tema-bg-body1:       #050d1a;
+        --tema-bg-body2:       #000508;
+        --tema-glow-rgb:       58,123,213;
+        --tema-glow-light-rgb: 122,179,245;
+        --purple:      #3a7bd5;
+        --purple-neon: #7ab3f5;
+        --purple-dark: #0d2a5e;
+        --purple-glow: rgba(58,123,213,0.45);
+        --bg:          #050d1a;
+        --card:        #091628;
+        --border:      #1a3a6e;
+        --text-dim:    #6a8aaa;
+    }
+    /* SANGUE — Vermelho */
+    :root[data-tema="sangue"] {
+        --tema-primary:        #cc1111;
+        --tema-primary-light:  #ff4444;
+        --tema-primary-dark:   #5a0000;
+        --tema-bg-body1:       #0f0000;
+        --tema-bg-body2:       #000000;
+        --tema-glow-rgb:       204,17,17;
+        --tema-glow-light-rgb: 255,68,68;
+        --purple:      #cc1111;
+        --purple-neon: #ff4444;
+        --purple-dark: #5a0000;
+        --purple-glow: rgba(204,17,17,0.45);
+        --bg:          #0f0000;
+        --card:        #1a0000;
+        --border:      #5a0000;
+        --text-dim:    #884444;
+    }
+    /* MORTE — Preto/Cinza */
+    :root[data-tema="morte"] {
+        --tema-primary:        #888888;
+        --tema-primary-light:  #cccccc;
+        --tema-primary-dark:   #333333;
+        --tema-bg-body1:       #0a0a0a;
+        --tema-bg-body2:       #000000;
+        --tema-glow-rgb:       136,136,136;
+        --tema-glow-light-rgb: 204,204,204;
+        --purple:      #888888;
+        --purple-neon: #cccccc;
+        --purple-dark: #333333;
+        --purple-glow: rgba(136,136,136,0.35);
+        --bg:          #0a0a0a;
+        --card:        #111111;
+        --border:      #2a2a2a;
+        --text-dim:    #666666;
+    }
+    /* CONHECIMENTO — Amarelo/Dourado */
+    :root[data-tema="conhecimento"] {
+        --tema-primary:        #c8960c;
+        --tema-primary-light:  #f5c842;
+        --tema-primary-dark:   #5a4000;
+        --tema-bg-body1:       #110e00;
+        --tema-bg-body2:       #000000;
+        --tema-glow-rgb:       200,150,12;
+        --tema-glow-light-rgb: 245,200,66;
+        --purple:      #c8960c;
+        --purple-neon: #f5c842;
+        --purple-dark: #5a4000;
+        --purple-glow: rgba(200,150,12,0.45);
+        --bg:          #110e00;
+        --card:        #1a1500;
+        --border:      #5a4000;
+        --text-dim:    #886a20;
+    }
+    /* ENERGIA — Roxo */
+    :root[data-tema="energia"] {
+        --tema-primary:        #9b30d9;
+        --tema-primary-light:  #d070ff;
+        --tema-primary-dark:   #3a0063;
+        --tema-bg-body1:       #0a0014;
+        --tema-bg-body2:       #000000;
+        --tema-glow-rgb:       155,48,217;
+        --tema-glow-light-rgb: 208,112,255;
+        --purple:      #9b30d9;
+        --purple-neon: #d070ff;
+        --purple-dark: #3a0063;
+        --purple-glow: rgba(155,48,217,0.45);
+        --bg:          #0a0014;
+        --card:        #110020;
+        --border:      #3a0063;
+        --text-dim:    #7744aa;
+    }
+    /* DEFAULT */
+    :root {
+        --tema-primary:        #3a7bd5;
+        --tema-primary-light:  #7ab3f5;
+        --tema-primary-dark:   #0d2a5e;
+        --tema-bg-body1:       #050d1a;
+        --tema-bg-body2:       #000508;
+        --tema-glow-rgb:       58,123,213;
+        --tema-glow-light-rgb: 122,179,245;
+        --purple:      #3a7bd5;
+        --purple-neon: #7ab3f5;
+        --purple-dark: #0d2a5e;
+        --purple-glow: rgba(58,123,213,0.45);
+        --bg:          #050d1a;
+        --card:        #091628;
+        --border:      #1a3a6e;
+        --text-dim:    #6a8aaa;
+    }
+
+    .btn-temas {
+        background: transparent;
+        border: 1px solid var(--tema-primary);
+        color: var(--tema-primary-light);
+        font-family: 'Oswald', sans-serif;
+        font-size: 0.85rem; font-weight: 700;
+        letter-spacing: 1px; padding: 6px 14px;
+        border-radius: 4px; cursor: pointer;
+        transition: 0.2s; margin-right: 12px;
+        white-space: nowrap;
+    }
+    .btn-temas:hover {
+        background: var(--tema-primary); color: white;
+        box-shadow: 0 0 12px rgba(var(--tema-glow-rgb),0.4);
+    }
+    .temas-wrapper { position: relative; display: inline-block; }
+    .temas-dropdown {
+        position: absolute; right: 0; top: 46px;
+        background: #0d0d0d;
+        border: 1px solid var(--tema-primary-dark);
+        border-radius: 10px; min-width: 210px;
+        padding: 8px 0;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+        z-index: 1001; display: none;
+    }
+    .temas-dropdown.open { display: block; }
+    .temas-dropdown .td-header {
+        padding: 6px 16px 8px; color: #555;
+        font-size: 0.68rem; letter-spacing: 2px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #1a1a1a; margin-bottom: 4px;
+        font-family: 'Share Tech Mono', monospace;
+    }
+    .temas-dropdown .td-item {
+        padding: 9px 16px; color: #bbb; font-size: 0.88rem;
+        cursor: pointer; transition: 0.15s;
+        display: flex; align-items: center; gap: 10px; font-weight: 600;
+        font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;
+    }
+    .temas-dropdown .td-item:hover { background: #1a1a1a; color: white; }
+    .temas-dropdown .td-item.ativo { color: white; }
+    .td-swatch {
+        width: 10px; height: 10px; border-radius: 50%;
+        flex-shrink: 0; box-shadow: 0 0 6px currentColor;
+    }
+    body { transition: background 0.4s ease; }
+
+        
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Oswald', sans-serif;
-            background: linear-gradient(135deg, #1a0033 0%, #000000 100%);
+            background: linear-gradient(135deg, var(--tema-bg-body1) 0%, var(--tema-bg-body2) 100%);
             background-attachment: fixed; color: white; min-height: 100vh;
             display: flex; flex-direction: column;
         }
@@ -299,7 +453,28 @@
             </div>
         </div>
         <div class="d-none d-lg-flex pe-3">
-            <span id="user-status" style="font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;display:flex;align-items:center;gap:4px;">
+            <div class="temas-wrapper" id="temas-wrapper">
+                    <button class="btn-temas" onclick="toggleTemas(event)">&#x2B21; Temas</button>
+                    <div class="temas-dropdown" id="temas-dropdown">
+                        <div class="td-header">Elemento</div>
+                        <div class="td-item" onclick="aplicarTema('medo')" data-tema="medo">
+                            <span class="td-swatch" style="background:#3a7bd5;color:#3a7bd5"></span> Medo
+                        </div>
+                        <div class="td-item" onclick="aplicarTema('sangue')" data-tema="sangue">
+                            <span class="td-swatch" style="background:#cc1111;color:#cc1111"></span> Sangue
+                        </div>
+                        <div class="td-item" onclick="aplicarTema('morte')" data-tema="morte">
+                            <span class="td-swatch" style="background:#888888;color:#888888"></span> Morte
+                        </div>
+                        <div class="td-item" onclick="aplicarTema('conhecimento')" data-tema="conhecimento">
+                            <span class="td-swatch" style="background:#c8960c;color:#c8960c"></span> Conhecimento
+                        </div>
+                        <div class="td-item" onclick="aplicarTema('energia')" data-tema="energia">
+                            <span class="td-swatch" style="background:#9b30d9;color:#9b30d9"></span> Energia
+                        </div>
+                    </div>
+                </div>
+                <span id="user-status" style="font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;display:flex;align-items:center;gap:4px;">
                 <span class="status-dot offline" id="status-dot"></span>
                 <span id="status-txt">Conectando...</span>
             </span>
@@ -871,5 +1046,39 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        /* ===== SISTEMA DE TEMAS ===== */
+        function toggleTemas(e) {
+            e.stopPropagation();
+            var dd = document.getElementById('temas-dropdown');
+            if (dd) dd.classList.toggle('open');
+            var av = document.getElementById('avatar-dropdown');
+            if (av) av.classList.remove('open');
+        }
+        function aplicarTema(tema) {
+            document.documentElement.setAttribute('data-tema', tema);
+            localStorage.setItem('ficha_tema', tema);
+            document.querySelectorAll('.td-item').forEach(function(el) {
+                el.classList.toggle('ativo', el.dataset.tema === tema);
+            });
+            var dd = document.getElementById('temas-dropdown');
+            if (dd) dd.classList.remove('open');
+        }
+        document.addEventListener('click', function() {
+            var dd = document.getElementById('temas-dropdown');
+            if (dd) dd.classList.remove('open');
+        });
+        (function() {
+            var t = localStorage.getItem('ficha_tema') || 'medo';
+            document.documentElement.setAttribute('data-tema', t);
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.td-item').forEach(function(el) {
+                    el.classList.toggle('ativo', el.dataset.tema === t);
+                });
+            });
+        })();
+
+    </script>
 </body>
 </html>

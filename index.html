@@ -13,55 +13,123 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
 
+    /* ===== SISTEMA DE TEMAS - ORDEM PARANORMAL ===== */
+    :root {
+        --tema-primary:        #3a7bd5;
+        --tema-primary-light:  #7ab3f5;
+        --tema-primary-dark:   #0d2a5e;
+        --tema-bg-dark:        #050d1a;
+        --tema-bg-body1:       #050d1a;
+        --tema-bg-body2:       #000508;
+        --tema-glow-rgb:       58,123,213;
+        --tema-glow-light-rgb: 122,179,245;
+    }
+    /* MEDO — Azul translúcido */
+    :root[data-tema="medo"] {
+        --tema-primary:        #3a7bd5;
+        --tema-primary-light:  #7ab3f5;
+        --tema-primary-dark:   #0d2a5e;
+        --tema-bg-dark:        #050d1a;
+        --tema-bg-body1:       #050d1a;
+        --tema-bg-body2:       #000508;
+        --tema-glow-rgb:       58,123,213;
+        --tema-glow-light-rgb: 122,179,245;
+    }
+    /* SANGUE — Vermelho */
+    :root[data-tema="sangue"] {
+        --tema-primary:        #cc1111;
+        --tema-primary-light:  #ff4444;
+        --tema-primary-dark:   #5a0000;
+        --tema-bg-dark:        #0f0000;
+        --tema-bg-body1:       #0f0000;
+        --tema-bg-body2:       #000000;
+        --tema-glow-rgb:       204,17,17;
+        --tema-glow-light-rgb: 255,68,68;
+    }
+    /* MORTE — Preto/Cinza */
+    :root[data-tema="morte"] {
+        --tema-primary:        #888888;
+        --tema-primary-light:  #cccccc;
+        --tema-primary-dark:   #333333;
+        --tema-bg-dark:        #0a0a0a;
+        --tema-bg-body1:       #0a0a0a;
+        --tema-bg-body2:       #000000;
+        --tema-glow-rgb:       136,136,136;
+        --tema-glow-light-rgb: 204,204,204;
+    }
+    /* CONHECIMENTO — Amarelo/Dourado */
+    :root[data-tema="conhecimento"] {
+        --tema-primary:        #c8960c;
+        --tema-primary-light:  #f5c842;
+        --tema-primary-dark:   #5a4000;
+        --tema-bg-dark:        #110e00;
+        --tema-bg-body1:       #110e00;
+        --tema-bg-body2:       #000000;
+        --tema-glow-rgb:       200,150,12;
+        --tema-glow-light-rgb: 245,200,66;
+    }
+    /* ENERGIA — Roxo */
+    :root[data-tema="energia"] {
+        --tema-primary:        #9b30d9;
+        --tema-primary-light:  #d070ff;
+        --tema-primary-dark:   #3a0063;
+        --tema-bg-dark:        #0a0014;
+        --tema-bg-body1:       #0a0014;
+        --tema-bg-body2:       #000000;
+        --tema-glow-rgb:       155,48,217;
+        --tema-glow-light-rgb: 208,112,255;
+    }
+
     body {
         font-family: 'Oswald', sans-serif;
-        background: linear-gradient(135deg, #1a0033 0%, #000000 100%);
+        background: linear-gradient(135deg, var(--tema-bg-body1) 0%, var(--tema-bg-body2) 100%);
         background-attachment: fixed;
         color: white;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
+        transition: background 0.5s;
     }
     #secao-inicio, #secao-agentes { flex: 1; }
 
     .titulo-destaque {
-        border-bottom: 5px solid #8a2be2;
+        border-bottom: 5px solid var(--tema-primary);
         padding-bottom: 5px;
-        text-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+        text-shadow: 0 0 15px rgba(var(--tema-glow-rgb), 0.5);
     }
-    .text-purple-neon { color: #bc6ff1; text-shadow: 0 0 10px rgba(188, 111, 241, 0.8); }
+    .text-purple-neon { color: var(--tema-primary-light); text-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb), 0.8); }
     .navbar-brand { font-weight: 700; }
     .nav-link { font-weight: 700; }
     .custom-nav { background-color: black; border-bottom: 2px solid #333; }
-    .nav-link:hover { color: #ff0000 !important; }
-    .text-purple { color: #8a2be2; }
-    .border-purple { border: 3px solid #3a0063; }
+    .nav-link:hover { color: var(--tema-primary-light) !important; }
+    .text-purple { color: var(--tema-primary); }
+    .border-purple { border: 3px solid var(--tema-primary-dark); }
 
     .btn-criar-ficha {
         display: inline-block; padding: 12px 40px;
-        border: 2px solid #8a2be2; color: white; text-decoration: none;
+        border: 2px solid var(--tema-primary); color: white; text-decoration: none;
         font-size: 1.5rem; font-weight: 700; border-radius: 5px;
         transition: 0.3s; background-color: rgba(0,0,0,0.5);
     }
-    .btn-criar-ficha:hover { background-color: #8a2be2; color: white; box-shadow: 0 0 20px rgba(138,43,226,0.6); }
+    .btn-criar-ficha:hover { background-color: var(--tema-primary); color: white; box-shadow: 0 0 20px rgba(var(--tema-glow-rgb),0.6); }
 
     .card-agente {
         background-color: #161616; border: 1px solid #333; border-radius: 10px;
         display: flex; align-items: center; overflow: hidden; transition: 0.3s;
     }
-    .card-agente:hover { transform: translateY(-8px); border-color: #8a2be2; box-shadow: 0 10px 20px rgba(138,43,226,0.2); }
+    .card-agente:hover { transform: translateY(-8px); border-color: var(--tema-primary); box-shadow: 0 10px 20px rgba(var(--tema-glow-rgb),0.2); }
     .img-agente { width: 120px; height: 120px; object-fit: cover; border-right: 1px solid #333; background-color: #222; flex-shrink: 0; }
     .card-body { flex: 1; }
 
     .btn-acessar {
-        background-color: #8a2be2; color: white; font-size: 0.9rem; font-weight: bold;
+        background-color: var(--tema-primary); color: white; font-size: 0.9rem; font-weight: bold;
         border: none; padding: 5px 15px; border-radius: 4px; transition: 0.3s;
         text-decoration: none; display: inline-block;
     }
-    .btn-acessar:hover { background-color: #bc6ff1; color: white; }
+    .btn-acessar:hover { background-color: var(--tema-primary-light); color: white; }
 
     .footer-link { color: #888; text-decoration: none; display: block; margin-bottom: 4px; }
-    .footer-link:hover { color: #bc6ff1; }
+    .footer-link:hover { color: var(--tema-primary-light); }
 
     /* ===== LOGIN STYLES ===== */
     #modal-login-overlay {
@@ -75,17 +143,17 @@
 
     .login-box {
         background: #0d0d0d;
-        border: 1px solid #3a0063;
+        border: 1px solid var(--tema-primary-dark);
         border-radius: 12px;
         padding: 40px;
         width: 100%;
         max-width: 420px;
-        box-shadow: 0 0 40px rgba(138,43,226,0.3);
+        box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3);
     }
     .login-box h2 {
         font-size: 1.8rem;
         font-weight: 700;
-        color: #bc6ff1;
+        color: var(--tema-primary-light);
         text-align: center;
         margin-bottom: 8px;
     }
@@ -107,7 +175,7 @@
         font-size: 0.95rem; border-bottom: 2px solid transparent;
         margin-bottom: -2px; transition: 0.2s;
     }
-    .login-tab.active { color: #bc6ff1; border-bottom-color: #8a2be2; }
+    .login-tab.active { color: var(--tema-primary-light); border-bottom-color: var(--tema-primary); }
     .login-field {
         background: #1a1a1a;
         border: 1px solid #333;
@@ -120,17 +188,17 @@
         margin-bottom: 14px;
         transition: border-color 0.2s;
     }
-    .login-field:focus { outline: none; border-color: #8a2be2; }
+    .login-field:focus { outline: none; border-color: var(--tema-primary); }
     .btn-login {
         width: 100%; padding: 12px;
-        background: #8a2be2; color: white;
+        background: var(--tema-primary); color: white;
         border: none; border-radius: 6px;
         font-family: 'Oswald', sans-serif;
         font-size: 1.1rem; font-weight: 700;
         cursor: pointer; transition: 0.2s;
         margin-top: 6px;
     }
-    .btn-login:hover { background: #bc6ff1; }
+    .btn-login:hover { background: var(--tema-primary-light); }
     .login-error {
         color: #ff4444; font-size: 0.85rem;
         text-align: center; margin-top: 10px;
@@ -146,21 +214,21 @@
     .avatar-circle {
         width: 38px; height: 38px;
         border-radius: 50%;
-        border: 2px solid #8a2be2;
-        background: #1a0033;
+        border: 2px solid var(--tema-primary);
+        background: var(--tema-bg-dark);
         display: flex; align-items: center; justify-content: center;
-        font-size: 1rem; font-weight: 700; color: #bc6ff1;
+        font-size: 1rem; font-weight: 700; color: var(--tema-primary-light);
         overflow: hidden;
         transition: 0.2s;
         user-select: none;
     }
-    .avatar-circle:hover { border-color: #bc6ff1; box-shadow: 0 0 10px rgba(138,43,226,0.5); }
+    .avatar-circle:hover { border-color: var(--tema-primary-light); box-shadow: 0 0 10px rgba(var(--tema-glow-rgb),0.5); }
     .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
 
     .avatar-dropdown {
         position: absolute; right: 0; top: 46px;
         background: #0d0d0d;
-        border: 1px solid #3a0063;
+        border: 1px solid var(--tema-primary-dark);
         border-radius: 10px;
         min-width: 180px;
         padding: 10px 0;
@@ -171,7 +239,7 @@
     .avatar-dropdown.open { display: block; }
     .avatar-dropdown .dd-username {
         padding: 8px 16px 6px;
-        color: #bc6ff1; font-weight: 700; font-size: 0.95rem;
+        color: var(--tema-primary-light); font-weight: 700; font-size: 0.95rem;
         border-bottom: 1px solid #222; margin-bottom: 6px;
     }
     .avatar-dropdown .dd-item {
@@ -180,10 +248,67 @@
         cursor: pointer; transition: 0.15s;
         display: flex; align-items: center; gap: 8px;
     }
-    .avatar-dropdown .dd-item:hover { background: #1a0033; color: #bc6ff1; }
+    .avatar-dropdown .dd-item:hover { background: var(--tema-bg-dark); color: var(--tema-primary-light); }
     .avatar-dropdown .dd-item.danger { color: #ff6666; }
     .avatar-dropdown .dd-item.danger:hover { background: #2a0000; color: #ff4444; }
     #input-foto-perfil { display: none; }
+    /* ===== BOTÃO TEMAS ===== */
+    .btn-temas {
+        background: transparent;
+        border: 1px solid var(--tema-primary);
+        color: var(--tema-primary-light);
+        font-family: 'Oswald', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        padding: 6px 14px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: 0.2s;
+        margin-right: 12px;
+        white-space: nowrap;
+    }
+    .btn-temas:hover { background: var(--tema-primary); color: white; box-shadow: 0 0 12px rgba(var(--tema-glow-rgb),0.4); }
+
+    .temas-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-right: 12px;
+    }
+    .temas-dropdown {
+        position: absolute; right: 0; top: 42px;
+        background: #0d0d0d;
+        border: 1px solid var(--tema-primary-dark);
+        border-radius: 10px;
+        min-width: 200px;
+        padding: 8px 0;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+        z-index: 1001;
+        display: none;
+    }
+    .temas-dropdown.open { display: block; }
+    .temas-dropdown .td-header {
+        padding: 6px 16px 8px;
+        color: #666; font-size: 0.7rem; letter-spacing: 2px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #1a1a1a; margin-bottom: 4px;
+    }
+    .temas-dropdown .td-item {
+        padding: 9px 16px;
+        color: #ccc; font-size: 0.9rem;
+        cursor: pointer; transition: 0.15s;
+        display: flex; align-items: center; gap: 10px;
+        font-weight: 600;
+    }
+    .temas-dropdown .td-item:hover { background: #1a1a1a; }
+    .temas-dropdown .td-item.ativo { color: white; }
+    .td-swatch {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        box-shadow: 0 0 6px currentColor;
+    }
+
     /* ── MODAL CROPPER ── */
   .crop-overlay {
     display: none;
@@ -214,7 +339,7 @@
         max-width: 420px;
         height: 420px;
         overflow: hidden;
-        border: 1px solid #8a2be2;
+        border: 1px solid var(--tema-primary);
         background: #000;
     }
 
@@ -352,6 +477,30 @@
 
             <!-- Avatar de perfil -->
             <div class="d-none d-lg-flex align-items-center" style="min-width: 200px; justify-content: flex-end;">
+
+                <!-- Botão Temas -->
+                <div class="temas-wrapper" id="temas-wrapper">
+                    <button class="btn-temas" onclick="toggleTemas(event)">⬡ Temas</button>
+                    <div class="temas-dropdown" id="temas-dropdown">
+                        <div class="td-header">Elemento</div>
+                        <div class="td-item" onclick="aplicarTema('medo')" data-tema="medo">
+                            <span class="td-swatch" style="background:#3a7bd5;color:#3a7bd5"></span> Medo
+                        </div>
+                        <div class="td-item" onclick="aplicarTema('sangue')" data-tema="sangue">
+                            <span class="td-swatch" style="background:#cc1111;color:#cc1111"></span> Sangue
+                        </div>
+                        <div class="td-item" onclick="aplicarTema('morte')" data-tema="morte">
+                            <span class="td-swatch" style="background:#888888;color:#888888"></span> Morte
+                        </div>
+                        <div class="td-item" onclick="aplicarTema('conhecimento')" data-tema="conhecimento">
+                            <span class="td-swatch" style="background:#c8960c;color:#c8960c"></span> Conhecimento
+                        </div>
+                        <div class="td-item" onclick="aplicarTema('energia')" data-tema="energia">
+                            <span class="td-swatch" style="background:#9b30d9;color:#9b30d9"></span> Energia
+                        </div>
+                    </div>
+                </div>
+
                 <div class="avatar-wrapper" id="avatar-wrapper" onclick="toggleDropdown(event)">
                     <div class="avatar-circle" id="avatar-circle">
                         <span id="avatar-iniciais"></span>
@@ -375,7 +524,7 @@
     <main id="secao-inicio" class="container my-5 text-white">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-4 mb-lg-0">
-                <h1 class="display-4 fw-bold">Fichas <span style="border-bottom: 4px solid #8a2be2;">Digitais</span></h1>
+                <h1 class="display-4 fw-bold">Fichas <span style="border-bottom: 4px solid var(--tema-primary);">Digitais</span></h1>
                 <p class="fs-4 mt-4 text-secondary">
                     Com uma ideia simples, você pode fazer uma ficha de ordem paranormal de maneira rápida e um pouco complicada, porém isso faz ficar mais divertido!
                 </p>
@@ -700,8 +849,46 @@
 
         function toggleDropdown(e) {
             e.stopPropagation();
+            document.getElementById('temas-dropdown').classList.remove('open');
             document.getElementById('avatar-dropdown').classList.toggle('open');
         }
+
+        /* =============================================
+           SISTEMA DE TEMAS
+        ============================================= */
+        function toggleTemas(e) {
+            e.stopPropagation();
+            document.getElementById('avatar-dropdown').classList.remove('open');
+            document.getElementById('temas-dropdown').classList.toggle('open');
+        }
+
+        function aplicarTema(tema) {
+            document.documentElement.setAttribute('data-tema', tema);
+            localStorage.setItem('ficha_tema', tema);
+            // marca item ativo
+            document.querySelectorAll('.td-item').forEach(el => {
+                el.classList.toggle('ativo', el.dataset.tema === tema);
+            });
+            document.getElementById('temas-dropdown').classList.remove('open');
+        }
+
+        // Fecha dropdowns ao clicar fora
+        document.addEventListener('click', function() {
+            document.getElementById('temas-dropdown').classList.remove('open');
+            document.getElementById('avatar-dropdown').classList.remove('open');
+        });
+
+        // Restaura tema salvo ao carregar
+        (function() {
+            const temaSalvo = localStorage.getItem('ficha_tema') || 'medo';
+            document.documentElement.setAttribute('data-tema', temaSalvo);
+            // aguarda DOM pronto para marcar ativo
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.td-item').forEach(el => {
+                    el.classList.toggle('ativo', el.dataset.tema === temaSalvo);
+                });
+            });
+        })();
 
 function abrirSeletorFoto(e) {
     e.stopPropagation();
