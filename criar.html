@@ -348,6 +348,61 @@
 
         textarea.form-control { min-height: 100px; resize: vertical; font-size: 0.9rem; line-height: 1.6; }
 
+        /* ===== PAINEL DE INFO DA CLASSE ===== */
+        .classe-info-panel {
+            display: none;
+            background: #0a0018;
+            border: 1px solid var(--purple-dark);
+            border-left: 4px solid var(--purple);
+            border-radius: 8px;
+            padding: 20px 22px;
+            margin-top: 24px;
+            animation: fadeIn 0.35s ease;
+        }
+        .classe-info-panel.visible { display: block; }
+        .classe-info-title {
+            font-size: 1rem; font-weight: 700; letter-spacing: 3px;
+            text-transform: uppercase; color: var(--purple-neon);
+            margin-bottom: 16px; border-bottom: 1px solid #2a0050; padding-bottom: 10px;
+        }
+        .ci-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin-bottom: 16px; }
+        @media(max-width:600px){ .ci-grid { grid-template-columns: 1fr; } }
+        .ci-row { display: flex; justify-content: space-between; align-items: baseline;
+            font-size: 0.78rem; border-bottom: 1px solid #1a0033; padding: 5px 0; }
+        .ci-label { color: #aaa; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+        .ci-value { color: var(--purple-neon); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; }
+        .ci-sub { color: #666; font-size: 0.7rem; font-family: 'Share Tech Mono', monospace;
+            padding: 2px 0 6px 0; letter-spacing: 0.5px; }
+        .ci-section-title {
+            font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
+            color: #666; margin: 14px 0 6px; font-family: 'Share Tech Mono', monospace;
+        }
+        .ci-tag {
+            display: inline-block; background: #1a0033; color: var(--purple-neon);
+            border-radius: 4px; padding: 3px 8px; font-size: 0.72rem;
+            font-family: 'Share Tech Mono', monospace; margin: 2px 3px 2px 0;
+            border: 1px solid #3a0063;
+        }
+        .nex-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 0.75rem; }
+        .nex-table th {
+            background: #1a0033; color: var(--purple-neon); text-align: left;
+            padding: 6px 10px; letter-spacing: 2px; text-transform: uppercase;
+            border-bottom: 2px solid var(--purple-dark);
+        }
+        .nex-table td {
+            padding: 5px 10px; border-bottom: 1px solid #150025;
+            font-family: 'Share Tech Mono', monospace; color: #ccc;
+        }
+        .nex-table tr:nth-child(even) td { background: #0d001a; }
+        .nex-table td:first-child { color: var(--purple-neon); font-weight: 700; width: 52px; }
+        .nex-toggle {
+            background: transparent; border: 1px solid var(--purple-dark);
+            color: var(--purple-neon); font-family: 'Oswald', sans-serif;
+            font-size: 0.72rem; letter-spacing: 1.5px; padding: 4px 12px;
+            border-radius: 4px; cursor: pointer; transition: 0.2s; margin-top: 12px;
+        }
+        .nex-toggle:hover { background: var(--purple-dark); }
+
         .btn-nav {
             background: transparent; border: 2px solid var(--purple);
             color: white; font-family: 'Oswald', sans-serif;
@@ -608,10 +663,29 @@
         <div class="classe-card" data-classe="Sobrevivente" onclick="selecionarClasse(this)">
             <div class="classe-icon">🧍</div>
             <div class="classe-nome">Sobrevivente</div>
-            <div class="classe-desc">Cidadão comum com sorte e conexões incomuns.</div>
+            <div class="classe-desc">Pessoa comum sem treinamento. Fuja, improvise, sobreviva.</div>
         </div>
     </div>
     <div id="alerta-classe" style="color:var(--danger);font-family:'Share Tech Mono',monospace;font-size:0.75rem;margin-top:10px;display:none;">⚠ Selecione uma classe</div>
+
+    <!-- PAINEL DE INFO DA CLASSE -->
+    <div class="classe-info-panel" id="classe-info-panel">
+        <div class="classe-info-title" id="ci-title">▸ CARACTERÍSTICAS DA CLASSE</div>
+        <div class="ci-grid" id="ci-stats"></div>
+        <div class="ci-section-title">Perícias Treinadas</div>
+        <div id="ci-pericias"></div>
+        <div class="ci-section-title">Proficiências</div>
+        <div id="ci-proficiencias"></div>
+        <div class="ci-section-title" style="margin-top:16px;">Progressão por NEX
+            <button class="nex-toggle" id="nex-toggle-btn" onclick="toggleNexTable()">▾ MOSTRAR TABELA</button>
+        </div>
+        <div id="nex-table-wrap" style="display:none;overflow-x:auto;margin-top:8px;">
+            <table class="nex-table">
+                <thead><tr><th>NEX</th><th>Habilidade</th></tr></thead>
+                <tbody id="nex-tbody"></tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- ETAPA 2: ATRIBUTOS -->
@@ -773,28 +847,199 @@ const PERICIAS = [
 
 const HABILIDADES_CLASSE = {
     'Combatente': [
-        { nome:'Ataque Especial', desc:'Uma vez por rodada pode realizar um ataque adicional com -5 no rolamento.' },
-        { nome:'Resistência de Combate', desc:'+2 de Defesa enquanto estiver usando armadura.' },
-        { nome:'Chuva de Balas', desc:'Sacrifique pacotes de munição para causar +2 dados de dano por pacote no ataque com arma de fogo.' },
-        { nome:'Combatente Esforçado', desc:'+1 PE por NEX. Pré-req: For 3 ou Vig 3.' },
-        { nome:'Treinamento Militarizado', desc:'Bônus de exercício muda para +1d8 em rolagens de dano (um bônus por rolagem).' },
+        { nome:'Ataque Especial (NEX 5%)', desc:'2 PE, +5 no ataque. Habilidade inicial do Combatente.' },
+        { nome:'Habilidade de Trilha', desc:'Bônus da trilha escolhida (Combate, Defesa ou Fogo).' },
+        { nome:'Poder de Combatente', desc:'Escolha um poder da lista de poderes de combatente.' },
+        { nome:'Aumento de Atributo', desc:'Aumente um atributo em +1 (máximo 5).' },
+        { nome:'Ataque Especial (NEX 25%)', desc:'3 PE, +10 no ataque.' },
+        { nome:'Grau de Treinamento', desc:'Avance no grau de treinamento de uma perícia.' },
+        { nome:'Ataque Especial (NEX 55%)', desc:'4 PE, +15 no ataque.' },
+        { nome:'Ataque Especial (NEX 85%)', desc:'5 PE, +20 no ataque.' },
+        { nome:'Versatilidade', desc:'Ganhe uma perícia treinada adicional.' },
     ],
     'Especialista': [
-        { nome:'Foco Profissional', desc:'Pode rolar duas vezes em qualquer perícia de sua especialidade e usar o maior resultado.' },
-        { nome:'Improviso', desc:'Uma vez por cena pode usar um objeto como arma ou ferramenta improvisada sem penalidade.' },
-        { nome:'Análise Conturbada', desc:'Gaste ação padrão em investigação para implantar paranoia: ouvintes recebem bônus em INT/PRE mas perdem esse valor em SAN.' },
-        { nome:'Profissão Perigo', desc:'Gaste ação completa e 4 PE para desmontar um item e criar outro de mesma categoria. Uma vez por missão.' },
-        { nome:'Quase Novo', desc:'Manutenção em interlúdio concede +10 PV ao item e permite adicionar modificação temporária.' },
-        { nome:'Uma Última Olhada', desc:'Gaste 2 PE na última rodada de investigação para ganhar uma rodada extra.' },
+        { nome:'Eclético, Perito (NEX 5%)', desc:'2 PE, +1d6 em testes de perícia. Habilidade inicial.' },
+        { nome:'Habilidade de Trilha', desc:'Bônus da trilha escolhida (Explorador, Atirador ou Infiltrador).' },
+        { nome:'Poder de Especialista', desc:'Escolha um poder da lista de poderes de especialista.' },
+        { nome:'Aumento de Atributo', desc:'Aumente um atributo em +1 (máximo 5).' },
+        { nome:'Perito (NEX 25%)', desc:'3 PE, +1d8 em testes de perícia.' },
+        { nome:'Engenhosidade (Veterano)', desc:'Habilidade de trilha aprimorada para veterano.' },
+        { nome:'Perito (NEX 55%)', desc:'4 PE, +1d10 em testes de perícia.' },
+        { nome:'Engenhosidade (Expert)', desc:'Habilidade de trilha aprimorada para expert.' },
+        { nome:'Perito (NEX 85%)', desc:'5 PE, +1d12 em testes de perícia.' },
+        { nome:'Versatilidade', desc:'Ganhe uma perícia treinada adicional.' },
     ],
     'Ocultista': [
-        { nome:'Sentido Paranormal', desc:'Pode detectar a presença de entidades em até 30 metros automaticamente.' },
-        { nome:'Ritual Menor', desc:'Conhece um ritual de nível 1 que pode executar sem custo de PE.' },
+        { nome:'Escolhido pelo Outro Lado 1º Círculo (NEX 5%)', desc:'Habilidade de ritual do 1º círculo concedida pelo Outro Lado.' },
+        { nome:'Habilidade de Trilha', desc:'Bônus da trilha escolhida (Médium, Ilusionista ou Destruidor).' },
+        { nome:'Poder de Ocultista', desc:'Escolha um poder da lista de poderes de ocultista.' },
+        { nome:'Aumento de Atributo', desc:'Aumente um atributo em +1 (máximo 5).' },
+        { nome:'Escolhido pelo Outro Lado 2º Círculo (NEX 25%)', desc:'Habilidade de ritual do 2º círculo.' },
+        { nome:'Grau de Treinamento', desc:'Avance no grau de treinamento de uma perícia.' },
+        { nome:'Escolhido pelo Outro Lado 3º Círculo (NEX 55%)', desc:'Habilidade de ritual do 3º círculo.' },
+        { nome:'Escolhido pelo Outro Lado 4º Círculo (NEX 85%)', desc:'Habilidade de ritual do 4º círculo.' },
+        { nome:'Versatilidade', desc:'Ganhe uma perícia treinada adicional.' },
     ],
     'Mundano': [
         { nome:'Sortudo', desc:'Uma vez por sessão pode rerrolar qualquer dado e ficar com o melhor resultado.' },
         { nome:'Conexões', desc:'Possui contatos em 3 áreas distintas que podem fornecer informações ou ajuda.' },
     ],
+    'Sobrevivente': [
+        { nome:'Empenho', desc:'Gaste 1 PD para receber +2 em um teste de perícia.' },
+        { nome:'Sentir o Paranormal (Esotérico)', desc:'Gaste uma ação padrão e 1 PD para sentir energias paranormais em alcance curto.' },
+        { nome:'Habilidade de Trilha', desc:'Escolha uma trilha: Durão (resistência física), Esperto (perícias) ou Esotérico (contato com o Outro Lado).' },
+        { nome:'Treinamento Especial (Estágio 5)', desc:'Ao atingir o 5º estágio, pode ser recrutado por uma organização (como a Ordo Realitas) e se tornar agente de NEX 5%, mantendo as habilidades adquiridas.' },
+        { nome:'Cicatrizado', desc:'Sobreviver a horrores constantes endurece a alma. Benefícios narrativos por ter enfrentado e sobrevivido ao paranormal.' },
+    ],
+};
+
+// ══════════════════════════════════════════════
+// DADOS DE CARACTERÍSTICAS POR CLASSE
+// ══════════════════════════════════════════════
+const CLASSE_INFO = {
+    'Combatente': {
+        pvInicial: '20 + VIGOR',
+        pvNex: '4 PV (+Vig) por NEX',
+        peInicial: '2 + PRESENÇA',
+        peNex: '2 PE (+Pre) por NEX',
+        sanInicial: '12',
+        sanNex: '3 SAN por NEX',
+        pericias: 'Luta ou Pontaria (uma), Fortitude ou Reflexos (uma), mais 1 + Intelecto perícias à escolha',
+        proficiencias: 'Armas simples, táticas e proteções leves',
+        nex: [
+            { pct:'5%',  hab:'Ataque especial (2 PE, +5)' },
+            { pct:'10%', hab:'Habilidade de trilha' },
+            { pct:'15%', hab:'Poder de combatente' },
+            { pct:'20%', hab:'Aumento de atributo' },
+            { pct:'25%', hab:'Ataque especial (3 PE, +10)' },
+            { pct:'30%', hab:'Poder de combatente' },
+            { pct:'35%', hab:'Grau de treinamento' },
+            { pct:'40%', hab:'Habilidade de trilha' },
+            { pct:'45%', hab:'Poder de combatente' },
+            { pct:'50%', hab:'Aumento de atributo, versatilidade' },
+            { pct:'55%', hab:'Ataque especial (4 PE, +15)' },
+            { pct:'60%', hab:'Poder de combatente' },
+            { pct:'65%', hab:'Habilidade de trilha' },
+            { pct:'70%', hab:'Grau de treinamento' },
+            { pct:'75%', hab:'Poder de combatente' },
+            { pct:'80%', hab:'Aumento de atributo' },
+            { pct:'85%', hab:'Ataque especial (5 PE, +20)' },
+            { pct:'90%', hab:'Poder de combatente' },
+            { pct:'95%', hab:'Aumento de atributo' },
+            { pct:'99%', hab:'Habilidade de trilha' },
+        ]
+    },
+    'Especialista': {
+        pvInicial: '16 + VIGOR',
+        pvNex: '3 PV (+Vig) por NEX',
+        peInicial: '3 + PRESENÇA',
+        peNex: '3 PE (+Pre) por NEX',
+        sanInicial: '16',
+        sanNex: '4 SAN por NEX',
+        pericias: 'Quantidade de perícias à sua escolha igual a 7 + Intelecto',
+        proficiencias: 'Armas simples e proteções leves',
+        nex: [
+            { pct:'5%',  hab:'Eclético, perito (2 PE, +1d6)' },
+            { pct:'10%', hab:'Habilidade de trilha' },
+            { pct:'15%', hab:'Poder de especialista' },
+            { pct:'20%', hab:'Aumento de atributo' },
+            { pct:'25%', hab:'Perito (3 PE, +1d8)' },
+            { pct:'30%', hab:'Poder de especialista' },
+            { pct:'35%', hab:'Grau de treinamento' },
+            { pct:'40%', hab:'Engenhosidade (veterano), habilidade de trilha' },
+            { pct:'45%', hab:'Poder de especialista' },
+            { pct:'50%', hab:'Aumento de atributo, versatilidade' },
+            { pct:'55%', hab:'Perito (4 PE, +1d10)' },
+            { pct:'60%', hab:'Poder de especialista' },
+            { pct:'65%', hab:'Habilidade de trilha' },
+            { pct:'70%', hab:'Grau de treinamento' },
+            { pct:'75%', hab:'Engenhosidade (expert), poder de especialista' },
+            { pct:'80%', hab:'Aumento de atributo' },
+            { pct:'85%', hab:'Perito (5 PE, +1d12)' },
+            { pct:'90%', hab:'Poder de especialista' },
+            { pct:'95%', hab:'Aumento de atributo' },
+            { pct:'99%', hab:'Habilidade de trilha' },
+        ]
+    },
+    'Ocultista': {
+        pvInicial: '12 + VIGOR',
+        pvNex: '2 PV (+Vig) por NEX',
+        peInicial: '4 + PRESENÇA',
+        peNex: '4 PE (+Pre) por NEX',
+        sanInicial: '20',
+        sanNex: '5 SAN por NEX',
+        pericias: 'Ocultismo e Vontade, mais 3 + Intelecto perícias à escolha',
+        proficiencias: 'Armas simples',
+        nex: [
+            { pct:'5%',  hab:'Escolhido pelo Outro Lado (1º círculo)' },
+            { pct:'10%', hab:'Habilidade de trilha' },
+            { pct:'15%', hab:'Poder de ocultista' },
+            { pct:'20%', hab:'Aumento de atributo' },
+            { pct:'25%', hab:'Escolhido pelo Outro Lado (2º círculo)' },
+            { pct:'30%', hab:'Poder de ocultista' },
+            { pct:'35%', hab:'Grau de treinamento' },
+            { pct:'40%', hab:'Habilidade de trilha' },
+            { pct:'45%', hab:'Poder de ocultista' },
+            { pct:'50%', hab:'Aumento de atributo, versatilidade' },
+            { pct:'55%', hab:'Escolhido pelo Outro Lado (3º círculo)' },
+            { pct:'60%', hab:'Poder de ocultista' },
+            { pct:'65%', hab:'Habilidade de trilha' },
+            { pct:'70%', hab:'Grau de treinamento' },
+            { pct:'75%', hab:'Poder de ocultista' },
+            { pct:'80%', hab:'Aumento de atributo' },
+            { pct:'85%', hab:'Escolhido pelo Outro Lado (4º círculo)' },
+            { pct:'90%', hab:'Poder de ocultista' },
+            { pct:'95%', hab:'Aumento de atributo' },
+            { pct:'99%', hab:'Habilidade de trilha' },
+        ]
+    },
+    'Mundano': {
+        pvInicial: '12 + VIGOR',
+        pvNex: '2 PV (+Vig) por NEX',
+        peInicial: '2 + PRESENÇA',
+        peNex: '2 PE (+Pre) por NEX',
+        sanInicial: '14',
+        sanNex: '3 SAN por NEX',
+        pericias: '3 + Intelecto perícias à escolha',
+        proficiencias: 'Armas simples',
+        nex: [
+            { pct:'5%',  hab:'Sortudo' },
+            { pct:'10%', hab:'Habilidade de trilha' },
+            { pct:'15%', hab:'Conexões' },
+            { pct:'20%', hab:'Aumento de atributo' },
+            { pct:'25%', hab:'Sortudo aprimorado' },
+            { pct:'30%', hab:'Poder de mundano' },
+            { pct:'35%', hab:'Grau de treinamento' },
+            { pct:'40%', hab:'Habilidade de trilha' },
+            { pct:'45%', hab:'Poder de mundano' },
+            { pct:'50%', hab:'Aumento de atributo, versatilidade' },
+        ]
+    },
+    'Sobrevivente': {
+        pvInicial: '8 + VIGOR',
+        pvNex: '1 PV (+Vig) por estágio',
+        peInicial: '— (usa Pontos de Determinação)',
+        peNex: '',
+        sanInicial: '— (usa Pontos de Determinação)',
+        sanNex: '',
+        pdInicial: '4 + PRESENÇA',
+        pdEstagio: '+2 PD por estágio',
+        pericias: 'Perícias definidas pela Origem do personagem (pessoa comum)',
+        proficiencias: 'Nenhuma — usa objetos improvisados do cotidiano',
+        progressaoTipo: 'estagio',
+        nex: [
+            { pct:'Est. 1', hab:'Empenho (1 PD: +2 em teste de perícia)' },
+            { pct:'Est. 1', hab:'Habilidade de trilha (Durão, Esperto ou Esotérico)' },
+            { pct:'Est. 2', hab:'+2 Pontos de Determinação' },
+            { pct:'Est. 2', hab:'Poder da trilha escolhida' },
+            { pct:'Est. 3', hab:'+2 Pontos de Determinação' },
+            { pct:'Est. 3', hab:'Sentir o Paranormal (trilha Esotérica)' },
+            { pct:'Est. 4', hab:'+2 Pontos de Determinação' },
+            { pct:'Est. 4', hab:'Poder da trilha aprimorado' },
+            { pct:'Est. 5', hab:'+2 Pontos de Determinação' },
+            { pct:'Est. 5', hab:'Treinamento Especial — pode se tornar agente NEX 5%' },
+        ]
+    },
 };
 
 // ══════════════════════════════════════════════
@@ -914,6 +1159,73 @@ function selecionarClasse(card) {
     document.querySelectorAll('.classe-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     document.getElementById('alerta-classe').style.display = 'none';
+    renderClasseInfo(card.dataset.classe);
+}
+
+function renderClasseInfo(classe) {
+    const info = CLASSE_INFO[classe];
+    if (!info) return;
+    const panel = document.getElementById('classe-info-panel');
+    panel.classList.add('visible');
+    document.getElementById('ci-title').textContent = '▸ CARACTERÍSTICAS – ' + classe.toUpperCase();
+
+    let statsHtml;
+    if (info.progressaoTipo === 'estagio') {
+        // Sobrevivente — usa PD, progride por estágios
+        statsHtml = `
+        <div>
+            <div class="ci-row"><span class="ci-label">PV Iniciais</span><span class="ci-value">${info.pvInicial}</span></div>
+            <div class="ci-sub">${info.pvNex}</div>
+            <div class="ci-row"><span class="ci-label">PD Iniciais</span><span class="ci-value">${info.pdInicial}</span></div>
+            <div class="ci-sub">${info.pdEstagio}</div>
+        </div>
+        <div>
+            <div class="ci-row"><span class="ci-label">Progressão</span><span class="ci-value">Estágios 1–5</span></div>
+            <div class="ci-sub">1 estágio por missão concluída</div>
+            <div class="ci-row" style="margin-top:6px;"><span class="ci-label" style="color:#e0a020;">⚠ Classe Frágil</span></div>
+            <div class="ci-sub" style="color:#886622;">Fuja. Seja esperto. O combate direto é fatal.</div>
+        </div>`;
+    } else {
+        statsHtml = `
+        <div>
+            <div class="ci-row"><span class="ci-label">PV Iniciais</span><span class="ci-value">${info.pvInicial}</span></div>
+            <div class="ci-sub">${info.pvNex}</div>
+            <div class="ci-row"><span class="ci-label">PE Iniciais</span><span class="ci-value">${info.peInicial}</span></div>
+            <div class="ci-sub">${info.peNex}</div>
+        </div>
+        <div>
+            <div class="ci-row"><span class="ci-label">Sanidade Inicial</span><span class="ci-value">${info.sanInicial}</span></div>
+            <div class="ci-sub">${info.sanNex}</div>
+        </div>`;
+    }
+
+    document.getElementById('ci-stats').innerHTML = statsHtml;
+
+    document.getElementById('ci-pericias').innerHTML =
+        `<span class="ci-tag" style="white-space:normal;display:inline;">${info.pericias}</span>`;
+
+    document.getElementById('ci-proficiencias').innerHTML =
+        `<span class="ci-tag">${info.proficiencias}</span>`;
+
+    const tbody = document.getElementById('nex-tbody');
+    const thLabel = info.progressaoTipo === 'estagio' ? 'Estágio' : 'NEX';
+    document.querySelector('#classe-info-panel .nex-table thead tr').innerHTML =
+        `<th>${thLabel}</th><th>Habilidade</th>`;
+    tbody.innerHTML = info.nex.map(r =>
+        `<tr><td>${r.pct}</td><td>${r.hab}</td></tr>`
+    ).join('');
+
+    // reset toggle
+    document.getElementById('nex-table-wrap').style.display = 'none';
+    document.getElementById('nex-toggle-btn').textContent = '▾ MOSTRAR TABELA';
+}
+
+function toggleNexTable() {
+    const wrap = document.getElementById('nex-table-wrap');
+    const btn  = document.getElementById('nex-toggle-btn');
+    const open = wrap.style.display === 'block';
+    wrap.style.display = open ? 'none' : 'block';
+    btn.textContent = open ? '▾ MOSTRAR TABELA' : '▴ OCULTAR TABELA';
 }
 
 // ══════════════════════════════════════════════

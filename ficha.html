@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <style>
 
     /* ===== SISTEMA DE TEMAS - ORDEM PARANORMAL ===== */
@@ -470,6 +472,62 @@
         .footer-link { color: #888; text-decoration: none; }
         .footer-link:hover { color: var(--purple-neon); }
 
+        /* ── MODAL CROPPER FOTO AGENTE ── */
+        .foto-crop-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.97);
+            z-index: 99999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 24px;
+        }
+        .foto-crop-overlay.show { display: flex; }
+        .foto-crop-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #666;
+            align-self: flex-start;
+        }
+        .foto-crop-area {
+            width: 100%;
+            max-width: 420px;
+            height: 420px;
+            overflow: hidden;
+            border: 1px solid var(--purple);
+            background: #000;
+        }
+        .foto-crop-area img { display: block; max-width: 100%; }
+        .foto-crop-area .cropper-container { max-width: 100% !important; }
+        .foto-crop-btns { display: flex; gap: 10px; }
+        .foto-crop-btn {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            padding: 8px 20px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid;
+        }
+        .foto-crop-btn-ok {
+            background: rgba(58,0,100,0.6);
+            border-color: var(--purple);
+            color: var(--purple-neon);
+        }
+        .foto-crop-btn-ok:hover { background: var(--purple-dark); box-shadow: 0 0 10px var(--purple-glow); }
+        .foto-crop-btn-cancel {
+            background: transparent;
+            border-color: #333;
+            color: #555;
+        }
+        .foto-crop-btn-cancel:hover { border-color: #666; color: #888; }
+
         .btn-voltar {
             background: transparent; border: 1px solid var(--border); color: var(--text-dim);
             font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 2px;
@@ -905,6 +963,18 @@
 
 <input type="file" id="foto-input" accept="image/*">
 
+<!-- MODAL CROPPER FOTO AGENTE -->
+<div class="foto-crop-overlay" id="foto-crop-overlay">
+    <div class="foto-crop-title">▸ AJUSTAR FOTO DO AGENTE</div>
+    <div class="foto-crop-area">
+        <img id="foto-crop-img" src="" alt="crop">
+    </div>
+    <div class="foto-crop-btns">
+        <button class="foto-crop-btn foto-crop-btn-ok" onclick="confirmarFotoCrop()">✔ CONFIRMAR</button>
+        <button class="foto-crop-btn foto-crop-btn-cancel" onclick="cancelarFotoCrop()">✕ CANCELAR</button>
+    </div>
+</div>
+
 <div class="ficha-wrapper">
   <!-- COLUNA ESQUERDA -->
   <div class="col-esquerda">
@@ -916,7 +986,10 @@
         </div>
         <div style="flex:1">
           <div class="label-field">Personagem</div>
-          <div class="value-field" id="display-nome">—</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div class="value-field" id="display-nome" style="margin-bottom:0;flex:1">—</div>
+            <button onclick="abrirModalRenomear()" title="Renomear personagem" style="background:none;border:none;color:var(--text-dim);font-size:0.85rem;cursor:pointer;padding:0 2px;opacity:0.5;transition:opacity 0.2s,color 0.2s;line-height:1;" onmouseover="this.style.opacity='1';this.style.color='var(--purple-neon)'" onmouseout="this.style.opacity='0.5';this.style.color='var(--text-dim)'">✎</button>
+          </div>
           <div class="label-field">Criado em</div>
           <div style="color:var(--text-dim);font-size:0.85rem" id="display-criado">—</div>
         </div>
@@ -1393,7 +1466,7 @@
         <div class="atrib-edit-label">FOR</div>
         <div class="atrib-edit-controls">
           <button class="atrib-spin-btn" onclick="stepAtrib('FOR',-1)">−</button>
-          <input type="number" class="atrib-edit-val" id="ae-FOR" min="-1" max="20" value="0">
+          <input type="number" class="atrib-edit-val" id="ae-FOR" min="-1" max="20" value="0" oninput="previewAtributos()">
           <button class="atrib-spin-btn" onclick="stepAtrib('FOR',1)">+</button>
         </div>
       </div>
@@ -1401,7 +1474,7 @@
         <div class="atrib-edit-label">AGI</div>
         <div class="atrib-edit-controls">
           <button class="atrib-spin-btn" onclick="stepAtrib('AGI',-1)">−</button>
-          <input type="number" class="atrib-edit-val" id="ae-AGI" min="-1" max="20" value="0">
+          <input type="number" class="atrib-edit-val" id="ae-AGI" min="-1" max="20" value="0" oninput="previewAtributos()">
           <button class="atrib-spin-btn" onclick="stepAtrib('AGI',1)">+</button>
         </div>
       </div>
@@ -1409,7 +1482,7 @@
         <div class="atrib-edit-label">INT</div>
         <div class="atrib-edit-controls">
           <button class="atrib-spin-btn" onclick="stepAtrib('INT',-1)">−</button>
-          <input type="number" class="atrib-edit-val" id="ae-INT" min="-1" max="20" value="0">
+          <input type="number" class="atrib-edit-val" id="ae-INT" min="-1" max="20" value="0" oninput="previewAtributos()">
           <button class="atrib-spin-btn" onclick="stepAtrib('INT',1)">+</button>
         </div>
       </div>
@@ -1417,7 +1490,7 @@
         <div class="atrib-edit-label">PRE</div>
         <div class="atrib-edit-controls">
           <button class="atrib-spin-btn" onclick="stepAtrib('PRE',-1)">−</button>
-          <input type="number" class="atrib-edit-val" id="ae-PRE" min="-1" max="20" value="0">
+          <input type="number" class="atrib-edit-val" id="ae-PRE" min="-1" max="20" value="0" oninput="previewAtributos()">
           <button class="atrib-spin-btn" onclick="stepAtrib('PRE',1)">+</button>
         </div>
       </div>
@@ -1425,13 +1498,19 @@
         <div class="atrib-edit-label">VIG</div>
         <div class="atrib-edit-controls">
           <button class="atrib-spin-btn" onclick="stepAtrib('VIG',-1)">−</button>
-          <input type="number" class="atrib-edit-val" id="ae-VIG" min="-1" max="20" value="0">
+          <input type="number" class="atrib-edit-val" id="ae-VIG" min="-1" max="20" value="0" oninput="previewAtributos()">
           <button class="atrib-spin-btn" onclick="stepAtrib('VIG',1)">+</button>
         </div>
       </div>
     </div>
+    <!-- Preview de ganhos -->
+    <div id="atrib-preview" style="display:none;background:#080010;border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:12px;font-family:'Share Tech Mono',monospace;font-size:0.75rem;"></div>
     <div style="font-size:0.65rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-bottom:16px;">
-      Distribuição: min –1 / máx 5 por atributo. Alterações afetam os recursos derivados.
+      ▸ VIG aumentado → +PV retroativo (×níveis já alcançados)<br>
+      ▸ PRE aumentado → +PE retroativo (×níveis já alcançados)<br>
+      ▸ INT aumentado → +1 perícia treinada à escolha<br>
+      ▸ AGI aumentado → +1 Defesa base<br>
+      ▸ FOR aumentado → +2 espaços de carga
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;">
       <button onclick="fecharModalAtributos()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Cancelar</button>
@@ -1440,7 +1519,36 @@
   </div>
 </div>
 
+<!-- Modal: Perícia grátis por INT -->
+<div id="modal-pericia-gratis" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:#0d0010;border:1px solid var(--purple);border-radius:12px;padding:28px 24px;max-width:420px;width:92%;box-shadow:0 0 40px var(--purple-glow);">
+    <div style="font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;">✦ Bônus de Intelecto</div>
+    <div id="pericia-gratis-titulo" style="font-size:1rem;font-weight:700;color:var(--purple-neon);margin-bottom:14px;">Escolha 1 perícia treinada</div>
+    <div style="font-size:0.65rem;color:#555;font-family:'Share Tech Mono',monospace;margin-bottom:12px;">▸ Selecione uma perícia que ainda não seja treinada.</div>
+    <div id="pericia-gratis-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:260px;overflow-y:auto;margin-bottom:16px;"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="fecharModalPericiasGratis()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Pular</button>
+    </div>
+  </div>
+</div>
+
 <!-- PATCH: Modal edição de NEX / PE / Deslocamento / Recursos -->
+<!-- MODAL RENOMEAR PERSONAGEM -->
+<div id="modal-renomear" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#0d0010;border:1px solid var(--purple);border-radius:12px;padding:28px 24px;max-width:380px;width:92%;box-shadow:0 0 40px var(--purple-glow);">
+    <div style="font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin-bottom:18px;">✎ Renomear Personagem</div>
+    <input id="input-renomear" type="text" maxlength="60"
+      style="width:100%;background:#080010;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;font-size:1.1rem;font-weight:700;padding:10px 14px;border-radius:6px;outline:none;margin-bottom:18px;transition:border-color 0.2s;"
+      onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border)'"
+      onkeydown="if(event.key==='Enter') salvarRenomear(); if(event.key==='Escape') fecharModalRenomear();"
+      placeholder="Nome do personagem">
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="fecharModalRenomear()" style="background:transparent;border:1px solid #333;color:#555;font-family:'Oswald',sans-serif;font-size:0.85rem;padding:8px 18px;border-radius:5px;cursor:pointer;transition:0.2s;" onmouseover="this.style.borderColor='#666';this.style.color='#888'" onmouseout="this.style.borderColor='#333';this.style.color='#555'">Cancelar</button>
+      <button onclick="salvarRenomear()" style="background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;padding:8px 20px;border-radius:5px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">✔ Salvar</button>
+    </div>
+  </div>
+</div>
+
 <div id="modal-nex">
   <div class="modal-nex-box">
     <div class="modal-atrib-title">✦ Editar Progressão</div>
@@ -1471,8 +1579,11 @@
     <!-- Preview automático -->
     <div id="nex-preview" style="background:#080010;border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin:12px 0;"></div>
     <div style="font-size:0.6rem;color:#444;font-family:'Share Tech Mono',monospace;margin-bottom:14px;">
-      ▸ PV e SAN calculados pela classe <strong style="color:#666;">${ficha?.classe || '—'}</strong> + atributos.<br>
-      ▸ PE máx = valor do NEX + AGI. Os valores atuais serão restaurados ao máximo.
+      ▸ PV, PE e SAN calculados pelas fórmulas oficiais da classe + atributos VIG/PRE.<br>
+      ▸ Combatente: PV=20+VIG (+5+VIG/nex) · PE=2+PRE (+2+PRE/nex) · SAN=12 (+3/nex)<br>
+      ▸ Especialista: PV=16+VIG (+3+VIG/nex) · PE=3+PRE (+3+PRE/nex) · SAN=16 (+4/nex)<br>
+      ▸ Ocultista: PV=12+VIG (+2+VIG/nex) · PE=4+PRE (+4+PRE/nex) · SAN=20 (+5/nex)<br>
+      ▸ Os valores atuais serão restaurados ao máximo ao salvar.
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end;">
       <button onclick="fecharModalNex()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Cancelar</button>
@@ -1514,98 +1625,103 @@ const PERICIAS = [
 // ══════════════════════════════════════════════
 // TABELA DE NEX — Ordem Paranormal oficial
 // ══════════════════════════════════════════════
+// Tabela de NEX — apenas para deslocamento (PE/turno é derivado da classe)
 const NEX_TABELA = [
-    { nex:'5%',  pe:3,  desl:'9m'  },
-    { nex:'10%', pe:4,  desl:'9m'  },
-    { nex:'15%', pe:5,  desl:'9m'  },
-    { nex:'20%', pe:6,  desl:'9m'  },
-    { nex:'25%', pe:7,  desl:'9m'  },
-    { nex:'30%', pe:8,  desl:'9m'  },
-    { nex:'35%', pe:9,  desl:'9m'  },
-    { nex:'40%', pe:10, desl:'9m'  },
-    { nex:'45%', pe:11, desl:'9m'  },
-    { nex:'50%', pe:12, desl:'9m'  },
-    { nex:'55%', pe:13, desl:'9m'  },
-    { nex:'60%', pe:14, desl:'9m'  },
-    { nex:'65%', pe:15, desl:'9m'  },
-    { nex:'70%', pe:16, desl:'9m'  },
-    { nex:'75%', pe:17, desl:'9m'  },
-    { nex:'80%', pe:18, desl:'9m'  },
-    { nex:'85%', pe:19, desl:'9m'  },
-    { nex:'90%', pe:20, desl:'9m'  },
-    { nex:'95%', pe:21, desl:'9m'  },
-    { nex:'99%', pe:22, desl:'9m'  },
+    { nex:'5%',  desl:'9m'  },
+    { nex:'10%', desl:'9m'  },
+    { nex:'15%', desl:'9m'  },
+    { nex:'20%', desl:'9m'  },
+    { nex:'25%', desl:'9m'  },
+    { nex:'30%', desl:'9m'  },
+    { nex:'35%', desl:'9m'  },
+    { nex:'40%', desl:'9m'  },
+    { nex:'45%', desl:'9m'  },
+    { nex:'50%', desl:'9m'  },
+    { nex:'55%', desl:'9m'  },
+    { nex:'60%', desl:'9m'  },
+    { nex:'65%', desl:'9m'  },
+    { nex:'70%', desl:'9m'  },
+    { nex:'75%', desl:'9m'  },
+    { nex:'80%', desl:'9m'  },
+    { nex:'85%', desl:'9m'  },
+    { nex:'90%', desl:'9m'  },
+    { nex:'95%', desl:'9m'  },
+    { nex:'99%', desl:'9m'  },
 ];
 
-// PV base por classe (valor inicial no NEX 5%)
-// A cada nível de exposição (a cada 5% de NEX) soma-se o incremento
-const CLASSE_PV = {
-    'Combatente':   { base: 20, inc: 4 },
-    'Especialista': { base: 16, inc: 3 },
-    'Ocultista':    { base: 12, inc: 2 },
-    'Sobrevivente': { base: 8,  inc: 2 },
+// Fórmulas por classe (valores confirmados pelo livro):
+// PV:  pvBase + VIG  (inicial),  pvInc + VIG por nível adicional
+// PE:  peBase + PRE  (inicial),  peInc + PRE por nível adicional
+// SAN: sanBase        (inicial),  sanInc por nível adicional
+// (nível 0 = NEX 5%, nível 1 = NEX 10%, ...)
+const CLASSE_FORMULA = {
+    'Combatente':   { pvBase: 20, pvInc: 5,  peBase: 2, peInc: 2,  sanBase: 12, sanInc: 3 },
+    'Especialista': { pvBase: 16, pvInc: 3,  peBase: 3, peInc: 3,  sanBase: 16, sanInc: 4 },
+    'Ocultista':    { pvBase: 12, pvInc: 2,  peBase: 4, peInc: 4,  sanBase: 20, sanInc: 5 },
+    'Sobrevivente': { pvBase: 8,  pvInc: 2,  peBase: 2, peInc: 1,  sanBase: 8,  sanInc: 2 },
 };
 
 // Sobrevivente não usa NEX_TABELA — tem progressão própria por estágio
 const SOBREVIVENTE_TABELA = [
-    { estagio: 1, pe: 1, desl: 9 },
-    { estagio: 2, pe: 1, desl: 9 },
-    { estagio: 3, pe: 1, desl: 9 },
-    { estagio: 4, pe: 1, desl: 9 },
-    { estagio: 5, pe: 1, desl: 9 },
+    { estagio: 1, desl: '9m' },
+    { estagio: 2, desl: '9m' },
+    { estagio: 3, desl: '9m' },
+    { estagio: 4, desl: '9m' },
+    { estagio: 5, desl: '9m' },
 ];
 
 function calcRecursosPorNex(nexStr, classe, atribs) {
     const vig = atribs?.VIG || 0;
     const pre = atribs?.PRE || 0;
-    const agi = atribs?.AGI || 0;
 
-    const classeNorm = Object.keys(CLASSE_PV).find(
+    // Normaliza o nome da classe
+    const classeNorm = Object.keys(CLASSE_FORMULA).find(
         c => c.toLowerCase() === (classe || '').toLowerCase()
     ) || 'Especialista';
 
-    const { base, inc } = CLASSE_PV[classeNorm];
+    const f = CLASSE_FORMULA[classeNorm];
 
-    // ── SOBREVIVENTE: progressão por estágio ──────────────────────────────
+    // ── SOBREVIVENTE: progressão por estágio 1–5 ─────────────────────────
     if (classeNorm === 'Sobrevivente') {
-        // nexStr recebe "Estágio 1" … "Estágio 5"
         const estagio = parseInt(nexStr?.replace(/\D/g, '')) || 1;
         const nivel   = Math.min(Math.max(estagio, 1), 5) - 1; // 0–4
         const entrada = SOBREVIVENTE_TABELA[nivel];
 
-        // PV = 8 + VIG  (+2 por estágio após o 1°, +VIG por estágio adicional)
-        // Fórmula equivalente: base + (inc × nivel) + VIG × (nivel + 1)
-        const pvMax  = base + (inc * nivel) + (vig  * (nivel + 1));
-        // SAN = 8 + PRE  (mesma lógica)
-        const sanMax = base + (inc * nivel) + (pre  * (nivel + 1));
-        // PE = 2 + PRE base, +1 por estágio — limite de gasto sempre 1
-        const peMax  = (2 + pre) + nivel;
+        // Estágio 1: PV = 8 + VIG; cada estágio adicional: +2 + VIG
+        const pvMax  = f.pvBase + vig + (f.pvInc + vig) * nivel;
+        // SAN funciona como PV mas baseada em PRE
+        const sanMax = f.sanBase + pre + (f.sanInc + pre) * nivel;
+        // PE = 2 + PRE base, +1 por estágio após o 1°; limite de gasto: 1/turno
+        const peMax  = f.peBase + pre + f.peInc * nivel;
 
         return {
             pvMax,
             sanMax,
             peMax,
-            pe:         entrada.pe,   // limite de gasto por turno (sempre 1)
-            desl:       entrada.desl,
-            limitePE:   1,            // sobrevivente nunca gasta mais que 1 por turno
+            pe: 1, // sobrevivente nunca gasta mais que 1 PE por turno
+            desl: entrada.desl,
             isSobrevivente: true,
         };
     }
 
     // ── CLASSES NORMAIS: progressão por NEX ──────────────────────────────
+    // nivel 0 = NEX 5% (entrada inicial), nivel 1 = NEX 10%, etc.
     const idx   = NEX_TABELA.findIndex(n => n.nex === nexStr);
     const nivel = idx >= 0 ? idx : 0;
     const entrada = NEX_TABELA[nivel] || NEX_TABELA[0];
 
-    const pvMax  = base + (inc * nivel) + (vig * (nivel + 1));
-    const sanMax = base + (inc * nivel) + (pre * (nivel + 1));
-    const peMax  = entrada.pe + agi;
+    // NEX 5% (nivel 0): pvBase + VIG
+    // NEX 10%+ (nivel N): pvBase + VIG + N × (pvInc + VIG)
+    const pvMax  = f.pvBase  + vig + f.pvInc  * nivel + vig  * nivel;
+    const peMax  = f.peBase  + pre + f.peInc  * nivel + pre  * nivel;
+    const sanMax = f.sanBase +       f.sanInc * nivel;
 
+    // PE/turno = peMax (o jogador tem livre acesso, sem limite por turno)
     return {
         pvMax,
         sanMax,
         peMax,
-        pe:   entrada.pe,
+        pe:   peMax,
         desl: entrada.desl,
     };
 }
@@ -2573,15 +2689,26 @@ window.onload = function() {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = function(ev) {
-            const base64 = ev.target.result;
-            document.getElementById('foto-agente').src = base64;
-            estado.fotoCostum = base64;
-            if (ficha) {
-                const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-                const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-                if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
-            }
-            salvarEstado(); mostrarToast('📷 FOTO ATUALIZADA');
+            const cropImg = document.getElementById('foto-crop-img');
+            if (fotoCropperInstance) { fotoCropperInstance.destroy(); fotoCropperInstance = null; }
+            cropImg.src = ev.target.result;
+            document.getElementById('foto-crop-overlay').classList.add('show');
+            cropImg.onload = function() {
+                fotoCropperInstance = new Cropper(cropImg, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 0.85,
+                    guides: true,
+                    center: true,
+                    highlight: true,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                    minContainerWidth: 300,
+                    minContainerHeight: 300,
+                });
+            };
         };
         reader.readAsDataURL(file);
     });
@@ -2663,15 +2790,28 @@ async function carregarFicha() {
         if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
         if (!estado.progressao)            estado.progressao = {};
     } else {
-        // Primeiro acesso: calcula máximos pelos atributos
-        const vig = ficha.atributos?.VIG || 0;
-        const pre = ficha.atributos?.PRE || 0;
-        const agi = ficha.atributos?.AGI || 0;
-        estado.vida = { max: 8 + vig * 4, atual: 8 + vig * 4 };
-        estado.san  = { max: 8 + pre * 4, atual: 8 + pre * 4 };
-        estado.esf  = { max: 4 + agi * 2, atual: 4 + agi * 2 };
+        // Primeiro acesso: calcula máximos pelos atributos e classe
+        const calc = calcRecursosPorNex('5%', ficha.classe, ficha.atributos);
+        estado.vida = { max: calc.pvMax, atual: calc.pvMax };
+        estado.san  = { max: calc.sanMax, atual: calc.sanMax };
+        estado.esf  = { max: calc.peMax, atual: calc.peMax };
+        estado.progressao = { nex: '5%', pe: calc.pe, desl: '9m' };
+
         if (ficha.pericias) ficha.pericias.forEach(p => {
             estado.pericias[p] = { bonus: 0, outros: 0, treinada: true };
+        });
+
+        // Adicionar automaticamente as habilidades de NEX 5% (ou Estágio 1) da classe
+        if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
+        const classeNorm = ficha.classe || '';
+        const nexInicial = classeNorm.toLowerCase() === 'sobrevivente' ? 'Estágio 1' : '5%';
+        const habsIniciais = (HABILIDADES_DB.classe || []).filter(h =>
+            h.classe?.toLowerCase() === classeNorm.toLowerCase() && h.nex === nexInicial
+        );
+        habsIniciais.forEach(h => {
+            if (!estado.habilidadesPersonagem.some(x => x.nome === h.nome)) {
+                estado.habilidadesPersonagem.push({ ...h });
+            }
         });
     }
     sincronizarAgenteFirebase();
@@ -3528,6 +3668,7 @@ function abrirModalAtributos() {
         const el = document.getElementById('ae-' + k);
         if (el) el.value = a[k] ?? 0;
     });
+    document.getElementById('atrib-preview').style.display = 'none';
     document.getElementById('modal-atributos').style.display = 'flex';
 }
 
@@ -3538,36 +3679,172 @@ function fecharModalAtributos() {
 function stepAtrib(key, delta) {
     const el = document.getElementById('ae-' + key); if (!el) return;
     el.value = Math.max(-1, (parseInt(el.value) || 0) + delta);
+    previewAtributos();
+}
+
+function previewAtributos() {
+    const prev = document.getElementById('atrib-preview');
+    if (!ficha) return;
+    const antigos = ficha.atributos || {};
+    const novos = {};
+    ['FOR','AGI','INT','PRE','VIG'].forEach(k => {
+        const el = document.getElementById('ae-' + k);
+        novos[k] = el ? (parseInt(el.value) || 0) : (antigos[k] || 0);
+    });
+
+    const nex  = estado.progressao?.nex || '5%';
+    const calcNovo  = calcRecursosPorNex(nex, ficha.classe, novos);
+    const calcVelho = calcRecursosPorNex(nex, ficha.classe, antigos);
+
+    const linhas = [];
+
+    const diffPV = calcNovo.pvMax - calcVelho.pvMax;
+    if (diffPV !== 0) linhas.push(`<span style="color:${diffPV>0?'#e84040':'#888'}">❤ PV: ${estado.vida.max} → ${calcNovo.pvMax} (${diffPV>0?'+':''}${diffPV})</span>`);
+
+    const diffPE = calcNovo.peMax - calcVelho.peMax;
+    if (diffPE !== 0) linhas.push(`<span style="color:${diffPE>0?'var(--orange)':'#888'}">⚡ PE: ${estado.esf.max} → ${calcNovo.peMax} (${diffPE>0?'+':''}${diffPE})</span>`);
+
+    const diffSAN = calcNovo.sanMax - calcVelho.sanMax;
+    if (diffSAN !== 0) linhas.push(`<span style="color:${diffSAN>0?'var(--purple-neon)':'#888'}">🧠 SAN: ${estado.san.max} → ${calcNovo.sanMax} (${diffSAN>0?'+':''}${diffSAN})</span>`);
+
+    const diffAGI = (novos.AGI||0) - (antigos.AGI||0);
+    if (diffAGI !== 0) {
+        const defAtual = 10 + (antigos.AGI||0);
+        const defNova  = 10 + (novos.AGI||0);
+        linhas.push(`<span style="color:${diffAGI>0?'#4a9eff':'#888'}">🛡 Defesa: ${defAtual} → ${defNova} (${diffAGI>0?'+':''}${diffAGI})</span>`);
+    }
+
+    const diffINT = (novos.INT||0) - (antigos.INT||0);
+    if (diffINT > 0) linhas.push(`<span style="color:#39d353">📚 +${diffINT} perícia(s) treinada(s) à escolha</span>`);
+
+    const diffFOR = (novos.FOR||0) - (antigos.FOR||0);
+    if (diffFOR !== 0) linhas.push(`<span style="color:${diffFOR>0?'#f5c842':'#888'}">🎒 Carga: ${diffFOR>0?'+':''}${diffFOR*2} espaços</span>`);
+
+    if (linhas.length === 0) {
+        prev.style.display = 'none';
+        return;
+    }
+    prev.style.display = 'block';
+    prev.innerHTML = '<div style="color:#555;margin-bottom:6px;letter-spacing:2px;text-transform:uppercase;font-size:0.6rem;">Preview dos ganhos:</div>' + linhas.join('<br>');
 }
 
 function salvarAtributos() {
     if (!ficha) return;
     if (!ficha.atributos) ficha.atributos = {};
+
+    const antigos = { ...ficha.atributos };
     ['FOR','AGI','INT','PRE','VIG'].forEach(k => {
         const el = document.getElementById('ae-' + k);
         if (el) ficha.atributos[k] = Math.max(-1, parseInt(el.value) || 0);
     });
+
     // Persistir no localStorage
     const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
     const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
     if (idx !== -1) { agentes[idx].atributos = ficha.atributos; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
-    // Recalcular recursos derivados
-    const vig = ficha.atributos.VIG || 0;
-    const pre = ficha.atributos.PRE || 0;
-    const novoVidaMax = 8 + vig * 4;
-    const novoSanMax  = 8 + pre * 4;
-    if (estado.vida.max !== novoVidaMax) {
-        const diff = novoVidaMax - estado.vida.max;
-        estado.vida.max   = novoVidaMax;
-        estado.vida.atual = Math.min(estado.vida.atual + diff, novoVidaMax);
+
+    // Recalcular recursos pela classe + NEX atual
+    const nex  = estado.progressao?.nex || '5%';
+    const calc = calcRecursosPorNex(nex, ficha.classe, ficha.atributos);
+
+    // PV — VIG retroativo
+    const diffPV = calc.pvMax - estado.vida.max;
+    estado.vida.max   = calc.pvMax;
+    estado.vida.atual = Math.max(0, Math.min(estado.vida.atual + Math.max(0, diffPV), calc.pvMax));
+
+    // SAN — sem atributo direto, mas classe pode ter mudado (edge case)
+    const diffSAN = calc.sanMax - estado.san.max;
+    estado.san.max   = calc.sanMax;
+    estado.san.atual = Math.max(0, Math.min(estado.san.atual + Math.max(0, diffSAN), calc.sanMax));
+
+    // PE — PRE retroativo
+    const diffPE = calc.peMax - estado.esf.max;
+    estado.esf.max   = calc.peMax;
+    estado.esf.atual = Math.max(0, Math.min(estado.esf.atual + Math.max(0, diffPE), calc.peMax));
+
+    // INT — perícia treinada grátis por ponto ganho
+    const diffINT = (ficha.atributos.INT || 0) - (antigos.INT || 0);
+    if (diffINT > 0) {
+        // Abre seletor de perícia(s) após salvar
+        estado._periciasGratisINT = (estado._periciasGratisINT || 0) + diffINT;
     }
-    if (estado.san.max !== novoSanMax) {
-        const diff = novoSanMax - estado.san.max;
-        estado.san.max   = novoSanMax;
-        estado.san.atual = Math.min(estado.san.atual + diff, novoSanMax);
+
+    // FOR — carga aumenta +2 por ponto
+    const diffFOR = (ficha.atributos.FOR || 0) - (antigos.FOR || 0);
+    if (diffFOR !== 0) {
+        if (!estado.invStats) estado.invStats = {};
+        estado.invStats.cargaMax = Math.max(0, (estado.invStats.cargaMax || 20) + diffFOR * 2);
     }
-    salvarEstado(); fecharModalAtributos(); renderFicha();
-    mostrarToast('✦ ATRIBUTOS ATUALIZADOS');
+
+    salvarEstado();
+    fecharModalAtributos();
+    renderFicha();
+
+    // Monta toast detalhado
+    const partes = [];
+    if (diffPV > 0)  partes.push(`+${diffPV} PV`);
+    if (diffPE > 0)  partes.push(`+${diffPE} PE`);
+    if (diffSAN > 0) partes.push(`+${diffSAN} SAN`);
+    if (diffINT > 0) partes.push(`+${diffINT} perícia`);
+    if (diffFOR > 0) partes.push(`+${diffFOR*2} carga`);
+    mostrarToast('✦ ATRIBUTOS ATUALIZADOS' + (partes.length ? ' · ' + partes.join(' · ') : ''));
+
+    // Se ganhou perícias por INT, abre modal de seleção
+    if (estado._periciasGratisINT > 0) {
+        setTimeout(() => abrirModalPericiasGratis(), 400);
+    }
+}
+
+// ══════════════════════════════════════════════
+// MODAL — PERÍCIA GRÁTIS (bônus INT)
+// ══════════════════════════════════════════════
+function abrirModalPericiasGratis() {
+    const qtd = estado._periciasGratisINT || 0;
+    if (qtd <= 0) return;
+    const titulo = document.getElementById('pericia-gratis-titulo');
+    if (titulo) titulo.textContent = `Escolha ${qtd} perícia${qtd > 1 ? 's' : ''} treinada${qtd > 1 ? 's' : ''}`;
+    renderPericiasGratis();
+    document.getElementById('modal-pericia-gratis').style.display = 'flex';
+}
+
+function fecharModalPericiasGratis() {
+    document.getElementById('modal-pericia-gratis').style.display = 'none';
+    estado._periciasGratisINT = 0;
+    salvarEstado();
+}
+
+function renderPericiasGratis() {
+    const grid = document.getElementById('pericia-gratis-grid');
+    if (!grid) return;
+    grid.innerHTML = PERICIAS.map(p => {
+        const jaTreinada = estado.pericias[p.nome]?.treinada;
+        if (jaTreinada) return ''; // já tem
+        return `<button onclick="escolherPericiasGratis('${p.nome}')"
+            style="background:#0d0010;border:1px solid var(--border);color:#ccc;font-family:'Oswald',sans-serif;
+                   font-size:0.75rem;font-weight:700;letter-spacing:1px;padding:8px 10px;border-radius:5px;
+                   cursor:pointer;text-align:left;transition:0.15s;display:flex;justify-content:space-between;align-items:center;"
+            onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--purple-neon)'"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='#ccc'">
+            <span>${p.nome}</span>
+            <span style="font-size:0.6rem;color:var(--purple-neon);font-family:'Share Tech Mono',monospace;">${p.atrib}</span>
+        </button>`;
+    }).join('');
+}
+
+function escolherPericiasGratis(nome) {
+    if (!estado.pericias[nome]) estado.pericias[nome] = { bonus: 0, outros: 0, treinada: false };
+    estado.pericias[nome].treinada = true;
+    estado._periciasGratisINT = Math.max(0, (estado._periciasGratisINT || 1) - 1);
+    salvarEstado();
+    renderPericias();
+    mostrarToast(`✦ ${nome.toUpperCase()} TREINADA`);
+    if (estado._periciasGratisINT > 0) {
+        renderPericiasGratis(); // atualiza o grid (remove a recém-escolhida)
+        const titulo = document.getElementById('pericia-gratis-titulo');
+        if (titulo) titulo.textContent = `Escolha ${estado._periciasGratisINT} perícia${estado._periciasGratisINT > 1 ? 's' : ''} treinada${estado._periciasGratisINT > 1 ? 's' : ''}`;
+    } else {
+        fecharModalPericiasGratis();
+    }
 }
 
 // ══════════════════════════════════════════════
@@ -3655,6 +3932,65 @@ function salvarNex() {
 }
 </script>
     <script>
+
+        /* ===== FOTO AGENTE — CROPPER ===== */
+        let fotoCropperInstance = null;
+
+        function confirmarFotoCrop() {
+            if (!fotoCropperInstance) return;
+            const canvas = fotoCropperInstance.getCroppedCanvas({ width: 300, height: 300 });
+            if (!canvas) return;
+            const base64 = canvas.toDataURL('image/jpeg', 0.92);
+            document.getElementById('foto-agente').src = base64;
+            estado.fotoCostum = base64;
+            if (ficha) {
+                const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+                const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+                if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
+            }
+            salvarEstado();
+            mostrarToast('📷 FOTO ATUALIZADA');
+            cancelarFotoCrop();
+        }
+
+        function cancelarFotoCrop() {
+            document.getElementById('foto-crop-overlay').classList.remove('show');
+            if (fotoCropperInstance) { fotoCropperInstance.destroy(); fotoCropperInstance = null; }
+            document.getElementById('foto-input').value = '';
+        }
+
+        /* ===== RENOMEAR PERSONAGEM ===== */
+        function abrirModalRenomear() {
+            const nomeAtual = ficha ? ficha.nome : '';
+            document.getElementById('input-renomear').value = nomeAtual;
+            document.getElementById('modal-renomear').style.display = 'flex';
+            setTimeout(() => {
+                const inp = document.getElementById('input-renomear');
+                inp.focus(); inp.select();
+            }, 50);
+        }
+
+        function fecharModalRenomear() {
+            document.getElementById('modal-renomear').style.display = 'none';
+        }
+
+        function salvarRenomear() {
+            const novoNome = document.getElementById('input-renomear').value.trim();
+            if (!novoNome) return;
+            ficha.nome = novoNome;
+            // Atualiza display
+            document.getElementById('display-nome').textContent = ficha.nome + (ficha.codinome ? ` "${ficha.codinome}"` : '');
+            document.title = `F.I.C.H.A. – ${ficha.nome}`;
+            // Salva no estado
+            if (estado) { estado.nome = novoNome; salvarEstado(); }
+            // Atualiza lista de agentes
+            const chave = getPrefix() + 'lista_agentes';
+            const agentes = JSON.parse(localStorage.getItem(chave)) || [];
+            const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+            if (idx !== -1) { agentes[idx].nome = novoNome; localStorage.setItem(chave, JSON.stringify(agentes)); }
+            fecharModalRenomear();
+            mostrarToast('✎ NOME ATUALIZADO');
+        }
 
         /* ===== SISTEMA DE TEMAS ===== */
         function toggleTemas(e) {
