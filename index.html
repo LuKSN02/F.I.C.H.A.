@@ -581,6 +581,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getDatabase, ref, get, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
@@ -594,6 +595,13 @@
 
         const app  = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db   = getDatabase(app);
+
+        // Expõe Firebase Database para o script global
+        window._firebaseDB  = db;
+        window._firebaseRef = ref;
+        window._firebaseGet = get;
+        window._firebaseRemove = remove;
 
         // Converte nome de usuário em email interno do Firebase
         function toEmail(usuario) {
@@ -768,11 +776,34 @@
         /* =============================================
            AGENTES
         ============================================= */
-        function carregarAgentes() {
+        async function carregarAgentes() {
             const lista    = document.getElementById('lista-agentes');
             const contador = document.getElementById('contador');
-            const chave    = getPrefix() + 'lista_agentes';
-            const agentes  = JSON.parse(localStorage.getItem(chave)) || [];
+            const usuario  = getUsuarioLogado();
+            const chaveLocal = getPrefix() + 'lista_agentes';
+
+            lista.innerHTML = `<div class="col-12"><p class="text-secondary" style="font-family:monospace;letter-spacing:1px;">▸ Carregando agentes...</p></div>`;
+
+            let agentes = [];
+
+            // Tenta buscar do Firebase primeiro
+            if (window._firebaseDB && usuario) {
+                try {
+                    const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}`));
+                    if (snap.exists()) {
+                        const dados = snap.val();
+                        agentes = Object.values(dados).filter(Boolean);
+                        // Sincroniza com localStorage como cache
+                        localStorage.setItem(chaveLocal, JSON.stringify(agentes));
+                    }
+                } catch(err) {
+                    console.warn('Firebase indisponível, usando localStorage:', err);
+                    agentes = JSON.parse(localStorage.getItem(chaveLocal)) || [];
+                }
+            } else {
+                agentes = JSON.parse(localStorage.getItem(chaveLocal)) || [];
+            }
+
             contador.textContent = agentes.length;
 
             if (agentes.length === 0) {
@@ -791,8 +822,7 @@
                 if (!fotoSrc) {
                     const estadoSalvo = localStorage.getItem(getPrefix() + 'estado_ficha_' + agente.id);
                     if (estadoSalvo) {
-                        const est = JSON.parse(estadoSalvo);
-                        fotoSrc = est.fotoCostum || null;
+                        try { fotoSrc = JSON.parse(estadoSalvo).fotoCostum || null; } catch(e) {}
                     }
                 }
                 if (!fotoSrc) fotoSrc = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(agente.nome)}`;
@@ -807,7 +837,7 @@
                                 <p class="text-secondary small mb-2">${agente.origem}</p>
                                 <div class="d-flex justify-content-between align-items-center mt-2">
                                     <a href="ficha.html?id=${agente.id}" class="btn-acessar">Acessar Ficha</a>
-                                    <button onclick="deletarAgente(${index})" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem;" title="Remover agente">🗑</button>
+                                    <button onclick="deletarAgente('${agente.id}')" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem;" title="Remover agente">🗑</button>
                                 </div>
                             </div>
                         </div>
@@ -815,14 +845,24 @@
             });
         }
 
-        function deletarAgente(index) {
+        async function deletarAgente(agenteId) {
             if (!confirm('Remover este agente? Esta ação não pode ser desfeita.')) return;
-            const chave   = getPrefix() + 'lista_agentes';
-            const agentes = JSON.parse(localStorage.getItem(chave)) || [];
-            const agente  = agentes[index];
-            if (agente?.id) localStorage.removeItem(getPrefix() + 'estado_ficha_' + agente.id);
-            agentes.splice(index, 1);
-            localStorage.setItem(chave, JSON.stringify(agentes));
+            const usuario  = getUsuarioLogado();
+            const chave    = getPrefix() + 'lista_agentes';
+            const agentes  = JSON.parse(localStorage.getItem(chave)) || [];
+            const idx      = agentes.findIndex(a => String(a.id) === String(agenteId));
+            if (idx !== -1) {
+                agentes.splice(idx, 1);
+                localStorage.setItem(chave, JSON.stringify(agentes));
+                localStorage.removeItem(getPrefix() + 'estado_ficha_' + agenteId);
+            }
+            // Remove do Firebase
+            if (window._firebaseDB && usuario) {
+                try {
+                    await window._firebaseRemove(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${agenteId}`));
+                    await window._firebaseRemove(window._firebaseRef(window._firebaseDB, `fichas/${agenteId}`));
+                } catch(err) { console.warn('Erro ao remover do Firebase:', err); }
+            }
             carregarAgentes();
         }
 
@@ -904,14 +944,6 @@ function salvarFotoPerfil(event) {
 
     const reader = new FileReader();
     reader.onload = function(e) {
-        // GIF: pula o cropper e salva direto para preservar a animação
-        if (file.type === 'image/gif') {
-            localStorage.setItem(getAvatarKey(), e.target.result);
-            atualizarAvatar();
-            document.getElementById('input-foto-perfil').value = '';
-            return;
-        }
-
         const cropImg = document.getElementById('crop-img');
 
         if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
