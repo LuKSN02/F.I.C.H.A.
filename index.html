@@ -904,6 +904,14 @@ function salvarFotoPerfil(event) {
 
     const reader = new FileReader();
     reader.onload = function(e) {
+        // GIF: pula o cropper e salva direto para preservar a animação
+        if (file.type === 'image/gif') {
+            localStorage.setItem(getAvatarKey(), e.target.result);
+            atualizarAvatar();
+            document.getElementById('input-foto-perfil').value = '';
+            return;
+        }
+
         const cropImg = document.getElementById('crop-img');
 
         if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }

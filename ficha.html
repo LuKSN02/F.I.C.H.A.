@@ -2689,6 +2689,21 @@ window.onload = function() {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = function(ev) {
+            // GIF: pula o cropper e salva direto para preservar a animação
+            if (file.type === 'image/gif') {
+                const base64 = ev.target.result;
+                document.getElementById('foto-agente').src = base64;
+                estado.fotoCostum = base64;
+                if (ficha) {
+                    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+                    const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+                    if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
+                }
+                salvarEstado(); mostrarToast('📷 FOTO ATUALIZADA');
+                document.getElementById('foto-input').value = '';
+                return;
+            }
+
             const cropImg = document.getElementById('foto-crop-img');
             if (fotoCropperInstance) { fotoCropperInstance.destroy(); fotoCropperInstance = null; }
             cropImg.src = ev.target.result;
