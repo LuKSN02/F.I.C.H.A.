@@ -381,6 +381,226 @@
     color: #555;
   }
   .crop-btn-cancel:hover { border-color: #666; color: #888; }
+
+    /* ===== PAINEL DE PERFIL ESTILO DISCORD ===== */
+    #perfil-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+        z-index: 9998; align-items: center; justify-content: center;
+    }
+    #perfil-overlay.show { display: flex; }
+
+    .perfil-card {
+        background: #111115;
+        border-radius: 14px;
+        width: 340px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        position: relative;
+        font-family: 'Oswald', sans-serif;
+    }
+
+    /* Banner */
+    .perfil-banner {
+        width: 100%; height: 110px;
+        background: linear-gradient(135deg, var(--tema-primary-dark), #000);
+        background-size: cover; background-position: center;
+        position: relative; cursor: pointer;
+        transition: filter 0.2s;
+    }
+    .perfil-banner:hover .perfil-banner-edit { opacity: 1; }
+    .perfil-banner-edit {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: 0.2s;
+        font-size: 0.7rem; letter-spacing: 2px; color: #ccc;
+        font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* Avatar sobre o banner */
+    .perfil-avatar-wrap {
+        position: absolute;
+        bottom: -38px; left: 18px;
+        cursor: pointer;
+    }
+    .perfil-avatar {
+        width: 76px; height: 76px; border-radius: 50%;
+        border: 4px solid #111115;
+        background: #222; overflow: hidden;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.6rem; font-weight: 700;
+        color: var(--tema-primary-light);
+        position: relative; transition: filter 0.2s;
+    }
+    .perfil-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .perfil-avatar-edit {
+        position: absolute; inset: 0; border-radius: 50%;
+        background: rgba(0,0,0,0.55);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: 0.2s;
+        font-size: 1.2rem;
+    }
+    .perfil-avatar-wrap:hover .perfil-avatar-edit { opacity: 1; }
+
+    /* Borda colorida do avatar */
+    .perfil-avatar-wrap.borda-ativa .perfil-avatar {
+        border-color: var(--perfil-borda, var(--tema-primary));
+        box-shadow: 0 0 12px var(--perfil-borda, var(--tema-primary));
+    }
+
+    /* Botões de ação topo direito */
+    .perfil-top-actions {
+        position: absolute; top: 8px; right: 8px;
+        display: flex; gap: 6px;
+    }
+    .perfil-top-btn {
+        background: rgba(0,0,0,0.6); border: 1px solid #333;
+        color: #aaa; font-size: 0.7rem; padding: 4px 10px;
+        border-radius: 4px; cursor: pointer; transition: 0.2s;
+        font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px;
+    }
+    .perfil-top-btn:hover { background: rgba(0,0,0,0.9); color: white; border-color: #555; }
+    .perfil-top-btn.danger:hover { border-color: #aa2222; color: #ff6666; }
+
+    /* Body do card */
+    .perfil-body { padding: 50px 18px 18px; }
+
+    .perfil-username {
+        font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 2px;
+    }
+    .perfil-handle {
+        font-size: 0.75rem; color: #666; margin-bottom: 10px;
+        font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* Status/recado */
+    .perfil-status {
+        background: #1a1a1f; border-radius: 6px; padding: 8px 12px;
+        font-size: 0.82rem; color: #aaa; margin-bottom: 10px;
+        border-left: 3px solid var(--tema-primary);
+        min-height: 34px; cursor: pointer; transition: border-color 0.2s;
+        font-style: italic;
+    }
+    .perfil-status:hover { border-left-color: var(--tema-primary-light); color: #ccc; }
+    .perfil-status.vazio { color: #444; font-style: italic; }
+
+    /* Divisor */
+    .perfil-divider { border: none; border-top: 1px solid #222; margin: 10px 0; }
+
+    /* Bio */
+    .perfil-bio-label {
+        font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase;
+        color: #555; margin-bottom: 4px;
+        font-family: 'Share Tech Mono', monospace;
+    }
+    .perfil-bio {
+        font-size: 0.82rem; color: #999; line-height: 1.5;
+        cursor: pointer; min-height: 20px; transition: color 0.2s;
+    }
+    .perfil-bio:hover { color: #ccc; }
+    .perfil-bio.vazio { color: #444; font-style: italic; }
+
+    /* Badges */
+    .perfil-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+    .perfil-badge {
+        display: flex; align-items: center; gap: 5px;
+        padding: 4px 10px; border-radius: 20px;
+        font-size: 0.7rem; font-weight: 700; letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .badge-mestre  { background: rgba(200,150,12,0.15); border: 1px solid #c8960c; color: #f5c842; }
+    .badge-novato  { background: rgba(80,80,100,0.2);   border: 1px solid #555;    color: #888; }
+    .badge-membro  { background: rgba(58,123,213,0.15); border: 1px solid #3a7bd5; color: #7ab3f5; }
+
+    /* Pronomes */
+    .perfil-pronomes {
+        font-size: 0.72rem; color: #555; margin-top: 4px;
+        font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* Data de entrada */
+    .perfil-membro-desde {
+        font-size: 0.65rem; color: #444; margin-top: 8px;
+        font-family: 'Share Tech Mono', monospace; letter-spacing: 1px;
+    }
+
+    /* Cor de destaque picker */
+    .perfil-cor-row {
+        display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap;
+    }
+    .perfil-cor-label {
+        font-size: 0.58rem; letter-spacing: 2px; color: #555;
+        text-transform: uppercase; font-family: 'Share Tech Mono', monospace;
+        margin-right: 4px;
+    }
+    .cor-btn {
+        width: 18px; height: 18px; border-radius: 50%; cursor: pointer;
+        border: 2px solid transparent; transition: 0.15s; flex-shrink: 0;
+    }
+    .cor-btn:hover, .cor-btn.ativa { border-color: white; transform: scale(1.2); }
+
+    /* Modal de edição inline */
+    .perfil-edit-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 10000; align-items: center; justify-content: center;
+    }
+    .perfil-edit-overlay.show { display: flex; }
+    .perfil-edit-box {
+        background: #0d0d0d; border: 1px solid var(--tema-primary-dark);
+        border-radius: 12px; padding: 24px; width: 320px;
+        box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3);
+    }
+    .perfil-edit-title {
+        font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
+        color: #666; margin-bottom: 14px;
+        font-family: 'Share Tech Mono', monospace;
+    }
+    .perfil-edit-input, .perfil-edit-textarea {
+        width: 100%; background: #1a1a1f; border: 1px solid #333;
+        color: white; font-family: 'Oswald', sans-serif; font-size: 0.95rem;
+        padding: 9px 12px; border-radius: 6px; outline: none;
+        transition: border-color 0.2s; resize: vertical;
+    }
+    .perfil-edit-input:focus, .perfil-edit-textarea:focus { border-color: var(--tema-primary); }
+    .perfil-edit-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+    .perfil-edit-btn-ok {
+        background: var(--tema-primary-dark); border: 1px solid var(--tema-primary);
+        color: white; font-family: 'Oswald', sans-serif; font-size: 0.85rem;
+        font-weight: 700; padding: 7px 18px; border-radius: 5px; cursor: pointer; transition: 0.2s;
+    }
+    .perfil-edit-btn-ok:hover { background: var(--tema-primary); }
+    .perfil-edit-btn-cancel {
+        background: transparent; border: 1px solid #333; color: #555;
+        font-family: 'Oswald', sans-serif; font-size: 0.85rem;
+        padding: 7px 18px; border-radius: 5px; cursor: pointer; transition: 0.2s;
+    }
+    .perfil-edit-btn-cancel:hover { border-color: #666; color: #888; }
+
+    /* Crop banner */
+    .banner-crop-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.97); z-index: 100000;
+        flex-direction: column; align-items: center; justify-content: center;
+        gap: 16px; padding: 24px;
+    }
+    .banner-crop-overlay.show { display: flex; }
+    .banner-crop-area {
+        width: 100%; max-width: 600px; height: 220px;
+        overflow: hidden; border: 1px solid var(--tema-primary); background: #000;
+    }
+    .banner-crop-area img { display: block; max-width: 100%; }
+    .banner-crop-btns { display: flex; gap: 10px; }
+    .banner-crop-btn {
+        font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
+        letter-spacing: 1px; padding: 8px 20px; border-radius: 2px;
+        cursor: pointer; transition: 0.2s; border: 1px solid;
+    }
+    .banner-crop-btn-ok { background: rgba(58,0,100,0.6); border-color: var(--tema-primary); color: var(--tema-primary-light); }
+    .banner-crop-btn-ok:hover { background: var(--tema-primary-dark); }
+    .banner-crop-btn-cancel { background: transparent; border-color: #333; color: #555; }
+    .banner-crop-btn-cancel:hover { border-color: #666; color: #888; }
   
   /* ===== RESPONSIVIDADE MOBILE ===== */
 @media (max-width: 576px) {
@@ -501,21 +721,14 @@
                     </div>
                 </div>
 
-                <div class="avatar-wrapper" id="avatar-wrapper" onclick="toggleDropdown(event)">
+                <div class="avatar-wrapper" id="avatar-wrapper" onclick="abrirPainelPerfil(event)">
                     <div class="avatar-circle" id="avatar-circle">
                         <span id="avatar-iniciais"></span>
                     </div>
-                    <div class="avatar-dropdown" id="avatar-dropdown">
-                        <div class="dd-username" id="dd-username-label"></div>
-                        <div class="dd-item" onclick="abrirSeletorFoto(event)">
-                            📷 Alterar foto
-                        </div>
-                        <div class="dd-item danger" onclick="fazerLogout()">
-                            ✕ Sair
-                        </div>
-                    </div>
                 </div>
-                <input type="file" id="input-foto-perfil" accept="image/*" onchange="salvarFotoPerfil(event)">
+                <input type="file" id="input-foto-perfil"   accept="image/*" onchange="salvarFotoPerfil(event)"   style="display:none">
+                <input type="file" id="input-banner-perfil" accept="image/*" onchange="salvarBannerPerfil(event)" style="display:none">
+                <span id="dd-username-label" style="display:none"></span>
             </div>
         </div>
     </nav>
@@ -581,7 +794,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getDatabase, ref, get, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
@@ -597,10 +810,11 @@
         const auth = getAuth(app);
         const db   = getDatabase(app);
 
-        // Expõe Firebase Database para o script global
-        window._firebaseDB  = db;
-        window._firebaseRef = ref;
-        window._firebaseGet = get;
+        // Expõe Firebase Database para scripts globais
+        window._firebaseDB     = db;
+        window._firebaseRef    = ref;
+        window._firebaseSet    = set;
+        window._firebaseGet    = get;
         window._firebaseRemove = remove;
 
         // Converte nome de usuário em email interno do Firebase
@@ -776,34 +990,11 @@
         /* =============================================
            AGENTES
         ============================================= */
-        async function carregarAgentes() {
+        function carregarAgentes() {
             const lista    = document.getElementById('lista-agentes');
             const contador = document.getElementById('contador');
-            const usuario  = getUsuarioLogado();
-            const chaveLocal = getPrefix() + 'lista_agentes';
-
-            lista.innerHTML = `<div class="col-12"><p class="text-secondary" style="font-family:monospace;letter-spacing:1px;">▸ Carregando agentes...</p></div>`;
-
-            let agentes = [];
-
-            // Tenta buscar do Firebase primeiro
-            if (window._firebaseDB && usuario) {
-                try {
-                    const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}`));
-                    if (snap.exists()) {
-                        const dados = snap.val();
-                        agentes = Object.values(dados).filter(Boolean);
-                        // Sincroniza com localStorage como cache
-                        localStorage.setItem(chaveLocal, JSON.stringify(agentes));
-                    }
-                } catch(err) {
-                    console.warn('Firebase indisponível, usando localStorage:', err);
-                    agentes = JSON.parse(localStorage.getItem(chaveLocal)) || [];
-                }
-            } else {
-                agentes = JSON.parse(localStorage.getItem(chaveLocal)) || [];
-            }
-
+            const chave    = getPrefix() + 'lista_agentes';
+            const agentes  = JSON.parse(localStorage.getItem(chave)) || [];
             contador.textContent = agentes.length;
 
             if (agentes.length === 0) {
@@ -822,7 +1013,8 @@
                 if (!fotoSrc) {
                     const estadoSalvo = localStorage.getItem(getPrefix() + 'estado_ficha_' + agente.id);
                     if (estadoSalvo) {
-                        try { fotoSrc = JSON.parse(estadoSalvo).fotoCostum || null; } catch(e) {}
+                        const est = JSON.parse(estadoSalvo);
+                        fotoSrc = est.fotoCostum || null;
                     }
                 }
                 if (!fotoSrc) fotoSrc = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(agente.nome)}`;
@@ -837,7 +1029,7 @@
                                 <p class="text-secondary small mb-2">${agente.origem}</p>
                                 <div class="d-flex justify-content-between align-items-center mt-2">
                                     <a href="ficha.html?id=${agente.id}" class="btn-acessar">Acessar Ficha</a>
-                                    <button onclick="deletarAgente('${agente.id}')" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem;" title="Remover agente">🗑</button>
+                                    <button onclick="deletarAgente(${index})" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem;" title="Remover agente">🗑</button>
                                 </div>
                             </div>
                         </div>
@@ -845,24 +1037,14 @@
             });
         }
 
-        async function deletarAgente(agenteId) {
+        function deletarAgente(index) {
             if (!confirm('Remover este agente? Esta ação não pode ser desfeita.')) return;
-            const usuario  = getUsuarioLogado();
-            const chave    = getPrefix() + 'lista_agentes';
-            const agentes  = JSON.parse(localStorage.getItem(chave)) || [];
-            const idx      = agentes.findIndex(a => String(a.id) === String(agenteId));
-            if (idx !== -1) {
-                agentes.splice(idx, 1);
-                localStorage.setItem(chave, JSON.stringify(agentes));
-                localStorage.removeItem(getPrefix() + 'estado_ficha_' + agenteId);
-            }
-            // Remove do Firebase
-            if (window._firebaseDB && usuario) {
-                try {
-                    await window._firebaseRemove(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${agenteId}`));
-                    await window._firebaseRemove(window._firebaseRef(window._firebaseDB, `fichas/${agenteId}`));
-                } catch(err) { console.warn('Erro ao remover do Firebase:', err); }
-            }
+            const chave   = getPrefix() + 'lista_agentes';
+            const agentes = JSON.parse(localStorage.getItem(chave)) || [];
+            const agente  = agentes[index];
+            if (agente?.id) localStorage.removeItem(getPrefix() + 'estado_ficha_' + agente.id);
+            agentes.splice(index, 1);
+            localStorage.setItem(chave, JSON.stringify(agentes));
             carregarAgentes();
         }
 
@@ -986,8 +1168,421 @@ function cancelarCrop() {
     if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
     document.getElementById('input-foto-perfil').value = '';
 }
+
+/* =============================================
+   PAINEL DE PERFIL — FIREBASE + LOCAL
+============================================= */
+let _perfilCampoAtual = null;
+let _bannerCropperInstance = null;
+
+function getPerfilKey(usuario) {
+    return 'perfil_' + (usuario || getUsuarioLogado() || '');
+}
+
+function getPerfilLocal() {
+    const u = getUsuarioLogado(); if (!u) return {};
+    try { return JSON.parse(localStorage.getItem(getPerfilKey(u))) || {}; } catch(e) { return {}; }
+}
+
+function setPerfilLocal(dados) {
+    const u = getUsuarioLogado(); if (!u) return;
+    localStorage.setItem(getPerfilKey(u), JSON.stringify(dados));
+}
+
+async function salvarPerfilFirebase(dados) {
+    const u = getUsuarioLogado(); if (!u) return;
+    if (window._firebaseDB) {
+        try {
+            const { ref, set } = { ref: window._firebaseRef, set: window._firebaseSet };
+            if (ref && set) await set(ref(window._firebaseDB, `perfis/${u}`), dados);
+        } catch(e) { console.warn('Perfil firebase erro:', e); }
+    }
+}
+
+async function carregarPerfilFirebase(usuario) {
+    if (!window._firebaseDB || !window._firebaseGet || !window._firebaseRef) return null;
+    try {
+        const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis/${usuario}`));
+        return snap.exists() ? snap.val() : null;
+    } catch(e) { return null; }
+}
+
+async function abrirPainelPerfil(e) {
+    if (e) e.stopPropagation();
+    const usuario = getUsuarioLogado(); if (!usuario) return;
+
+    // Carrega perfil local primeiro (rápido), depois Firebase
+    let perfil = getPerfilLocal();
+    renderPainelPerfil(usuario, perfil);
+    document.getElementById('perfil-overlay').classList.add('show');
+
+    // Atualiza do Firebase em background
+    const perfilFB = await carregarPerfilFirebase(usuario);
+    if (perfilFB) {
+        perfil = { ...perfil, ...perfilFB };
+        setPerfilLocal(perfil);
+        renderPainelPerfil(usuario, perfil);
+    }
+}
+
+async function renderPainelPerfil(usuario, perfil) {
+    // Username
+    document.getElementById('perfil-username').textContent = usuario;
+    document.getElementById('perfil-handle').textContent   = '@' + usuario;
+
+    // Avatar
+    const avatarEl = document.getElementById('perfil-avatar-img');
+    const fotoSalva = localStorage.getItem(getAvatarKey()) || perfil.foto || '';
+    const iniciais  = usuario.substring(0,2).toUpperCase();
+    if (fotoSalva) {
+        avatarEl.innerHTML = `<img src="${fotoSalva}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
+    } else {
+        avatarEl.innerHTML = `<span>${iniciais}</span><div class="perfil-avatar-edit">📷</div>`;
+    }
+
+    // Borda colorida
+    const corBorda = perfil.corBorda || '';
+    const wrap = document.getElementById('perfil-avatar-wrap');
+    if (corBorda) {
+        wrap.classList.add('borda-ativa');
+        wrap.style.setProperty('--perfil-borda', corBorda);
+        document.querySelectorAll('.cor-btn').forEach(b => {
+            b.classList.toggle('ativa', b.dataset.cor === corBorda);
+        });
+    }
+
+    // Banner
+    const banner = document.getElementById('perfil-banner');
+    if (perfil.banner) {
+        banner.style.backgroundImage = `url('${perfil.banner}')`;
+        banner.style.backgroundSize  = 'cover';
+    } else {
+        banner.style.backgroundImage = '';
+    }
+
+    // Status
+    const statusEl = document.getElementById('perfil-status-display');
+    if (perfil.status) {
+        statusEl.textContent = '💬 ' + perfil.status;
+        statusEl.classList.remove('vazio');
+    } else {
+        statusEl.textContent = 'Clique para adicionar um recado...';
+        statusEl.classList.add('vazio');
+    }
+
+    // Bio
+    const bioEl = document.getElementById('perfil-bio-display');
+    if (perfil.bio) {
+        bioEl.textContent = perfil.bio;
+        bioEl.classList.remove('vazio');
+    } else {
+        bioEl.textContent = 'Nenhuma descrição ainda...';
+        bioEl.classList.add('vazio');
+    }
+
+    // Pronomes
+    const pronEl = document.getElementById('perfil-pronomes-display');
+    pronEl.textContent = perfil.pronomes || '';
+
+    // Data de entrada
+    const membroEl = document.getElementById('perfil-membro-desde');
+    const dataEntrada = perfil.dataEntrada || new Date().toLocaleDateString('pt-BR');
+    if (!perfil.dataEntrada) {
+        // Salva a data de entrada na primeira vez
+        perfil.dataEntrada = dataEntrada;
+        setPerfilLocal(perfil);
+    }
+    membroEl.textContent = '▸ Membro desde ' + dataEntrada;
+
+    // Badges — verifica se tem campanha no Firebase
+    await renderBadges(usuario);
+}
+
+async function renderBadges(usuario) {
+    const badgesEl = document.getElementById('perfil-badges');
+    badgesEl.innerHTML = '';
+
+    // Badge Membro (todos têm)
+    badgesEl.innerHTML += `<span class="perfil-badge badge-membro">⚡ Membro</span>`;
+
+    // Verifica se tem campanha criada → badge Mestre
+    let temCampanha = false;
+    if (window._firebaseDB) {
+        try {
+            const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
+            if (uid) {
+                const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `campanhas`));
+                if (snap.exists()) {
+                    const cams = snap.val();
+                    temCampanha = Object.values(cams).some(c => c && (c.criadorUid === uid || c.dono === uid || c.criador === usuario));
+                }
+            }
+        } catch(e) {}
+    }
+
+    if (temCampanha) {
+        badgesEl.innerHTML += `<span class="perfil-badge badge-mestre">👑 Mestre</span>`;
+    } else {
+        badgesEl.innerHTML += `<span class="perfil-badge badge-novato">🌑 Novato</span>`;
+    }
+}
+
+function fecharPainelPerfil(e) {
+    if (e && e.target !== document.getElementById('perfil-overlay')) return;
+    document.getElementById('perfil-overlay').classList.remove('show');
+}
+
+/* ── Edição de campos ── */
+function abrirEditPerfil(campo) {
+    _perfilCampoAtual = campo;
+    const overlay  = document.getElementById('perfil-edit-overlay');
+    const titleEl  = document.getElementById('perfil-edit-title');
+    const inputEl  = document.getElementById('perfil-edit-input');
+    const textaEl  = document.getElementById('perfil-edit-textarea');
+    const perfil   = getPerfilLocal();
+
+    inputEl.style.display = 'none';
+    textaEl.style.display = 'none';
+
+    if (campo === 'status') {
+        titleEl.textContent  = '▸ EDITAR RECADO';
+        inputEl.value        = perfil.status || '';
+        inputEl.placeholder  = 'Ex: O medo é real...';
+        inputEl.style.display = '';
+        overlay.classList.add('show');
+        setTimeout(() => { inputEl.focus(); inputEl.select(); }, 50);
+    } else if (campo === 'bio') {
+        titleEl.textContent   = '▸ EDITAR BIO';
+        textaEl.value         = perfil.bio || '';
+        textaEl.placeholder   = 'Fale um pouco sobre você...';
+        textaEl.style.display = '';
+        overlay.classList.add('show');
+        setTimeout(() => textaEl.focus(), 50);
+    } else if (campo === 'pronomes') {
+        titleEl.textContent  = '▸ PRONOMES';
+        inputEl.value        = perfil.pronomes || '';
+        inputEl.placeholder  = 'Ex: ele/dele';
+        inputEl.style.display = '';
+        overlay.classList.add('show');
+        setTimeout(() => { inputEl.focus(); inputEl.select(); }, 50);
+    }
+}
+
+function fecharEditPerfil() {
+    document.getElementById('perfil-edit-overlay').classList.remove('show');
+    _perfilCampoAtual = null;
+}
+
+async function salvarEditPerfil() {
+    const campo  = _perfilCampoAtual;
+    const inputEl = document.getElementById('perfil-edit-input');
+    const textaEl = document.getElementById('perfil-edit-textarea');
+    const valor  = (campo === 'bio' ? textaEl.value : inputEl.value).trim();
+    const perfil = getPerfilLocal();
+    perfil[campo] = valor;
+    setPerfilLocal(perfil);
+    await salvarPerfilFirebase(perfil);
+    fecharEditPerfil();
+    renderPainelPerfil(getUsuarioLogado(), perfil);
+}
+
+/* ── Borda colorida ── */
+async function aplicarCorBorda(el) {
+    const cor    = el.dataset.cor;
+    const perfil = getPerfilLocal();
+    perfil.corBorda = cor;
+    setPerfilLocal(perfil);
+    await salvarPerfilFirebase(perfil);
+    document.querySelectorAll('.cor-btn').forEach(b => b.classList.remove('ativa'));
+    el.classList.add('ativa');
+    const wrap = document.getElementById('perfil-avatar-wrap');
+    wrap.classList.add('borda-ativa');
+    wrap.style.setProperty('--perfil-borda', cor);
+    // Atualiza também o avatar-circle da navbar
+    const circle = document.getElementById('avatar-circle');
+    if (circle) { circle.style.borderColor = cor; circle.style.boxShadow = `0 0 8px ${cor}`; }
+}
+
+/* ── Foto do avatar via painel ── */
+function perfilClicarAvatar() {
+    document.getElementById('input-foto-perfil').click();
+}
+
+/* ── Banner ── */
+function perfilClicarBanner() {
+    document.getElementById('input-banner-perfil').click();
+}
+
+function salvarBannerPerfil(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        if (file.type === 'image/gif') {
+            _salvarBannerBase64(ev.target.result);
+            document.getElementById('input-banner-perfil').value = '';
+            return;
+        }
+        const cropImg = document.getElementById('banner-crop-img');
+        if (_bannerCropperInstance) { _bannerCropperInstance.destroy(); _bannerCropperInstance = null; }
+        cropImg.src = ev.target.result;
+        document.getElementById('banner-crop-overlay').classList.add('show');
+        cropImg.onload = function() {
+            _bannerCropperInstance = new Cropper(cropImg, {
+                aspectRatio: 600/110,
+                viewMode: 1, dragMode: 'move',
+                autoCropArea: 1, guides: false, center: false,
+                cropBoxMovable: true, cropBoxResizable: true,
+                minContainerWidth: 400, minContainerHeight: 150,
+            });
+        };
+    };
+    reader.readAsDataURL(file);
+}
+
+function confirmarBannerCrop() {
+    if (!_bannerCropperInstance) return;
+    const canvas = _bannerCropperInstance.getCroppedCanvas({ width: 680, height: 140 });
+    if (!canvas) return;
+    _salvarBannerBase64(canvas.toDataURL('image/jpeg', 0.9));
+    cancelarBannerCrop();
+}
+
+function cancelarBannerCrop() {
+    document.getElementById('banner-crop-overlay').classList.remove('show');
+    if (_bannerCropperInstance) { _bannerCropperInstance.destroy(); _bannerCropperInstance = null; }
+    document.getElementById('input-banner-perfil').value = '';
+}
+
+async function _salvarBannerBase64(base64) {
+    const perfil = getPerfilLocal();
+    perfil.banner = base64;
+    setPerfilLocal(perfil);
+    await salvarPerfilFirebase(perfil);
+    const banner = document.getElementById('perfil-banner');
+    banner.style.backgroundImage = `url('${base64}')`;
+    banner.style.backgroundSize  = 'cover';
+}
+
+/* ── Sobrescreve confirmarCrop para também atualizar o painel ── */
+const _confirmarCropOriginal = confirmarCrop;
+confirmarCrop = async function() {
+    if (!cropperInstance) return;
+    const canvas  = cropperInstance.getCroppedCanvas({ width: 300, height: 300 });
+    if (!canvas) return;
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    localStorage.setItem(getAvatarKey(), dataUrl);
+    // Salva também no perfil Firebase
+    const perfil  = getPerfilLocal();
+    perfil.foto   = dataUrl;
+    setPerfilLocal(perfil);
+    await salvarPerfilFirebase(perfil);
+    atualizarAvatar();
+    cancelarCrop();
+    // Atualiza avatar no painel se estiver aberto
+    const avatarEl = document.getElementById('perfil-avatar-img');
+    if (avatarEl) {
+        avatarEl.innerHTML = `<img src="${dataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
+    }
+};
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ===== PAINEL DE PERFIL ===== -->
+<div id="perfil-overlay" onclick="fecharPainelPerfil(event)">
+  <div class="perfil-card" onclick="event.stopPropagation()" id="perfil-card">
+
+    <!-- Banner -->
+    <div class="perfil-banner" id="perfil-banner" onclick="perfilClicarBanner()">
+      <div class="perfil-banner-edit">📷 Alterar banner</div>
+      <div class="perfil-top-actions">
+        <button class="perfil-top-btn" onclick="event.stopPropagation();abrirEditPerfil('status')">✎ Status</button>
+        <button class="perfil-top-btn danger" onclick="event.stopPropagation();fazerLogout()">✕ Sair</button>
+      </div>
+      <!-- Avatar sobre o banner -->
+      <div class="perfil-avatar-wrap" id="perfil-avatar-wrap" onclick="event.stopPropagation();perfilClicarAvatar()">
+        <div class="perfil-avatar" id="perfil-avatar-img">
+          <span id="perfil-avatar-iniciais"></span>
+          <div class="perfil-avatar-edit">📷</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="perfil-body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="perfil-username" id="perfil-username">—</div>
+          <div class="perfil-handle" id="perfil-handle">@—</div>
+          <div class="perfil-pronomes" id="perfil-pronomes-display" onclick="abrirEditPerfil('pronomes')" title="Editar pronomes"></div>
+        </div>
+        <button onclick="abrirEditPerfil('bio')" style="background:transparent;border:1px solid #333;color:#555;font-size:0.7rem;font-family:'Oswald',sans-serif;padding:4px 10px;border-radius:4px;cursor:pointer;transition:0.2s;margin-top:4px;" onmouseover="this.style.borderColor='var(--tema-primary)';this.style.color='var(--tema-primary-light)'" onmouseout="this.style.borderColor='#333';this.style.color='#555'">✎ Editar</button>
+      </div>
+
+      <!-- Status/recado -->
+      <div class="perfil-status vazio" id="perfil-status-display" onclick="abrirEditPerfil('status')">
+        Clique para adicionar um recado...
+      </div>
+
+      <hr class="perfil-divider">
+
+      <!-- Bio -->
+      <div class="perfil-bio-label">Sobre mim</div>
+      <div class="perfil-bio vazio" id="perfil-bio-display" onclick="abrirEditPerfil('bio')">
+        Nenhuma descrição ainda...
+      </div>
+
+      <hr class="perfil-divider">
+
+      <!-- Badges -->
+      <div class="perfil-bio-label">Cargos</div>
+      <div class="perfil-badges" id="perfil-badges"></div>
+
+      <!-- Data de entrada -->
+      <div class="perfil-membro-desde" id="perfil-membro-desde"></div>
+
+      <!-- Cor de destaque da borda do avatar -->
+      <hr class="perfil-divider">
+      <div class="perfil-cor-row">
+        <span class="perfil-cor-label">Borda</span>
+        <div class="cor-btn" data-cor="#3a7bd5" style="background:#3a7bd5" onclick="aplicarCorBorda(this)" title="Azul"></div>
+        <div class="cor-btn" data-cor="#cc1111" style="background:#cc1111" onclick="aplicarCorBorda(this)" title="Vermelho"></div>
+        <div class="cor-btn" data-cor="#9b30d9" style="background:#9b30d9" onclick="aplicarCorBorda(this)" title="Roxo"></div>
+        <div class="cor-btn" data-cor="#c8960c" style="background:#c8960c" onclick="aplicarCorBorda(this)" title="Dourado"></div>
+        <div class="cor-btn" data-cor="#39d353" style="background:#39d353" onclick="aplicarCorBorda(this)" title="Verde"></div>
+        <div class="cor-btn" data-cor="#ff6ec7" style="background:#ff6ec7" onclick="aplicarCorBorda(this)" title="Rosa"></div>
+        <div class="cor-btn" data-cor="#888888" style="background:#888888" onclick="aplicarCorBorda(this)" title="Cinza"></div>
+        <div class="cor-btn" data-cor="#ffffff" style="background:#ffffff" onclick="aplicarCorBorda(this)" title="Branco"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de edição de campo -->
+<div class="perfil-edit-overlay" id="perfil-edit-overlay" onclick="fecharEditPerfil()">
+  <div class="perfil-edit-box" onclick="event.stopPropagation()">
+    <div class="perfil-edit-title" id="perfil-edit-title">Editar</div>
+    <input type="text" class="perfil-edit-input" id="perfil-edit-input" style="display:none"
+      onkeydown="if(event.key==='Enter')salvarEditPerfil();if(event.key==='Escape')fecharEditPerfil();">
+    <textarea class="perfil-edit-textarea" id="perfil-edit-textarea" rows="4" style="display:none"
+      onkeydown="if(event.key==='Escape')fecharEditPerfil();"></textarea>
+    <div class="perfil-edit-btns">
+      <button class="perfil-edit-btn-cancel" onclick="fecharEditPerfil()">Cancelar</button>
+      <button class="perfil-edit-btn-ok" onclick="salvarEditPerfil()">✔ Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Crop do banner -->
+<div class="banner-crop-overlay" id="banner-crop-overlay">
+  <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:3px;color:#666;align-self:flex-start;">▸ AJUSTAR BANNER</div>
+  <div class="banner-crop-area">
+    <img id="banner-crop-img" src="" alt="banner">
+  </div>
+  <div class="banner-crop-btns">
+    <button class="banner-crop-btn banner-crop-btn-ok" onclick="confirmarBannerCrop()">✔ CONFIRMAR</button>
+    <button class="banner-crop-btn banner-crop-btn-cancel" onclick="cancelarBannerCrop()">✕ CANCELAR</button>
+  </div>
+</div>
 </body>
 </html>

@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <style>
 
     /* ===== SISTEMA DE TEMAS - ORDEM PARANORMAL ===== */
@@ -392,6 +394,178 @@
         .status-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
         .status-dot.offline { background: #444; }
 
+        /* ===== PAINEL DE PERFIL ESTILO DISCORD ===== */
+        #perfil-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            z-index: 9998; align-items: center; justify-content: center;
+        }
+        #perfil-overlay.show { display: flex; }
+        .perfil-card {
+            background: #111115; border-radius: 14px; width: 340px;
+            overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            position: relative; font-family: 'Oswald', sans-serif;
+        }
+        .perfil-banner {
+            width: 100%; height: 110px;
+            background: linear-gradient(135deg, var(--tema-primary-dark), #000);
+            background-size: cover; background-position: center;
+            position: relative; cursor: pointer; transition: filter 0.2s;
+        }
+        .perfil-banner:hover .perfil-banner-edit { opacity: 1; }
+        .perfil-banner-edit {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: 0.2s; font-size: 0.7rem; letter-spacing: 2px;
+            color: #ccc; font-family: 'Share Tech Mono', monospace;
+        }
+        .perfil-avatar-wrap { position: absolute; bottom: -38px; left: 18px; cursor: pointer; }
+        .perfil-avatar {
+            width: 76px; height: 76px; border-radius: 50%; border: 4px solid #111115;
+            background: #222; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; font-weight: 700; color: var(--tema-primary-light);
+            position: relative; transition: filter 0.2s;
+        }
+        .perfil-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .perfil-avatar-edit {
+            position: absolute; inset: 0; border-radius: 50%;
+            background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: 0.2s; font-size: 1.2rem;
+        }
+        .perfil-avatar-wrap:hover .perfil-avatar-edit { opacity: 1; }
+        .perfil-avatar-wrap.borda-ativa .perfil-avatar {
+            border-color: var(--perfil-borda, var(--tema-primary));
+            box-shadow: 0 0 12px var(--perfil-borda, var(--tema-primary));
+        }
+        .perfil-top-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
+        .perfil-top-btn {
+            background: rgba(0,0,0,0.6); border: 1px solid #333; color: #aaa;
+            font-size: 0.7rem; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: 0.2s;
+            font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px;
+        }
+        .perfil-top-btn:hover { background: rgba(0,0,0,0.9); color: white; border-color: #555; }
+        .perfil-top-btn.danger:hover { border-color: #aa2222; color: #ff6666; }
+        .perfil-body { padding: 50px 18px 18px; }
+        .perfil-username { font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 2px; }
+        .perfil-handle { font-size: 0.75rem; color: #666; margin-bottom: 10px; font-family: 'Share Tech Mono', monospace; }
+        .perfil-status {
+            background: #1a1a1f; border-radius: 6px; padding: 8px 12px;
+            font-size: 0.82rem; color: #aaa; margin-bottom: 10px;
+            border-left: 3px solid var(--tema-primary); min-height: 34px;
+            cursor: pointer; transition: border-color 0.2s; font-style: italic;
+        }
+        .perfil-status:hover { border-left-color: var(--tema-primary-light); color: #ccc; }
+        .perfil-status.vazio { color: #444; font-style: italic; }
+        .perfil-divider { border: none; border-top: 1px solid #222; margin: 10px 0; }
+        .perfil-bio-label {
+            font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase;
+            color: #555; margin-bottom: 4px; font-family: 'Share Tech Mono', monospace;
+        }
+        .perfil-bio { font-size: 0.82rem; color: #999; line-height: 1.5; cursor: pointer; min-height: 20px; transition: color 0.2s; }
+        .perfil-bio:hover { color: #ccc; }
+        .perfil-bio.vazio { color: #444; font-style: italic; }
+        .perfil-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .perfil-badge {
+            display: flex; align-items: center; gap: 5px; padding: 4px 10px;
+            border-radius: 20px; font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+        .badge-mestre  { background: rgba(200,150,12,0.15); border: 1px solid #c8960c; color: #f5c842; }
+        .badge-novato  { background: rgba(80,80,100,0.2);   border: 1px solid #555;    color: #888; }
+        .badge-membro  { background: rgba(58,123,213,0.15); border: 1px solid #3a7bd5; color: #7ab3f5; }
+        .perfil-pronomes { font-size: 0.72rem; color: #555; margin-top: 4px; font-family: 'Share Tech Mono', monospace; }
+        .perfil-membro-desde { font-size: 0.65rem; color: #444; margin-top: 8px; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
+        .perfil-cor-row { display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+        .perfil-cor-label { font-size: 0.58rem; letter-spacing: 2px; color: #555; text-transform: uppercase; font-family: 'Share Tech Mono', monospace; margin-right: 4px; }
+        .cor-btn { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.15s; flex-shrink: 0; }
+        .cor-btn:hover, .cor-btn.ativa { border-color: white; transform: scale(1.2); }
+        .perfil-edit-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            z-index: 10000; align-items: center; justify-content: center;
+        }
+        .perfil-edit-overlay.show { display: flex; }
+        .perfil-edit-box {
+            background: #0d0d0d; border: 1px solid var(--tema-primary-dark);
+            border-radius: 12px; padding: 24px; width: 320px;
+            box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3);
+        }
+        .perfil-edit-title { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #666; margin-bottom: 14px; font-family: 'Share Tech Mono', monospace; }
+        .perfil-edit-input, .perfil-edit-textarea {
+            width: 100%; background: #1a1a1f; border: 1px solid #333; color: white;
+            font-family: 'Oswald', sans-serif; font-size: 0.95rem;
+            padding: 9px 12px; border-radius: 6px; outline: none;
+            transition: border-color 0.2s; resize: vertical;
+        }
+        .perfil-edit-input:focus, .perfil-edit-textarea:focus { border-color: var(--tema-primary); }
+        .perfil-edit-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+        .perfil-edit-btn-ok {
+            background: var(--tema-primary-dark); border: 1px solid var(--tema-primary);
+            color: white; font-family: 'Oswald', sans-serif; font-size: 0.85rem;
+            font-weight: 700; padding: 7px 18px; border-radius: 5px; cursor: pointer; transition: 0.2s;
+        }
+        .perfil-edit-btn-ok:hover { background: var(--tema-primary); }
+        .perfil-edit-btn-cancel {
+            background: transparent; border: 1px solid #333; color: #555;
+            font-family: 'Oswald', sans-serif; font-size: 0.85rem;
+            padding: 7px 18px; border-radius: 5px; cursor: pointer; transition: 0.2s;
+        }
+        .perfil-edit-btn-cancel:hover { border-color: #666; color: #888; }
+
+        /* Crop avatar */
+        .crop-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97);
+            z-index: 99999; flex-direction: column; align-items: center; justify-content: center;
+            gap: 16px; padding: 24px;
+        }
+        .crop-overlay.show { display: flex; }
+        .crop-title { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: #666; align-self: flex-start; }
+        .crop-area { width: 100%; max-width: 420px; height: 420px; overflow: hidden; border: 1px solid var(--tema-primary); background: #000; }
+        .crop-area img { display: block; max-width: 100%; }
+        .cropper-container { max-width: 100% !important; }
+        .crop-btns { display: flex; gap: 10px; }
+        .crop-btn { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; letter-spacing: 1px; padding: 8px 20px; border-radius: 2px; cursor: pointer; transition: 0.2s; border: 1px solid; }
+        .crop-btn-ok { background: rgba(60,0,80,0.6); border-color: var(--tema-primary); color: var(--tema-primary-light); }
+        .crop-btn-ok:hover { background: var(--tema-primary-dark); }
+        .crop-btn-cancel { background: transparent; border-color: #333; color: #555; }
+        .crop-btn-cancel:hover { border-color: #666; color: #888; }
+
+        /* Crop banner */
+        .banner-crop-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97);
+            z-index: 100000; flex-direction: column; align-items: center; justify-content: center;
+            gap: 16px; padding: 24px;
+        }
+        .banner-crop-overlay.show { display: flex; }
+        .banner-crop-area { width: 100%; max-width: 600px; height: 220px; overflow: hidden; border: 1px solid var(--tema-primary); background: #000; }
+        .banner-crop-area img { display: block; max-width: 100%; }
+        .banner-crop-btns { display: flex; gap: 10px; }
+        .banner-crop-btn { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; letter-spacing: 1px; padding: 8px 20px; border-radius: 2px; cursor: pointer; transition: 0.2s; border: 1px solid; }
+        .banner-crop-btn-ok { background: rgba(58,0,100,0.6); border-color: var(--tema-primary); color: var(--tema-primary-light); }
+        .banner-crop-btn-ok:hover { background: var(--tema-primary-dark); }
+        .banner-crop-btn-cancel { background: transparent; border-color: #333; color: #555; }
+        .banner-crop-btn-cancel:hover { border-color: #666; color: #888; }
+
+        /* ===== AVATAR DE PERFIL ===== */
+        .avatar-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .avatar-circle {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--tema-primary);
+            background: var(--tema-primary-dark);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; font-weight: 700; color: var(--tema-primary-light);
+            overflow: hidden;
+            transition: 0.2s;
+            user-select: none;
+        }
+        .avatar-circle:hover { border-color: var(--tema-primary-light); box-shadow: 0 0 10px rgba(var(--tema-glow-rgb),0.5); }
+        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+
         /* ===== RESPONSIVIDADE MOBILE ===== */
 @media (max-width: 576px) {
     /* Navbar: logo menor */
@@ -439,7 +613,7 @@
 <nav class="navbar navbar-expand-lg custom-nav navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand fs-2" href="index.html">
-            <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="52" height="52" class="d-inline-block align-text-center">
+            <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="72" height="72" class="d-inline-block align-text-center">
             F.I.C.H.A.
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -452,31 +626,44 @@
                 <a class="nav-link px-3" href="homebrew.html">Homebrew</a>
             </div>
         </div>
-        <div class="d-none d-lg-flex pe-3">
+
+        <!-- Avatar de perfil -->
+        <div class="d-none d-lg-flex align-items-center" style="min-width: 200px; justify-content: flex-end;">
+
+            <!-- Botão Temas -->
             <div class="temas-wrapper" id="temas-wrapper">
-                    <button class="btn-temas" onclick="toggleTemas(event)">&#x2B21; Temas</button>
-                    <div class="temas-dropdown" id="temas-dropdown">
-                        <div class="td-header">Elemento</div>
-                        <div class="td-item" onclick="aplicarTema('medo')" data-tema="medo">
-                            <span class="td-swatch" style="background:#3a7bd5;color:#3a7bd5"></span> Medo
-                        </div>
-                        <div class="td-item" onclick="aplicarTema('sangue')" data-tema="sangue">
-                            <span class="td-swatch" style="background:#cc1111;color:#cc1111"></span> Sangue
-                        </div>
-                        <div class="td-item" onclick="aplicarTema('morte')" data-tema="morte">
-                            <span class="td-swatch" style="background:#888888;color:#888888"></span> Morte
-                        </div>
-                        <div class="td-item" onclick="aplicarTema('conhecimento')" data-tema="conhecimento">
-                            <span class="td-swatch" style="background:#c8960c;color:#c8960c"></span> Conhecimento
-                        </div>
-                        <div class="td-item" onclick="aplicarTema('energia')" data-tema="energia">
-                            <span class="td-swatch" style="background:#9b30d9;color:#9b30d9"></span> Energia
-                        </div>
+                <button class="btn-temas" onclick="toggleTemas(event)">⬡ Temas</button>
+                <div class="temas-dropdown" id="temas-dropdown">
+                    <div class="td-header">Elemento</div>
+                    <div class="td-item" onclick="aplicarTema('medo')" data-tema="medo">
+                        <span class="td-swatch" style="background:#3a7bd5;color:#3a7bd5"></span> Medo
+                    </div>
+                    <div class="td-item" onclick="aplicarTema('sangue')" data-tema="sangue">
+                        <span class="td-swatch" style="background:#cc1111;color:#cc1111"></span> Sangue
+                    </div>
+                    <div class="td-item" onclick="aplicarTema('morte')" data-tema="morte">
+                        <span class="td-swatch" style="background:#888888;color:#888888"></span> Morte
+                    </div>
+                    <div class="td-item" onclick="aplicarTema('conhecimento')" data-tema="conhecimento">
+                        <span class="td-swatch" style="background:#c8960c;color:#c8960c"></span> Conhecimento
+                    </div>
+                    <div class="td-item" onclick="aplicarTema('energia')" data-tema="energia">
+                        <span class="td-swatch" style="background:#9b30d9;color:#9b30d9"></span> Energia
                     </div>
                 </div>
-                <span id="user-status" style="font-size:0.65rem;letter-spacing:1px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;display:flex;align-items:center;gap:4px;">
-                <span class="status-dot offline" id="status-dot"></span>
-                <span id="status-txt">Conectando...</span>
+            </div>
+
+            <div class="avatar-wrapper" id="avatar-wrapper" onclick="abrirPainelPerfil(event)">
+                <div class="avatar-circle" id="avatar-circle">
+                    <span id="avatar-iniciais"></span>
+                </div>
+            </div>
+            <input type="file" id="input-foto-perfil"   accept="image/*" onchange="salvarFotoPerfil(event)"   style="display:none">
+            <input type="file" id="input-banner-perfil" accept="image/*" onchange="salvarBannerPerfil(event)" style="display:none">
+            <!-- status mantido mas invisível para compatibilidade com o JS -->
+            <span id="user-status" style="display:none;">
+                <span id="status-dot"></span>
+                <span id="status-txt"></span>
             </span>
         </div>
     </div>
@@ -655,6 +842,7 @@ onAuthStateChanged(auth, async user => {
         const nomeUsuario = user.displayName || user.email.replace('@ficha.local', '');
         document.getElementById('status-dot').className = 'status-dot online';
         document.getElementById('status-txt').textContent = nomeUsuario;
+        atualizarAvatar();
 
         // Checa se veio de link de convite
         const params = new URLSearchParams(window.location.search);
@@ -1014,6 +1202,21 @@ function getNomeLocal() {
     return usuario || `Agente_${currentUser.uid.slice(0,6)}`;
 }
 
+function atualizarAvatar() {
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    if (!usuario) return;
+    const iniciais = usuario.substring(0, 2).toUpperCase();
+    const chaveAvatar = usuario + '_foto_perfil';
+    const fotoSalva = localStorage.getItem(chaveAvatar);
+    const circle = document.getElementById('avatar-circle');
+    if (!circle) return;
+    if (fotoSalva) {
+        circle.innerHTML = `<img src="${fotoSalva}" alt="foto de perfil">`;
+    } else {
+        circle.innerHTML = `<span id="avatar-iniciais">${iniciais}</span>`;
+    }
+}
+
 window.voltarLista = function() {
     unsubListeners.forEach(u => u());
     unsubListeners = [];
@@ -1043,7 +1246,361 @@ function mostrarToast(msg) {
 document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
 });
+
+/* =============================================
+   PAINEL DE PERFIL
+============================================= */
+function getUsuarioLogado() {
+    return sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+}
+function getAvatarKey() {
+    return getUsuarioLogado() + '_foto_perfil';
+}
+function getPerfilKey(usuario) {
+    return 'perfil_' + (usuario || getUsuarioLogado() || '');
+}
+function getPerfilLocal() {
+    const u = getUsuarioLogado(); if (!u) return {};
+    try { return JSON.parse(localStorage.getItem(getPerfilKey(u))) || {}; } catch(e) { return {}; }
+}
+function setPerfilLocal(dados) {
+    const u = getUsuarioLogado(); if (!u) return;
+    localStorage.setItem(getPerfilKey(u), JSON.stringify(dados));
+}
+async function salvarPerfilFirebase(dados) {
+    const u = getUsuarioLogado(); if (!u) return;
+    try {
+        const { getDatabase, ref, set } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+        const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+        const apps = getApps();
+        if (apps.length > 0) {
+            const rtdb = getDatabase(apps[0]);
+            await set(ref(rtdb, `perfis/${u}`), dados);
+        }
+    } catch(e) { console.warn('Perfil firebase erro:', e); }
+}
+async function carregarPerfilFirebase(usuario) {
+    try {
+        const { getDatabase, ref, get } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+        const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+        const apps = getApps();
+        if (apps.length > 0) {
+            const rtdb = getDatabase(apps[0]);
+            const snap = await get(ref(rtdb, `perfis/${usuario}`));
+            return snap.exists() ? snap.val() : null;
+        }
+    } catch(e) { return null; }
+    return null;
+}
+
+window.abrirPainelPerfil = async function(e) {
+    if (e) e.stopPropagation();
+    const usuario = getUsuarioLogado(); if (!usuario) return;
+    let perfil = getPerfilLocal();
+    renderPainelPerfil(usuario, perfil);
+    document.getElementById('perfil-overlay').classList.add('show');
+    const perfilFB = await carregarPerfilFirebase(usuario);
+    if (perfilFB) {
+        perfil = { ...perfil, ...perfilFB };
+        setPerfilLocal(perfil);
+        renderPainelPerfil(usuario, perfil);
+    }
+};
+
+async function renderPainelPerfil(usuario, perfil) {
+    document.getElementById('perfil-username').textContent = usuario;
+    document.getElementById('perfil-handle').textContent   = '@' + usuario;
+    const avatarEl  = document.getElementById('perfil-avatar-img');
+    const fotoSalva = localStorage.getItem(getAvatarKey()) || perfil.foto || '';
+    const iniciais  = usuario.substring(0,2).toUpperCase();
+    if (fotoSalva) {
+        avatarEl.innerHTML = `<img src="${fotoSalva}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
+    } else {
+        avatarEl.innerHTML = `<span>${iniciais}</span><div class="perfil-avatar-edit">📷</div>`;
+    }
+    const corBorda = perfil.corBorda || '';
+    const wrap = document.getElementById('perfil-avatar-wrap');
+    if (corBorda) {
+        wrap.classList.add('borda-ativa');
+        wrap.style.setProperty('--perfil-borda', corBorda);
+        document.querySelectorAll('.cor-btn').forEach(b => b.classList.toggle('ativa', b.dataset.cor === corBorda));
+    }
+    const banner = document.getElementById('perfil-banner');
+    if (perfil.banner) { banner.style.backgroundImage = `url('${perfil.banner}')`; banner.style.backgroundSize = 'cover'; }
+    else { banner.style.backgroundImage = ''; }
+    const statusEl = document.getElementById('perfil-status-display');
+    if (perfil.status) { statusEl.textContent = '💬 ' + perfil.status; statusEl.classList.remove('vazio'); }
+    else { statusEl.textContent = 'Clique para adicionar um recado...'; statusEl.classList.add('vazio'); }
+    const bioEl = document.getElementById('perfil-bio-display');
+    if (perfil.bio) { bioEl.textContent = perfil.bio; bioEl.classList.remove('vazio'); }
+    else { bioEl.textContent = 'Nenhuma descrição ainda...'; bioEl.classList.add('vazio'); }
+    document.getElementById('perfil-pronomes-display').textContent = perfil.pronomes || '';
+    const dataEntrada = perfil.dataEntrada || new Date().toLocaleDateString('pt-BR');
+    if (!perfil.dataEntrada) { perfil.dataEntrada = dataEntrada; setPerfilLocal(perfil); }
+    document.getElementById('perfil-membro-desde').textContent = '▸ Membro desde ' + dataEntrada;
+    await renderBadges(usuario);
+}
+
+async function renderBadges(usuario) {
+    const badgesEl = document.getElementById('perfil-badges');
+    badgesEl.innerHTML = `<span class="perfil-badge badge-membro">⚡ Membro</span>`;
+    // badge Mestre — verifica campanhas que o usuário criou (já temos o db Firestore aqui)
+    try {
+        const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
+        if (uid && typeof db !== 'undefined') {
+            const { query: q, collection: col, where: wh, getDocs: gd } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+            const snap = await gd(q(col(db, 'campanhas'), wh('mestreUid', '==', uid)));
+            if (!snap.empty) {
+                badgesEl.innerHTML += `<span class="perfil-badge badge-mestre">👑 Mestre</span>`;
+                return;
+            }
+        }
+    } catch(e) {}
+    badgesEl.innerHTML += `<span class="perfil-badge badge-novato">🌑 Novato</span>`;
+}
+
+window.fecharPainelPerfil = function(e) {
+    if (e && e.target !== document.getElementById('perfil-overlay')) return;
+    document.getElementById('perfil-overlay').classList.remove('show');
+};
+
+let _perfilCampoAtual = null;
+window.abrirEditPerfil = function(campo) {
+    _perfilCampoAtual = campo;
+    const overlay  = document.getElementById('perfil-edit-overlay');
+    const titleEl  = document.getElementById('perfil-edit-title');
+    const inputEl  = document.getElementById('perfil-edit-input');
+    const textaEl  = document.getElementById('perfil-edit-textarea');
+    const perfil   = getPerfilLocal();
+    inputEl.style.display = 'none';
+    textaEl.style.display = 'none';
+    if (campo === 'status') {
+        titleEl.textContent = '▸ EDITAR RECADO';
+        inputEl.value = perfil.status || ''; inputEl.placeholder = 'Ex: O medo é real...';
+        inputEl.style.display = ''; overlay.classList.add('show');
+        setTimeout(() => { inputEl.focus(); inputEl.select(); }, 50);
+    } else if (campo === 'bio') {
+        titleEl.textContent = '▸ EDITAR BIO';
+        textaEl.value = perfil.bio || ''; textaEl.placeholder = 'Fale um pouco sobre você...';
+        textaEl.style.display = ''; overlay.classList.add('show');
+        setTimeout(() => textaEl.focus(), 50);
+    } else if (campo === 'pronomes') {
+        titleEl.textContent = '▸ PRONOMES';
+        inputEl.value = perfil.pronomes || ''; inputEl.placeholder = 'Ex: ele/dele';
+        inputEl.style.display = ''; overlay.classList.add('show');
+        setTimeout(() => { inputEl.focus(); inputEl.select(); }, 50);
+    }
+};
+window.fecharEditPerfil = function() {
+    document.getElementById('perfil-edit-overlay').classList.remove('show');
+    _perfilCampoAtual = null;
+};
+window.salvarEditPerfil = async function() {
+    const campo   = _perfilCampoAtual;
+    const inputEl = document.getElementById('perfil-edit-input');
+    const textaEl = document.getElementById('perfil-edit-textarea');
+    const valor   = (campo === 'bio' ? textaEl.value : inputEl.value).trim();
+    const perfil  = getPerfilLocal();
+    perfil[campo] = valor;
+    setPerfilLocal(perfil);
+    await salvarPerfilFirebase(perfil);
+    window.fecharEditPerfil();
+    renderPainelPerfil(getUsuarioLogado(), perfil);
+};
+
+window.aplicarCorBorda = async function(el) {
+    const cor    = el.dataset.cor;
+    const perfil = getPerfilLocal();
+    perfil.corBorda = cor;
+    setPerfilLocal(perfil);
+    await salvarPerfilFirebase(perfil);
+    document.querySelectorAll('.cor-btn').forEach(b => b.classList.remove('ativa'));
+    el.classList.add('ativa');
+    const wrap = document.getElementById('perfil-avatar-wrap');
+    wrap.classList.add('borda-ativa');
+    wrap.style.setProperty('--perfil-borda', cor);
+    const circle = document.getElementById('avatar-circle');
+    if (circle) { circle.style.borderColor = cor; circle.style.boxShadow = `0 0 8px ${cor}`; }
+};
+
+window.perfilClicarAvatar = function() {
+    document.getElementById('input-foto-perfil').click();
+};
+window.perfilClicarBanner = function() {
+    document.getElementById('input-banner-perfil').click();
+};
+
+/* — Cropper avatar — */
+let cropperInstance = null;
+window.salvarFotoPerfil = function(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const cropImg = document.getElementById('crop-img');
+        if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+        cropImg.src = e.target.result;
+        document.getElementById('crop-overlay').classList.add('show');
+        cropImg.onload = function() {
+            cropperInstance = new Cropper(cropImg, { aspectRatio: 1, viewMode: 1, dragMode: 'move', autoCropArea: 0.85, guides: true, center: true, cropBoxMovable: true, cropBoxResizable: true, minContainerWidth: 300, minContainerHeight: 300 });
+        };
+    };
+    reader.readAsDataURL(file);
+};
+window.confirmarCrop = async function() {
+    if (!cropperInstance) return;
+    const canvas = cropperInstance.getCroppedCanvas({ width: 300, height: 300 });
+    if (!canvas) return;
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    localStorage.setItem(getAvatarKey(), dataUrl);
+    const perfil = getPerfilLocal();
+    perfil.foto  = dataUrl;
+    setPerfilLocal(perfil);
+    await salvarPerfilFirebase(perfil);
+    atualizarAvatar();
+    window.cancelarCrop();
+    const avatarEl = document.getElementById('perfil-avatar-img');
+    if (avatarEl) avatarEl.innerHTML = `<img src="${dataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
+};
+window.cancelarCrop = function() {
+    document.getElementById('crop-overlay').classList.remove('show');
+    if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+    document.getElementById('input-foto-perfil').value = '';
+};
+
+/* — Cropper banner — */
+let _bannerCropperInstance = null;
+window.salvarBannerPerfil = function(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        if (file.type === 'image/gif') { _salvarBannerBase64(ev.target.result); document.getElementById('input-banner-perfil').value = ''; return; }
+        const cropImg = document.getElementById('banner-crop-img');
+        if (_bannerCropperInstance) { _bannerCropperInstance.destroy(); _bannerCropperInstance = null; }
+        cropImg.src = ev.target.result;
+        document.getElementById('banner-crop-overlay').classList.add('show');
+        cropImg.onload = function() {
+            _bannerCropperInstance = new Cropper(cropImg, { aspectRatio: 600/110, viewMode: 1, dragMode: 'move', autoCropArea: 1, guides: false, center: false, cropBoxMovable: true, cropBoxResizable: true, minContainerWidth: 400, minContainerHeight: 150 });
+        };
+    };
+    reader.readAsDataURL(file);
+};
+window.confirmarBannerCrop = function() {
+    if (!_bannerCropperInstance) return;
+    const canvas = _bannerCropperInstance.getCroppedCanvas({ width: 680, height: 140 });
+    if (!canvas) return;
+    _salvarBannerBase64(canvas.toDataURL('image/jpeg', 0.9));
+    window.cancelarBannerCrop();
+};
+window.cancelarBannerCrop = function() {
+    document.getElementById('banner-crop-overlay').classList.remove('show');
+    if (_bannerCropperInstance) { _bannerCropperInstance.destroy(); _bannerCropperInstance = null; }
+    document.getElementById('input-banner-perfil').value = '';
+};
+async function _salvarBannerBase64(base64) {
+    const perfil = getPerfilLocal();
+    perfil.banner = base64;
+    setPerfilLocal(perfil);
+    await salvarPerfilFirebase(perfil);
+    const banner = document.getElementById('perfil-banner');
+    banner.style.backgroundImage = `url('${base64}')`;
+    banner.style.backgroundSize  = 'cover';
+}
+
+window.fazerLogout = async function() {
+    if (!confirm('Deseja sair da conta?')) return;
+    const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+    const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const apps = getApps();
+    if (apps.length > 0) await signOut(getAuth(apps[0]));
+    sessionStorage.removeItem('ficha_user');
+    localStorage.removeItem('ficha_user_ativo');
+    window.location.href = 'index.html';
+};
 </script>
+
+<!-- ===== PAINEL DE PERFIL ===== -->
+<div id="perfil-overlay" onclick="fecharPainelPerfil(event)">
+  <div class="perfil-card" onclick="event.stopPropagation()" id="perfil-card">
+    <div class="perfil-banner" id="perfil-banner" onclick="perfilClicarBanner()">
+      <div class="perfil-banner-edit">📷 Alterar banner</div>
+      <div class="perfil-top-actions">
+        <button class="perfil-top-btn" onclick="event.stopPropagation();abrirEditPerfil('status')">✎ Status</button>
+        <button class="perfil-top-btn danger" onclick="event.stopPropagation();fazerLogout()">✕ Sair</button>
+      </div>
+      <div class="perfil-avatar-wrap" id="perfil-avatar-wrap" onclick="event.stopPropagation();perfilClicarAvatar()">
+        <div class="perfil-avatar" id="perfil-avatar-img">
+          <span id="perfil-avatar-iniciais"></span>
+          <div class="perfil-avatar-edit">📷</div>
+        </div>
+      </div>
+    </div>
+    <div class="perfil-body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="perfil-username" id="perfil-username">—</div>
+          <div class="perfil-handle" id="perfil-handle">@—</div>
+          <div class="perfil-pronomes" id="perfil-pronomes-display" onclick="abrirEditPerfil('pronomes')" title="Editar pronomes"></div>
+        </div>
+        <button onclick="abrirEditPerfil('bio')" style="background:transparent;border:1px solid #333;color:#555;font-size:0.7rem;font-family:'Oswald',sans-serif;padding:4px 10px;border-radius:4px;cursor:pointer;transition:0.2s;margin-top:4px;" onmouseover="this.style.borderColor='var(--tema-primary)';this.style.color='var(--tema-primary-light)'" onmouseout="this.style.borderColor='#333';this.style.color='#555'">✎ Editar</button>
+      </div>
+      <div class="perfil-status vazio" id="perfil-status-display" onclick="abrirEditPerfil('status')">Clique para adicionar um recado...</div>
+      <hr class="perfil-divider">
+      <div class="perfil-bio-label">Sobre mim</div>
+      <div class="perfil-bio vazio" id="perfil-bio-display" onclick="abrirEditPerfil('bio')">Nenhuma descrição ainda...</div>
+      <hr class="perfil-divider">
+      <div class="perfil-bio-label">Cargos</div>
+      <div class="perfil-badges" id="perfil-badges"></div>
+      <div class="perfil-membro-desde" id="perfil-membro-desde"></div>
+      <hr class="perfil-divider">
+      <div class="perfil-cor-row">
+        <span class="perfil-cor-label">Borda</span>
+        <div class="cor-btn" data-cor="#3a7bd5" style="background:#3a7bd5" onclick="aplicarCorBorda(this)" title="Azul"></div>
+        <div class="cor-btn" data-cor="#cc1111" style="background:#cc1111" onclick="aplicarCorBorda(this)" title="Vermelho"></div>
+        <div class="cor-btn" data-cor="#9b30d9" style="background:#9b30d9" onclick="aplicarCorBorda(this)" title="Roxo"></div>
+        <div class="cor-btn" data-cor="#c8960c" style="background:#c8960c" onclick="aplicarCorBorda(this)" title="Dourado"></div>
+        <div class="cor-btn" data-cor="#39d353" style="background:#39d353" onclick="aplicarCorBorda(this)" title="Verde"></div>
+        <div class="cor-btn" data-cor="#ff6ec7" style="background:#ff6ec7" onclick="aplicarCorBorda(this)" title="Rosa"></div>
+        <div class="cor-btn" data-cor="#888888" style="background:#888888" onclick="aplicarCorBorda(this)" title="Cinza"></div>
+        <div class="cor-btn" data-cor="#ffffff" style="background:#ffffff" onclick="aplicarCorBorda(this)" title="Branco"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal edição de campo -->
+<div class="perfil-edit-overlay" id="perfil-edit-overlay" onclick="fecharEditPerfil()">
+  <div class="perfil-edit-box" onclick="event.stopPropagation()">
+    <div class="perfil-edit-title" id="perfil-edit-title">Editar</div>
+    <input type="text" class="perfil-edit-input" id="perfil-edit-input" style="display:none"
+      onkeydown="if(event.key==='Enter')salvarEditPerfil();if(event.key==='Escape')fecharEditPerfil();">
+    <textarea class="perfil-edit-textarea" id="perfil-edit-textarea" rows="4" style="display:none"
+      onkeydown="if(event.key==='Escape')fecharEditPerfil();"></textarea>
+    <div class="perfil-edit-btns">
+      <button class="perfil-edit-btn-cancel" onclick="fecharEditPerfil()">Cancelar</button>
+      <button class="perfil-edit-btn-ok" onclick="salvarEditPerfil()">✔ Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Crop do avatar -->
+<div class="crop-overlay" id="crop-overlay">
+  <div class="crop-title">▸ AJUSTAR FOTO DE PERFIL</div>
+  <div class="crop-area"><img id="crop-img" src="" alt="crop"></div>
+  <div class="crop-btns">
+    <button class="crop-btn crop-btn-ok" onclick="confirmarCrop()">✔ Confirmar</button>
+    <button class="crop-btn crop-btn-cancel" onclick="cancelarCrop()">✕ Cancelar</button>
+  </div>
+</div>
+
+<!-- Crop do banner -->
+<div class="banner-crop-overlay" id="banner-crop-overlay">
+  <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:3px;color:#666;align-self:flex-start;">▸ AJUSTAR BANNER</div>
+  <div class="banner-crop-area"><img id="banner-crop-img" src="" alt="banner"></div>
+  <div class="banner-crop-btns">
+    <button class="banner-crop-btn banner-crop-btn-ok" onclick="confirmarBannerCrop()">✔ CONFIRMAR</button>
+    <button class="banner-crop-btn banner-crop-btn-cancel" onclick="cancelarBannerCrop()">✕ CANCELAR</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
