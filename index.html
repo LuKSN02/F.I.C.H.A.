@@ -100,7 +100,9 @@
     .text-purple-neon { color: var(--tema-primary-light); text-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb), 0.8); }
     .navbar-brand { font-weight: 700; }
     .nav-link { font-weight: 700; }
-    .custom-nav { background-color: black; border-bottom: 2px solid #333; }
+    .custom-nav { background-color: black; border-bottom: 2px solid #333; overflow: visible !important; }
+    .navbar { overflow: visible !important; }
+    .navbar-collapse { overflow: visible !important; }
     .nav-link:hover { color: var(--tema-primary-light) !important; }
     .text-purple { color: var(--tema-primary); }
     .border-purple { border: 3px solid var(--tema-primary-dark); }
@@ -1080,34 +1082,43 @@
         ============================================= */
         function toggleTemas(e) {
             e.stopPropagation();
-            document.getElementById('avatar-dropdown').classList.remove('open');
-            document.getElementById('temas-dropdown').classList.toggle('open');
+            var dd = document.getElementById('temas-dropdown');
+            if (dd) dd.classList.toggle('open');
+            var av = document.getElementById('avatar-dropdown');
+            if (av) av.classList.remove('open');
         }
 
         function aplicarTema(tema) {
             document.documentElement.setAttribute('data-tema', tema);
             localStorage.setItem('ficha_tema', tema);
-            // marca item ativo
-            document.querySelectorAll('.td-item').forEach(el => {
+            document.querySelectorAll('.td-item').forEach(function(el) {
                 el.classList.toggle('ativo', el.dataset.tema === tema);
             });
-            document.getElementById('temas-dropdown').classList.remove('open');
+            var dd = document.getElementById('temas-dropdown');
+            if (dd) dd.classList.remove('open');
         }
 
         // Fecha dropdowns ao clicar fora
-        document.addEventListener('click', function() {
-            document.getElementById('temas-dropdown').classList.remove('open');
-            document.getElementById('avatar-dropdown').classList.remove('open');
+        document.addEventListener('click', function(e) {
+            var wrapper = document.getElementById('temas-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                var dd = document.getElementById('temas-dropdown');
+                if (dd) dd.classList.remove('open');
+            }
+            var avWrapper = document.getElementById('avatar-wrapper');
+            if (avWrapper && !avWrapper.contains(e.target)) {
+                var av = document.getElementById('avatar-dropdown');
+                if (av) av.classList.remove('open');
+            }
         });
 
         // Restaura tema salvo ao carregar
         (function() {
-            const temaSalvo = localStorage.getItem('ficha_tema') || 'medo';
-            document.documentElement.setAttribute('data-tema', temaSalvo);
-            // aguarda DOM pronto para marcar ativo
+            var t = localStorage.getItem('ficha_tema') || 'medo';
+            document.documentElement.setAttribute('data-tema', t);
             document.addEventListener('DOMContentLoaded', function() {
-                document.querySelectorAll('.td-item').forEach(el => {
-                    el.classList.toggle('ativo', el.dataset.tema === temaSalvo);
+                document.querySelectorAll('.td-item').forEach(function(el) {
+                    el.classList.toggle('ativo', el.dataset.tema === t);
                 });
             });
         })();
