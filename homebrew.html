@@ -659,6 +659,176 @@ body {
 .avatar-dropdown .dd-item.danger { color: #ff6666; }
 .avatar-dropdown .dd-item.danger:hover { background: #2a0000; color: #ff4444; }
 
+/* ===== SISTEMA DE COMPARTILHAMENTO ===== */
+
+/* Botão compartilhar no card */
+.btn-share-card {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  background: transparent;
+  border: 1px dashed #333;
+  color: #555;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 5px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-share-card:hover { border-color: var(--purple-neon); color: var(--purple-neon); }
+
+/* Badge "compartilhado" no card */
+.badge-compartilhado {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 1px;
+  background: rgba(var(--tema-glow-rgb), 0.12);
+  border: 1px solid var(--purple);
+  color: var(--purple-neon);
+  padding: 1px 7px;
+  border-radius: 20px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* Badge "importado" */
+.badge-importado {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 1px;
+  background: rgba(57,211,83,0.1);
+  border: 1px solid #39d353;
+  color: #39d353;
+  padding: 1px 7px;
+  border-radius: 20px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* Modal compartilhar */
+.share-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92); z-index: 10001;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.share-modal-overlay.show { display: flex; }
+.share-modal-box {
+  background: var(--card);
+  border: 1px solid var(--purple);
+  border-radius: 14px;
+  padding: 28px;
+  width: 100%; max-width: 460px;
+  box-shadow: 0 0 50px var(--purple-glow);
+  animation: fadeUp 0.2s ease;
+}
+.share-modal-title {
+  font-size: 1rem; font-weight: 700; letter-spacing: 3px;
+  color: var(--purple-neon); text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.share-modal-subtitle {
+  font-size: 0.72rem; color: #555; font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 1px; margin-bottom: 20px;
+}
+.share-code-box {
+  display: flex; align-items: center; gap: 10px;
+  background: #08001a; border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
+}
+.share-code-text {
+  flex: 1; font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem; color: var(--purple-neon);
+  letter-spacing: 2px; word-break: break-all;
+}
+.btn-copy-code {
+  background: var(--purple); border: none; color: white;
+  font-family: 'Oswald', sans-serif; font-size: 0.8rem;
+  font-weight: 700; padding: 6px 14px; border-radius: 5px;
+  cursor: pointer; transition: 0.2s; white-space: nowrap; flex-shrink: 0;
+}
+.btn-copy-code:hover { background: var(--purple-neon); }
+.btn-copy-code.copied { background: #39d353; }
+.share-info-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; color: #444;
+  font-family: 'Share Tech Mono', monospace;
+  margin-bottom: 16px;
+}
+
+/* Aba comunidade */
+.community-search-bar {
+  display: flex; gap: 10px; margin-bottom: 20px;
+}
+.community-search-input {
+  flex: 1; background: #0d000e; border: 1px solid var(--border);
+  border-radius: 5px; color: white; padding: 8px 12px;
+  font-family: 'Oswald', sans-serif; font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+.community-search-input:focus { outline: none; border-color: var(--purple); }
+.btn-buscar-codigo {
+  background: var(--purple); border: none; color: white;
+  font-family: 'Oswald', sans-serif; font-size: 0.9rem;
+  font-weight: 700; padding: 8px 18px; border-radius: 5px;
+  cursor: pointer; transition: 0.2s; white-space: nowrap;
+}
+.btn-buscar-codigo:hover { background: var(--purple-neon); }
+
+.community-item-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px 16px; margin-bottom: 12px;
+  transition: 0.2s;
+}
+.community-item-card:hover { border-color: var(--purple); }
+.community-item-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 8px;
+}
+.community-item-name {
+  font-size: 1rem; font-weight: 700; color: white;
+}
+.community-item-meta {
+  font-size: 0.7rem; color: #555; font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 1px; margin-top: 3px;
+}
+.community-item-author {
+  font-size: 0.75rem; color: var(--purple-neon); font-family: 'Share Tech Mono', monospace;
+}
+.btn-importar {
+  background: transparent; border: 1px solid var(--purple);
+  color: var(--purple-neon); font-family: 'Oswald', sans-serif;
+  font-size: 0.8rem; font-weight: 700; padding: 6px 16px;
+  border-radius: 5px; cursor: pointer; transition: 0.2s; white-space: nowrap;
+}
+.btn-importar:hover { background: var(--purple); color: white; }
+.btn-importar:disabled { opacity: 0.4; cursor: default; }
+
+.community-tabs {
+  display: flex; gap: 8px; margin-bottom: 18px;
+}
+.community-tab {
+  padding: 5px 14px; border-radius: 4px;
+  border: 1px solid #333; background: transparent;
+  color: #888; font-family: 'Oswald', sans-serif;
+  font-size: 0.82rem; font-weight: 600;
+  cursor: pointer; transition: 0.2s;
+}
+.community-tab:hover { border-color: var(--purple); color: var(--purple-neon); }
+.community-tab.active { background: var(--purple); border-color: var(--purple); color: white; }
+
+.community-empty {
+  text-align: center; color: #444; font-size: 0.9rem;
+  font-family: 'Share Tech Mono', monospace; letter-spacing: 1px;
+  margin-top: 40px; line-height: 2;
+}
+
 /* ===== RESPONSIVIDADE MOBILE ===== */
 @media (max-width: 576px) {
     /* Navbar: logo menor */
@@ -879,6 +1049,7 @@ body {
   <div class="main-tab" onclick="trocarMainTab('habilidades')">Habilidades</div>
   <div class="main-tab" onclick="trocarMainTab('rituais')">Rituais</div>
   <div class="main-tab" onclick="trocarMainTab('itens')">Itens</div>
+  <div class="main-tab" onclick="trocarMainTab('comunidade')">⬡ Comunidade</div>
 </div>
 
 <!-- CONTEÚDO -->
@@ -947,7 +1118,60 @@ body {
     <div id="empty-itens" class="empty-msg">Você ainda não criou novas armas</div>
   </div>
 
+  <!-- ══════════ COMUNIDADE ══════════ -->
+  <div class="tab-pane" id="pane-comunidade">
+    <div class="list-header" style="margin-bottom:16px;">
+      <span class="list-count" style="font-size:1.1rem;">⬡ Comunidade</span>
+    </div>
+
+    <!-- Buscar por código -->
+    <div style="margin-bottom:24px;">
+      <div style="font-size:0.65rem;letter-spacing:2px;color:#555;font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:8px;">▸ Importar por código</div>
+      <div class="community-search-bar">
+        <input class="community-search-input" id="input-codigo-importar" type="text" placeholder="Cole o código de compartilhamento aqui..." oninput="this.value=this.value.toUpperCase()">
+        <button class="btn-buscar-codigo" onclick="buscarPorCodigo()">Importar</button>
+      </div>
+      <div id="comunidade-codigo-resultado" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- Sub-abas de tipo -->
+    <div class="community-tabs" id="community-type-tabs">
+      <button class="community-tab active" onclick="trocarCommunityTab('itens')" data-ctab="itens">Itens</button>
+      <button class="community-tab" onclick="trocarCommunityTab('rituais')" data-ctab="rituais">Rituais</button>
+      <button class="community-tab" onclick="trocarCommunityTab('habilidades')" data-ctab="habilidades">Habilidades</button>
+      <button class="community-tab" onclick="trocarCommunityTab('ameacas')" data-ctab="ameacas">Ameaças</button>
+    </div>
+
+    <div id="lista-comunidade-itens" class="community-list-pane active"></div>
+    <div id="lista-comunidade-rituais" class="community-list-pane" style="display:none"></div>
+    <div id="lista-comunidade-habilidades" class="community-list-pane" style="display:none"></div>
+    <div id="lista-comunidade-ameacas" class="community-list-pane" style="display:none"></div>
+  </div>
+
 </div><!-- /tab-content-area -->
+
+<!-- ══════════════════════════════════════════
+     MODAL COMPARTILHAR ITEM
+══════════════════════════════════════════ -->
+<div class="share-modal-overlay" id="modal-compartilhar">
+  <div class="share-modal-box">
+    <div class="share-modal-title">⬡ Compartilhar</div>
+    <div class="share-modal-subtitle" id="share-item-subtitulo">—</div>
+
+    <div class="share-code-box">
+      <div class="share-code-text" id="share-code-display">—</div>
+      <button class="btn-copy-code" id="btn-copy-share" onclick="copiarCodigoCompartilhamento()">Copiar</button>
+    </div>
+
+    <div class="share-info-row">
+      ▸ Qualquer pessoa com este código pode importar este item para a coleção delas.
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+      <button onclick="fecharModalCompartilhar()" style="background:transparent;border:1px solid #333;color:#666;font-family:'Oswald',sans-serif;font-size:0.9rem;padding:7px 18px;border-radius:5px;cursor:pointer;transition:0.2s;" onmouseover="this.style.borderColor='#666'" onmouseout="this.style.borderColor='#333'">Fechar</button>
+    </div>
+  </div>
+</div>
 
 
 <!-- ══════════════════════════════════════════
@@ -1387,11 +1611,12 @@ function getImgData(inputId) {
 ═══════════════════════════════════════════════ */
 function trocarMainTab(tab) {
   document.querySelectorAll('.main-tab').forEach((t,i) => {
-    const tabs = ['ameacas','habilidades','rituais','itens'];
+    const tabs = ['ameacas','habilidades','rituais','itens','comunidade'];
     t.classList.toggle('active', tabs[i] === tab);
   });
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.getElementById('pane-' + tab).classList.add('active');
+  if (tab === 'comunidade') carregarComunidade();
 }
 
 /* ═══════════════════════════════════════════════
@@ -1442,9 +1667,10 @@ function renderLista(tipo, itens) {
     <div class="item-card" onclick="verItem('${tipo}',${i})">
       ${item.img ? `<img class="item-card-img" src="${item.img}" alt="">` : ''}
       <button class="btn-del-card" onclick="event.stopPropagation();deletarItem('${tipo}',${i})">✕</button>
-      <div class="item-card-name">${item.nome || '—'}</div>
+      <div class="item-card-name">${item.nome || '—'}${item.compartilhado ? '<span class="badge-compartilhado">✦ público</span>' : ''}${item._importado ? '<span class="badge-importado">↓ importado</span>' : ''}</div>
       <div class="item-card-sub">${item.sub || ''}</div>
       ${tipo === 'itens' ? `<button class="btn-add-ficha" onclick="event.stopPropagation();abrirModalAdicionarFicha(${i})" title="Adicionar à ficha">+ Ficha</button>` : ''}
+      <button class="btn-share-card" onclick="event.stopPropagation();abrirModalCompartilhar('${tipo}',${i})">⬡ Compartilhar</button>
     </div>`).join('');
 }
 
@@ -1824,6 +2050,293 @@ function confirmarAddFicha() {
     setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 400); }, 2500);
 }
 
+/* ═══════════════════════════════════════════════
+   SISTEMA DE COMPARTILHAMENTO VIA FIREBASE
+═══════════════════════════════════════════════ */
+
+// Gera um código legível e curto ex: "HB-A3F9K2"
+function gerarCodigoCompartilhamento() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = 'HB-';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+// Retorna a instância do Firebase Realtime Database via variáveis globais do index
+async function _getFirebaseDB() {
+  try {
+    const { getDatabase } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+    const { getApp }      = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    return getDatabase(getApp());
+  } catch(e) { return null; }
+}
+
+let _shareItemAtual = null; // { tipo, item, index }
+
+async function abrirModalCompartilhar(tipo, indexFiltrado) {
+  // Para itens filtramos, para os outros pegamos direto
+  let item;
+  if (tipo === 'itens') {
+    const todos = carregar('itens');
+    const filtrados = todos.filter(i => i.subTipo === subItenAtivo);
+    item = filtrados[indexFiltrado];
+  } else {
+    const lista = carregar(tipo);
+    item = lista[indexFiltrado];
+  }
+  if (!item) return;
+
+  _shareItemAtual = { tipo, item, indexFiltrado };
+
+  const subtitulo = `${item.nome} · ${item.sub || item.subTipo || tipo}`;
+  document.getElementById('share-item-subtitulo').textContent = subtitulo;
+
+  // Se já tem código, usa o existente
+  let codigo = item._shareCode;
+
+  if (!codigo) {
+    // Gera novo código e publica no Firebase
+    codigo = gerarCodigoCompartilhamento();
+    const autor = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'anon';
+
+    const db = await _getFirebaseDB();
+    if (db) {
+      try {
+        const { ref, set } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+        // Sanitiza item: remove base64 de imagem para não estourar o banco
+        const itemParaSalvar = { ...item };
+        if (itemParaSalvar.img && itemParaSalvar.img.startsWith('data:')) {
+          itemParaSalvar.img = ''; // imagens base64 não são compartilhadas
+        }
+        await set(ref(db, `homebrew_compartilhado/${codigo}`), {
+          tipo, autor,
+          criadoEm: new Date().toISOString(),
+          item: { ...itemParaSalvar, _shareCode: codigo, compartilhado: true }
+        });
+      } catch(e) {
+        console.warn('Erro ao publicar no Firebase:', e);
+        showToast('⚠ Falha ao publicar. Verifique sua conexão.', '#aa2200');
+        return;
+      }
+    } else {
+      showToast('⚠ Firebase não disponível.', '#aa2200'); return;
+    }
+
+    // Atualiza item local com o código
+    item._shareCode = codigo;
+    item.compartilhado = true;
+    if (tipo === 'itens') {
+      const todos = carregar('itens');
+      const idx = todos.findIndex(i => i.id === item.id);
+      if (idx !== -1) { todos[idx] = item; salvar('itens', todos); }
+    } else {
+      const lista = carregar(tipo);
+      const idx = lista.findIndex(i => i.id === item.id);
+      if (idx !== -1) { lista[idx] = item; salvar(tipo, lista); }
+    }
+    renderLista(tipo, carregar(tipo));
+    if (tipo === 'itens') renderItensAtivos();
+  }
+
+  document.getElementById('share-code-display').textContent = codigo;
+  document.getElementById('btn-copy-share').textContent = 'Copiar';
+  document.getElementById('btn-copy-share').classList.remove('copied');
+  document.getElementById('modal-compartilhar').classList.add('show');
+}
+
+function fecharModalCompartilhar() {
+  document.getElementById('modal-compartilhar').classList.remove('show');
+  _shareItemAtual = null;
+}
+
+function copiarCodigoCompartilhamento() {
+  const code = document.getElementById('share-code-display').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById('btn-copy-share');
+    btn.textContent = '✔ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+/* ── Buscar por código ── */
+async function buscarPorCodigo() {
+  const codigo = document.getElementById('input-codigo-importar').value.trim().toUpperCase();
+  const resultDiv = document.getElementById('comunidade-codigo-resultado');
+  if (!codigo) { resultDiv.innerHTML = '<div style="color:#666;font-size:0.8rem;font-family:monospace;">▸ Digite um código.</div>'; return; }
+
+  resultDiv.innerHTML = '<div style="color:#555;font-size:0.75rem;font-family:monospace;letter-spacing:1px;">▸ Buscando...</div>';
+
+  const db = await _getFirebaseDB();
+  if (!db) { resultDiv.innerHTML = '<div style="color:#aa4444;font-size:0.8rem;">⚠ Firebase indisponível.</div>'; return; }
+
+  try {
+    const { ref, get } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+    const snap = await get(ref(db, `homebrew_compartilhado/${codigo}`));
+    if (!snap.exists()) {
+      resultDiv.innerHTML = '<div style="color:#aa4444;font-size:0.8rem;font-family:monospace;">▸ Código não encontrado.</div>';
+      return;
+    }
+    const dados = snap.val();
+    const item  = dados.item;
+    const autor = dados.autor || '?';
+    const tipo  = dados.tipo  || 'itens';
+
+    // Verifica se já foi importado
+    const jaTemLocal = carregar(tipo).some(i => i._shareCode === codigo);
+    const jaTem = jaTemLocal ? 'disabled' : '';
+    const jaTemLabel = jaTemLocal ? '✔ Já importado' : '↓ Importar';
+
+    resultDiv.innerHTML = `
+      <div class="community-item-card" style="border-color:var(--purple);">
+        <div class="community-item-header">
+          <div>
+            <div class="community-item-name">${item.nome || '—'}</div>
+            <div class="community-item-meta">${item.sub || item.subTipo || tipo}</div>
+            <div class="community-item-author">por @${autor}</div>
+          </div>
+          <button class="btn-importar" ${jaTem} onclick="importarItem('${codigo}','${tipo}',this)">${jaTemLabel}</button>
+        </div>
+        ${item.descricao ? `<div style="font-size:0.78rem;color:#777;margin-top:6px;line-height:1.5;">${item.descricao.replace(/<[^>]+>/g,'').substring(0,120)}…</div>` : ''}
+      </div>`;
+  } catch(e) {
+    resultDiv.innerHTML = '<div style="color:#aa4444;font-size:0.8rem;">⚠ Erro ao buscar. Tente novamente.</div>';
+  }
+}
+
+/* ── Importar item ── */
+async function importarItem(codigo, tipo, btnEl) {
+  const db = await _getFirebaseDB();
+  if (!db) return;
+
+  btnEl.disabled = true;
+  btnEl.textContent = '↓ Importando...';
+
+  try {
+    const { ref, get } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+    const snap = await get(ref(db, `homebrew_compartilhado/${codigo}`));
+    if (!snap.exists()) { btnEl.textContent = '⚠ Não encontrado'; return; }
+
+    const dados = snap.val();
+    const itemOriginal = dados.item;
+
+    // Cria cópia local com novo ID
+    const itemImportado = {
+      ...itemOriginal,
+      id: gerarId(),
+      _importado: true,
+      _shareCode: codigo,
+      _autorOriginal: dados.autor || '?',
+      compartilhado: false // não re-compartilha automaticamente
+    };
+
+    const lista = carregar(tipo);
+    lista.push(itemImportado);
+    salvar(tipo, lista);
+
+    // Re-renderiza a aba correspondente
+    if (tipo === 'itens') renderItensAtivos();
+    else renderLista(tipo, carregar(tipo));
+
+    btnEl.textContent = '✔ Importado!';
+    btnEl.style.background = '#39d353';
+    btnEl.style.borderColor = '#39d353';
+    btnEl.style.color = 'white';
+
+    showToast(`✦ ${itemOriginal.nome} importado com sucesso!`, 'var(--purple)');
+
+    // Recarrega lista comunidade
+    setTimeout(() => carregarComunidade(), 300);
+
+  } catch(e) {
+    btnEl.disabled = false;
+    btnEl.textContent = '⚠ Erro';
+  }
+}
+
+/* ── Aba Comunidade: lista pública ── */
+let _communityTabAtiva = 'itens';
+
+function trocarCommunityTab(tipo) {
+  _communityTabAtiva = tipo;
+  document.querySelectorAll('[data-ctab]').forEach(b => b.classList.toggle('active', b.dataset.ctab === tipo));
+  document.querySelectorAll('.community-list-pane').forEach(p => p.style.display = 'none');
+  document.getElementById('lista-comunidade-' + tipo).style.display = '';
+  carregarComunidadeTipo(tipo);
+}
+
+async function carregarComunidade() {
+  carregarComunidadeTipo(_communityTabAtiva);
+}
+
+async function carregarComunidadeTipo(tipo) {
+  const container = document.getElementById('lista-comunidade-' + tipo);
+  container.innerHTML = '<div style="color:#444;font-size:0.75rem;font-family:monospace;letter-spacing:1px;margin-top:20px;">▸ Carregando...</div>';
+
+  const db = await _getFirebaseDB();
+  if (!db) { container.innerHTML = '<div class="community-empty">⚠ Firebase indisponível.</div>'; return; }
+
+  try {
+    const { ref, get, query, orderByChild, equalTo } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+    const snap = await get(ref(db, 'homebrew_compartilhado'));
+
+    if (!snap.exists()) { container.innerHTML = '<div class="community-empty">▸ Nenhum item compartilhado ainda.<br>Seja o primeiro!</div>'; return; }
+
+    const todos = snap.val();
+    const doTipo = Object.entries(todos).filter(([, v]) => v.tipo === tipo);
+
+    if (doTipo.length === 0) {
+      container.innerHTML = `<div class="community-empty">▸ Nenhum ${tipo === 'itens' ? 'item' : tipo.slice(0,-1)} compartilhado ainda.</div>`;
+      return;
+    }
+
+    const meusImportados = new Set(carregar(tipo).filter(i => i._shareCode).map(i => i._shareCode));
+    const autor = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+
+    container.innerHTML = doTipo.map(([codigo, dados]) => {
+      const item  = dados.item || {};
+      const ja    = meusImportados.has(codigo);
+      const meu   = dados.autor === autor;
+      const botao = meu
+        ? `<span style="font-size:0.7rem;color:var(--purple-neon);font-family:'Share Tech Mono',monospace;">✦ seu</span>`
+        : `<button class="btn-importar" ${ja ? 'disabled' : ''} onclick="importarItem('${codigo}','${tipo}',this)">${ja ? '✔ Importado' : '↓ Importar'}</button>`;
+
+      return `
+        <div class="community-item-card">
+          <div class="community-item-header">
+            <div>
+              <div class="community-item-name">${item.nome || '—'}</div>
+              <div class="community-item-meta">${item.sub || item.subTipo || tipo}</div>
+              <div class="community-item-author">por @${dados.autor || '?'}</div>
+            </div>
+            ${botao}
+          </div>
+          ${item.descricao ? `<div style="font-size:0.78rem;color:#666;margin-top:6px;line-height:1.5;">${item.descricao.replace(/<[^>]+>/g,'').substring(0,120)}…</div>` : ''}
+          <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+            <div style="font-size:0.6rem;color:#333;font-family:'Share Tech Mono',monospace;">${codigo}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch(e) {
+    container.innerHTML = '<div class="community-empty">⚠ Erro ao carregar. Tente novamente.</div>';
+  }
+}
+
+function showToast(msg, cor) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style, {
+    position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)',
+    background: cor || 'var(--purple)', border:'1px solid var(--purple-neon)',
+    color:'white', fontFamily:"'Oswald',sans-serif", fontSize:'0.8rem',
+    letterSpacing:'2px', padding:'10px 24px', borderRadius:'8px',
+    zIndex:'99999', boxShadow:'0 0 20px rgba(138,43,226,0.4)', transition:'opacity 0.4s'
+  });
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 400); }, 2800);
+}
+
 window.addEventListener('load', () => {
   const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
   if (!usuario) { window.location.href = 'index.html'; return; }
@@ -1885,10 +2398,14 @@ window.addEventListener('load', () => {
             var dd = document.getElementById('temas-dropdown');
             if (dd) dd.classList.remove('open');
         }
-        document.addEventListener('click', function() {
-            var dd = document.getElementById('temas-dropdown');
-            if (dd) dd.classList.remove('open');
-        });
+document.addEventListener('click', function() {
+    var dd = document.getElementById('temas-dropdown');
+    if (dd) dd.classList.remove('open');
+});
+// Fechar modal compartilhar ao clicar fora
+document.getElementById('modal-compartilhar').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalCompartilhar();
+});
         (function() {
             var t = localStorage.getItem('ficha_tema') || 'medo';
             document.documentElement.setAttribute('data-tema', t);
