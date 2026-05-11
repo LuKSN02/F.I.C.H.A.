@@ -104,30 +104,33 @@
         --text-dim:    #7744aa;
     }
     /* DEFAULT */
-    :root {
-        --tema-primary:        #3a7bd5;
-        --tema-primary-light:  #7ab3f5;
-        --tema-primary-dark:   #0d2a5e;
-        --tema-bg-body1:       #050d1a;
-        --tema-bg-body2:       #000508;
-        --tema-glow-rgb:       58,123,213;
-        --tema-glow-light-rgb: 122,179,245;
-        --purple:      #3a7bd5;
-        --purple-neon: #7ab3f5;
-        --purple-dark: #0d2a5e;
-        --purple-glow: rgba(58,123,213,0.45);
-        --bg:          #050d1a;
-        --card:        #091628;
-        --border:      #1a3a6e;
-        --text-dim:    #6a8aaa;
-        /* ── cores fixas (independentes de tema) ── */
-        --red:         #e84040;
-        --red-dark:    #7a0000;
-        --orange:      #f5a623;
-        --green:       #39d353;
-        --yellow:      #f5c842;
-    }
+    /* DEFAULT — só aplica se nenhum tema estiver ativo */
+:root:not([data-tema]) {
+    --tema-primary:        #3a7bd5;
+    --tema-primary-light:  #7ab3f5;
+    --tema-primary-dark:   #0d2a5e;
+    --tema-bg-body1:       #050d1a;
+    --tema-bg-body2:       #000508;
+    --tema-glow-rgb:       58,123,213;
+    --tema-glow-light-rgb: 122,179,245;
+    --purple:      #3a7bd5;
+    --purple-neon: #7ab3f5;
+    --purple-dark: #0d2a5e;
+    --purple-glow: rgba(58,123,213,0.45);
+    --bg:          #050d1a;
+    --card:        #091628;
+    --border:      #1a3a6e;
+    --text-dim:    #6a8aaa;
+}
 
+/* Cores fixas — independentes de tema */
+:root {
+    --red:         #e84040;
+    --red-dark:    #7a0000;
+    --orange:      #f5a623;
+    --green:       #39d353;
+    --yellow:      #f5c842;
+}
     .btn-temas {
         background: transparent;
         border: 1px solid var(--tema-primary);
