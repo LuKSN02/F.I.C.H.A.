@@ -104,33 +104,30 @@
         --text-dim:    #7744aa;
     }
     /* DEFAULT */
-    /* DEFAULT — só aplica se nenhum tema estiver ativo */
-:root:not([data-tema]) {
-    --tema-primary:        #3a7bd5;
-    --tema-primary-light:  #7ab3f5;
-    --tema-primary-dark:   #0d2a5e;
-    --tema-bg-body1:       #050d1a;
-    --tema-bg-body2:       #000508;
-    --tema-glow-rgb:       58,123,213;
-    --tema-glow-light-rgb: 122,179,245;
-    --purple:      #3a7bd5;
-    --purple-neon: #7ab3f5;
-    --purple-dark: #0d2a5e;
-    --purple-glow: rgba(58,123,213,0.45);
-    --bg:          #050d1a;
-    --card:        #091628;
-    --border:      #1a3a6e;
-    --text-dim:    #6a8aaa;
-}
+    :root {
+        --tema-primary:        #3a7bd5;
+        --tema-primary-light:  #7ab3f5;
+        --tema-primary-dark:   #0d2a5e;
+        --tema-bg-body1:       #050d1a;
+        --tema-bg-body2:       #000508;
+        --tema-glow-rgb:       58,123,213;
+        --tema-glow-light-rgb: 122,179,245;
+        --purple:      #3a7bd5;
+        --purple-neon: #7ab3f5;
+        --purple-dark: #0d2a5e;
+        --purple-glow: rgba(58,123,213,0.45);
+        --bg:          #050d1a;
+        --card:        #091628;
+        --border:      #1a3a6e;
+        --text-dim:    #6a8aaa;
+        /* ── cores fixas (independentes de tema) ── */
+        --red:         #e84040;
+        --red-dark:    #7a0000;
+        --orange:      #f5a623;
+        --green:       #39d353;
+        --yellow:      #f5c842;
+    }
 
-/* Cores fixas — independentes de tema */
-:root {
-    --red:         #e84040;
-    --red-dark:    #7a0000;
-    --orange:      #f5a623;
-    --green:       #39d353;
-    --yellow:      #f5c842;
-}
     .btn-temas {
         background: transparent;
         border: 1px solid var(--tema-primary);
@@ -1211,7 +1208,7 @@
                     style="font-size:0.75rem;padding:6px 14px;background:transparent;border:1px solid var(--purple);color:var(--purple-neon);">
                 🧪 Homebrew
             </button>
-            <button class="btn-add-item" onclick="abrirModalNovoItem()" style="font-size:0.75rem;padding:6px 14px;">+ Adicionar</button>
+            <button class="btn-add-item" onclick="abrirModalCatalogoOP()" style="font-size:0.75rem;padding:6px 14px;">+ Adicionar</button>
         </div>
     </div>
 
@@ -1377,6 +1374,55 @@
         <!-- Rodapé -->
         <div style="display:flex;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
             <button onclick="fecharModalHomebrew()"
+                    style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:0.85rem;">
+                Fechar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Catálogo de Itens — Ordem Paranormal -->
+<div id="modal-catalogo-op" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#0d0010;border:1px solid var(--purple);border-radius:14px;padding:0;max-width:620px;width:95%;box-shadow:0 0 50px var(--purple-glow);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;">
+
+        <!-- Header -->
+        <div style="padding:20px 24px 14px;border-bottom:1px solid var(--border);flex-shrink:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <div>
+                    <div style="font-size:1.1rem;letter-spacing:3px;font-weight:700;color:var(--purple-neon);">⚔️ ITENS — ORDEM PARANORMAL</div>
+                    <div style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);margin-top:2px;">Selecione um item para adicionar ao inventário</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <button onclick="abrirModalNovoItem()" title="Adicionar item manual"
+                            style="background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:1px;padding:5px 10px;border-radius:4px;cursor:pointer;transition:0.2s;"
+                            onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--purple-neon)'"
+                            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">✎ Manual</button>
+                    <button onclick="fecharModalCatalogoOP()" style="background:none;border:none;color:var(--text-dim);font-size:1.3rem;cursor:pointer;line-height:1;padding:2px 6px;">✕</button>
+                </div>
+            </div>
+
+            <!-- Abas de categoria -->
+            <div style="display:flex;gap:4px;flex-wrap:wrap;" id="op-cat-tabs"></div>
+
+            <!-- Busca -->
+            <div style="margin-top:10px;position:relative;">
+                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:0.9rem;pointer-events:none;">⌕</span>
+                <input id="op-busca" placeholder="Buscar item..."
+                       style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px 10px 8px 30px;border-radius:6px;font-size:0.85rem;outline:none;transition:0.2s;"
+                       onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border)'"
+                       oninput="renderCatalogoOP()">
+            </div>
+        </div>
+
+        <!-- Contagem -->
+        <div style="padding:8px 24px 4px;font-size:0.6rem;letter-spacing:2px;color:#444;font-family:'Share Tech Mono',monospace;flex-shrink:0;" id="op-count">—</div>
+
+        <!-- Lista -->
+        <div id="op-lista" style="flex:1;overflow-y:auto;padding:0 24px 16px;display:flex;flex-direction:column;gap:6px;"></div>
+
+        <!-- Footer -->
+        <div style="padding:12px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;flex-shrink:0;">
+            <button onclick="fecharModalCatalogoOP()"
                     style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:0.85rem;">
                 Fechar
             </button>
@@ -3438,8 +3484,825 @@ function adicionarItemHomebrew(indexFiltrado, buscaAtual, subFiltroAtual) {
 }
 
 // ══════════════════════════════════════════════
-// DESCRIÇÃO
+// CATÁLOGO DE ITENS — ORDEM PARANORMAL
 // ══════════════════════════════════════════════
+
+const OP_ITENS_DB = [
+  // ════════════════════════════════════════════════
+  // ARQUIVOS SECRETOS #1
+  // ════════════════════════════════════════════════
+  // ── Itens Paranormais (AS#1) ──
+  { nome:'Agrupador Ritualístico', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais',  catItem:'II', espaco:1,
+    desc:'Prende até 4 componentes/catalisadores. Enquanto empunhado, tudo preso nele conta como empunhado. Útil para segurar vários componentes com uma só mão.',
+    src:'Arquivos Secretos #1' },
+  { nome:'Amuleto Sinalizador de <Elemento>', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:1,
+    desc:'Escolha um elemento (exceto Medo). Quando uma criatura do elemento entra em alcance longo (mesmo com paredes), o amuleto emite um sinal visual discreto.',
+    src:'Arquivos Secretos #1' },
+  { nome:'Rubra', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:1,
+    desc:'Droga paranormal. Ação de movimento: esfregar em ferida aberta (+5 em FOR/AGI/VIG e 10 PV temporários). Fim da cena: perde 1d3 pontos de atributos físicos. Vontade DT 15+2 por uso ou fica insano 1d3 rodadas.',
+    src:'Arquivos Secretos #1' },
+  // ── Itens Amaldiçoados — Sangue (AS#1) ──
+  { nome:'Arpão do Pescador', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'III', espaco:1,
+    dano:'1d8+1d12', tipoDano:'Perfuração+Sangue', crit:'20/x3',
+    desc:'Arma simples corpo a corpo (1 mão), arremessável em alcance curto. Dano: 1d8 perfuração + 1d12 Sangue. Crít 20/x3. Acerto de arremesso: alvo fica lento até remover o arpão (ação padrão + Atletismo DT For).',
+    src:'Arquivos Secretos #1' },
+  { nome:'Combustível de Sangue', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'III', espaco:2,
+    desc:'Munição para lança-chamas ou galões. Troca todo o dano para Sangue e aumenta todos os dados em uma categoria (d6→d8). Especialmente poderoso contra criaturas de Conhecimento.',
+    src:'Arquivos Secretos #1' },
+  { nome:'Marreta Transtornada', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'IV', espaco:2,
+    dano:'2d10+2d12', tipoDano:'Impacto+Sangue', crit:'20/x4',
+    desc:'Arma tática corpo a corpo (duas mãos). Dano: 2d10 impacto + 2d12 Sangue. Crít 20/x4. Ao empunhar/atacar, perde 1d6 PV. Crítico: Fortitude DT For ou quebra osso (fraco; se já fraco: debilitado).',
+    src:'Arquivos Secretos #1' },
+
+  // ════════════════════════════════════════════════
+  // ARQUIVOS SECRETOS #2
+  // ════════════════════════════════════════════════
+  // ── Novos Itens de Recursos (AS#2) ──
+  { nome:'Bandagem', subtipo:'Geral', cat:'GERAL', grupo:'Itens de Recursos', catItem:'I', espaco:0.5,
+    desc:'Ação padrão: cura 2d4+2 PV e remove a condição sangrando em você ou em ser adjacente.',
+    src:'Arquivos Secretos #2' },
+  { nome:'Bússola', subtipo:'Geral', cat:'GERAL', grupo:'Itens de Recursos', catItem:'I', espaco:1,
+    desc:'Utensílio. Fornece +2 em Sobrevivência para se guiar e não se perder.',
+    src:'Arquivos Secretos #2' },
+  { nome:'Caixa de Ferramentas', subtipo:'Geral', cat:'GERAL', grupo:'Itens de Recursos', catItem:'I', espaco:2,
+    desc:'Utensílio. Fornece +2 em Profissão para testes que façam sentido serem auxiliados por ferramentas mecânicas.',
+    src:'Arquivos Secretos #2' },
+  { nome:'Dose de Álcool', subtipo:'Geral', cat:'GERAL', grupo:'Itens de Recursos', catItem:'I', espaco:0.5,
+    desc:'Ação padrão: +2 em testes contra infecções/doenças por contato. Com bandagem: aumenta cura da bandagem para 2d8+2 PV. Também inflamável (não causa explosões).',
+    src:'Arquivos Secretos #2' },
+  { nome:'Incenso', subtipo:'Geral', cat:'GERAL', grupo:'Itens de Recursos', catItem:'I', espaco:0.5,
+    desc:'Ação de interlúdio: queime o incenso. Todos os personagens na mesma cena de interlúdio recuperam 1d4 PE. Efeito limitado a uma vez por dia.',
+    src:'Arquivos Secretos #2' },
+  { nome:'Kit de Escalada', subtipo:'Geral', cat:'GERAL', grupo:'Itens de Recursos', catItem:'I', espaco:2,
+    desc:'Corda dinâmica + equipamentos de segurança (sapatilhas, cadeirinha, capacete, freio, mosquetões, magnésio). Utensílio: +2 em Atletismo para escalar.',
+    src:'Arquivos Secretos #2' },
+  { nome:'Pedra de Amolar', subtipo:'Geral', cat:'GERAL', grupo:'Itens de Recursos', catItem:'I', espaco:0.5,
+    desc:'Ação de interlúdio: amola uma arma corpo a corpo de corte ou perfuração. Na primeira cena após amolar, a arma causa +1d4 do mesmo tipo de dano.',
+    src:'Arquivos Secretos #2' },
+  // ── Itens Amaldiçoados (AS#2) ──
+  { nome:'Machado do Mutilador', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'IV', espaco:1,
+    dano:'1d8+1d8', tipoDano:'Corte+Sangue', crit:'20/x3',
+    desc:'Arma tática corpo a corpo (1 mão). Dano: 1d8 corte + 1d8 Sangue (multiplicado no crítico). Crít 20/x3. Ao acertar, pode gastar 1 PE para deixar o alvo sangrando (cumulativo: perde 1d6 PV por sangramento).',
+    src:'Arquivos Secretos #2' },
+  { nome:'Elmo do Colosso', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Energia', catItem:'III', espaco:2,
+    desc:'Vestimenta. Fornece RD 5. Usado com traje de escafandro completo, conta como traje de mergulho. Imbuído com pressão eletrostática de Energia.',
+    src:'Arquivos Secretos #2' },
+  { nome:'Manoplas do Colosso', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Energia', catItem:'IV', espaco:2,
+    dano:'1d6+1d10 (cada)', tipoDano:'Impacto+Energia', crit:'20/x2',
+    desc:'Par de manoplas (só funcionam em par). Cada uma: 1d6 impacto + 1d10 Energia. Crít 20/x2. Aplicam regras de ataque desarmado. Poderes que aumentam dado desarmado não modificam o dano delas.',
+    src:'Arquivos Secretos #2' },
+  { nome:'Punhal X', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Conhecimento', catItem:'IV', espaco:1,
+    dano:'1d4+1d6', tipoDano:'Perfuração+Conhecimento', crit:'19/x2',
+    desc:'Arma simples ágil (1 mão), arremessável em alcance curto. Dano: 1d4 perfuração + 1d6 Conhecimento. Crít 19/x2. Ao atacar: gaste 2 PE para deixar alvo desprevenido; se acertar, alvo fica cego por 1 rodada (1x por cena por alvo).',
+    src:'Arquivos Secretos #2' },
+  { nome:'Sniper Fantasma', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Morte', catItem:'IV', espaco:2,
+    dano:'2d10+2d4', tipoDano:'Balístico+Morte', crit:'19/x3', alcance:'Longo',
+    desc:'Arma de fogo tática (duas mãos, alcance longo). Dano: 2d10 balístico + 2d4 Morte. Crít 19/x3. Veterano em Pontaria + mirar: +5 na margem de ameaça. Alvo reduzido a 0 PV morre se iniciar 2 turnos morrendo (em vez de 3).',
+    src:'Arquivos Secretos #2' },
+
+  // ════════════════════════════════════════════════
+  // ARQUIVOS SECRETOS #3
+  // ════════════════════════════════════════════════
+  // ── Equipamentos Gerais (AS#3) ──
+  { nome:'Bloody Mary Batizada', subtipo:'Geral', cat:'GERAL', grupo:'Equipamento Geral', catItem:'II', espaco:1,
+    desc:'Bebida especialmente preparada. Se beber: remove uma condição mental e/ou de medo. Porém, sofre 2d4 pontos de dano mental.',
+    src:'Arquivos Secretos #3' },
+  { nome:'Paçoca', subtipo:'Geral', cat:'GERAL', grupo:'Equipamento Geral', catItem:'0', espaco:0.5,
+    desc:'Conta como um prato rápido. Em ocasiões especiais (a critério do mestre), uma vez por dia: recupera 1d8+1 PV, PE e SAN ao comer.',
+    src:'Arquivos Secretos #3' },
+  // ── Arma (AS#3) ──
+  { nome:'Garra do Harpia', subtipo:'Armas', cat:'ARMA', grupo:'Arma Única', catItem:'I', espaco:2,
+    dano:'2d8', tipoDano:'Corte', crit:'19/x2', empun:'Duas Mãos',
+    desc:'Arma tática ágil corpo a corpo (duas mãos). Dano: 2d8 corte. Crít 19/x2. Arremessável (alcance curto). Ao causar dano: gaste 2 PE para manobra de agarrar grátis. Pode ser usada com Combater com Duas Armas como se fosse arma de 1 mão + leve. Item único.',
+    src:'Arquivos Secretos #3' },
+  // ── Itens Paranormais (AS#3) ──
+  { nome:'Crânio Dominador', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'III', espaco:1,
+    desc:'Ação padrão + 2 PE: invoca correntes que paralisam até 2 alvos em alcance curto (Reflexos DT Pre evita). Para libertar: romper a corrente (Defesa 10, RD 10, 20 PV). Recarrega em 24h; correntes desaparecem ao recarregar.',
+    src:'Arquivos Secretos #3' },
+  { nome:'Gaiola do Corvo', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'IV', espaco:2,
+    desc:'Ação padrão: coloque no chão e abra. Raio de 18m vira Lodo (terreno difícil). Início de cada rodada no Lodo: 3d10 Morte (Fort DT Vig reduz à metade). Se alguém morrer no Lodo, corpo vira cinzas e vai para a gaiola; ela fecha sozinha.',
+    src:'Arquivos Secretos #3' },
+  // ── Itens Amaldiçoados (AS#3) ──
+  { nome:'Camiseta Psikolera', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'II', espaco:1,
+    desc:'Vestimenta. Enquanto machucado usando esta camiseta, todas as rolagens de dano causam +2d8 Sangue.',
+    src:'Arquivos Secretos #3' },
+  { nome:'Dupla Obsessiva (Maça + Florete)', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'III', espaco:2,
+    dano:'2d4+1d6 / 1d6+2d4', tipoDano:'Perfuração+Sangue',
+    desc:'Maça: 2d4 perfuração +1d6 Sangue, crít 20/x3. Florete: 1d6 perfuração +2d4 Sangue, ágil, crít 18/x2. Empunhando ambas: ação padrão para dois ataques. Aliado em alcance curto atacado: gaste 2 PE (reação) para sofrer o ataque por ele + contra-ataque com maça (2 PE).',
+    src:'Arquivos Secretos #3' },
+  { nome:'Armadura de Guevara (Couraças)', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'III', espaco:0,
+    desc:'Proteção pesada amaldiçoada de Sangue. Defesa +10 (+1/semana, máx +20). 0 espaços (se move sozinha). RD 5 balístico/impacto/perfuração, RD 10 Sangue. Vulnerável a Morte. Toque: Vontade (DT 6d6) ou força equipa. Equipado: Fort (DT 6d6) ou Sangue pode controlá-lo.',
+    src:'Arquivos Secretos #3' },
+
+  // ════════════════════════════════════════════════
+  // INICIATIVA T20 — ORDEM PARANORMAL RPG (v1.2)
+  // ════════════════════════════════════════════════
+
+  // ── Armas Simples ──
+  { nome:'Faca', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Leve', catItem:'0', espaco:1,
+    dano:'1d4', tipoDano:'Corte', crit:'19',
+    desc:'Arma simples ágil, arremessável em alcance curto. Pode-se aplicar Agilidade no ataque e dano.',
+    src:'Iniciativa T20' },
+  { nome:'Martelo', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Leve', catItem:'0', espaco:1,
+    dano:'1d6', tipoDano:'Impacto', crit:'x2',
+    desc:'Ferramenta comum que pode ser usada como arma.',
+    src:'Iniciativa T20' },
+  { nome:'Punhal', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Leve', catItem:'0', espaco:1,
+    dano:'1d4', tipoDano:'Perfuração', crit:'x3',
+    desc:'Arma simples ágil. Faca de lâmina longa e pontiaguda, usada por cultistas em rituais.',
+    src:'Iniciativa T20' },
+  { nome:'Bastão', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Uma Mão', catItem:'0', espaco:1,
+    dano:'1d6/1d8', tipoDano:'Impacto', crit:'x2',
+    desc:'Cabo de madeira ou barra de ferro longos. Arma ágil; pode ser usada com Combater com Duas Armas.',
+    src:'Iniciativa T20' },
+  { nome:'Machete', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Uma Mão', catItem:'0', espaco:1,
+    dano:'1d6', tipoDano:'Corte', crit:'19',
+    desc:'Lâmina longa e larga, muito usada como ferramenta para abrir trilhas.',
+    src:'Iniciativa T20' },
+  { nome:'Lança', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Uma Mão', catItem:'0', espaco:1,
+    dano:'1d6', tipoDano:'Perfuração', crit:'x2', alcance:'Curto',
+    desc:'Arma simples arremessável em alcance curto.',
+    src:'Iniciativa T20' },
+  { nome:'Cajado', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Duas Mãos', catItem:'0', espaco:2,
+    dano:'1d6/1d6', tipoDano:'Impacto', crit:'x2',
+    desc:'Arma ágil de duas mãos. Pode ser usada com Combater com Duas Armas como arma de 1 mão + leve.',
+    src:'Iniciativa T20' },
+  { nome:'Arco', subtipo:'Armas', cat:'ARMA', grupo:'Disparo Duas Mãos', catItem:'0', espaco:2,
+    dano:'1d6', tipoDano:'Perfuração', crit:'x3', alcance:'Médio',
+    desc:'Arma de disparo simples. Usa flechas como munição (1 pacote = 1 missão inteira).',
+    src:'Iniciativa T20' },
+  { nome:'Besta', subtipo:'Armas', cat:'ARMA', grupo:'Disparo Duas Mãos', catItem:'0', espaco:2,
+    dano:'1d8', tipoDano:'Perfuração', crit:'19', alcance:'Médio',
+    desc:'Exige ação de movimento para recarregar a cada disparo. Usa flechas.',
+    src:'Iniciativa T20' },
+  { nome:'Pistola', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Fogo Leve', catItem:'I', espaco:1,
+    dano:'1d12', tipoDano:'Balístico', crit:'18', alcance:'Curto',
+    desc:'Arma de mão comum entre policiais e militares, facilmente recarregável.',
+    src:'Iniciativa T20' },
+  { nome:'Revólver', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Fogo Leve', catItem:'I', espaco:1,
+    dano:'2d6', tipoDano:'Balístico', crit:'19/x3', alcance:'Curto',
+    desc:'A arma de fogo mais comum e uma das mais confiáveis.',
+    src:'Iniciativa T20' },
+  { nome:'Fuzil de Caça', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Fogo Duas Mãos', catItem:'I', espaco:2,
+    dano:'2d8', tipoDano:'Balístico', crit:'19/x3', alcance:'Médio',
+    desc:'Arma de fogo longa de uso comum.',
+    src:'Iniciativa T20' },
+
+  // ── Armas Táticas ──
+  { nome:'Machadinha', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Leve', catItem:'0', espaco:1,
+    dano:'1d6', tipoDano:'Corte', crit:'x3', alcance:'Curto',
+    desc:'Ferramenta útil para cortar madeira. Pode ser arremessada.',
+    src:'Iniciativa T20' },
+  { nome:'Nunchaku', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Leve', catItem:'0', espaco:1,
+    dano:'1d8', tipoDano:'Impacto', crit:'x2',
+    desc:'Dois bastões curtos ligados por corrente. Arma ágil.',
+    src:'Iniciativa T20' },
+  { nome:'Corrente', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Uma Mão', catItem:'0', espaco:1,
+    dano:'1d8', tipoDano:'Impacto', crit:'x2',
+    desc:'Corrente grossa usada como arma. Fornece +2 em testes para desarmar e derrubar.',
+    src:'Iniciativa T20' },
+  { nome:'Espada', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Uma Mão', catItem:'I', espaco:1,
+    dano:'1d8/1d10', tipoDano:'Corte', crit:'19',
+    desc:'Arma medieval. Pode ser empunhada com 1 mão (1d8) ou 2 mãos (1d10).',
+    src:'Iniciativa T20' },
+  { nome:'Florete', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Uma Mão', catItem:'I', espaco:1,
+    dano:'1d6', tipoDano:'Corte', crit:'18',
+    desc:'Arma ágil de esgrima.',
+    src:'Iniciativa T20' },
+  { nome:'Machado', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Uma Mão', catItem:'I', espaco:1,
+    dano:'1d8', tipoDano:'Corte', crit:'x3',
+    desc:'Ferramenta importante para lenhadores e bombeiros. Pode causar ferimentos terríveis.',
+    src:'Iniciativa T20' },
+  { nome:'Maça', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Uma Mão', catItem:'I', espaco:1,
+    dano:'2d4', tipoDano:'Impacto', crit:'x2',
+    desc:'Bastão com cabeça metálica cheia de protuberâncias.',
+    src:'Iniciativa T20' },
+  { nome:'Acha', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Duas Mãos', catItem:'I', espaco:2,
+    dano:'1d12', tipoDano:'Corte', crit:'x3',
+    desc:'Machado grande de duas mãos.',
+    src:'Iniciativa T20' },
+  { nome:'Gadanho', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Duas Mãos', catItem:'I', espaco:2,
+    dano:'2d4', tipoDano:'Corte', crit:'x4',
+    desc:'Arma tática de duas mãos com lâmina em foice.',
+    src:'Iniciativa T20' },
+  { nome:'Katana', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Duas Mãos', catItem:'I', espaco:2,
+    dano:'1d10', tipoDano:'Corte', crit:'19',
+    desc:'Arma ágil de duas mãos.',
+    src:'Iniciativa T20' },
+  { nome:'Marreta', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Duas Mãos', catItem:'I', espaco:2,
+    dano:'3d4', tipoDano:'Impacto', crit:'x2',
+    desc:'Usada para demolir paredes, também pode demolir pessoas. Use para picaretas e similares.',
+    src:'Iniciativa T20' },
+  { nome:'Montante', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Duas Mãos', catItem:'I', espaco:2,
+    dano:'2d6', tipoDano:'Corte', crit:'19',
+    desc:'Enorme espada de 1,5m, uma das armas mais poderosas de seu tempo.',
+    src:'Iniciativa T20' },
+  { nome:'Motoserra', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Duas Mãos', catItem:'I', espaco:2,
+    dano:'3d6', tipoDano:'Corte', crit:'x2',
+    desc:'Ao rolar 6 em dado de dano, role dado adicional. Impõe –O em testes de ataque. Ligar gasta ação de movimento.',
+    src:'Iniciativa T20' },
+  { nome:'Arco Composto', subtipo:'Armas', cat:'ARMA', grupo:'Disparo Duas Mãos', catItem:'I', espaco:2,
+    dano:'1d10', tipoDano:'Perfuração', crit:'x3', alcance:'Médio',
+    desc:'Arma de disparo tática. Usa flechas.',
+    src:'Iniciativa T20' },
+  { nome:'Balestra', subtipo:'Armas', cat:'ARMA', grupo:'Disparo Duas Mãos', catItem:'I', espaco:2,
+    dano:'1d12', tipoDano:'Perfuração', crit:'19', alcance:'Médio',
+    desc:'Besta tática de maior potência. Usa flechas.',
+    src:'Iniciativa T20' },
+  { nome:'Submetralhadora', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Fogo Uma Mão', catItem:'I', espaco:1,
+    dano:'2d6', tipoDano:'Balístico', crit:'19/x3', alcance:'Curto',
+    desc:'Arma de fogo automática que pode ser empunhada com uma mão. Usa balas curtas.',
+    src:'Iniciativa T20' },
+  { nome:'Espingarda', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Fogo Duas Mãos', catItem:'I', espaco:2,
+    dano:'4d6', tipoDano:'Balístico', crit:'x3', alcance:'Curto',
+    desc:'Arma de fogo longa e com cano liso. Usa cartuchos.',
+    src:'Iniciativa T20' },
+  { nome:'Fuzil de Assalto', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Fogo Duas Mãos', catItem:'II', espaco:2,
+    dano:'2d10', tipoDano:'Balístico', crit:'19/x3', alcance:'Médio',
+    desc:'Arma militar automática. Usa balas longas.',
+    src:'Iniciativa T20' },
+  { nome:'Fuzil de Precisão', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Fogo Duas Mãos', catItem:'III', espaco:2,
+    dano:'2d10', tipoDano:'Balístico', crit:'19/x3', alcance:'Longo',
+    desc:'Arma de fogo de alto alcance e precisão. Usa balas longas.',
+    src:'Iniciativa T20' },
+
+  // ── Armas Pesadas ──
+  { nome:'Bazuca', subtipo:'Armas', cat:'ARMA', grupo:'Arma Pesada', catItem:'III', espaco:2,
+    dano:'10d8', tipoDano:'Impacto', crit:'x2', alcance:'Médio',
+    desc:'Lança foguetes. Requer ação de movimento para recarregar a cada disparo. Usa foguetes.',
+    src:'Iniciativa T20' },
+  { nome:'Lança-Chamas', subtipo:'Armas', cat:'ARMA', grupo:'Arma Pesada', catItem:'III', espaco:2,
+    dano:'6d6', tipoDano:'Fogo', crit:'x2', alcance:'Curto',
+    desc:'Atinge todos em linha de 1,5m de largura. Um ataque contra todos na área. Atingidos ficam em chamas. Usa combustível.',
+    src:'Iniciativa T20' },
+  { nome:'Metralhadora', subtipo:'Armas', cat:'ARMA', grupo:'Arma Pesada', catItem:'II', espaco:2,
+    dano:'2d12', tipoDano:'Balístico', crit:'19/x3', alcance:'Médio',
+    desc:'Arma automática pesada. Exige Força 4+ ou apoio em tripé (senão –5 em ataques). Usa balas longas.',
+    src:'Iniciativa T20' },
+
+  // ── Munições ──
+  { nome:'Balas Curtas', subtipo:'Geral', cat:'GERAL', grupo:'Munição', catItem:'0', espaco:1,
+    desc:'Munição básica para pistolas, revólveres e submetralhadoras. Dura duas cenas.',
+    src:'Iniciativa T20' },
+  { nome:'Balas Longas', subtipo:'Geral', cat:'GERAL', grupo:'Munição', catItem:'I', espaco:1,
+    desc:'Munição para fuzis e metralhadoras. Dura uma cena.',
+    src:'Iniciativa T20' },
+  { nome:'Cartuchos', subtipo:'Geral', cat:'GERAL', grupo:'Munição', catItem:'I', espaco:1,
+    desc:'Munição para espingardas. Dura uma cena.',
+    src:'Iniciativa T20' },
+  { nome:'Combustível (Lança-Chamas)', subtipo:'Geral', cat:'GERAL', grupo:'Munição', catItem:'I', espaco:1,
+    desc:'Tanque de combustível para lança-chamas. Dura uma cena.',
+    src:'Iniciativa T20' },
+  { nome:'Flechas', subtipo:'Geral', cat:'GERAL', grupo:'Munição', catItem:'0', espaco:1,
+    desc:'Munição para arcos e bestas. Podem ser reaproveitadas; um pacote dura uma missão inteira.',
+    src:'Iniciativa T20' },
+  { nome:'Foguete', subtipo:'Geral', cat:'GERAL', grupo:'Munição', catItem:'I', espaco:1,
+    desc:'Munição para bazuca. Cada foguete dura um único disparo.',
+    src:'Iniciativa T20' },
+
+  // ── Equipamentos Gerais (Acessórios) ──
+  { nome:'Kit de Perícia', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'0', espaco:1,
+    desc:'Ferramentas para uma perícia específica. Sem o kit, sofre –5 no teste.',
+    src:'Iniciativa T20' },
+  { nome:'Utensílio', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'I', espaco:1,
+    desc:'Item com utilidade específica (canivete, lupa, smartphone, notebook). Fornece +2 em uma perícia.',
+    src:'Iniciativa T20' },
+  { nome:'Vestimenta', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'I', espaco:1,
+    desc:'Peça de vestuário que fornece +2 em uma perícia (exceto Luta/Pontaria). Máximo 2 vestimentas ativas.',
+    src:'Iniciativa T20' },
+
+  // ── Explosivos ──
+  { nome:'Granada de Atordoamento', subtipo:'Geral', cat:'GERAL', grupo:'Explosivos', catItem:'0', espaco:1,
+    desc:'Flash-bang. Seres na área ficam atordoados por 1 rodada (Fort DT Agi: ofuscado e surdo por 1 rodada).',
+    src:'Iniciativa T20' },
+  { nome:'Granada de Fragmentação', subtipo:'Armas', cat:'ARMA', grupo:'Explosivos', catItem:'I', espaco:1,
+    dano:'8d6', tipoDano:'Perfuração',
+    desc:'Espalha fragmentos. Seres na área sofrem 8d6 perfuração (Reflexos DT Agi: metade). Raio 6m.',
+    src:'Iniciativa T20' },
+  { nome:'Granada de Fumaça', subtipo:'Geral', cat:'GERAL', grupo:'Explosivos', catItem:'0', espaco:1,
+    desc:'Fumaça espessa. Seres na área ficam cegos e sob camuflagem total por 2 rodadas.',
+    src:'Iniciativa T20' },
+  { nome:'Granada Incendiária', subtipo:'Armas', cat:'ARMA', grupo:'Explosivos', catItem:'I', espaco:1,
+    dano:'6d6', tipoDano:'Fogo',
+    desc:'Labaredas em raio 6m. Seres sofrem 6d6 fogo e ficam em chamas (Reflexos DT Agi: metade e evita condição).',
+    src:'Iniciativa T20' },
+  { nome:'Mina Antipessoal', subtipo:'Armas', cat:'ARMA', grupo:'Explosivos', catItem:'I', espaco:1,
+    dano:'12d6', tipoDano:'Perfuração',
+    desc:'Ativada por controle remoto (alcance longo). Cone 6m; 12d6 perfuração (Reflexos DT Int: metade). Instalar: ação completa + Tática DT 15.',
+    src:'Iniciativa T20' },
+
+  // ── Itens Operacionais ──
+  { nome:'Algemas', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'0', espaco:1,
+    desc:'Par de algemas de aço. Para prender: empunhar + agarrar + novo teste de agarrar. Escapar: Acrobacia DT 30.',
+    src:'Iniciativa T20' },
+  { nome:'Arpéu', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'0', espaco:1,
+    desc:'Gancho de aço com corda. Prender: Pontaria DT 15. Fornece +5 em Atletismo para escalar.',
+    src:'Iniciativa T20' },
+  { nome:'Bandoleira', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Cinto com bolsos e alças. Uma vez por rodada, sacar ou guardar item como ação livre.',
+    src:'Iniciativa T20' },
+  { nome:'Binóculos', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'0', espaco:1,
+    desc:'Binóculos militares. Fornecem +5 em Percepção para observar coisas distantes.',
+    src:'Iniciativa T20' },
+  { nome:'Bloqueador de Sinal', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Emite ondas que bloqueiam a frequência de celulares em alcance médio.',
+    src:'Iniciativa T20' },
+  { nome:'Cicatrizante', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Spray cicatrizante. Ação padrão: cura 2d8+2 PV em você ou ser adjacente.',
+    src:'Iniciativa T20' },
+  { nome:'Corda', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'0', espaco:1,
+    desc:'10 metros de corda resistente. Fornece +5 em Atletismo para descer ou escalar.',
+    src:'Iniciativa T20' },
+  { nome:'Equipamento de Sobrevivência', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'0', espaco:2,
+    desc:'Mochila com saco de dormir, panelas, GPS. Fornece +5 em Sobrevivência; permite testes sem treinamento.',
+    src:'Iniciativa T20' },
+  { nome:'Lanterna Tática', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Ilumina locais escuros. Gastar ação de movimento: mirar luz em ser em alcance curto — fica ofuscado por 1 rodada.',
+    src:'Iniciativa T20' },
+  { nome:'Máscara de Gás', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'0', espaco:1,
+    desc:'Máscara com filtro. Fornece +10 em Fort contra efeitos que dependam de respiração.',
+    src:'Iniciativa T20' },
+  { nome:'Mochila Militar', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:0,
+    desc:'Mochila leve de alta qualidade. Não usa espaço e aumenta capacidade de carga em 2 espaços.',
+    src:'Iniciativa T20' },
+  { nome:'Óculos de Visão Térmica', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Eliminam penalidade em testes por camuflagem.',
+    src:'Iniciativa T20' },
+  { nome:'Pé de Cabra', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'0', espaco:1,
+    desc:'Barra de ferro. Fornece +5 em Força para arrombar portas. Pode ser usada em combate como bastão.',
+    src:'Iniciativa T20' },
+  { nome:'Pistola de Dardos', subtipo:'Armas', cat:'ARMA', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Dispara dardos soníferos. Acerto: alvo fica inconsciente até o fim da cena (Fort DT Agi: desprevenido e lento por 1 rodada). Vem com 2 dardos.',
+    src:'Iniciativa T20' },
+  { nome:'Pistola Sinalizadora', subtipo:'Armas', cat:'ARMA', grupo:'Itens Operacionais', catItem:'0', espaco:1,
+    dano:'2d6', tipoDano:'Fogo', alcance:'Curto',
+    desc:'Dispara sinalizador luminoso. Pode ser usada como arma (alcance curto, 2d6 fogo). Vem com 2 cargas.',
+    src:'Iniciativa T20' },
+  { nome:'Soqueira', subtipo:'Armas', cat:'ARMA', grupo:'Itens Operacionais', catItem:'0', espaco:1,
+    desc:'Peça de metal para socos. Fornece +1 em rolagens de dano desarmado. Pode receber modificações e maldições.',
+    src:'Iniciativa T20' },
+  { nome:'Spray de Pimenta', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Ação padrão: ser adjacente fica cego por 1d4 rodadas (Fort DT Agi evita). Dura dois usos.',
+    src:'Iniciativa T20' },
+  { nome:'Taser', subtipo:'Armas', cat:'ARMA', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    dano:'1d6', tipoDano:'Eletricidade',
+    desc:'Ação padrão: ser adjacente sofre 1d6 eletricidade e fica atordoado por 1 rodada (Fort DT Agi evita). Dura dois usos.',
+    src:'Iniciativa T20' },
+  { nome:'Traje Hazmat', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:2,
+    desc:'Roupa impermeável contra materiais tóxicos. Fornece +5 em testes contra efeitos ambientais e RD 10 químico.',
+    src:'Iniciativa T20' },
+
+  // ── Itens Paranormais (T20) ──
+  { nome:'Amarras de (Elemento)', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:1,
+    desc:'Cordas/correntes de um elemento paranormal. Armadilha (área 3x3m, Reflexos DT Int ou imóvel) ou Laçar (ação padrão + 1 PE, Vontade DT Agi ou paralisado).',
+    src:'Iniciativa T20' },
+  { nome:'Câmera de Aura Paranormal', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:1,
+    desc:'Fotografar: ação padrão + 1 PE. Revela auras paranormais em pessoas e objetos (cor do elemento).',
+    src:'Iniciativa T20' },
+  { nome:'Componentes Ritualísticos de (Elemento)', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'0', espaco:1,
+    desc:'Necessários para conjuração de rituais. Elementos: Sangue, Morte, Conhecimento ou Energia.',
+    src:'Iniciativa T20' },
+  { nome:'Emissor de Pulsos Paranormais', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:1,
+    desc:'Ação completa + 1 PE: emite pulso de elemento definido pelo ativador. Atrai criaturas do mesmo elemento e afasta do elemento oposto (Vontade DT Pre evita).',
+    src:'Iniciativa T20' },
+  { nome:'Escuta de Ruídos Paranormais', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:1,
+    desc:'Microfone que capta ruídos paranormais. Ativar: ação completa + 2 PE, grava por até 24h. Ouvir fornece +5 em Ocultismo para identificar criaturas.',
+    src:'Iniciativa T20' },
+  { nome:'Scanner de Manifestação Paranormal de (Elemento)', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:1,
+    desc:'Ação padrão para ativar; consome 1 PE/rodada. Detecta toda manifestação paranormal do elemento escolhido em alcance longo.',
+    src:'Iniciativa T20' },
+
+  // ── Itens Amaldiçoados Especiais (T20) ──
+  { nome:'Coração Pulsante', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'II', espaco:1,
+    desc:'Reação ao sofrer dano: espremer para reduzir dano à metade. Fort DT 15+5/uso no dia ou item é destruído. Compartimento deve ser drenado uma vez por dia.',
+    src:'Iniciativa T20' },
+  { nome:'Coroa de Espinhos', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'II', espaco:1,
+    desc:'Uma vez/rodada (reação): transforma qualquer dano mental em dano de Sangue. Não recupera sanidade por descanso enquanto vestido. Leva 1 semana para ativar.',
+    src:'Iniciativa T20' },
+  { nome:'Frasco de Vitalidade', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'II', espaco:1,
+    desc:'Gastar 1 min + até 20 PV: enche com sangue. Ação padrão para beber e recuperar o PV armazenado. Fort DT 20 ou fica enjoado por 1 rodada.',
+    src:'Iniciativa T20' },
+  { nome:'Pérola de Sangue', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'II', espaco:1,
+    desc:'Ação de movimento: absorver dando +5 em Agi/For/Vig até o fim da cena. Ao fim da cena: Fort DT 20 ou fatigado até o fim do dia (falha por 5+: parada cardíaca).',
+    src:'Iniciativa T20' },
+  { nome:'Punhos Enraivecidos', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'II', espaco:1,
+    desc:'Soqueiras de metal vermelho. Ataques desarmados causam 1d8 Sangue. Ao acertar: ataque adicional pagando 2 PE cada vez (cumulativo por ataque no turno).',
+    src:'Iniciativa T20' },
+  { nome:'Seringa de Transfiguração', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'II', espaco:1,
+    desc:'Ação padrão: suga sangue de alvo adjacente. Outra ação padrão: injeta em adjacente, transfigurando sua aparência para a do dono do sangue por um dia.',
+    src:'Iniciativa T20' },
+  { nome:'Amarras Mortais', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Morte', catItem:'II', espaco:1,
+    desc:'Correntes de ferro negro. Uma vez/rodada: ação padrão + 2 PE para agarrar (+10 no teste) ser Gde ou menor em alcance curto. Ação de movimento: puxar agarrado para adjacente.',
+    src:'Iniciativa T20' },
+  { nome:'Casaco de Lodo', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Morte', catItem:'II', espaco:1,
+    desc:'Feito de Lodo ativo. RD 5 para corte, impacto, Morte e perfuração. Vulnerável a balístico e Energia.',
+    src:'Iniciativa T20' },
+  { nome:'Coletora', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Morte', catItem:'II', espaco:1,
+    dano:'—', tipoDano:'Perfuração',
+    desc:'Punhal negro. Ação completa: apunhalar ser morrendo (mata e absorve até 20 PE usáveis). Enquanto portar: pesadelos e descanso sempre ruim.',
+    src:'Iniciativa T20' },
+  { nome:'Crânio Espiral', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Morte', catItem:'II', espaco:1,
+    desc:'Ação livre: ativar para receber ação padrão adicional na rodada. Vontade DT 15+5/uso ou envelhece 1d4 anos e não pode mais usar no dia.',
+    src:'Iniciativa T20' },
+  { nome:'Frasco de Lodo', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Morte', catItem:'II', espaco:1,
+    desc:'Aplicar em ferimento recente (≤1 rodada): recupera 6d8+20 PV. Ferida mais antiga: par recupera 3d8+10 PV, ímpar causa 3d8+10 dano de Morte. Uso único.',
+    src:'Iniciativa T20' },
+  { nome:'Vislumbre do Fim', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Morte', catItem:'II', espaco:1,
+    desc:'Óculos escuros com sigilos. Ação de movimento: ver como um alvo vai morrer ou, em Marcados/criaturas, o pior valor de resistência e vulnerabilidades.',
+    src:'Iniciativa T20' },
+  { nome:'Anéis do Elo Mental', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Conhecimento', catItem:'II', espaco:1,
+    desc:'Par de anéis dourados. Usados por 2 pessoas por 24h: ativa Ligação Telepática permanente. Ambos compartilham melhores testes de Vontade, mas qualquer dano mental afeta as duas.',
+    src:'Iniciativa T20' },
+  { nome:'Lanterna Reveladora', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Conhecimento', catItem:'II', espaco:1,
+    desc:'Ação padrão + 1 PE: ativa por uma cena com efeito de Terceiro Olho. Incomoda criaturas de Sangue iluminadas (atacam o portador em detrimento de outros).',
+    src:'Iniciativa T20' },
+  { nome:'Máscara das Pessoas nas Sombras', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Conhecimento', catItem:'II', espaco:1,
+    desc:'RD 10 Conhecimento. Ação de movimento + 2 PE: entrar em sombra adjacente e se transportar para outra sombra visível em alcance médio. Uso implica acordo com as Máscaras.',
+    src:'Iniciativa T20' },
+  { nome:'Munição Jurada', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Conhecimento', catItem:'II', espaco:1,
+    desc:'Ritual de 1h para vincular a um ser. Contra esse ser: +10 no ataque, dobra margem de ameaça, +6d12 Conhecimento. Enquanto possuída: –2 em Defesa e ataque contra outros.',
+    src:'Iniciativa T20' },
+  { nome:'Pergaminho da Pertinácia', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Conhecimento', catItem:'II', espaco:1,
+    desc:'Ação padrão: encarar sigilos e receber 5 PE temporários até o fim da cena. Ocultismo DT 15+5/uso ou pergaminho se desfaz.',
+    src:'Iniciativa T20' },
+  { nome:'Peitoral da Segunda Chance', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Energia', catItem:'II', espaco:1,
+    desc:'Ao chegar a 0 PV: gasta 5 PE automaticamente para reanimar com 4d10 PV. Falha se sem PE. A cada ativação: 1 em 1d10 de chance de morte instantânea.',
+    src:'Iniciativa T20' },
+  { nome:'Relógio de Arnaldo', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Energia', catItem:'II', espaco:1,
+    desc:'Relógio de ouro com aspecto queimado. Poderes ligados à manipulação do tempo e previsão. Detalhes a critério do mestre.',
+    src:'Iniciativa T20' },
+
+  // ════════════════════════════════════════════════
+  // SOBREVIVENDO AO HORROR v1.2
+  // ════════════════════════════════════════════════
+
+  // ── Novas Armas ──
+  { nome:'Baioneta', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Leve', catItem:'0', espaco:1,
+    dano:'1d4', tipoDano:'Perfuração', crit:'19',
+    desc:'Lâmina fixada em fuzil. Ação de movimento para fixar. Fixada: arma de 2 mãos ágil com dano 1d6. Arma de fogo sofre –O em ataques à distância.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Bastão Policial', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Uma Mão', catItem:'I', espaco:1,
+    dano:'1d6', tipoDano:'Impacto', crit:'x2', alcance:'Curto',
+    desc:'Arma ágil. Na ação especial esquiva com bastão policial, bônus de Defesa aumenta em +1.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Espingarda de Cano Duplo', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Fogo Duas Mãos', catItem:'II', espaco:2,
+    dano:'4d6', tipoDano:'Balístico', crit:'x3', alcance:'Curto',
+    desc:'Dois canos; ação de movimento para recarregar. Pode disparar ambos no mesmo alvo: –O no ataque, mas dano aumenta para 6d6.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Estilingue', subtipo:'Armas', cat:'ARMA', grupo:'Disparo Duas Mãos', catItem:'0', espaco:1,
+    dano:'1d4', tipoDano:'Impacto', crit:'x2', alcance:'Curto',
+    desc:'Aplica Força no dano. Bolinhas reaproveitáveis (duram uma missão). Pode lançar granadas em alcance longo.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Faca Tática', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Leve', catItem:'I', espaco:1,
+    dano:'1d6', tipoDano:'Corte', crit:'19', alcance:'Curto',
+    desc:'Arma ágil. Contra-ataque: +2 no ataque. Bloqueio: pode gastar 2 PE e sacrificar a faca para aumentar RD do bloqueio em +20.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Gancho de Carne', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Leve', catItem:'0', espaco:1,
+    dano:'1d4', tipoDano:'Perfuração', crit:'x4',
+    desc:'Gancho metálico de frigorífico. Amarrado a corda: alcance 4,5m e espaço 2.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Picareta', subtipo:'Armas', cat:'ARMA', grupo:'Corpo a Corpo Uma Mão', catItem:'0', espaco:1,
+    dano:'1d6', tipoDano:'Perfuração', crit:'x4',
+    desc:'Ferramenta de mineração e demolição usada em combate.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Pistola Pesada', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Fogo Uma Mão', catItem:'I', espaco:1,
+    dano:'2d8', tipoDano:'Balístico', crit:'18', alcance:'Curto',
+    desc:'Calibre superior. –O no ataque; empunhar com 2 mãos anula a penalidade.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Pregador Pneumático', subtipo:'Armas', cat:'ARMA', grupo:'Disparo Uma Mão', catItem:'0', espaco:1,
+    dano:'1d4', tipoDano:'Perfuração', crit:'x4', alcance:'Curto',
+    desc:'Ferramenta que dispara pregos. Conta como arma de fogo. Armazena 300 pregos (dura uma missão).',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Revólver Compacto', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Fogo Leve', catItem:'I', espaco:1,
+    dano:'2d4', tipoDano:'Perfuração', crit:'19/x3', alcance:'Curto',
+    desc:'Arma de baixo calibre fácil de ocultar. Treinado em Crime: pode carregar sem ocupar espaço.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Shuriken', subtipo:'Armas', cat:'ARMA', grupo:'Arma de Arremesso', catItem:'I', espaco:0.5,
+    dano:'1d4', tipoDano:'Perfuração', crit:'x2', alcance:'Curto',
+    desc:'Projéteis metálicos em estrela. Veterano em Pontaria: 1x/rodada gastar 1 PE para ataque adicional de shuriken no mesmo alvo.',
+    src:'Sobrevivendo ao Horror' },
+
+  // ── Novos Equipamentos Gerais (SaH) ──
+  { nome:'Amuleto Sagrado', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'0', espaco:1,
+    desc:'Shimenawa, rosário ou contas de oração. Ocupa espaço de vestimenta. Fornece +2 em Religião e Vontade.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Celular', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'0', espaco:1,
+    desc:'Utensílio especial. Com internet: +2 em testes para adquirir informações. Lanterna fraca (cone 4,5m).',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Chave de Fenda Universal', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'0', espaco:1,
+    desc:'Ferramenta de precisão. Fornece +2 em testes para criar ou reparar objetos de qualquer tipo.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Chaves', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'0', espaco:1,
+    desc:'Molho de chaves. Usar barulho para distrair: +2 em Furtividade na mesma rodada.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Documentos Falsos', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'I', espaco:1,
+    desc:'Identidade falsa completa. +2 em Diplomacia, Enganação e Intimidação para se passar pela pessoa representada.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Manual Operacional', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'I', espaco:1,
+    desc:'Ação de interlúdio para ler: use a perícia deste manual como treinada até o próximo interlúdio. Versão aprimorada fornece +5 adicional.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Notebook', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'0', espaco:2,
+    desc:'Utensílio especial. Com internet: +2 em informações. Relaxar em interlúdio: recupera +1 SAN adicional. Ilumina cone 4,5m.',
+    src:'Sobrevivendo ao Horror' },
+
+  // ── Explosivos (SaH) ──
+  { nome:'Dinamite', subtipo:'Armas', cat:'ARMA', grupo:'Explosivos', catItem:'I', espaco:1,
+    dano:'4d6+4d6', tipoDano:'Impacto+Fogo',
+    desc:'Bastão de 20cm. Ação padrão: acender e arremessar (alcance médio, raio 6m). 4d6 impacto + 4d6 fogo (Reflexos DT Agi: metade e evita chamas).',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Explosivo Plástico', subtipo:'Armas', cat:'ARMA', grupo:'Explosivos', catItem:'I', espaco:1,
+    dano:'16d6', tipoDano:'Impacto',
+    desc:'Massa adesiva com detonador remoto. 2 rodadas para preparar. Raio 3m; 16d6 impacto (Reflexos DT Int: metade). Especialista em explosivos: dano duplo em estruturas.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Galão Vermelho', subtipo:'Armas', cat:'ARMA', grupo:'Explosivos', catItem:'0', espaco:2,
+    dano:'12d6', tipoDano:'Fogo',
+    desc:'Galão de substância inflamável. Ao sofrer dano de fogo/balístico, explode (esfera 6m). 12d6 fogo (Reflexos DT 25: metade e evita). Área fica em chamas até ser apagada.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Granada de Gás Sonífero', subtipo:'Geral', cat:'GERAL', grupo:'Explosivos', catItem:'I', espaco:1,
+    desc:'Fumaça branca em raio 6m. Seres no início do turno: inconscientes ou (em combate) exaustos por 1 rodada, depois fatigados (Fort DT Agi: fatigado por 1d4 rodadas). Gás dura 2 rodadas.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Granada de PEM', subtipo:'Geral', cat:'GERAL', grupo:'Explosivos', catItem:'I', espaco:1,
+    desc:'Pulso eletromagnético. Desativa todos os equipamentos elétricos em raio 18m até o fim da cena. Criaturas de Energia: 6d6 impacto + paralisadas 1 rodada (Fort DT Agi: metade e evita).',
+    src:'Sobrevivendo ao Horror' },
+
+  // ── Itens Operacionais (SaH) ──
+  { nome:'Alarme de Movimento', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'0', espaco:1,
+    desc:'Ação completa para posicionar. Detecta movimento em cone de 30m e sinaliza dispositivo de controle (discreto ou sonoro). Sensibilidade ajustável.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Alimento Energético', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'II', espaco:1,
+    desc:'Ação padrão: consumir e recuperar 1d4 PE.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Aplicador de Medicamentos', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Bomba injetora portátil (presa ao braço/perna). Aplica substância como ação de movimento. Capacidade para 3 doses.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Braçadeira Reforçada', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Braçadeiras de artes marciais. Aumentam em +2 a RD de qualquer bloqueio feito com o braço.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Cão Adestrado', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:0,
+    desc:'Aliado. Requer treinamento em Adestramento. Fornece +2 em Investigação e Percepção. Gastar 1 PE: postura defensiva (+2 Defesa por 1 rodada).',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Coldre Saque Rápido', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Uma vez por rodada: sacar ou guardar arma de fogo leve como ação livre.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Equipamento de Escuta', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Receptor (alcance 90m) + 3 transmissores (raio 9m cada). Instalar: Crime DT 20. Pode ser instalado discretamente (ação completa + Furtividade vs Percepção).',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Estrepes (saco)', subtipo:'Armas', cat:'ARMA', grupo:'Itens Operacionais', catItem:'0', espaco:1,
+    dano:'1d4', tipoDano:'Perfuração',
+    desc:'Peças metálicas de quatro pontas. Ação padrão: cobrir quadrado 1,5m. Ser que pisar: 1d4 perfuração + lento por um dia (Reflexos DT Agi evita). Em perseguição: –O no perseguidor que pisar.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Faixa de Pregos', subtipo:'Armas', cat:'ARMA', grupo:'Itens Operacionais', catItem:'I', espaco:2,
+    desc:'Como estrepes, mas cobre linha de 9m. Veículos com pneus de borracha: pneus perfurados automaticamente (deslocamento pela metade).',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Isqueiro', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'0', espaco:0.5,
+    desc:'Ação de movimento: produzir chama. Incendeia objetos inflamáveis. Emite luz em raio 3m.',
+    src:'Sobrevivendo ao Horror' },
+
+  // ── Medicamentos (SaH) ──
+  { nome:'Antibiótico', subtipo:'Geral', cat:'GERAL', grupo:'Medicamentos', catItem:'I', espaco:0.5,
+    desc:'Ação padrão. Fornece +5 no próximo teste de Fort contra doença até o fim do dia.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Antídoto', subtipo:'Geral', cat:'GERAL', grupo:'Medicamentos', catItem:'I', espaco:0.5,
+    desc:'Ação padrão. +5 no próximo Fort contra veneno até o fim do dia. Antídoto específico remove o veneno completamente.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Antiemético', subtipo:'Geral', cat:'GERAL', grupo:'Medicamentos', catItem:'I', espaco:0.5,
+    desc:'Remove a condição enjoado. +5 em testes para evitar enjoo até o fim da cena.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Antihistamínico', subtipo:'Geral', cat:'GERAL', grupo:'Medicamentos', catItem:'I', espaco:0.5,
+    desc:'+5 no próximo teste contra efeitos de alergia até o fim do dia.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Anti-inflamatório', subtipo:'Geral', cat:'GERAL', grupo:'Medicamentos', catItem:'I', espaco:0.5,
+    desc:'Fornece 1d8+2 PV temporários.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Antitérmico', subtipo:'Geral', cat:'GERAL', grupo:'Medicamentos', catItem:'I', espaco:0.5,
+    desc:'Permite novo teste contra uma condição mental que o usuário esteja sofrendo. Funciona uma vez por cena.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Broncodilatador', subtipo:'Geral', cat:'GERAL', grupo:'Medicamentos', catItem:'I', espaco:0.5,
+    desc:'+5 em testes para evitar as condições asfixiado ou fatigado feitos até o fim do dia.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Coagulante', subtipo:'Geral', cat:'GERAL', grupo:'Medicamentos', catItem:'I', espaco:0.5,
+    desc:'+5 em testes para se estabilizar de sangrando até o fim do dia. Com Medicina para remover morrendo: +5 nesse teste.',
+    src:'Sobrevivendo ao Horror' },
+
+  // ── Outros Itens Operacionais (SaH) ──
+  { nome:'Óculos de Visão Noturna', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:1,
+    desc:'Visão no escuro por bateria. –O em testes contra ofuscado e efeitos de luz.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Óculos Escuros', subtipo:'Geral', cat:'GERAL', grupo:'Acessórios', catItem:'0', espaco:1,
+    desc:'Portador não pode ser ofuscado.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Pá', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'0', espaco:2,
+    desc:'Fornece +5 em Força para cavar buracos e mover detritos. Pode ser usada em combate como bastão.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Paraquedas', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:2,
+    desc:'Anula dano de queda. Sem treinamento ou queda muito curta: Reflexos DT 20 ou dano de queda reduzido apenas à metade.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Traje de Mergulho', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'I', espaco:2,
+    desc:'Roupa impermeável com tanque e máscara (1h de oxigênio). +5 em testes contra efeitos ambientais e RD 5 químico.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Traje Espacial', subtipo:'Geral', cat:'GERAL', grupo:'Itens Operacionais', catItem:'II', espaco:5,
+    desc:'Roupa completa para o espaço. Suprimento de água e oxigênio por 8h. +10 contra efeitos ambientais e RD 20 químico.',
+    src:'Sobrevivendo ao Horror' },
+
+  // ── Itens Paranormais (SaH) ──
+  { nome:'Catalisador Ritualístico — Ampliador', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Catalisadores', catItem:'I', espaco:0.5,
+    desc:'Consumido ao usar. Aumenta alcance do ritual em um passo ou dobra a área de efeito.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Catalisador Ritualístico — Perturbador', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Catalisadores', catItem:'I', espaco:0.5,
+    desc:'Consumido ao usar. Aumenta a DT para resistir ao ritual em +2.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Catalisador Ritualístico — Potencializador', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Catalisadores', catItem:'I', espaco:0.5,
+    desc:'Consumido ao usar. O dano do ritual aumenta em um dado do mesmo tipo.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Catalisador Ritualístico — Prolongador', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Catalisadores', catItem:'I', espaco:0.5,
+    desc:'Consumido ao usar. A duração do ritual dobra. Não funciona em rituais instantâneos ou sustentados.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Ligação Direta Infernal', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:1,
+    desc:'Ação completa: liga veículo paranormalmente. Veículo ganha RD 20 e imunidade a Sangue; você recebe +5 em Pilotagem. Veículo tenta causar o máximo de confusão; falhas são amplificadas.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Medidor de Condição Vertebral', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:1,
+    desc:'Coluna vertebral paranormal. Conectar: ação completa + atordoado 1 rodada. Vestimenta: +2 em Fort. Ilumina cores (vermelho=ruim, verde=ótimo). +5 em Medicina para auxiliar o usuário.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Pé de Morto', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:1,
+    desc:'Botas de couro de cadáver amaldiçoado. +5 em Furtividade. Em cenas de furtividade, ações de movimento chamativas (correr, saltar) aumentam visibilidade em apenas +1.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Pendrive Selado', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'II', espaco:0.5,
+    desc:'Sigilos de Conhecimento protegem o pendrive de invasões e efeitos de Energia. Pode invadir outros dispositivos sem ser contaminado.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Valete da Salvação', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'I', espaco:0.5,
+    desc:'Ação padrão: jogar a carta ao ar. Ela aponta para a melhor rota de fuga em alcance médio e desaparece. Em cena de perseguição: sucesso automático em uma ação de cortar caminho.',
+    src:'Sobrevivendo ao Horror' },
+  { nome:'Lente de Revelação (mod. Câmera Aura)', subtipo:'Itens Paranormais', cat:'ITEM_AMALD', grupo:'Itens Paranormais', catItem:'I', espaco:0.5,
+    desc:'Modificação para câmera de aura paranormal. Permite ver seres invisíveis/incorpóreos e ignorar sua camuflagem. Ação padrão + 1 PE: fotografar ser em alcance curto (perde camuflagem, invisibilidade e corporeidade até fim da cena).',
+    src:'Sobrevivendo ao Horror' },
+];
+
+// Mapeamento de subtipos para categoria de inventário
+const OP_SUBTIPO_CAT = {
+    'Armas':               'ARMA',
+    'Geral':               'GERAL',
+    'Itens Paranormais':   'ITEM_AMALD',
+    'Itens Amaldiçoados':  'ITEM_AMALD',
+};
+
+// Ícones por subtipo
+const OP_SUBTIPO_ICON = {
+    'Armas':               '⚔️',
+    'Geral':               '📦',
+    'Itens Paranormais':   '🔮',
+    'Itens Amaldiçoados':  '💀',
+};
+
+let opCatFiltro = 'Todos';
+
+function abrirModalCatalogoOP() {
+    opCatFiltro = 'Todos';
+    document.getElementById('op-busca').value = '';
+    renderOpCatTabs();
+    renderCatalogoOP();
+    document.getElementById('modal-catalogo-op').style.display = 'flex';
+}
+
+function fecharModalCatalogoOP() {
+    document.getElementById('modal-catalogo-op').style.display = 'none';
+}
+
+function renderOpCatTabs() {
+    const categorias = ['Todos', 'Armas', 'Geral', 'Itens Paranormais', 'Itens Amaldiçoados'];
+    const el = document.getElementById('op-cat-tabs');
+    el.innerHTML = categorias.map(c => {
+        const ativo = c === opCatFiltro;
+        return `<button onclick="setOpCatFiltro('${c}')"
+            style="font-family:'Oswald',sans-serif;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;
+                   padding:5px 12px;border-radius:99px;cursor:pointer;transition:0.2s;
+                   background:${ativo ? 'var(--purple-dark)' : 'transparent'};
+                   border:1px solid ${ativo ? 'var(--purple)' : 'var(--border)'};
+                   color:${ativo ? 'var(--purple-neon)' : 'var(--text-dim)'};">
+            ${c === 'Todos' ? '⊞ ' : (OP_SUBTIPO_ICON[c] || '') + ' '}${c}
+        </button>`;
+    }).join('');
+}
+
+function setOpCatFiltro(cat) {
+    opCatFiltro = cat;
+    renderOpCatTabs();
+    renderCatalogoOP();
+}
+
+function renderCatalogoOP() {
+    const busca = (document.getElementById('op-busca')?.value || '').toLowerCase();
+    const filtrados = OP_ITENS_DB.filter(item => {
+        const catOk  = opCatFiltro === 'Todos' || item.subtipo === opCatFiltro;
+        const busOk  = !busca ||
+            (item.nome   || '').toLowerCase().includes(busca) ||
+            (item.grupo  || '').toLowerCase().includes(busca) ||
+            (item.desc   || '').toLowerCase().includes(busca);
+        return catOk && busOk;
+    });
+
+    const countEl = document.getElementById('op-count');
+    if (countEl) countEl.textContent = `▸ ${filtrados.length} item${filtrados.length !== 1 ? 'ns' : ''}`;
+
+    const el = document.getElementById('op-lista');
+    if (filtrados.length === 0) {
+        el.innerHTML = `<div style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;padding:24px;text-align:center;">▸ Nenhum item encontrado.</div>`;
+        return;
+    }
+
+    el.innerHTML = filtrados.map((item, i) => {
+        const icon = OP_SUBTIPO_ICON[item.subtipo] || '📦';
+        const isArma = item.subtipo === 'Armas';
+        let detalheHtml = '';
+        if (isArma) {
+            const parts = [];
+            if (item.dano)    parts.push(`<span style="color:#e84040;">${item.dano}</span>`);
+            if (item.tipoDano) parts.push(`<span style="color:#aaa;">${item.tipoDano}</span>`);
+            if (item.crit)    parts.push(`<span style="color:#f5c842;">Crít ${item.crit}</span>`);
+            if (item.alcance) parts.push(`<span style="color:#4a9eff;">${item.alcance}</span>`);
+            if (item.munição) parts.push(`<span style="color:#888;">Mun: ${item.munição}</span>`);
+            if (item.empun)   parts.push(`<span style="color:#666;">${item.empun}</span>`);
+            detalheHtml = parts.join('<span style="color:#333;margin:0 3px;">·</span>');
+        } else if (item.desc) {
+            detalheHtml = `<span style="color:#666;">${item.desc.length > 80 ? item.desc.substring(0,80)+'…' : item.desc}</span>`;
+        }
+        const catBadge = item.catItem !== undefined ? `<span style="background:#0a001a;border:1px solid #2a0050;color:var(--purple-neon);font-size:0.52rem;letter-spacing:1px;padding:1px 6px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;">Cat. ${item.catItem}</span>` : '';
+        const srcColors = {
+            'Arquivos Secretos #1': { bg:'#001a10', border:'#004422', color:'#44cc88' },
+            'Arquivos Secretos #2': { bg:'#00101a', border:'#003344', color:'#44aacc' },
+            'Arquivos Secretos #3': { bg:'#1a0010', border:'#440022', color:'#cc4488' },
+        };
+        const sc = srcColors[item.src] || { bg:'#0d0d0d', border:'#222', color:'#555' };
+        const srcBadge = `<span style="background:${sc.bg};border:1px solid ${sc.border};color:${sc.color};font-size:0.52rem;letter-spacing:1px;padding:1px 6px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;">${item.src}</span>`;
+
+        // Índice real no array para passar à função
+        const realIdx = OP_ITENS_DB.indexOf(item);
+
+        return `
+        <div style="background:#0a0015;border:1px solid var(--border);border-radius:8px;padding:10px 14px;
+                    display:flex;align-items:center;gap:12px;transition:0.15s;cursor:default;"
+             onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:40px;height:40px;border-radius:8px;border:1px solid var(--border);background:#0d0010;
+                        display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">${icon}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;">
+                    <span style="font-size:0.88rem;font-weight:700;color:white;">${item.nome}</span>
+                    ${catBadge}${srcBadge}
+                </div>
+                <div style="font-size:0.65rem;font-family:'Share Tech Mono',monospace;line-height:1.5;">${detalheHtml}</div>
+            </div>
+            <button onclick="adicionarItemCatalogoOP(${realIdx})"
+                    id="op-btn-add-${realIdx}"
+                    style="background:var(--purple-dark);border:1px solid var(--purple);color:var(--purple-neon);
+                           font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:1px;
+                           padding:7px 14px;border-radius:6px;cursor:pointer;white-space:nowrap;transition:0.2s;flex-shrink:0;"
+                    onmouseover="this.style.background='var(--purple)';this.style.color='white'"
+                    onmouseout="this.style.background='var(--purple-dark)';this.style.color='var(--purple-neon)'">
+                + Inv
+            </button>
+        </div>`;
+    }).join('');
+}
+
+function adicionarItemCatalogoOP(idx) {
+    const item = OP_ITENS_DB[idx];
+    if (!item) return;
+
+    const catInv = OP_SUBTIPO_CAT[item.subtipo] || 'GERAL';
+    let descParts = [];
+    if (item.dano)     descParts.push(`Dano: ${item.dano}`);
+    if (item.tipoDano) descParts.push(item.tipoDano);
+    if (item.crit)     descParts.push(`Crít: ${item.crit}`);
+    if (item.alcance)  descParts.push(`Alcance: ${item.alcance}`);
+    if (item.munição)  descParts.push(`Munição: ${item.munição}`);
+    if (item.empun)    descParts.push(item.empun);
+    if (item.catItem)  descParts.push(`Cat. ${item.catItem}`);
+    if (item.desc)     descParts.push(item.desc);
+    const desc = descParts.join(' · ');
+
+    if (!estado.inventario) estado.inventario = [];
+    estado.inventario.push({ nome: item.nome, cat: catInv, qtd: 1, desc });
+    salvarEstado();
+    renderInventario();
+
+    // Visual feedback no botão
+    const btn = document.getElementById(`op-btn-add-${idx}`);
+    if (btn) {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ Adicionado';
+        btn.style.background = '#003300';
+        btn.style.borderColor = 'var(--green)';
+        btn.style.color = 'var(--green)';
+        setTimeout(() => {
+            btn.innerHTML = orig;
+            btn.style.background = 'var(--purple-dark)';
+            btn.style.borderColor = 'var(--purple)';
+            btn.style.color = 'var(--purple-neon)';
+        }, 1500);
+    }
+
+    mostrarToast(`✦ ${item.nome} ADICIONADO AO INVENTÁRIO`);
+}
+
 function salvarDescricao() {
     estado.descricao={ personalidade:document.getElementById('desc-personalidade').value, ideal:document.getElementById('desc-ideal').value, vinculo:document.getElementById('desc-vinculo').value, fraqueza:document.getElementById('desc-fraqueza').value, historia:document.getElementById('desc-historia').value };
     salvarEstado(); mostrarToast('✦ DESCRIÇÃO SALVA');
