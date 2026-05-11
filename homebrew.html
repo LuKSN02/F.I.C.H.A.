@@ -1002,6 +1002,47 @@ body {
 .banner-crop-btn-cancel:hover { border-color: #666; color: #888; }
 
 </style>
+
+<!-- ===== FIREBASE INIT ===== -->
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
+    authDomain: "ficha-op-c9df8.firebaseapp.com",
+    databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com",
+    projectId: "ficha-op-c9df8",
+    storageBucket: "ficha-op-c9df8.firebasestorage.app",
+    messagingSenderId: "5463680704",
+    appId: "1:5463680704:web:3d6296c296699f4d41af25"
+  };
+
+  // Inicializa apenas se ainda não foi inicializado (evita erro de app duplicado)
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  const db  = getDatabase(app);
+
+  // Expõe para os scripts globais da página
+  window._firebaseApp = app;
+  window._firebaseDB  = db;
+  window._firebaseRef = ref;
+  window._firebaseSet = set;
+  window._firebaseGet = get;
+
+  // Observa autenticação: se o usuário não estiver logado, redireciona
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      const usuario = user.displayName || user.email.replace('@ficha.local', '');
+      sessionStorage.setItem('ficha_user', usuario);
+      localStorage.setItem('ficha_user_ativo', usuario);
+      localStorage.setItem('ficha_uid', user.uid);
+      localStorage.setItem('ficha_uid_firebase', user.uid);
+    }
+    // Não redireciona aqui — o window.load já cuida disso
+  });
+</script>
 </head>
 <body>
 
@@ -2062,13 +2103,35 @@ function gerarCodigoCompartilhamento() {
   return code;
 }
 
-// Retorna a instância do Firebase Realtime Database via variáveis globais do index
+// Retorna a instância do Firebase Realtime Database já inicializada no bloco module
 async function _getFirebaseDB() {
+  // Tenta usar a instância já disponível (inicializada no bloco <script type="module">)
+  if (window._firebaseDB) return window._firebaseDB;
+
+  // Fallback: tenta inicializar diretamente caso o módulo ainda não tenha rodado
   try {
-    const { getDatabase } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-    const { getApp }      = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-    return getDatabase(getApp());
-  } catch(e) { return null; }
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getDatabase, ref, set, get } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+    const firebaseConfig = {
+      apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
+      authDomain: "ficha-op-c9df8.firebaseapp.com",
+      databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com",
+      projectId: "ficha-op-c9df8",
+      storageBucket: "ficha-op-c9df8.firebasestorage.app",
+      messagingSenderId: "5463680704",
+      appId: "1:5463680704:web:3d6296c296699f4d41af25"
+    };
+    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    const db  = getDatabase(app);
+    window._firebaseDB  = db;
+    window._firebaseRef = ref;
+    window._firebaseSet = set;
+    window._firebaseGet = get;
+    return db;
+  } catch(e) {
+    console.error('Firebase init falhou:', e);
+    return null;
+  }
 }
 
 let _shareItemAtual = null; // { tipo, item, index }
@@ -2102,7 +2165,8 @@ async function abrirModalCompartilhar(tipo, indexFiltrado) {
     const db = await _getFirebaseDB();
     if (db) {
       try {
-        const { ref, set } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+        const ref = window._firebaseRef;
+        const set = window._firebaseSet;
         // Sanitiza item: remove base64 de imagem para não estourar o banco
         const itemParaSalvar = { ...item };
         if (itemParaSalvar.img && itemParaSalvar.img.startsWith('data:')) {
@@ -2171,7 +2235,8 @@ async function buscarPorCodigo() {
   if (!db) { resultDiv.innerHTML = '<div style="color:#aa4444;font-size:0.8rem;">⚠ Firebase indisponível.</div>'; return; }
 
   try {
-    const { ref, get } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+    const ref  = window._firebaseRef;
+    const get  = window._firebaseGet;
     const snap = await get(ref(db, `homebrew_compartilhado/${codigo}`));
     if (!snap.exists()) {
       resultDiv.innerHTML = '<div style="color:#aa4444;font-size:0.8rem;font-family:monospace;">▸ Código não encontrado.</div>';
@@ -2213,7 +2278,8 @@ async function importarItem(codigo, tipo, btnEl) {
   btnEl.textContent = '↓ Importando...';
 
   try {
-    const { ref, get } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+    const ref  = window._firebaseRef;
+    const get  = window._firebaseGet;
     const snap = await get(ref(db, `homebrew_compartilhado/${codigo}`));
     if (!snap.exists()) { btnEl.textContent = '⚠ Não encontrado'; return; }
 
@@ -2277,7 +2343,8 @@ async function carregarComunidadeTipo(tipo) {
   if (!db) { container.innerHTML = '<div class="community-empty">⚠ Firebase indisponível.</div>'; return; }
 
   try {
-    const { ref, get, query, orderByChild, equalTo } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+    const ref  = window._firebaseRef;
+    const get  = window._firebaseGet;
     const snap = await get(ref(db, 'homebrew_compartilhado'));
 
     if (!snap.exists()) { container.innerHTML = '<div class="community-empty">▸ Nenhum item compartilhado ainda.<br>Seja o primeiro!</div>'; return; }
@@ -2518,32 +2585,55 @@ function _setPerfilLocal(dados) {
 }
 async function _salvarPerfilFirebase(dados) {
     try {
-        const { getDatabase, ref, set } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-        const { getApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-        const rtdb = getDatabase(getApp());
-        await set(ref(rtdb, `perfis/${_getUsuario()}`), dados);
+        const db  = await _getFirebaseDB();
+        const ref = window._firebaseRef;
+        const set = window._firebaseSet;
+        if (!db || !ref || !set) return;
+        await set(ref(db, `perfis/${_getUsuario()}`), dados);
     } catch(e) { console.warn('Perfil firebase erro:', e); }
 }
 async function _carregarPerfilFirebase() {
     try {
-        const { getDatabase, ref, get } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-        const { getApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-        const rtdb = getDatabase(getApp());
-        const snap = await get(ref(rtdb, `perfis/${_getUsuario()}`));
+        const db  = await _getFirebaseDB();
+        const ref = window._firebaseRef;
+        const get = window._firebaseGet;
+        if (!db || !ref || !get) return null;
+        const snap = await get(ref(db, `perfis/${_getUsuario()}`));
         return snap.exists() ? snap.val() : null;
     } catch(e) { return null; }
 }
 
-function atualizarAvatar() {
+async function atualizarAvatar() {
     const usuario  = _getUsuario(); if (!usuario) return;
     const iniciais = usuario.substring(0, 2).toUpperCase();
-    const foto     = localStorage.getItem(_getAvatarKey());
     const circle   = document.getElementById('avatar-circle');
     if (!circle) return;
-    circle.innerHTML = foto ? `<img src="${foto}" alt="avatar">` : `<span>${iniciais}</span>`;
-    // aplica cor de borda salva
-    const perfil = _getPerfilLocal();
-    if (perfil.corBorda) { circle.style.borderColor = perfil.corBorda; circle.style.boxShadow = `0 0 8px ${perfil.corBorda}`; }
+
+    // Exibe cache local enquanto busca do Firebase
+    const perfilLocal = _getPerfilLocal();
+    const fotoLocal   = perfilLocal.foto || '';
+    circle.innerHTML  = fotoLocal
+        ? `<img src="${fotoLocal}" alt="avatar">`
+        : `<span>${iniciais}</span>`;
+    if (perfilLocal.corBorda) {
+        circle.style.borderColor = perfilLocal.corBorda;
+        circle.style.boxShadow   = `0 0 8px ${perfilLocal.corBorda}`;
+    }
+
+    // Atualiza com a foto do Firebase (fonte de verdade)
+    const perfilFB = await _carregarPerfilFirebase();
+    if (perfilFB) {
+        const perfilAtualizado = { ...perfilLocal, ...perfilFB };
+        _setPerfilLocal(perfilAtualizado);
+        const fotoFB = perfilAtualizado.foto || '';
+        circle.innerHTML = fotoFB
+            ? `<img src="${fotoFB}" alt="avatar">`
+            : `<span>${iniciais}</span>`;
+        if (perfilAtualizado.corBorda) {
+            circle.style.borderColor = perfilAtualizado.corBorda;
+            circle.style.boxShadow   = `0 0 8px ${perfilAtualizado.corBorda}`;
+        }
+    }
 }
 
 window.abrirPainelPerfil = async function(e) {
@@ -2561,7 +2651,7 @@ async function _renderPainel(usuario, perfil) {
     document.getElementById('perfil-handle').textContent   = '@' + usuario;
     // Avatar
     const avatarEl  = document.getElementById('perfil-avatar-img');
-    const foto      = localStorage.getItem(_getAvatarKey()) || perfil.foto || '';
+    const foto      = perfil.foto || '';
     const iniciais  = usuario.substring(0,2).toUpperCase();
     avatarEl.innerHTML = foto
         ? `<img src="${foto}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`
@@ -2595,14 +2685,16 @@ async function _renderPainel(usuario, perfil) {
     badgesEl.innerHTML = `<span class="perfil-badge badge-membro">⚡ Membro</span>`;
     try {
         const { getFirestore, collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-        const { getApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+        const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
         const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
-        if (uid) {
-            const fs   = getFirestore(getApp());
+        if (uid && getApps().length > 0) {
+            const fs   = getFirestore(getApps()[0]);
             const snap = await getDocs(query(collection(fs, 'campanhas'), where('mestreUid', '==', uid)));
             badgesEl.innerHTML += snap.empty
                 ? `<span class="perfil-badge badge-novato">🌑 Novato</span>`
                 : `<span class="perfil-badge badge-mestre">👑 Mestre</span>`;
+        } else {
+            badgesEl.innerHTML += `<span class="perfil-badge badge-novato">🌑 Novato</span>`;
         }
     } catch(e) { badgesEl.innerHTML += `<span class="perfil-badge badge-novato">🌑 Novato</span>`; }
 }
@@ -2684,10 +2776,10 @@ window.confirmarCrop = async function() {
     const canvas = _cropInst.getCroppedCanvas({ width: 300, height: 300 });
     if (!canvas) return;
     const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-    localStorage.setItem(_getAvatarKey(), dataUrl);
+    // Salva no perfil (Firebase + cache local) — não usa chave separada no localStorage
     const perfil = _getPerfilLocal(); perfil.foto = dataUrl; _setPerfilLocal(perfil);
     await _salvarPerfilFirebase(perfil);
-    atualizarAvatar(); window.cancelarCrop();
+    await atualizarAvatar(); window.cancelarCrop();
     const avatarEl = document.getElementById('perfil-avatar-img');
     if (avatarEl) avatarEl.innerHTML = `<img src="${dataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
 };
@@ -2737,8 +2829,8 @@ async function fazerLogout() {
     if (!confirm('Deseja sair da conta?')) return;
     try {
         const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
-        const { getApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-        await signOut(getAuth(getApp()));
+        const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+        if (getApps().length > 0) await signOut(getAuth(getApps()[0]));
     } catch(e) {}
     sessionStorage.removeItem('ficha_user');
     localStorage.removeItem('ficha_user_ativo');
