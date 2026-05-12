@@ -929,6 +929,21 @@
         <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
         <a class="nav-link px-3" href="homebrew.html">Homebrew</a>
       </div>
+      <!-- Mobile: Temas + botões de ação dentro do menu hambúrguer -->
+      <div class="d-lg-none px-3 pb-3 pt-2">
+          <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
+          <div style="font-size:0.6rem;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:8px;font-family:'Oswald',sans-serif;">Tema</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+              <button onclick="aplicarTema('medo');toggleNavbar()" style="background:rgba(58,123,213,0.15);border:1px solid #3a7bd5;color:#7ab3f5;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Medo</button>
+              <button onclick="aplicarTema('sangue');toggleNavbar()" style="background:rgba(204,17,17,0.15);border:1px solid #cc1111;color:#ff4444;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Sangue</button>
+              <button onclick="aplicarTema('morte');toggleNavbar()" style="background:rgba(136,136,136,0.15);border:1px solid #888;color:#ccc;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Morte</button>
+              <button onclick="aplicarTema('conhecimento');toggleNavbar()" style="background:rgba(200,150,12,0.15);border:1px solid #c8960c;color:#f5c842;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Conhecimento</button>
+              <button onclick="aplicarTema('energia');toggleNavbar()" style="background:rgba(155,48,217,0.15);border:1px solid #9b30d9;color:#d070ff;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Energia</button>
+          </div>
+          <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
+          <a id="btn-portrait-mobile" href="portrait.html" target="_blank" onclick="toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid var(--purple,#9b30d9);color:var(--purple-neon,#d070ff);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:1px;margin-bottom:8px;">🎭 Portrait</a>
+          <a href="index.html?view=agentes" onclick="toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid #333;color:#aaa;padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:1px;">← Voltar</a>
+      </div>
     </div>
     <div class="d-none d-lg-flex pe-3 gap-2">
   <div class="temas-wrapper" id="temas-wrapper">
@@ -4904,6 +4919,11 @@ function salvarNex() {
             });
         })();
 
-    </script>
+    
+    function toggleNavbar() {
+        const nav = document.getElementById('navbarNav');
+        if (nav && nav.classList.contains('show')) nav.classList.remove('show');
+    }
+</script>
 </body>
 </html>

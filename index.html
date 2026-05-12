@@ -409,6 +409,7 @@
         background-size: cover; background-position: center;
         position: relative; cursor: pointer;
         transition: filter 0.2s;
+        overflow: hidden;
     }
     .perfil-banner:hover .perfil-banner-edit { opacity: 1; }
     .perfil-banner-edit {
@@ -418,13 +419,23 @@
         opacity: 0; transition: 0.2s;
         font-size: 0.7rem; letter-spacing: 2px; color: #ccc;
         font-family: 'Share Tech Mono', monospace;
+        z-index: 1;
+    }
+    /* Imagem animada (GIF/WebP) usada como banner */
+    .banner-img-animado {
+        position: absolute;
+        inset: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        z-index: 0;
     }
 
     /* Avatar sobre o banner */
     .perfil-avatar-wrap {
         position: absolute;
-        bottom: -38px; left: 18px;
+        top: 72px; left: 18px;
         cursor: pointer;
+        z-index: 10;
     }
     .perfil-avatar {
         width: 76px; height: 76px; border-radius: 50%;
@@ -455,6 +466,7 @@
     .perfil-top-actions {
         position: absolute; top: 8px; right: 8px;
         display: flex; gap: 6px;
+        z-index: 2;
     }
     .perfil-top-btn {
         background: rgba(0,0,0,0.6); border: 1px solid #333;
@@ -632,9 +644,168 @@
     }
 }
 
+/* ===== ANIMAÇÕES PARANORMAIS ===== */
+
+/* Canvas de partículas */
+/* Canvas de partículas */
+#particle-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.45;
+}
+
+/* Garante que o conteúdo da página fique acima do canvas sem criar stacking context problemático */
+.custom-nav { isolation: isolate; }
+#secao-inicio, #secao-agentes { isolation: isolate; }
+footer { isolation: isolate; }
+#modal-login-overlay, #perfil-overlay,
+.crop-overlay, .banner-crop-overlay,
+.perfil-edit-overlay { isolation: isolate; }
+
+/* ── Fade + slide de entrada ── */
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.anim-fade-up {
+    opacity: 0;
+    animation: fadeSlideUp 0.7s cubic-bezier(.22,.68,0,1.2) forwards;
+}
+.anim-fade-up.delay-1 { animation-delay: 0.15s; }
+.anim-fade-up.delay-2 { animation-delay: 0.30s; }
+.anim-fade-up.delay-3 { animation-delay: 0.45s; }
+.anim-fade-up.delay-4 { animation-delay: 0.60s; }
+
+/* ── Efeito glitch no título ── */
+@keyframes glitch-1 {
+    0%,95%,100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+    96%  { clip-path: inset(20% 0 50% 0); transform: translate(-4px, 1px); }
+    97%  { clip-path: inset(60% 0 10% 0); transform: translate(4px, -1px); }
+    98%  { clip-path: inset(40% 0 30% 0); transform: translate(-3px, 2px); }
+    99%  { clip-path: inset(10% 0 70% 0); transform: translate(3px, -2px); }
+}
+@keyframes glitch-2 {
+    0%,94%,100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+    95%  { clip-path: inset(50% 0 20% 0); transform: translate(3px, -1px); color: var(--tema-primary-light); }
+    96%  { clip-path: inset(10% 0 60% 0); transform: translate(-3px, 1px); }
+    97%  { clip-path: inset(70% 0 5%  0); transform: translate(4px, 2px);  }
+    98%  { clip-path: inset(30% 0 40% 0); transform: translate(-2px,-1px); }
+    99%  { clip-path: inset(80% 0 2%  0); transform: translate(2px, 1px);  }
+}
+
+.glitch-wrap {
+    position: relative;
+    display: inline-block;
+}
+.glitch-wrap::before,
+.glitch-wrap::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    color: var(--tema-primary);
+    font-weight: inherit;
+    font-size: inherit;
+}
+.glitch-wrap::before { animation: glitch-1 6s infinite steps(1); }
+.glitch-wrap::after  { animation: glitch-2 6s infinite steps(1); color: var(--tema-primary-light); }
+
+/* ── Scan-line sobre a hero image ── */
+.scan-wrap {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+.scan-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(var(--tema-glow-rgb), 0.04) 3px,
+        rgba(var(--tema-glow-rgb), 0.04) 4px
+    );
+    pointer-events: none;
+    z-index: 2;
+}
+@keyframes scanMove {
+    from { background-position: 0 0; }
+    to   { background-position: 0 100px; }
+}
+.scan-wrap::after { animation: scanMove 3s linear infinite; }
+
+/* ── Brilho pulsante no botão principal ── */
+@keyframes pulseBorder {
+    0%,100% { box-shadow: 0 0 10px rgba(var(--tema-glow-rgb),0.3); }
+    50%      { box-shadow: 0 0 28px rgba(var(--tema-glow-rgb),0.75), 0 0 60px rgba(var(--tema-glow-rgb),0.2); }
+}
+.btn-criar-ficha {
+    animation: pulseBorder 2.8s ease-in-out infinite;
+}
+
+/* ── Hover nos cards de agente: glow lateral ── */
+.card-agente {
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+/* ── Entrada dos cards de agente ── */
+.card-agente.anim-fade-up {
+    opacity: 0;
+}
+
+/* ── Linha de scan no login box ── */
+@keyframes loginScan {
+    0%   { top: -10%; opacity: 0.6; }
+    100% { top: 110%;  opacity: 0; }
+}
+.login-box {
+    position: relative;
+    overflow: hidden;
+}
+.login-box::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(var(--tema-glow-rgb),0.6), transparent);
+    animation: loginScan 3.5s linear infinite;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* ── Navbar: fade in from top ── */
+@keyframes navDrop {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.custom-nav {
+    animation: navDrop 0.6s ease forwards;
+}
+
+/* ── Footer fade in ── */
+.custom-footer {
+    animation: fadeIn 1.2s ease 0.8s both;
+}
+
+/* ── Tema transition glow ── */
+body { transition: background 0.6s ease; }
+
 </style>
 
 <body>
+
+<!-- Canvas de partículas paranormais -->
+<canvas id="particle-canvas"></canvas>
 
     <!-- ===== MODAL DE LOGIN ===== -->
     <div id="modal-login-overlay">
@@ -695,6 +866,21 @@
                     <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
                     <a class="nav-link px-3" href="homebrew.html">Homebrew</a>
                 </div>
+                <!-- Mobile: Temas + Perfil dentro do menu hambúrguer -->
+                <div class="d-lg-none px-3 pb-3 pt-2">
+                    <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
+                    <div style="font-size:0.6rem;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:8px;font-family:'Oswald',sans-serif;">Tema</div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+                        <button onclick="aplicarTema('medo');toggleNavbar()" style="background:rgba(58,123,213,0.15);border:1px solid #3a7bd5;color:#7ab3f5;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Medo</button>
+                        <button onclick="aplicarTema('sangue');toggleNavbar()" style="background:rgba(204,17,17,0.15);border:1px solid #cc1111;color:#ff4444;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Sangue</button>
+                        <button onclick="aplicarTema('morte');toggleNavbar()" style="background:rgba(136,136,136,0.15);border:1px solid #888;color:#ccc;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Morte</button>
+                        <button onclick="aplicarTema('conhecimento');toggleNavbar()" style="background:rgba(200,150,12,0.15);border:1px solid #c8960c;color:#f5c842;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Conhecimento</button>
+                        <button onclick="aplicarTema('energia');toggleNavbar()" style="background:rgba(155,48,217,0.15);border:1px solid #9b30d9;color:#d070ff;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Energia</button>
+                    </div>
+                    <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
+                    <button onclick="abrirPainelPerfil(event);toggleNavbar()" style="width:100%;background:transparent;border:1px solid var(--tema-primary);color:var(--tema-primary-light);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;">👤 Ver Perfil</button>
+                    <button onclick="fazerLogout();toggleNavbar()" style="width:100%;background:transparent;border:1px solid #552222;color:#ff6666;padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;margin-top:8px;">✕ Sair</button>
+                </div>
             </div>
 
             <!-- Avatar de perfil -->
@@ -739,17 +925,22 @@
     <main id="secao-inicio" class="container my-5 text-white">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-4 mb-lg-0">
-                <h1 class="display-4 fw-bold">Fichas <span style="border-bottom: 4px solid var(--tema-primary);">Digitais</span></h1>
-                <p class="fs-4 mt-4 text-secondary">
+                <h1 class="display-4 fw-bold anim-fade-up">
+                    <span class="glitch-wrap" data-text="Fichas">Fichas</span>
+                    <span style="border-bottom: 4px solid var(--tema-primary);"> Digitais</span>
+                </h1>
+                <p class="fs-4 mt-4 text-secondary anim-fade-up delay-1">
                     Com uma ideia simples, você pode fazer uma ficha de ordem paranormal de maneira rápida e um pouco complicada, porém isso faz ficar mais divertido!
                 </p>
-                <p class="fs-4 text-secondary">
+                <p class="fs-4 text-secondary anim-fade-up delay-2">
                     Talvez a matemática aqui seja um pouco necessária viu, então se você é de exatas, tenho certeza que vai se sair bem
                 </p>
-                <a href="criar.html" class="btn-criar-ficha mt-3">Criar ficha</a>
+                <a href="criar.html" class="btn-criar-ficha mt-3 anim-fade-up delay-3">Criar ficha</a>
             </div>
-            <div class="col-lg-6 text-center">
-                <img src="./image.png" alt="Ficha Digital" class="img-fluid rounded shadow-lg border-purple">
+            <div class="col-lg-6 text-center anim-fade-up delay-2">
+                <div class="scan-wrap d-inline-block rounded">
+                    <img src="./image.png" alt="Ficha Digital" class="img-fluid rounded shadow-lg border-purple">
+                </div>
             </div>
         </div>
     </main>
@@ -1051,18 +1242,61 @@
         }
 
         /* =============================================
+           INDEXEDDB — armazenamento de imagens grandes
+        ============================================= */
+        const _imgDB = (function() {
+            const DB_NAME = 'fichaImagens', STORE = 'imagens', VER = 1;
+            let _db = null;
+            function open() {
+                if (_db) return Promise.resolve(_db);
+                return new Promise((res, rej) => {
+                    const req = indexedDB.open(DB_NAME, VER);
+                    req.onupgradeneeded = e => e.target.result.createObjectStore(STORE);
+                    req.onsuccess = e => { _db = e.target.result; res(_db); };
+                    req.onerror   = e => rej(e.target.error);
+                });
+            }
+            return {
+                async set(key, value) {
+                    const db = await open();
+                    return new Promise((res, rej) => {
+                        const tx = db.transaction(STORE, 'readwrite');
+                        tx.objectStore(STORE).put(value, key);
+                        tx.oncomplete = res; tx.onerror = e => rej(e.target.error);
+                    });
+                },
+                async get(key) {
+                    const db = await open();
+                    return new Promise((res, rej) => {
+                        const req = db.transaction(STORE, 'readonly').objectStore(STORE).get(key);
+                        req.onsuccess = () => res(req.result ?? null);
+                        req.onerror   = e => rej(e.target.error);
+                    });
+                },
+                async del(key) {
+                    const db = await open();
+                    return new Promise((res, rej) => {
+                        const tx = db.transaction(STORE, 'readwrite');
+                        tx.objectStore(STORE).delete(key);
+                        tx.oncomplete = res; tx.onerror = e => rej(e.target.error);
+                    });
+                }
+            };
+        })();
+
+        /* =============================================
            AVATAR / FOTO DE PERFIL
         ============================================= */
         function getAvatarKey() {
             return getPrefix() + 'foto_perfil';
         }
 
-        function atualizarAvatar() {
+        async function atualizarAvatar() {
             const usuario = getUsuarioLogado();
             if (!usuario) return;
             const iniciais = usuario.substring(0, 2).toUpperCase();
             document.getElementById('dd-username-label').textContent = usuario;
-            const fotoSalva = localStorage.getItem(getAvatarKey());
+            const fotoSalva = await _imgDB.get(getAvatarKey());
             const circle = document.getElementById('avatar-circle');
             if (fotoSalva) {
                 circle.innerHTML = `<img src="${fotoSalva}" alt="foto de perfil">`;
@@ -1131,19 +1365,46 @@ function abrirSeletorFoto(e) {
 
 let cropperInstance = null;
 
+// Detecta se um arquivo é animado (GIF ou WebP animado) verificando os bytes
+async function isAnimatedImage(file) {
+    if (file.type === 'image/gif') return true;
+    if (file.type === 'image/webp') {
+        // WebP animado tem o chunk 'ANIM' nos primeiros 64 bytes
+        const buf = await file.slice(0, 64).arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        const str = String.fromCharCode(...bytes);
+        return str.includes('ANIM');
+    }
+    return false;
+}
+
+let _avatarAnimado = false; // flag: foto atual é animada (não passou pelo cropper)
+
 function salvarFotoPerfil(event) {
     const file = event.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
+        const animado = await isAnimatedImage(file);
+
+if (animado) {
+            window.abrirGifCrop(e.target.result, 'avatar', async function(resultDataUrl, isAnim) {
+                await _imgDB.set(getAvatarKey(), resultDataUrl);
+                const perfil = getPerfilLocal(); perfil.foto = resultDataUrl; perfil.fotoAnimada = isAnim;
+                setPerfilLocal(perfil); await salvarPerfilFirebase(perfil); atualizarAvatar();
+                const avatarEl = document.getElementById('perfil-avatar-img');
+                if (avatarEl) avatarEl.innerHTML = `<img src="${resultDataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
+            });
+            document.getElementById('input-foto-perfil').value = '';
+            return;
+        }
+
+        _avatarAnimado = false;
         const cropImg = document.getElementById('crop-img');
-
         if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
-
         cropImg.src = e.target.result;
         document.getElementById('crop-overlay').classList.add('show');
-
         cropImg.onload = function() {
             cropperInstance = new Cropper(cropImg, {
                 aspectRatio: 1,
@@ -1169,8 +1430,7 @@ function confirmarCrop() {
     const canvas = cropperInstance.getCroppedCanvas({ width: 300, height: 300 });
     if (!canvas) return;
     const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-    localStorage.setItem(getAvatarKey(), dataUrl);
-    atualizarAvatar();
+    _imgDB.set(getAvatarKey(), dataUrl).then(() => atualizarAvatar());
     cancelarCrop();
 }
 
@@ -1235,6 +1495,7 @@ async function abrirPainelPerfil(e) {
         renderPainelPerfil(usuario, perfil);
     }
 }
+window.abrirPainelPerfil = abrirPainelPerfil;
 
 async function renderPainelPerfil(usuario, perfil) {
     // Username
@@ -1243,7 +1504,7 @@ async function renderPainelPerfil(usuario, perfil) {
 
     // Avatar
     const avatarEl = document.getElementById('perfil-avatar-img');
-    const fotoSalva = localStorage.getItem(getAvatarKey()) || perfil.foto || '';
+    const fotoSalva = (await _imgDB.get(getAvatarKey())) || perfil.foto || '';
     const iniciais  = usuario.substring(0,2).toUpperCase();
     if (fotoSalva) {
         avatarEl.innerHTML = `<img src="${fotoSalva}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
@@ -1263,12 +1524,17 @@ async function renderPainelPerfil(usuario, perfil) {
     }
 
     // Banner
-    const banner = document.getElementById('perfil-banner');
-    if (perfil.banner) {
-        banner.style.backgroundImage = `url('${perfil.banner}')`;
-        banner.style.backgroundSize  = 'cover';
+    const bannerKey = getPrefix() + 'banner_perfil';
+    const bannerData = (await _imgDB.get(bannerKey)) || perfil.banner || null;
+    if (bannerData) {
+        _aplicarBannerNaUI(bannerData, !!perfil.bannerAnimado);
     } else {
-        banner.style.backgroundImage = '';
+        const banner = document.getElementById('perfil-banner');
+        if (banner) {
+            banner.style.backgroundImage = '';
+            const imgAnt = banner.querySelector('.banner-img-animado');
+            if (imgAnt) imgAnt.remove();
+        }
     }
 
     // Status
@@ -1342,8 +1608,8 @@ function fecharPainelPerfil(e) {
     if (e && e.target !== document.getElementById('perfil-overlay')) return;
     document.getElementById('perfil-overlay').classList.remove('show');
 }
+window.fecharPainelPerfil = fecharPainelPerfil;
 
-/* ── Edição de campos ── */
 function abrirEditPerfil(campo) {
     _perfilCampoAtual = campo;
     const overlay  = document.getElementById('perfil-edit-overlay');
@@ -1383,6 +1649,8 @@ function fecharEditPerfil() {
     document.getElementById('perfil-edit-overlay').classList.remove('show');
     _perfilCampoAtual = null;
 }
+window.abrirEditPerfil   = abrirEditPerfil;
+window.fecharEditPerfil  = fecharEditPerfil;
 
 async function salvarEditPerfil() {
     const campo  = _perfilCampoAtual;
@@ -1396,6 +1664,7 @@ async function salvarEditPerfil() {
     fecharEditPerfil();
     renderPainelPerfil(getUsuarioLogado(), perfil);
 }
+window.salvarEditPerfil = salvarEditPerfil;
 
 /* ── Borda colorida ── */
 async function aplicarCorBorda(el) {
@@ -1413,23 +1682,29 @@ async function aplicarCorBorda(el) {
     const circle = document.getElementById('avatar-circle');
     if (circle) { circle.style.borderColor = cor; circle.style.boxShadow = `0 0 8px ${cor}`; }
 }
+window.aplicarCorBorda = aplicarCorBorda;
 
 /* ── Foto do avatar via painel ── */
 function perfilClicarAvatar() {
     document.getElementById('input-foto-perfil').click();
 }
+window.perfilClicarAvatar = perfilClicarAvatar;
 
 /* ── Banner ── */
 function perfilClicarBanner() {
     document.getElementById('input-banner-perfil').click();
 }
+window.perfilClicarBanner = perfilClicarBanner;
 
 function salvarBannerPerfil(event) {
     const file = event.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = function(ev) {
-        if (file.type === 'image/gif') {
-            _salvarBannerBase64(ev.target.result);
+    reader.onload = async function(ev) {
+        const animado = await isAnimatedImage(file);
+if (animado) {
+            window.abrirGifCrop(ev.target.result, 'banner', async function(resultDataUrl, isAnim) {
+                _salvarBannerBase64(resultDataUrl, isAnim);
+            });
             document.getElementById('input-banner-perfil').value = '';
             return;
         }
@@ -1454,7 +1729,7 @@ function confirmarBannerCrop() {
     if (!_bannerCropperInstance) return;
     const canvas = _bannerCropperInstance.getCroppedCanvas({ width: 680, height: 140 });
     if (!canvas) return;
-    _salvarBannerBase64(canvas.toDataURL('image/jpeg', 0.9));
+    _salvarBannerBase64(canvas.toDataURL('image/jpeg', 0.9), false);
     cancelarBannerCrop();
 }
 
@@ -1464,14 +1739,41 @@ function cancelarBannerCrop() {
     document.getElementById('input-banner-perfil').value = '';
 }
 
-async function _salvarBannerBase64(base64) {
+async function _salvarBannerBase64(base64, animado) {
     const perfil = getPerfilLocal();
-    perfil.banner = base64;
+    // Salva a imagem grande no IndexedDB, não no localStorage
+    const bannerKey = getPrefix() + 'banner_perfil';
+    await _imgDB.set(bannerKey, base64);
+    // Salva apenas os metadados (sem o base64) no perfil local
+    perfil.banner = null; // não guarda no localStorage
+    perfil.bannerAnimado = !!animado;
+    perfil.temBanner = true;
     setPerfilLocal(perfil);
-    await salvarPerfilFirebase(perfil);
+    await salvarPerfilFirebase({ ...perfil, banner: base64, bannerAnimado: !!animado });
+    _aplicarBannerNaUI(base64, !!animado);
+}
+
+function _aplicarBannerNaUI(base64, animado) {
     const banner = document.getElementById('perfil-banner');
-    banner.style.backgroundImage = `url('${base64}')`;
-    banner.style.backgroundSize  = 'cover';
+    if (!banner) return;
+    // Remove img animada anterior se existir
+    const imgAnterior = banner.querySelector('.banner-img-animado');
+    if (imgAnterior) imgAnterior.remove();
+
+    if (animado) {
+        // GIF/WebP animado: usa <img> para preservar animação
+        banner.style.backgroundImage = '';
+        banner.style.backgroundSize  = '';
+        const img = document.createElement('img');
+        img.src = base64;
+        img.className = 'banner-img-animado';
+        img.alt = 'banner animado';
+        // Insere antes de tudo dentro do banner para ficar atrás dos botões
+        banner.insertBefore(img, banner.firstChild);
+    } else {
+        banner.style.backgroundImage = `url('${base64}')`;
+        banner.style.backgroundSize  = 'cover';
+    }
 }
 
 /* ── Sobrescreve confirmarCrop para também atualizar o painel ── */
@@ -1481,10 +1783,11 @@ confirmarCrop = async function() {
     const canvas  = cropperInstance.getCroppedCanvas({ width: 300, height: 300 });
     if (!canvas) return;
     const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-    localStorage.setItem(getAvatarKey(), dataUrl);
+    await _imgDB.set(getAvatarKey(), dataUrl);
     // Salva também no perfil Firebase
     const perfil  = getPerfilLocal();
     perfil.foto   = dataUrl;
+    perfil.fotoAnimada = false;
     setPerfilLocal(perfil);
     await salvarPerfilFirebase(perfil);
     atualizarAvatar();
@@ -1499,6 +1802,115 @@ confirmarCrop = async function() {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- ===== SISTEMA DE PARTÍCULAS PARANORMAIS ===== -->
+    <script>
+    (function() {
+        const canvas = document.getElementById('particle-canvas');
+        const ctx    = canvas.getContext('2d');
+        let W, H, particles = [], animId;
+
+        function getThemeColor() {
+            const style = getComputedStyle(document.documentElement);
+            const rgb   = style.getPropertyValue('--tema-glow-rgb').trim() || '58,123,213';
+            return rgb;
+        }
+
+        function resize() {
+            W = canvas.width  = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+
+        function Particle() {
+            this.reset();
+        }
+        Particle.prototype.reset = function() {
+            this.x     = Math.random() * W;
+            this.y     = Math.random() * H;
+            this.r     = Math.random() * 1.8 + 0.4;
+            this.vx    = (Math.random() - 0.5) * 0.35;
+            this.vy    = -(Math.random() * 0.5 + 0.15);
+            this.alpha = Math.random() * 0.6 + 0.1;
+            this.life  = Math.random() * 200 + 100;
+            this.age   = 0;
+        };
+        Particle.prototype.update = function() {
+            this.x   += this.vx;
+            this.y   += this.vy;
+            this.age++;
+            // flicker
+            if (Math.random() < 0.03) this.alpha = Math.random() * 0.5 + 0.05;
+            if (this.age > this.life || this.y < -10) this.reset();
+        };
+        Particle.prototype.draw = function(rgb) {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${rgb},${this.alpha})`;
+            ctx.fill();
+        };
+
+        function initParticles(n) {
+            particles = [];
+            for (let i = 0; i < n; i++) {
+                const p = new Particle();
+                p.age = Math.random() * p.life; // stagger
+                particles.push(p);
+            }
+        }
+
+        function loop() {
+            ctx.clearRect(0, 0, W, H);
+            const rgb = getThemeColor();
+            for (const p of particles) { p.update(); p.draw(rgb); }
+            animId = requestAnimationFrame(loop);
+        }
+
+        window.addEventListener('resize', () => { resize(); });
+        resize();
+        initParticles(90);
+        loop();
+
+        // Reinicia quando o tema muda (as cores mudam)
+        document.addEventListener('temaAplicado', () => {});
+    })();
+
+    /* ── Anima cards de agente ao aparecerem ── */
+    function animarCards() {
+        document.querySelectorAll('.card-agente').forEach((card, i) => {
+            card.style.opacity = '0';
+            card.style.animation = 'none';
+            // force reflow
+            void card.offsetWidth;
+            card.style.animation = '';
+            card.classList.add('anim-fade-up');
+            card.style.animationDelay = (i * 0.08) + 's';
+        });
+    }
+
+    /* Intercepta mostrarAgentes para animar cards — aguarda DOM pronto */
+    window.addEventListener('load', function() {
+        const _orig = window.mostrarAgentes;
+        if (typeof _orig === 'function') {
+            window.mostrarAgentes = function() {
+                _orig.apply(this, arguments);
+                setTimeout(animarCards, 80);
+            };
+        }
+    });
+
+    /* Também anima cards que já estejam na tela ao carregar */
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(animarCards, 600);
+    });
+    
+    // Helper para fechar navbar mobile após clicar
+    function toggleNavbar() {
+        const nav = document.getElementById('navbarNav');
+        if (nav && nav.classList.contains('show')) {
+            nav.classList.remove('show');
+        }
+    }
+</script>
+
 <!-- ===== PAINEL DE PERFIL ===== -->
 <div id="perfil-overlay" onclick="fecharPainelPerfil(event)">
   <div class="perfil-card" onclick="event.stopPropagation()" id="perfil-card">
@@ -1510,12 +1922,11 @@ confirmarCrop = async function() {
         <button class="perfil-top-btn" onclick="event.stopPropagation();abrirEditPerfil('status')">✎ Status</button>
         <button class="perfil-top-btn danger" onclick="event.stopPropagation();fazerLogout()">✕ Sair</button>
       </div>
-      <!-- Avatar sobre o banner -->
-      <div class="perfil-avatar-wrap" id="perfil-avatar-wrap" onclick="event.stopPropagation();perfilClicarAvatar()">
-        <div class="perfil-avatar" id="perfil-avatar-img">
-          <span id="perfil-avatar-iniciais"></span>
-          <div class="perfil-avatar-edit">📷</div>
-        </div>
+    </div>
+    <div class="perfil-avatar-wrap" id="perfil-avatar-wrap" onclick="event.stopPropagation();perfilClicarAvatar()">
+      <div class="perfil-avatar" id="perfil-avatar-img">
+        <span id="perfil-avatar-iniciais"></span>
+        <div class="perfil-avatar-edit">📷</div>
       </div>
     </div>
 
@@ -1595,5 +2006,340 @@ confirmarCrop = async function() {
     <button class="banner-crop-btn banner-crop-btn-cancel" onclick="cancelarBannerCrop()">✕ CANCELAR</button>
   </div>
 </div>
+
+<script>
+
+/* ============================================================
+   GIF CROP MODULE
+   ============================================================ */
+(function() {
+  if (window._gifCropModuleLoaded) return;
+  window._gifCropModuleLoaded = true;
+
+  function _loadScript(src) {
+    return new Promise((res, rej) => {
+      if (document.querySelector('script[src="' + src + '"]')) { res(); return; }
+      const s = document.createElement('script');
+      s.src = src; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  async function _ensureGifLibs() {
+    await _loadScript('https://cdn.jsdelivr.net/npm/omggif@1.0.10/omggif.js');
+    await _loadScript('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js');
+  }
+
+  // Cria um blob URL para o worker do gif.js, evitando o bloqueio de CORS
+  // quando rodando em file:// ou http://127.0.0.1
+  async function _getWorkerScript() {
+    if (window._gifWorkerBlobUrl) return window._gifWorkerBlobUrl;
+    try {
+      const resp = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
+      const text = await resp.text();
+      const blob = new Blob([text], { type: 'application/javascript' });
+      window._gifWorkerBlobUrl = URL.createObjectURL(blob);
+      return window._gifWorkerBlobUrl;
+    } catch(e) {
+      // Fallback: tenta usar o CDN diretamente (funciona em produção)
+      return 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js';
+    }
+  }
+
+  window._gifCropState = null;
+
+  function _criarGifCropUI() {
+    if (document.getElementById('gif-crop-overlay')) return;
+    const div = document.createElement('div');
+    div.id = 'gif-crop-overlay';
+    div.innerHTML = `
+    <style>
+    #gif-crop-overlay {
+        display:none; position:fixed; inset:0; background:rgba(0,0,0,0.97);
+        z-index:999999; flex-direction:column; align-items:center;
+        justify-content:center; gap:14px; padding:20px; font-family:'Oswald',sans-serif;
+    }
+    #gif-crop-overlay.show { display:flex; }
+    #gif-crop-label { font-size:0.65rem; letter-spacing:3px; color:#666; text-transform:uppercase; align-self:flex-start; }
+    #gif-crop-stage {
+        position:relative; overflow:hidden; border:1px solid var(--tema-primary,#3a7bd5);
+        background:#000; cursor:crosshair; user-select:none; max-width:90vw; max-height:55vh;
+    }
+    #gif-crop-preview { display:block; width:100%; height:100%; object-fit:contain; pointer-events:none; }
+    #gif-crop-box {
+        position:absolute; border:2px solid #fff;
+        box-shadow:0 0 0 9999px rgba(0,0,0,0.55); cursor:move; box-sizing:border-box;
+    }
+    #gif-crop-box::after {
+        content:''; position:absolute; inset:0;
+        background: repeating-linear-gradient(0deg,transparent,transparent 33.3%,rgba(255,255,255,0.15) 33.3%,rgba(255,255,255,0.15) 33.4%),
+                    repeating-linear-gradient(90deg,transparent,transparent 33.3%,rgba(255,255,255,0.15) 33.3%,rgba(255,255,255,0.15) 33.4%);
+    }
+    .gif-crop-handle { position:absolute; width:12px; height:12px; background:#fff; border:1px solid #333; border-radius:2px; }
+    .gif-crop-handle.nw { top:-6px; left:-6px; cursor:nw-resize; }
+    .gif-crop-handle.ne { top:-6px; right:-6px; cursor:ne-resize; }
+    .gif-crop-handle.sw { bottom:-6px; left:-6px; cursor:sw-resize; }
+    .gif-crop-handle.se { bottom:-6px; right:-6px; cursor:se-resize; }
+    #gif-crop-info { font-size:0.7rem; color:#555; letter-spacing:1px; }
+    #gif-crop-progress { display:none; font-size:0.75rem; color:var(--tema-primary-light,#7ab3f5); letter-spacing:2px; text-align:center; }
+    .gif-crop-btns { display:flex; gap:10px; }
+    .gif-crop-btn { font-family:'Oswald',sans-serif; font-size:0.75rem; letter-spacing:1px; padding:8px 22px; border-radius:3px; cursor:pointer; transition:0.2s; border:1px solid; }
+    .gif-crop-btn-ok { background:rgba(0,40,80,0.7); border-color:var(--tema-primary,#3a7bd5); color:var(--tema-primary-light,#7ab3f5); }
+    .gif-crop-btn-ok:hover { background:var(--tema-primary-dark,#0d2a5e); }
+    .gif-crop-btn-cancel { background:transparent; border-color:#333; color:#555; }
+    .gif-crop-btn-cancel:hover { border-color:#666; color:#888; }
+    </style>
+    <div id="gif-crop-label">▸ AJUSTAR IMAGEM ANIMADA</div>
+    <div id="gif-crop-stage">
+        <img id="gif-crop-preview" src="" alt="gif preview">
+        <div id="gif-crop-box">
+            <div class="gif-crop-handle nw"></div>
+            <div class="gif-crop-handle ne"></div>
+            <div class="gif-crop-handle sw"></div>
+            <div class="gif-crop-handle se"></div>
+        </div>
+    </div>
+    <div id="gif-crop-info">Arraste para mover &bull; Cantos para redimensionar</div>
+    <div id="gif-crop-progress"></div>
+    <div class="gif-crop-btns">
+        <button class="gif-crop-btn gif-crop-btn-ok" onclick="window.confirmarGifCrop()">&#10004; CONFIRMAR</button>
+        <button class="gif-crop-btn gif-crop-btn-cancel" onclick="window.cancelarGifCrop()">&#10005; CANCELAR</button>
+    </div>`;
+    document.body.appendChild(div);
+    _initGifCropInteraction();
+  }
+
+  function _initGifCropInteraction() {
+    const stage = document.getElementById('gif-crop-stage');
+    const box   = document.getElementById('gif-crop-box');
+    let drag = null;
+
+    function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
+    function stageSize() { return { w: stage.offsetWidth, h: stage.offsetHeight }; }
+
+    function onDown(e) {
+      e.preventDefault();
+      const cl  = e.target.classList;
+      const bx  = { l: box.offsetLeft, t: box.offsetTop, w: box.offsetWidth, h: box.offsetHeight };
+      const px  = e.clientX || (e.touches && e.touches[0].clientX);
+      const py  = e.clientY || (e.touches && e.touches[0].clientY);
+      if      (cl.contains('nw')) drag = { type:'nw', startX:px, startY:py, startBox:{...bx} };
+      else if (cl.contains('ne')) drag = { type:'ne', startX:px, startY:py, startBox:{...bx} };
+      else if (cl.contains('sw')) drag = { type:'sw', startX:px, startY:py, startBox:{...bx} };
+      else if (cl.contains('se')) drag = { type:'se', startX:px, startY:py, startBox:{...bx} };
+      else if (e.target === box || box.contains(e.target))
+        drag = { type:'move', startX:px, startY:py, startBox:{...bx} };
+      else {
+        const r = stage.getBoundingClientRect();
+        drag = { type:'new', startX:px, startY:py, originX: px-r.left, originY: py-r.top };
+      }
+    }
+
+    function onMove(e) {
+      if (!drag) return;
+      e.preventDefault();
+      const px  = e.clientX || (e.touches && e.touches[0].clientX);
+      const py  = e.clientY || (e.touches && e.touches[0].clientY);
+      const dx  = px - drag.startX, dy = py - drag.startY;
+      const { w: SW, h: SH } = stageSize();
+      const ratio = window._gifCropState ? window._gifCropState.ratio : 0;
+      const MIN   = 20;
+      let { l, t, w, h } = drag.startBox || { l:0, t:0, w:MIN, h:MIN };
+
+      if (drag.type === 'move') {
+        l = clamp(l + dx, 0, SW - w);
+        t = clamp(t + dy, 0, SH - h);
+      } else if (drag.type === 'new') {
+        const r  = stage.getBoundingClientRect();
+        const cx = clamp(px - r.left, 0, SW);
+        const cy = clamp(py - r.top,  0, SH);
+        w = Math.abs(cx - drag.originX);
+        h = ratio ? w / ratio : Math.abs(cy - drag.originY);
+        l = Math.min(cx, drag.originX);
+        t = Math.min(cy, drag.originY);
+        drag.startBox = { l, t, w, h }; drag.startX = px; drag.startY = py;
+      } else {
+        const sb = drag.startBox;
+        if (drag.type === 'se') {
+          w = clamp(sb.w + dx, MIN, SW - sb.l);
+          h = ratio ? w / ratio : clamp(sb.h + dy, MIN, SH - sb.t);
+          l = sb.l; t = sb.t;
+        } else if (drag.type === 'sw') {
+          w = clamp(sb.w - dx, MIN, sb.l + sb.w);
+          h = ratio ? w / ratio : clamp(sb.h + dy, MIN, SH - sb.t);
+          l = sb.l + sb.w - w; t = sb.t;
+        } else if (drag.type === 'ne') {
+          w = clamp(sb.w + dx, MIN, SW - sb.l);
+          h = ratio ? w / ratio : clamp(sb.h - dy, MIN, sb.t + sb.h);
+          l = sb.l; t = sb.t + sb.h - h;
+        } else if (drag.type === 'nw') {
+          w = clamp(sb.w - dx, MIN, sb.l + sb.w);
+          h = ratio ? w / ratio : clamp(sb.h - dy, MIN, sb.t + sb.h);
+          l = sb.l + sb.w - w; t = sb.t + sb.h - h;
+        }
+      }
+
+      box.style.left   = clamp(l, 0, SW - MIN) + 'px';
+      box.style.top    = clamp(t, 0, SH - MIN) + 'px';
+      box.style.width  = clamp(w, MIN, SW - clamp(l,0,SW-MIN)) + 'px';
+      box.style.height = clamp(h, MIN, SH - clamp(t,0,SH-MIN)) + 'px';
+    }
+
+    function onUp() { drag = null; }
+
+    stage.addEventListener('mousedown', onDown);
+    box.addEventListener('mousedown',   onDown);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup',   onUp);
+    stage.addEventListener('touchstart',   onDown, {passive:false});
+    document.addEventListener('touchmove', onMove, {passive:false});
+    document.addEventListener('touchend',  onUp);
+  }
+
+  window.abrirGifCrop = async function(gifDataUrl, mode, onDone) {
+    await _ensureGifLibs();
+    _criarGifCropUI();
+
+    const ratio = (mode === 'banner') ? (680/140) : 1;
+
+    // Decodifica frames
+    let frames = [];
+    try {
+      const binary = atob(gifDataUrl.split(',')[1]);
+      const bytes  = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const gr = new GifReader(bytes);
+      const fw = gr.width, fh = gr.height;
+      for (let i = 0; i < gr.numFrames(); i++) {
+        const info   = gr.frameInfo(i);
+        const pixels = new Uint8ClampedArray(fw * fh * 4);
+        gr.decodeAndBlitFrameRGBA(i, pixels);
+        frames.push({ imageData: new ImageData(pixels, fw, fh), delay: info.delay * 10, width: fw, height: fh });
+      }
+    } catch(e) { console.warn('GIF decode:', e); frames = []; }
+
+    window._gifCropState = { gifDataUrl, frames, mode, ratio, onDone };
+
+    const preview  = document.getElementById('gif-crop-preview');
+    const stage    = document.getElementById('gif-crop-stage');
+    const box      = document.getElementById('gif-crop-box');
+    const progress = document.getElementById('gif-crop-progress');
+
+    preview.src = gifDataUrl;
+    progress.style.display = 'none';
+    document.getElementById('gif-crop-overlay').classList.add('show');
+
+    function initBox() {
+      const sw = stage.offsetWidth, sh = stage.offsetHeight;
+      let bw, bh;
+      if (mode === 'banner') {
+        bw = sw * 0.9; bh = bw / ratio;
+        if (bh > sh * 0.9) { bh = sh * 0.9; bw = bh * ratio; }
+      } else {
+        bw = bh = Math.min(sw, sh) * 0.8;
+      }
+      box.style.left   = ((sw - bw) / 2) + 'px';
+      box.style.top    = ((sh - bh) / 2) + 'px';
+      box.style.width  = bw + 'px';
+      box.style.height = bh + 'px';
+    }
+
+    if (preview.complete && preview.naturalWidth > 0) { initBox(); }
+    else { preview.onload = initBox; }
+  };
+
+  window.confirmarGifCrop = async function() {
+    if (!window._gifCropState) return;
+    const { gifDataUrl, frames, mode, onDone } = window._gifCropState;
+
+    const stage    = document.getElementById('gif-crop-stage');
+    const box      = document.getElementById('gif-crop-box');
+    const progress = document.getElementById('gif-crop-progress');
+
+    const sl = box.offsetLeft, st = box.offsetTop;
+    const bw = box.offsetWidth, bh = box.offsetHeight;
+    const sw = stage.offsetWidth,  sh = stage.offsetHeight;
+    const outW = (mode === 'banner') ? 680 : 300;
+    const outH = (mode === 'banner') ? 140 : 300;
+
+    // Fallback: sem frames decodificados — crop estático
+    if (!frames || frames.length === 0) {
+      const tmp = document.createElement('canvas');
+      tmp.width = outW; tmp.height = outH;
+      const ctx = tmp.getContext('2d', { willReadFrequently: true });
+      const img = new Image();
+      img.onload = function() {
+        const ir = img.naturalWidth / img.naturalHeight;
+        const sr = sw / sh;
+        let dw, dh, ox, oy;
+        if (ir > sr) { dw = sw; dh = sw/ir; ox = 0; oy = (sh-dh)/2; }
+        else         { dh = sh; dw = sh*ir; oy = 0; ox = (sw-dw)/2; }
+        ctx.drawImage(img, (sl-ox)*(img.naturalWidth/dw), (st-oy)*(img.naturalHeight/dh),
+                          bw*(img.naturalWidth/dw), bh*(img.naturalHeight/dh), 0, 0, outW, outH);
+        onDone(tmp.toDataURL('image/jpeg', 0.92), false);
+        window.cancelarGifCrop();
+      };
+      img.src = gifDataUrl;
+      return;
+    }
+
+    progress.style.display = 'block';
+    progress.textContent   = '⏳ Processando frames...';
+
+    const nw = frames[0].width, nh = frames[0].height;
+    const ir = nw / nh, sr = sw / sh;
+    let dw, dh, ox, oy;
+    if (ir > sr) { dw = sw; dh = sw/ir; ox = 0; oy = (sh-dh)/2; }
+    else         { dh = sh; dw = sh*ir; oy = 0; ox = (sw-dw)/2; }
+
+    const sx = Math.max(0, (sl-ox) * (nw/dw));
+    const sy = Math.max(0, (st-oy) * (nh/dh));
+    const sW = Math.min(bw * (nw/dw), nw - sx);
+    const sH = Math.min(bh * (nh/dh), nh - sy);
+
+    try {
+      await _ensureGifLibs();
+      const workerScript = await _getWorkerScript();
+      const gif = new GIF({
+        workers: 2, quality: 5, width: outW, height: outH,
+        workerScript: workerScript
+      });
+      const tmp = document.createElement('canvas');
+      tmp.width = outW; tmp.height = outH;
+      const ctx = tmp.getContext('2d', { willReadFrequently: true });
+      const src = document.createElement('canvas');
+      src.width = nw; src.height = nh;
+
+      for (let i = 0; i < frames.length; i++) {
+        progress.textContent = '⏳ Frame ' + (i+1) + '/' + frames.length + '...';
+        src.getContext('2d', { willReadFrequently: true }).putImageData(frames[i].imageData, 0, 0);
+        ctx.clearRect(0, 0, outW, outH);
+        ctx.drawImage(src, sx, sy, sW, sH, 0, 0, outW, outH);
+        gif.addFrame(ctx, { copy: true, delay: frames[i].delay || 100 });
+      }
+
+      gif.on('progress', p => { progress.textContent = '⚙️ Encodando... ' + Math.round(p*100) + '%'; });
+      gif.on('finished', function(blob) {
+        const r = new FileReader();
+        r.onload = function(ev) { onDone(ev.target.result, true); window.cancelarGifCrop(); };
+        r.readAsDataURL(blob);
+      });
+      gif.render();
+    } catch(err) {
+      console.error('GIF encode error:', err);
+      progress.textContent = '❌ Erro ao processar. Usando original.';
+      setTimeout(() => { onDone(gifDataUrl, true); window.cancelarGifCrop(); }, 1500);
+    }
+  };
+
+  window.cancelarGifCrop = function() {
+    const o = document.getElementById('gif-crop-overlay');
+    if (o) o.classList.remove('show');
+    window._gifCropState = null;
+  };
+
+})();
+
+</script>
 </body>
 </html>
