@@ -1291,12 +1291,41 @@ body { transition: background 0.6s ease; }
             return getPrefix() + 'foto_perfil';
         }
 
+        // Migra foto do localStorage (formato antigo) para IndexedDB uma única vez
+        async function _migrarFotoLocalStorage() {
+            const key = getAvatarKey();
+            if (!key) return;
+            try {
+                const jaTemNoIDB = await _imgDB.get(key);
+                if (jaTemNoIDB) return; // já migrado, nada a fazer
+                const fotoLS = localStorage.getItem(key);
+                if (fotoLS) {
+                    await _imgDB.set(key, fotoLS);
+                    localStorage.removeItem(key); // limpa do localStorage para liberar espaço
+                }
+            } catch(e) { console.warn('Migração foto:', e); }
+        }
+
         async function atualizarAvatar() {
             const usuario = getUsuarioLogado();
             if (!usuario) return;
             const iniciais = usuario.substring(0, 2).toUpperCase();
             document.getElementById('dd-username-label').textContent = usuario;
-            const fotoSalva = await _imgDB.get(getAvatarKey());
+
+            // Garante que a foto antiga do localStorage seja migrada
+            await _migrarFotoLocalStorage();
+
+            let fotoSalva = await _imgDB.get(getAvatarKey());
+
+            // Fallback: tenta buscar do perfil salvo localmente
+            if (!fotoSalva) {
+                const perfil = getPerfilLocal ? getPerfilLocal() : null;
+                if (perfil && perfil.foto) {
+                    fotoSalva = perfil.foto;
+                    await _imgDB.set(getAvatarKey(), fotoSalva);
+                }
+            }
+
             const circle = document.getElementById('avatar-circle');
             if (fotoSalva) {
                 circle.innerHTML = `<img src="${fotoSalva}" alt="foto de perfil">`;

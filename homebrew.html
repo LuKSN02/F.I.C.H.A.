@@ -3072,6 +3072,16 @@ async function atualizarAvatar() {
     const circle   = document.getElementById('avatar-circle');
     if (!circle) return;
 
+    // Migra foto do localStorage (formato antigo) para IndexedDB
+    try {
+        const key = _getAvatarKey();
+        const jaTemNoIDB = await _imgDB.get(key);
+        if (!jaTemNoIDB) {
+            const fotoLS = localStorage.getItem(key);
+            if (fotoLS) { await _imgDB.set(key, fotoLS); localStorage.removeItem(key); }
+        }
+    } catch(e) {}
+
     // Exibe cache local (IndexedDB) enquanto busca do Firebase
     const perfilLocal = _getPerfilLocal();
     const fotoLocal   = (await _imgDB.get(_getAvatarKey())) || perfilLocal.foto || '';

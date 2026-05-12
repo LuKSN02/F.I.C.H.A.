@@ -1273,9 +1273,24 @@ function atualizarAvatar() {
     const chaveAvatar = usuario + '_foto_perfil';
     const circle = document.getElementById('avatar-circle');
     if (!circle) return;
-    _imgDB.get(chaveAvatar).then(fotoSalva => {
-        if (fotoSalva) {
-            circle.innerHTML = `<img src="${fotoSalva}" alt="foto de perfil">`;
+
+    // Migra do localStorage para IndexedDB se necessário, depois exibe
+    _imgDB.get(chaveAvatar).then(async fotoIDB => {
+        if (!fotoIDB) {
+            // Tenta migrar do localStorage (formato antigo)
+            const fotoLS = localStorage.getItem(chaveAvatar);
+            if (fotoLS) {
+                await _imgDB.set(chaveAvatar, fotoLS);
+                localStorage.removeItem(chaveAvatar);
+                fotoIDB = fotoLS;
+            }
+            // Fallback: tenta do perfil local
+            if (!fotoIDB) {
+                try { const p = JSON.parse(localStorage.getItem('perfil_' + usuario) || '{}'); fotoIDB = p.foto || ''; } catch(e) {}
+            }
+        }
+        if (fotoIDB) {
+            circle.innerHTML = `<img src="${fotoIDB}" alt="foto de perfil">`;
         } else {
             circle.innerHTML = `<span id="avatar-iniciais">${iniciais}</span>`;
         }
