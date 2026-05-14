@@ -1165,9 +1165,11 @@ body { transition: background 0.5s ease; }
     if (user) {
       const usuario = user.displayName || user.email.replace('@ficha.local', '');
       sessionStorage.setItem('ficha_user', usuario);
-      localStorage.setItem('ficha_user_ativo', usuario);
+      // UID no localStorage para compatibilidade com campanhas/badges cross-page
       localStorage.setItem('ficha_uid', user.uid);
       localStorage.setItem('ficha_uid_firebase', user.uid);
+      // Remove resíduo de versões antigas que gravavam o nome no localStorage
+      localStorage.removeItem('ficha_user_ativo');
     }
     // Não redireciona aqui — o window.load já cuida disso
   });
@@ -1750,7 +1752,8 @@ body { transition: background 0.5s ease; }
    UTILITÁRIOS
 ═══════════════════════════════════════════════ */
 function getPrefix() {
-  return (sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'guest') + '_';
+  // Lê APENAS do sessionStorage — nunca do localStorage
+  return (sessionStorage.getItem('ficha_user') || 'guest') + '_';
 }
 
 function storageKey(tipo) { return getPrefix() + 'homebrew_' + tipo; }
@@ -2145,7 +2148,7 @@ function abrirModalAdicionarFicha(indexFiltrado) {
     _hbItemParaAdicionar = item;
 
     // Descobre fichas do usuário a partir do localStorage
-    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const usuario = sessionStorage.getItem('ficha_user') || '';
     const fichas  = [];
     for (let k of Object.keys(localStorage)) {
         // As fichas são salvas como "{usuario}_ficha_{fichaId}_estado" no localStorage
@@ -2304,7 +2307,7 @@ async function abrirModalCompartilhar(tipo, indexFiltrado) {
   if (!codigo) {
     // Gera novo código e publica no Firebase
     codigo = gerarCodigoCompartilhamento();
-    const autor = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'anon';
+    const autor = sessionStorage.getItem('ficha_user') || 'anon';
 
     const db = await _getFirebaseDB();
     if (db) {
@@ -2470,7 +2473,7 @@ async function importarItem(codigo, tipo, btnEl) {
 let _editando = null; // { codigo, tipo, dados }
 
 function abrirModalEditarComunidade(codigo, tipo) {
-  const autor = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+  const autor = sessionStorage.getItem('ficha_user') || '';
   // Busca dados no Firebase para preencher o modal
   (async () => {
     const db = await _getFirebaseDB();
@@ -2671,7 +2674,7 @@ async function carregarComunidadeTipo(tipo) {
     }
 
     const meusImportados = new Set(carregar(tipo).filter(i => i._shareCode).map(i => i._shareCode));
-    const autor = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const autor = sessionStorage.getItem('ficha_user') || '';
 
     container.innerHTML = doTipo.map(([codigo, dados]) => {
       const item  = dados.item || {};
@@ -2725,7 +2728,7 @@ function showToast(msg, cor) {
 }
 
 window.addEventListener('load', () => {
-  const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
+  const usuario = sessionStorage.getItem('ficha_user');
   if (!usuario) { window.location.href = 'index.html'; return; }
   atualizarAvatar();
   renderLista('ameacas', carregar('ameacas'));
@@ -3003,7 +3006,8 @@ document.getElementById('modal-compartilhar').addEventListener('click', function
    PAINEL DE PERFIL — HOMEBREW
 ============================================= */
 function _getUsuario() {
-    return sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    // Lê APENAS do sessionStorage — nunca do localStorage
+    return sessionStorage.getItem('ficha_user') || '';
 }
 function _getAvatarKey() { return _getUsuario() + '_foto_perfil'; }
 function _getPerfilKey() { return 'perfil_' + _getUsuario(); }
@@ -3044,6 +3048,8 @@ function _getPerfilLocal() {
     try { return JSON.parse(localStorage.getItem(_getPerfilKey())) || {}; } catch(e) { return {}; }
 }
 function _setPerfilLocal(dados) {
+    const u = _getUsuario(); if (!u) return;
+    dados._usuario = u;
     localStorage.setItem(_getPerfilKey(), JSON.stringify(dados));
 }
 async function _salvarPerfilFirebase(dados) {
@@ -3082,7 +3088,6 @@ async function atualizarAvatar() {
         }
     } catch(e) {}
 
-    // Exibe cache local (IndexedDB) enquanto busca do Firebase
     const perfilLocal = _getPerfilLocal();
     const fotoLocal   = (await _imgDB.get(_getAvatarKey())) || perfilLocal.foto || '';
     circle.innerHTML  = fotoLocal
@@ -3113,11 +3118,17 @@ async function atualizarAvatar() {
 window.abrirPainelPerfil = async function(e) {
     if (e) e.stopPropagation();
     const usuario = _getUsuario(); if (!usuario) return;
-    let perfil = _getPerfilLocal();
-    _renderPainel(usuario, perfil);
     document.getElementById('perfil-overlay').classList.add('show');
+    // Sempre carrega do Firebase primeiro (fonte de verdade)
     const fb = await _carregarPerfilFirebase();
-    if (fb) { perfil = { ...perfil, ...fb }; _setPerfilLocal(perfil); _renderPainel(usuario, perfil); }
+    let perfil;
+    if (fb) {
+        perfil = fb;
+        _setPerfilLocal(perfil);
+    } else {
+        perfil = _getPerfilLocal();
+    }
+    _renderPainel(usuario, perfil);
 };
 
 async function _renderPainel(usuario, perfil) {
@@ -3353,13 +3364,18 @@ async function _salvarBannerB64(base64, animado) {
 
 async function fazerLogout() {
     if (!confirm('Deseja sair da conta?')) return;
+    const usuario = _getUsuario();
     try {
         const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
         const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
         if (getApps().length > 0) await signOut(getAuth(getApps()[0]));
     } catch(e) {}
-    sessionStorage.removeItem('ficha_user');
+    sessionStorage.clear();
     localStorage.removeItem('ficha_user_ativo');
+    if (usuario) {
+        localStorage.removeItem(usuario + '_lista_agentes');
+        localStorage.removeItem('perfil_' + usuario);
+    }
     window.location.href = 'index.html';
 }
 

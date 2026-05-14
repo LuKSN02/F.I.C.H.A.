@@ -899,11 +899,13 @@ onAuthStateChanged(auth, async user => {
     if (user) {
         currentUser = user;
 
-        // Salva o UID permanente para referência
+        // Salva o UID no localStorage (necessário para campanhas/badges cross-page)
         localStorage.setItem('ficha_uid', user.uid);
         localStorage.setItem('ficha_uid_firebase', user.uid);
-
+        // Usuário logado fica APENAS no sessionStorage — nunca no localStorage
         const nomeUsuario = user.displayName || user.email.replace('@ficha.local', '');
+        sessionStorage.setItem('ficha_user', nomeUsuario);
+        localStorage.removeItem('ficha_user_ativo'); // limpa resíduo de versões antigas
         document.getElementById('status-dot').className = 'status-dot online';
         document.getElementById('status-txt').textContent = nomeUsuario;
         atualizarAvatar();
@@ -1013,7 +1015,7 @@ function renderAgentes(agentes, isMestre) {
         el.innerHTML = `<div class="empty-state"><div class="icon">👤</div><div>Nenhum agente na campanha ainda.</div></div>`;
         return;
     }
-    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const usuario = sessionStorage.getItem('ficha_user') || '';
     el.innerHTML = agentes.map(a => `
         <div class="agente-camp-card">
             <img class="agente-camp-foto" src="${a.foto || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(a.nome)}`}" alt="${a.nome}">
@@ -1140,12 +1142,32 @@ window.copiarConvite = function() {
 };
 
 // ══ VINCULAR AGENTE ══
-window.abrirModalVincularAgente = function() {
-    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
-    const prefix  = usuario ? usuario + '_' : '';
-    const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
+window.abrirModalVincularAgente = async function() {
+    const usuario = sessionStorage.getItem('ficha_user') || '';
     const lista   = document.getElementById('lista-agentes-locais');
     agentesSelecionados.clear();
+
+    // Busca agentes do Firebase (fonte de verdade)
+    let agentes = [];
+    if (window._firebaseDB && window._firebaseGet && window._firebaseRef) {
+        try {
+            const { getDatabase, ref, get } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+            const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+            if (getApps().length > 0) {
+                const rtdb = getDatabase(getApps()[0]);
+                const snap = await get(ref(rtdb, `agentes/${usuario}`));
+                if (snap.exists()) agentes = Object.values(snap.val());
+            }
+        } catch(e) {
+            // Fallback: cache local se Firebase falhar
+            const prefix = usuario ? usuario + '_' : '';
+            agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
+        }
+    } else {
+        // Fallback offline
+        const prefix = usuario ? usuario + '_' : '';
+        agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
+    }
 
     if (agentes.length === 0) {
         lista.innerHTML = `<div class="empty-state"><div class="icon">👤</div><div>Nenhum agente local encontrado.<br><a href="criar.html" style="color:var(--purple-neon);">Crie um agente primeiro!</a></div></div>`;
@@ -1162,6 +1184,8 @@ window.abrirModalVincularAgente = function() {
             </div>`;
         }).join('');
     }
+    // Guarda agentes em memória para vincularAgentes usar
+    window._agentesParaVincular = agentes;
     document.getElementById('modal-vincular').classList.add('show');
 };
 
@@ -1177,9 +1201,8 @@ window.toggleSelecionarAgente = function(i) {
 
 window.vincularAgentes = async function() {
     if (agentesSelecionados.size === 0) { mostrarToast('⚠ Selecione ao menos um agente'); return; }
-    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
-    const prefix  = usuario ? usuario + '_' : '';
-    const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
+    const usuario = sessionStorage.getItem('ficha_user') || '';
+    const agentes = window._agentesParaVincular || [];
 
     try {
         for (const i of agentesSelecionados) {
@@ -1262,12 +1285,12 @@ window.sairCampanha = async function() {
 
 // ══ UTILITÁRIOS ══
 function getNomeLocal() {
-    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const usuario = sessionStorage.getItem('ficha_user') || '';
     return usuario || `Agente_${currentUser.uid.slice(0,6)}`;
 }
 
 function atualizarAvatar() {
-    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const usuario = sessionStorage.getItem('ficha_user') || '';
     if (!usuario) return;
     const iniciais = usuario.substring(0, 2).toUpperCase();
     const chaveAvatar = usuario + '_foto_perfil';
@@ -1331,7 +1354,8 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
    PAINEL DE PERFIL
 ============================================= */
 function getUsuarioLogado() {
-    return sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    // Lê APENAS do sessionStorage — nunca do localStorage
+    return sessionStorage.getItem('ficha_user') || null;
 }
 function getAvatarKey() {
     return getUsuarioLogado() + '_foto_perfil';
@@ -1378,6 +1402,7 @@ function getPerfilLocal() {
 }
 function setPerfilLocal(dados) {
     const u = getUsuarioLogado(); if (!u) return;
+    dados._usuario = u;
     localStorage.setItem(getPerfilKey(u), JSON.stringify(dados));
 }
 async function salvarPerfilFirebase(dados) {
@@ -1409,15 +1434,17 @@ async function carregarPerfilFirebase(usuario) {
 window.abrirPainelPerfil = async function(e) {
     if (e) e.stopPropagation();
     const usuario = getUsuarioLogado(); if (!usuario) return;
-    let perfil = getPerfilLocal();
-    renderPainelPerfil(usuario, perfil);
     document.getElementById('perfil-overlay').classList.add('show');
+    // Sempre carrega do Firebase primeiro (fonte de verdade)
     const perfilFB = await carregarPerfilFirebase(usuario);
+    let perfil;
     if (perfilFB) {
-        perfil = { ...perfil, ...perfilFB };
+        perfil = perfilFB;
         setPerfilLocal(perfil);
-        renderPainelPerfil(usuario, perfil);
+    } else {
+        perfil = getPerfilLocal();
     }
+    renderPainelPerfil(usuario, perfil);
 };
 
 async function renderPainelPerfil(usuario, perfil) {
@@ -1461,7 +1488,7 @@ async function renderBadges(usuario) {
     badgesEl.innerHTML = `<span class="perfil-badge badge-membro">⚡ Membro</span>`;
     // badge Mestre — verifica campanhas que o usuário criou (já temos o db Firestore aqui)
     try {
-        const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
+        const uid = currentUser ? currentUser.uid : (localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase'));
         if (uid && typeof db !== 'undefined') {
             const { query: q, collection: col, where: wh, getDocs: gd } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
             const snap = await gd(q(col(db, 'campanhas'), wh('mestreUid', '==', uid)));
@@ -1672,12 +1699,17 @@ async function _salvarBannerBase64(base64, animado) {
 
 window.fazerLogout = async function() {
     if (!confirm('Deseja sair da conta?')) return;
+    const usuario = sessionStorage.getItem('ficha_user');
     const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
     const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
     const apps = getApps();
     if (apps.length > 0) await signOut(getAuth(apps[0]));
-    sessionStorage.removeItem('ficha_user');
+    sessionStorage.clear();
     localStorage.removeItem('ficha_user_ativo');
+    if (usuario) {
+        localStorage.removeItem(usuario + '_lista_agentes');
+        localStorage.removeItem('perfil_' + usuario);
+    }
     window.location.href = 'index.html';
 };
 </script>
