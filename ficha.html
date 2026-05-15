@@ -1821,6 +1821,37 @@
   </div>
 </div>
 
+<!-- Modal Habilidade Homebrew — painel de seleção -->
+<div id="modal-hab-homebrew" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:9999;align-items:center;justify-content:center;">
+  <div class="mrit-box" style="max-width:600px;">
+
+    <!-- Header -->
+    <div class="mrit-header">
+      <div class="mrit-header-esq">
+        <div class="mrit-header-icon">🧪</div>
+        <div>
+          <div class="mrit-title">Habilidades Homebrew</div>
+          <div class="mrit-subtitle">Criadas no painel Homebrew</div>
+        </div>
+      </div>
+      <button class="mrit-close" onclick="fecharModalHabHomebrew()">✕</button>
+    </div>
+
+    <!-- Busca -->
+    <div class="mrit-search-row">
+      <div class="mrit-search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="mrit-search" id="mhab-busca" placeholder="Buscar habilidade..." oninput="renderModalHabHomebrew()">
+      </div>
+    </div>
+    <div class="mrit-count" id="mhab-count"></div>
+
+    <!-- Lista -->
+    <div class="mrit-lista" id="modal-habs-lista"></div>
+
+  </div>
+</div>
+
 <!-- Modal Novo Ataque -->
 <div id="modal-ataque" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#0d0010;border:1px solid var(--purple);border-radius:10px;padding:28px;max-width:400px;width:90%;box-shadow:0 0 30px var(--purple-glow);">
@@ -2193,6 +2224,11 @@ const RITUAIS_DATA = [
   { nome:"Passagem de Conhecimento", elem:"SANGUE/CONHECIMENTO", src:"Arquivos Secretos #1", exec:"Completa", alcance:"Toque", dur:"Cena", conjuracao:"Sangue/Conhecimento 2º círculo.", desc:"Transfere consciência para o corpo do alvo. Dois modos: sobreposição (controla o alvo, que pode resistir por rodada) ou troca total (consciências trocam de corpo). Se o corpo habitado morrer, o conjurador também morre. Discente (+3 PE, 2º): médio, duração 1 dia. Verdadeiro (+7 PE, 4º+afinidade): médio, permanente.", dadosSugeridos:["1d20"] },
   { nome:"Passagem de Conhecimento Expandido", elem:"SANGUE/CONHECIMENTO", src:"Arquivos Secretos #1", exec:"1 dia", alcance:"Curto", dur:"Permanente", conjuracao:"Sangue/Conhecimento 4º círculo. Requer conhecer Passagem de Conhecimento.", desc:"Versão avançada criada por Agatha. Afeta de 2 a 10 pessoas (sempre em número par), divididas em grupos. Os corpos de um grupo ficam presos em caixões por 1d6+1 dias enquanto as consciências habitam os corpos do outro grupo. Ao trocar, os personagens assumem atributos e habilidades do novo corpo." },
   { nome:"Vínculo de Sangue", elem:"SANGUE", src:"Arquivos Secretos #2 (Juan)", exec:"Padrão", alcance:"Curto", dur:"Cena", conjuracao:"Sangue 4º círculo.", desc:"Manifesta símbolo no conjurador e num alvo em alcance curto. Sempre que o conjurador sofre dano, metade é transferida para o alvo. Pode ser invertido. Resistência (Fortitude DT 20) evita. Versão diabólica: DT 25, médio." },
+
+  // ── VARIA ──────────────────────────────────────────────────────────────────
+  { nome:"Amaldiçoar Arma", elem:"VARIA", src:"Livro Base", exec:"Padrão", alcance:"Toque", alvo:"1 arma corpo a corpo ou pacote de munição", dur:"Cena", conjuracao:"Ao aprender este ritual, escolha um elemento entre Conhecimento, Energia, Morte e Sangue. O ritual passa a ser desse elemento.",
+    desc:"Quando aprender este ritual, escolha um elemento entre Conhecimento, Energia, Morte e Sangue. Este ritual passa a ser do elemento escolhido. Você imbui a arma ou munições com o elemento, fazendo com que causem +1d6 de dano do tipo do elemento. Discente (+2 PE): muda o bônus de dano para +2d6. Requer 2º círculo. Verdadeiro (+5 PE): muda o bônus de dano para +4d6. Requer 3º círculo e afinidade.",
+    dadosSugeridos:["1d6","2d6","4d6"] },
 ];
  
 const HABILIDADES_DB = {
@@ -3220,6 +3256,19 @@ async function carregarFicha() {
                 estado.habilidadesPersonagem.push({ ...h });
             }
         });
+        // Adicionar habilidades iniciais da classe salvas no criar.html (exceto as de NEX específico)
+        if (Array.isArray(ficha.habilidadesIniciais)) {
+            ficha.habilidadesIniciais.forEach(h => {
+                if (!estado.habilidadesPersonagem.some(x => x.nome === h.nome)) {
+                    let encontrado = null;
+                    for (const cat of Object.keys(HABILIDADES_DB)) {
+                        const arr = HABILIDADES_DB[cat];
+                        if (Array.isArray(arr)) { encontrado = arr.find(x => x.nome === h.nome); if (encontrado) break; }
+                    }
+                    estado.habilidadesPersonagem.push(encontrado ? { ...encontrado } : { ...h });
+                }
+            });
+        }
     }
     sincronizarAgenteFirebase();
     renderFicha();
@@ -3248,6 +3297,7 @@ function sincronizarAgenteFirebase() {
 // ══════════════════════════════════════════════
 function renderFicha() {
     if (!ficha) return;
+    deduplicarRituais();
     document.getElementById('display-nome').textContent   = ficha.nome + (ficha.codinome ? ` "${ficha.codinome}"` : '');
     document.getElementById('display-origem').textContent = ficha.origem || '—';
     document.getElementById('display-classe').textContent = ficha.classe || '—';
@@ -4691,6 +4741,16 @@ function calcDT() {
     return 10 + peTurno + pre;
 }
 
+function deduplicarRituais() {
+    if (!estado.rituaisPersonagem) return;
+    const vistos = new Set();
+    estado.rituaisPersonagem = estado.rituaisPersonagem.filter(r => {
+        if (vistos.has(r.nome)) return false;
+        vistos.add(r.nome);
+        return true;
+    });
+}
+
 function rituaisRender() {
     const lista   = document.getElementById('rituais-lista');
     const countEl = document.getElementById('rituais-count');
@@ -5085,6 +5145,10 @@ function adicionarRitual(nome, jatem, isHb) {
         if (!dados) return;
     }
     if (!estado.rituaisPersonagem) estado.rituaisPersonagem = [];
+    if (estado.rituaisPersonagem.some(r => r.nome === dados.nome)) {
+        mostrarToast('⚠ RITUAL JÁ ADICIONADO');
+        return;
+    }
     estado.rituaisPersonagem.push({ ...dados });
     salvarEstado(); renderModalRituais(); rituaisRender();
     mostrarToast('✦ RITUAL ADICIONADO');
@@ -5100,6 +5164,10 @@ function salvarRitualCustom() {
     const desc = document.getElementById('rc-desc').value.trim();
     if (!nome) { mostrarToast('⚠ Informe o nome do ritual'); return; }
     if (!estado.rituaisPersonagem) estado.rituaisPersonagem = [];
+    if (estado.rituaisPersonagem.some(r => r.nome === nome)) {
+        mostrarToast('⚠ RITUAL JÁ ADICIONADO');
+        return;
+    }
     estado.rituaisPersonagem.push({ nome, elem, src:'Homebrew', desc, exec:'—', alcance:'—', dur:'—', conjuracao:'—', dadosSugeridos:[dado], custom:true });
     salvarEstado(); fecharModalRitualCustom(); rituaisRender();
     mostrarToast('✦ RITUAL CRIADO');
@@ -5122,7 +5190,7 @@ function renderHabilidades() {
 ];
     const catBtns = cats.map(c => `<button class="hab-cat-btn ${habCatAtiva===c.id?'active':''}" onclick="setHabCat('${c.id}')">${c.label}</button>`).join('');
     let content = habCatAtiva === 'ficha' ? buildHabFichaView() : buildHabCatView(habCatAtiva);
-    container.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div class="sec-title" style="margin-bottom:0;">Habilidades & Poderes</div></div><div class="hab-categorias">${catBtns}</div>${content}`;
+    container.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div class="sec-title" style="margin-bottom:0;">Habilidades & Poderes</div><button onclick="abrirModalHabHomebrew()" style="background:transparent;border:1px solid var(--purple);color:var(--purple-neon);font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;padding:6px 14px;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:0.2s;" onmouseover="this.style.background='var(--purple-dark)'" onmouseout="this.style.background='transparent'">🧪 Homebrew</button></div><div class="hab-categorias">${catBtns}</div>${content}`;
     container.querySelector('#hab-search')?.addEventListener('input', renderHabilidades);
 }
 
@@ -5130,10 +5198,10 @@ function buildHabFichaView() {
     const lista = estado.habilidadesPersonagem || [];
     if (lista.length === 0) return `<div class="hab-vazio">▸ Nenhuma habilidade adicionada ainda.<br>Use as abas acima para explorar e adicionar!</div>`;
     const grupos = {}; lista.forEach(h => { const g = h.tipo || 'outro'; if (!grupos[g]) grupos[g] = []; grupos[g].push(h); });
-    const labels = { classe:'Habilidades de Classe', trilha:'Habilidades de Trilha', paranormal:'Poderes Paranormais', poder_classe:'Poderes de Classe', origem:'Habilidades de Origem', treinamento_especial:'Treinamento Especial' };
+    const labels = { classe:'Habilidades de Classe', trilha:'Habilidades de Trilha', paranormal:'Poderes Paranormais', poder_classe:'Poderes de Classe', origem:'Habilidades de Origem', treinamento_especial:'Treinamento Especial', homebrew:'Homebrew' };
     let html = '';
     Object.entries(grupos).forEach(([tipo, habs]) => {
-        const icones = { classe:'⚔', trilha:'◈', paranormal:'✦', poder_classe:'◆', origem:'◉', treinamento_especial:'⊕', outro:'▸' };
+        const icones = { classe:'⚔', trilha:'◈', paranormal:'✦', poder_classe:'◆', origem:'◉', treinamento_especial:'⊕', homebrew:'🧪', outro:'▸' };
         html += `<div style="display:flex;align-items:center;gap:8px;font-size:0.68rem;letter-spacing:3px;color:var(--purple-neon);text-transform:uppercase;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:7px 12px;margin-bottom:10px;margin-top:16px;position:relative;z-index:1;"><span style="color:var(--purple);font-size:0.75rem;">${icones[tipo]||'▸'}</span><span>${labels[tipo]||tipo}</span><span style="margin-left:auto;font-size:0.55rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">${habs.length}</span></div>`;
         html += habs.map(h => buildPoderCard(h, true)).join('');
     });
@@ -5167,7 +5235,7 @@ function buildPoderCard(h, isFicha) {
     const ec    = ECORES[elem] || ECORES.NEUTRO;
     const elbl  = elem === 'NEUTRO' ? '—' : elem.charAt(0)+elem.slice(1).toLowerCase();
     const badgeElem = `<span style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;background:${ec.bg};color:${ec.cor};border:1px solid ${ec.border};">${elbl}</span>`;
-    const TIPOS = { classe:{cor:'var(--purple-neon)',bg:'#0d0020',border:'var(--border)',lbl:'CLASSE'}, trilha:{cor:'#39d353',bg:'#001510',border:'#003322',lbl:'TRILHA'}, paranormal:{cor:'#cc88ff',bg:'#100010',border:'#3a0060',lbl:'PARANORMAL'}, poder_classe:{cor:'var(--purple-neon)',bg:'#0d0020',border:'var(--border)',lbl:'PODER'}, origem:{cor:'#ffd700',bg:'#101000',border:'#443300',lbl:'ORIGEM'} };
+    const TIPOS = { classe:{cor:'var(--purple-neon)',bg:'#0d0020',border:'var(--border)',lbl:'CLASSE'}, trilha:{cor:'#39d353',bg:'#001510',border:'#003322',lbl:'TRILHA'}, paranormal:{cor:'#cc88ff',bg:'#100010',border:'#3a0060',lbl:'PARANORMAL'}, poder_classe:{cor:'var(--purple-neon)',bg:'#0d0020',border:'var(--border)',lbl:'PODER'}, origem:{cor:'#ffd700',bg:'#101000',border:'#443300',lbl:'ORIGEM'}, homebrew:{cor:'#39d353',bg:'#001a00',border:'#004400',lbl:'HOMEBREW'} };
     const tc = TIPOS[h.tipo] || TIPOS.classe;
     const badgeTipo = `<span style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;color:${tc.cor};background:${tc.bg};border:1px solid ${tc.border};">${tc.lbl}</span>`;
     const badgeTrilha = h.trilha ? `<span style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;color:#888;background:#0d0010;border:1px solid var(--border);">${h.trilha}</span>` : '';
@@ -5199,6 +5267,94 @@ function removerHabilidade(e, nome) {
     if (!confirm(`Remover "${nome}" da ficha?`)) return;
     estado.habilidadesPersonagem=(estado.habilidadesPersonagem||[]).filter(h=>h.nome!==nome);
     salvarEstado(); mostrarToast('🗑 HABILIDADE REMOVIDA'); renderHabilidades();
+}
+
+// ══════════════════════════════════════════════
+// MODAL HABILIDADES HOMEBREW — painel de seleção
+// ══════════════════════════════════════════════
+function _getHomebrewHabilidades() {
+    const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'guest';
+    const key  = user + '_homebrew_habilidades';
+    return JSON.parse(localStorage.getItem(key) || '[]');
+}
+
+function abrirModalHabHomebrew() {
+    document.getElementById('modal-hab-homebrew').style.display = 'flex';
+    const inp = document.getElementById('mhab-busca');
+    if (inp) inp.value = '';
+    renderModalHabHomebrew();
+}
+
+function fecharModalHabHomebrew() {
+    document.getElementById('modal-hab-homebrew').style.display = 'none';
+}
+
+function renderModalHabHomebrew() {
+    const busca  = (document.getElementById('mhab-busca')?.value || '').toLowerCase();
+    const lista  = document.getElementById('modal-habs-lista');
+    const countEl= document.getElementById('mhab-count');
+    const meus   = (estado.habilidadesPersonagem || []).map(h => h.nome);
+
+    const fonte  = _getHomebrewHabilidades();
+
+    if (fonte.length === 0) {
+        lista.innerHTML = `<div class="mrit-vazio"><div class="mrit-vazio-icon">🧪</div><div class="mrit-vazio-txt">Nenhuma habilidade no Homebrew ainda.<br><span style="font-size:0.7rem;color:#444;">Crie habilidades no painel Homebrew e elas aparecerão aqui.</span></div></div>`;
+        if (countEl) countEl.textContent = '';
+        return;
+    }
+
+    const filtrados = fonte.filter(h => {
+        if (!busca) return true;
+        return (h.nome||'').toLowerCase().includes(busca) || (h.descricao||'').toLowerCase().includes(busca);
+    });
+
+    if (countEl) countEl.textContent = filtrados.length ? `▸ ${filtrados.length} habilidade${filtrados.length !== 1 ? 's' : ''}` : '';
+
+    if (!filtrados.length) {
+        lista.innerHTML = '<div class="mrit-vazio"><div class="mrit-vazio-icon">🧪</div><div class="mrit-vazio-txt">Nenhuma habilidade encontrada</div></div>';
+        return;
+    }
+
+    lista.innerHTML = filtrados.map((h, i) => {
+        const nome   = h.nome || '—';
+        const jatem  = meus.includes(nome);
+        const descRaw= (h.descricao || '').replace(/<[^>]*>/g, '').trim();
+        const desc   = descRaw.length > 120 ? descRaw.slice(0, 120) + '…' : descRaw;
+        const safeNome = nome.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+        return `
+        <div class="mrit-item" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid #130020;cursor:default;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.95rem;font-weight:700;color:white;margin-bottom:3px;">${nome}</div>
+            ${desc ? `<div style="font-size:0.72rem;color:#666;font-family:'Share Tech Mono',monospace;line-height:1.4;">${desc}</div>` : ''}
+            <div style="margin-top:5px;"><span style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:#001a00;color:#39d353;border:1px solid #004400;font-family:'Oswald',sans-serif;font-weight:700;">HOMEBREW</span></div>
+          </div>
+          <button onclick="adicionarHabHomebrew('${safeNome.replace(/'/g,"\\'")}', ${i})"
+            style="flex-shrink:0;background:${jatem?'#0a1a0a':'var(--purple-dark)'};border:1px solid ${jatem?'#1a3a1a':'var(--purple)'};color:${jatem?'#39d353':'white'};font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;padding:6px 14px;border-radius:5px;cursor:${jatem?'default':'pointer'};transition:0.2s;white-space:nowrap;">
+            ${jatem ? '✓ Adicionado' : '+ Adicionar'}
+          </button>
+        </div>`;
+    }).join('');
+}
+
+function adicionarHabHomebrew(nome, idx) {
+    if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
+    if (estado.habilidadesPersonagem.some(h => h.nome === nome)) { mostrarToast('⚠ JÁ ADICIONADA'); return; }
+    const fonte = _getHomebrewHabilidades();
+    const hb = fonte[idx];
+    if (!hb) return;
+    const descRaw = (hb.descricao || '').replace(/<[^>]*>/g, '').trim();
+    estado.habilidadesPersonagem.push({
+        nome,
+        tipo: 'homebrew',
+        elem: 'NEUTRO',
+        desc: descRaw,
+        src:  'Homebrew',
+        custom: true
+    });
+    salvarEstado();
+    mostrarToast('🧪 HABILIDADE ADICIONADA');
+    renderModalHabHomebrew();
+    renderHabilidades();
 }
 
 // ══════════════════════════════════════════════

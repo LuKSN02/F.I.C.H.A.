@@ -1392,10 +1392,15 @@ function finalizarFicha() {
     const id = Date.now();
     fichaIdCriada = id;
 
+    // Habilidades da classe que NÃO são de NEX específico (não contêm "NEX" no nome)
+    const habsClasse = (HABILIDADES_CLASSE[classe] || []).filter(h => !h.nome.includes('NEX'));
+    const habilidadesIniciais = habsClasse.map(h => ({ nome: h.nome, desc: h.desc, tipo: 'classe', elem: 'NEUTRO', nex: '5%', src: 'Livro Base' }));
+
     const ficha = {
         id, nome, codinome, idade, nivel, origem, classe,
         atributos:    { ...atributosValores },
         pericias:     [...periciasSelected],
+        habilidadesIniciais,
         personalidade: document.getElementById('input-personalidade').value,
         ideal:         document.getElementById('input-ideal').value,
         vinculo:       document.getElementById('input-vinculo').value,
