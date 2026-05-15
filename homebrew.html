@@ -184,7 +184,7 @@ body {
 }
 
 /* ── NAVBAR ── */
-.custom-nav { background-color: black; border-bottom: 2px solid #333; overflow: visible !important; position: relative; z-index: 1040; }
+.custom-nav { background-color: black; border-bottom: 2px solid #333; position: relative; z-index: 1040; }
 .custom-nav .navbar-collapse { overflow: visible !important; }
 .nav-link { font-weight: 700; }
 .nav-link:hover { color: var(--tema-primary-light) !important; }
@@ -949,6 +949,14 @@ body {
     .modal-overlay { padding: 10px; }
 }
 
+/* Navbar intermediária (lg): evita esmagamento */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .navbar-brand { font-size: 1.2rem !important; }
+    .navbar-brand img { width: 48px !important; height: 48px !important; }
+    .btn-temas { font-size: 0.75rem; padding: 5px 10px; margin-right: 8px; }
+    .nav-link { padding-left: 0.5rem !important; padding-right: 0.5rem !important; font-size: 0.9rem; }
+}
+
 /* ===== AVATAR DE PERFIL ===== */
 .avatar-wrapper { position: relative; display: inline-block; cursor: pointer; }
 .avatar-circle {
@@ -969,7 +977,7 @@ body {
 }
 #perfil-overlay.show { display: flex; }
 .perfil-card {
-    background: #111115; border-radius: 14px; width: 340px;
+    background: #111115; border-radius: 14px; width: min(340px, 95vw);
     overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
     position: relative; font-family: 'Oswald', sans-serif;
 }
@@ -1049,7 +1057,7 @@ body {
     z-index: 10000; align-items: center; justify-content: center;
 }
 .perfil-edit-overlay.show { display: flex; }
-.perfil-edit-box { background: #0d0d0d; border: 1px solid var(--tema-primary-dark); border-radius: 12px; padding: 24px; width: 320px; box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3); }
+.perfil-edit-box { background: #0d0d0d; border: 1px solid var(--tema-primary-dark); border-radius: 12px; padding: 24px; width: min(320px, 92vw); box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3); }
 .perfil-edit-title { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #666; margin-bottom: 14px; font-family: 'Share Tech Mono', monospace; }
 .perfil-edit-input, .perfil-edit-textarea { width: 100%; background: #1a1a1f; border: 1px solid #333; color: white; font-family: 'Oswald', sans-serif; font-size: 0.95rem; padding: 9px 12px; border-radius: 6px; outline: none; transition: border-color 0.2s; resize: vertical; }
 .perfil-edit-input:focus, .perfil-edit-textarea:focus { border-color: var(--tema-primary); }
@@ -1209,7 +1217,7 @@ body { transition: background 0.5s ease; }
           <button onclick="fazerLogout();toggleNavbar()" style="width:100%;background:transparent;border:1px solid #552222;color:#ff6666;padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;margin-top:8px;">✕ Sair</button>
       </div>
     </div>
-    <div class="d-none d-lg-flex align-items-center" style="min-width:200px;justify-content:flex-end;">
+    <div class="d-none d-lg-flex align-items-center flex-shrink-0" style="justify-content:flex-end;">
       <div class="temas-wrapper" id="temas-wrapper">
         <button class="btn-temas" onclick="toggleTemas(event)">⬡ Temas</button>
         <div class="temas-dropdown" id="temas-dropdown">

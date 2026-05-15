@@ -555,11 +555,11 @@
         .rituais-lista { display: flex; flex-direction: column; gap: 6px; }
         .ritual-card-f { background: #0d0010; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: border-color 0.15s; }
         .ritual-card-f:hover { border-color: #3a0070; }
-        .ritual-card-hdr { display: flex; align-items: flex-start; justify-content: space-between; padding: 10px 14px; cursor: pointer; gap: 10px; transition: background 0.15s; }
+        .ritual-card-hdr { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; gap: 10px; transition: background 0.15s; min-height: 58px; }
         .ritual-card-hdr:hover { background: #130020; }
-        .ritual-hdr-esq { flex: 1; }
-        .ritual-card-nome { font-size: 0.9rem; font-weight: 700; color: white; margin-bottom: 5px; }
-        .ritual-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+        .ritual-hdr-esq { flex: 1; min-width: 0; }
+        .ritual-card-nome { font-size: 1rem; font-weight: 700; color: white; margin-bottom: 5px; line-height: 1.3; }
+        .ritual-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px; }
         .rbadge { font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; font-family: 'Oswald', sans-serif; font-weight: 700; }
         .rbadge-MORTE        { background: #1a0010; color: #e84040; border: 1px solid #3a0020; }
         .rbadge-SANGUE       { background: #200000; color: #ff5555; border: 1px solid #440000; }
@@ -614,12 +614,12 @@
         .hab-search-input:focus{border-color:var(--purple);outline:none;}
         .hab-search-input::placeholder{color:#444;}
         .hab-count{font-size:0.6rem;letter-spacing:2px;color:#444;text-transform:uppercase;font-family:'Share Tech Mono',monospace;margin-bottom:8px;}
-        .poder-card{background:#0d0010;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:6px;transition:border-color 0.15s;}
+        .poder-card{background:#0d0010;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:8px;transition:border-color 0.15s;}
         .poder-card:hover{border-color:#3a0070;}
-        .poder-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 14px;cursor:pointer;gap:10px;transition:background 0.15s;}
+        .poder-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:13px 16px;cursor:pointer;gap:10px;transition:background 0.15s;}
         .poder-card-hdr:hover{background:#130020;}
         .poder-hdr-esq{flex:1;}
-        .poder-nome{font-size:0.9rem;font-weight:700;color:white;margin-bottom:5px;}
+        .poder-nome{font-size:1rem;font-weight:700;color:white;margin-bottom:6px;}
         .poder-badges{display:flex;gap:4px;flex-wrap:wrap;}
         .poder-toggle{font-size:0.7rem;color:#444;flex-shrink:0;padding-top:2px;transition:color 0.15s;}
         .poder-card-hdr:hover .poder-toggle{color:var(--purple-neon);}
@@ -1445,22 +1445,350 @@
     </div>
 </div>
 
-<!-- Modal Adicionar Ritual -->
-<div id="modal-ritual" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;">
-  <div style="background:#0d0010;border:1px solid var(--purple);border-radius:10px;padding:28px;max-width:500px;width:90%;box-shadow:0 0 30px var(--purple-glow);max-height:80vh;overflow-y:auto;">
-    <div style="font-size:1.1rem;letter-spacing:3px;font-weight:700;margin-bottom:16px;">ADICIONAR RITUAL</div>
-    <div style="margin-bottom:12px;">
-      <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:4px;">BUSCAR RITUAL</label>
-      <input id="modal-ritual-busca" style="background:#000;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;width:100%;padding:8px;border-radius:4px;" placeholder="Digite o nome..." oninput="renderModalRituais()">
+<!-- ══ MODAL ADICIONAR RITUAL (visual premium) ══ -->
+<style>
+/* ── Overlay ── */
+#modal-ritual {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.92);
+  backdrop-filter:blur(6px);
+  z-index:9999; align-items:center; justify-content:center; padding:16px;
+}
+@keyframes mritIn {
+  from { opacity:0; transform:translateY(18px) scale(0.97); }
+  to   { opacity:1; transform:translateY(0)    scale(1); }
+}
+.mrit-box {
+  background:linear-gradient(160deg,#100018 0%,#080010 60%,#0a0008 100%);
+  border:1px solid rgba(155,48,217,0.45);
+  border-radius:16px;
+  width:100%; max-width:700px; max-height:92vh;
+  display:flex; flex-direction:column;
+  box-shadow:0 0 0 1px rgba(155,48,217,0.1), 0 8px 60px rgba(100,0,180,0.45), 0 0 120px rgba(100,0,180,0.1);
+  overflow:hidden;
+  animation:mritIn 0.25s cubic-bezier(.22,.68,0,1.1) both;
+  position:relative;
+}
+/* scanline sutil no topo */
+.mrit-box::before {
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(155,48,217,0.015) 3px,rgba(155,48,217,0.015) 4px);
+}
+
+/* ── Header ── */
+.mrit-header {
+  position:relative; z-index:1;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:22px 28px 18px;
+  background:linear-gradient(90deg,rgba(155,48,217,0.12) 0%,transparent 70%);
+  border-bottom:1px solid rgba(155,48,217,0.15);
+  flex-shrink:0;
+}
+.mrit-header-esq { display:flex; align-items:center; gap:12px; }
+.mrit-header-icon {
+  width:36px; height:36px; border-radius:8px;
+  background:rgba(155,48,217,0.15); border:1px solid rgba(155,48,217,0.35);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem;
+}
+.mrit-title {
+  font-size:1.1rem; font-weight:700; letter-spacing:2px;
+  color:white;
+}
+.mrit-subtitle {
+  font-size:0.6rem; letter-spacing:3px; color:rgba(155,48,217,0.6);
+  font-family:'Share Tech Mono',monospace; text-transform:uppercase; margin-top:1px;
+}
+.mrit-close {
+  width:34px; height:34px; border-radius:8px;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+  color:#555; font-size:0.9rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:0.2s;
+}
+.mrit-close:hover { background:rgba(255,60,60,0.12); border-color:rgba(255,60,60,0.3); color:#ff6666; }
+
+/* ── Tabs ── */
+.mrit-tabs {
+  position:relative; z-index:1;
+  display:flex; gap:6px; padding:14px 28px 0;
+  flex-shrink:0;
+}
+.mrit-tab {
+  padding:8px 20px; border-radius:8px 8px 0 0; font-size:0.8rem;
+  font-weight:700; cursor:pointer; letter-spacing:1px;
+  font-family:'Oswald',sans-serif; transition:0.2s; color:#444;
+  border:1px solid transparent; border-bottom:none; position:relative;
+}
+.mrit-tab.ativo {
+  background:rgba(155,48,217,0.18); color:#d070ff;
+  border-color:rgba(155,48,217,0.35);
+}
+.mrit-tab.ativo::after {
+  content:''; position:absolute; bottom:-1px; left:0; right:0; height:1px;
+  background:linear-gradient(160deg,#100018 0%,#080010 60%);
+}
+.mrit-tab:not(.ativo):hover { color:#888; background:rgba(255,255,255,0.03); }
+
+/* ── Filtros de elemento (com ícone) ── */
+.mrit-elems-wrap {
+  position:relative; z-index:1;
+  padding:12px 28px;
+  border-bottom:1px solid rgba(155,48,217,0.1);
+  flex-shrink:0; background:rgba(0,0,0,0.2);
+}
+.mrit-elems { display:flex; gap:6px; flex-wrap:wrap; }
+.mrit-elem-btn {
+  display:flex; align-items:center; gap:5px;
+  padding:5px 13px; border-radius:99px; font-size:0.68rem; font-weight:700;
+  font-family:'Oswald',sans-serif; letter-spacing:1px; cursor:pointer;
+  border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.03);
+  color:#444; transition:all 0.18s; text-transform:uppercase;
+}
+.mrit-elem-btn .ei { font-size:0.75rem; }
+.mrit-elem-btn:hover { border-color:rgba(255,255,255,0.15); color:#888; }
+
+/* selecionado por elemento — cada um com sua cor */
+.mrit-elem-btn.sel.eTodos    { background:rgba(200,200,200,0.12); border-color:#666; color:#ddd; box-shadow:0 0 10px rgba(200,200,200,0.08); }
+.mrit-elem-btn.sel.eCONHECIMENTO { background:rgba(200,150,12,0.18); border-color:#c8960c; color:#f5c842; box-shadow:0 0 10px rgba(200,150,12,0.2); }
+.mrit-elem-btn.sel.eENERGIA  { background:rgba(155,48,217,0.2);  border-color:#9b30d9; color:#d070ff; box-shadow:0 0 10px rgba(155,48,217,0.25); }
+.mrit-elem-btn.sel.eMORTE    { background:rgba(140,140,140,0.15); border-color:#999;    color:#ddd;    box-shadow:0 0 10px rgba(140,140,140,0.15); }
+.mrit-elem-btn.sel.eSANGUE   { background:rgba(204,17,17,0.2);   border-color:#cc1111; color:#ff5555; box-shadow:0 0 10px rgba(204,17,17,0.25); }
+.mrit-elem-btn.sel.eMEDO     { background:rgba(58,123,213,0.2);  border-color:#3a7bd5; color:#7ab3f5; box-shadow:0 0 10px rgba(58,123,213,0.25); }
+.mrit-elem-btn.sel.eVARIA    { background:rgba(120,80,180,0.15); border-color:#7050a0; color:#b090e0; box-shadow:0 0 10px rgba(120,80,180,0.15); }
+
+/* ── Busca ── */
+.mrit-search-row {
+  position:relative; z-index:1;
+  padding:12px 28px 8px; flex-shrink:0;
+}
+.mrit-search-wrap {
+  display:flex; align-items:center; gap:10px;
+  background:rgba(0,0,0,0.5); border:1px solid rgba(155,48,217,0.2);
+  border-radius:10px; padding:10px 16px; transition:border-color 0.2s;
+}
+.mrit-search-wrap:focus-within { border-color:rgba(155,48,217,0.5); box-shadow:0 0 0 3px rgba(155,48,217,0.08); }
+.mrit-search-wrap svg { flex-shrink:0; opacity:0.3; }
+.mrit-search {
+  background:transparent; border:none; color:white;
+  font-family:'Oswald',sans-serif; font-size:0.95rem; width:100%; outline:none;
+}
+.mrit-search::placeholder { color:#2a2a3a; }
+
+/* ── Contador ── */
+.mrit-count {
+  position:relative; z-index:1;
+  padding:0 28px 6px;
+  font-size:0.6rem; letter-spacing:2px; color:#2a1a3a;
+  font-family:'Share Tech Mono',monospace; flex-shrink:0;
+}
+
+/* ── Lista ── */
+.mrit-lista {
+  flex:1; overflow-y:auto; padding:6px 28px 20px;
+  display:flex; flex-direction:column; gap:6px;
+  position:relative; z-index:1;
+}
+.mrit-lista::-webkit-scrollbar { width:3px; }
+.mrit-lista::-webkit-scrollbar-track { background:transparent; }
+.mrit-lista::-webkit-scrollbar-thumb { background:rgba(155,48,217,0.3); border-radius:99px; }
+
+/* ── Separador de grupo ── */
+.mrit-sep {
+  display:flex; align-items:center; gap:10px;
+  padding:14px 0 6px; flex-shrink:0;
+}
+.mrit-sep-dot {
+  width:6px; height:6px; border-radius:50%; flex-shrink:0;
+}
+.mrit-sep-label {
+  font-size:0.58rem; letter-spacing:3px; text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace; font-weight:700; white-space:nowrap;
+}
+.mrit-sep-line { flex:1; height:1px; opacity:0.25; }
+
+/* cores dos separadores por elemento */
+.mrit-sep.sCONHECIMENTO .mrit-sep-dot  { background:#c8960c; box-shadow:0 0 6px #c8960c; }
+.mrit-sep.sCONHECIMENTO .mrit-sep-label { color:#c8960c; }
+.mrit-sep.sCONHECIMENTO .mrit-sep-line  { background:#c8960c; }
+.mrit-sep.sENERGIA .mrit-sep-dot   { background:#9b30d9; box-shadow:0 0 6px #9b30d9; }
+.mrit-sep.sENERGIA .mrit-sep-label { color:#9b30d9; }
+.mrit-sep.sENERGIA .mrit-sep-line  { background:#9b30d9; }
+.mrit-sep.sMORTE .mrit-sep-dot     { background:#aaa; box-shadow:0 0 6px #aaa; }
+.mrit-sep.sMORTE .mrit-sep-label   { color:#888; }
+.mrit-sep.sMORTE .mrit-sep-line    { background:#888; }
+.mrit-sep.sSANGUE .mrit-sep-dot    { background:#cc1111; box-shadow:0 0 6px #cc1111; }
+.mrit-sep.sSANGUE .mrit-sep-label  { color:#cc1111; }
+.mrit-sep.sSANGUE .mrit-sep-line   { background:#cc1111; }
+.mrit-sep.sMEDO .mrit-sep-dot      { background:#3a7bd5; box-shadow:0 0 6px #3a7bd5; }
+.mrit-sep.sMEDO .mrit-sep-label    { color:#3a7bd5; }
+.mrit-sep.sMEDO .mrit-sep-line     { background:#3a7bd5; }
+.mrit-sep.sVARIA .mrit-sep-dot     { background:#7050a0; box-shadow:0 0 6px #7050a0; }
+.mrit-sep.sVARIA .mrit-sep-label   { color:#7050a0; }
+.mrit-sep.sVARIA .mrit-sep-line    { background:#7050a0; }
+.mrit-sep.sDESCONHECIDO .mrit-sep-dot  { background:#444; }
+.mrit-sep.sDESCONHECIDO .mrit-sep-label { color:#444; }
+.mrit-sep.sDESCONHECIDO .mrit-sep-line  { background:#444; }
+
+/* ── Item de ritual ── */
+@keyframes mritItemIn {
+  from { opacity:0; transform:translateX(-6px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+.mrit-item {
+  display:flex; flex-direction:column; align-items:stretch;
+  padding:14px 16px 14px 14px;
+  border-radius:10px; border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.02);
+  transition:all 0.18s; cursor:pointer;
+  animation:mritItemIn 0.2s ease both;
+  position:relative; overflow:hidden;
+  min-height:64px;
+}
+.mrit-item-row {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+/* barra colorida à esquerda por elemento */
+.mrit-item::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+  border-radius:3px 0 0 3px; transition:opacity 0.2s; opacity:0.5;
+}
+.mrit-item:hover { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1); }
+.mrit-item:hover::before { opacity:1; }
+
+/* cores da barra por elemento */
+.mrit-item.eCONHECIMENTO::before { background:linear-gradient(180deg,#f5c842,#c8960c); }
+.mrit-item.eENERGIA::before  { background:linear-gradient(180deg,#d070ff,#9b30d9); }
+.mrit-item.eMORTE::before    { background:linear-gradient(180deg,#ccc,#777); }
+.mrit-item.eSANGUE::before   { background:linear-gradient(180deg,#ff4444,#cc1111); }
+.mrit-item.eMEDO::before     { background:linear-gradient(180deg,#7ab3f5,#3a7bd5); }
+.mrit-item.eVARIA::before    { background:linear-gradient(180deg,#b090e0,#7050a0); }
+.mrit-item.eDESCONHECIDO::before { background:#444; }
+
+.mrit-item-esq { flex:1; min-width:0; padding-left:4px; }
+.mrit-item-nome {
+  font-size:0.95rem; font-weight:700; color:rgba(255,255,255,0.9);
+  margin-bottom:5px; white-space:normal; overflow:hidden;
+  letter-spacing:0.3px; line-height:1.3;
+}
+.mrit-item-tags { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+.mrit-item-src {
+  font-size:0.65rem; color:#555; font-family:'Share Tech Mono',monospace;
+  letter-spacing:0.5px;
+}
+.mrit-desc-panel {
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  animation:fadeIn 0.2s ease;
+}
+.mrit-desc-meta {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:4px 16px; margin-bottom:10px;
+}
+.mrit-desc-meta-item {
+  display:flex; gap:6px; align-items:baseline;
+  font-family:'Share Tech Mono',monospace;
+}
+.mrit-desc-meta-lbl {
+  font-size:0.58rem; letter-spacing:2px; text-transform:uppercase;
+  color:#444; white-space:nowrap;
+}
+.mrit-desc-meta-val {
+  font-size:0.72rem; color:#888;
+}
+.mrit-desc-txt {
+  font-size:0.78rem; color:#888; font-family:'Share Tech Mono',monospace;
+  line-height:1.65; padding-left:2px;
+}
+.mrit-item-hb {
+  font-size:0.58rem; letter-spacing:1px; text-transform:uppercase;
+  padding:1px 7px; border-radius:99px;
+  background:rgba(57,211,83,0.08); color:#39d353; border:1px solid rgba(57,211,83,0.25);
+  font-family:'Oswald',sans-serif; font-weight:700;
+}
+
+/* ── Botão + ── */
+.mrit-btn-add {
+  flex-shrink:0; width:38px; height:38px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; font-weight:700; cursor:pointer; transition:all 0.18s;
+  border:none; position:relative;
+}
+.mrit-btn-add.pode {
+  background:rgba(155,48,217,0.2); color:#d070ff;
+  border:1px solid rgba(155,48,217,0.35);
+}
+.mrit-btn-add.pode:hover {
+  background:rgba(155,48,217,0.45); color:white;
+  box-shadow:0 0 16px rgba(155,48,217,0.4);
+  transform:scale(1.08);
+}
+.mrit-btn-add.pode:active { transform:scale(0.95); }
+.mrit-btn-add.tem {
+  background:transparent; color:rgba(57,211,83,0.5);
+  border:1px solid rgba(57,211,83,0.15); cursor:default; font-size:0.8rem;
+}
+
+/* ── Vazio ── */
+.mrit-vazio {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:48px 0; gap:10px; color:#2a1a3a;
+  font-family:'Share Tech Mono',monospace;
+}
+.mrit-vazio-icon { font-size:2rem; opacity:0.3; }
+.mrit-vazio-txt  { font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; }
+</style>
+
+<div id="modal-ritual">
+  <div class="mrit-box">
+
+    <!-- Header -->
+    <div class="mrit-header">
+      <div class="mrit-header-esq">
+        <div class="mrit-header-icon">⬡</div>
+        <div>
+          <div class="mrit-title">Adicionar Rituais</div>
+          <div class="mrit-subtitle">Banco de Rituais · Ordem Paranormal</div>
+        </div>
+      </div>
+      <button class="mrit-close" onclick="fecharModalRitual()">✕</button>
     </div>
-    <div id="modal-rituais-lista" style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;"></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-      <button onclick="fecharModalRitual()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Fechar</button>
+
+    <!-- Tabs -->
+    <div class="mrit-tabs">
+      <div class="mrit-tab ativo" id="mrit-tab-todos" onclick="mritTrocarTab('todos')">Rituais Oficiais</div>
+      <div class="mrit-tab" id="mrit-tab-homebrew" onclick="mritTrocarTab('homebrew')">🧪 Homebrew</div>
     </div>
+
+    <!-- Filtros de elemento -->
+    <div class="mrit-elems-wrap">
+      <div class="mrit-elems" id="mrit-elems">
+        <button class="mrit-elem-btn eTodos sel" onclick="mritFiltroElem('Todos')"><span class="ei">✦</span> Todos</button>
+        <button class="mrit-elem-btn eCONHECIMENTO" onclick="mritFiltroElem('CONHECIMENTO')"><span class="ei">📖</span> Conhecimento</button>
+        <button class="mrit-elem-btn eENERGIA"  onclick="mritFiltroElem('ENERGIA')"><span class="ei">⚡</span> Energia</button>
+        <button class="mrit-elem-btn eMORTE"    onclick="mritFiltroElem('MORTE')"><span class="ei">💀</span> Morte</button>
+        <button class="mrit-elem-btn eSANGUE"   onclick="mritFiltroElem('SANGUE')"><span class="ei">🩸</span> Sangue</button>
+        <button class="mrit-elem-btn eMEDO"     onclick="mritFiltroElem('MEDO')"><span class="ei">👁</span> Medo</button>
+        <button class="mrit-elem-btn eVARIA"    onclick="mritFiltroElem('VARIA')"><span class="ei">◈</span> Varia</button>
+      </div>
+    </div>
+
+    <!-- Busca -->
+    <div class="mrit-search-row">
+      <div class="mrit-search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="mrit-search" id="mrit-busca" placeholder="Buscar ritual..." oninput="renderModalRituais()">
+      </div>
+    </div>
+    <div class="mrit-count" id="mrit-count"></div>
+
+    <!-- Lista -->
+    <div class="mrit-lista" id="modal-rituais-lista"></div>
+
   </div>
 </div>
 
-<!-- Modal Novo Ritual (homebrew) -->
+<!-- Modal Novo Ritual (homebrew) — mantido para criar rituais na ficha -->
 <div id="modal-ritual-custom" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#0d0010;border:1px solid var(--purple);border-radius:10px;padding:28px;max-width:460px;width:90%;box-shadow:0 0 30px var(--purple-glow);">
     <div style="font-size:1.1rem;letter-spacing:3px;font-weight:700;margin-bottom:16px;">NOVO RITUAL</div>
@@ -4374,17 +4702,97 @@ function rituaisRender() {
     const filtrados = meus.filter(r => r.nome.toLowerCase().includes(busca) || (r.elem || '').toLowerCase().includes(busca));
     countEl.textContent = `▸ ${filtrados.length} ritual${filtrados.length !== 1 ? 'is' : ''}`;
     if (filtrados.length === 0) { lista.innerHTML = '<div class="rituais-vazio">▸ Nenhum ritual adicionado ainda. Clique em "+ Adicionar" para começar!</div>'; return; }
-    lista.innerHTML = filtrados.map(r => {
+
+    // Agrupar por elemento
+    const ELEM_ORDEM = ['CONHECIMENTO','ENERGIA','MORTE','SANGUE','MEDO','DESCONHECIDO','VARIA'];
+    const ELEM_ICON  = { CONHECIMENTO:'📚', ENERGIA:'⚡', MORTE:'💀', SANGUE:'🩸', MEDO:'👁', DESCONHECIDO:'◆', VARIA:'✦' };
+    const ELEM_COR   = { CONHECIMENTO:'var(--purple-neon)', ENERGIA:'#4a9eff', MORTE:'#e84040', SANGUE:'#ff5555', MEDO:'var(--orange)', DESCONHECIDO:'#555', VARIA:'#aaa' };
+    const ELEM_BORDA = { CONHECIMENTO:'#3a0063', ENERGIA:'#003366', MORTE:'#3a0020', SANGUE:'#440000', MEDO:'#3a2000', DESCONHECIDO:'#222', VARIA:'#333' };
+    const ELEM_BG    = { CONHECIMENTO:'#120025', ENERGIA:'#00101a', MORTE:'#1a0010', SANGUE:'#200000', MEDO:'#0d0800', DESCONHECIDO:'#0d0d0d', VARIA:'#111' };
+
+    const grupos = {};
+    filtrados.forEach(r => {
+        const eu = (r.elem || 'DESCONHECIDO').toUpperCase().includes('/') ? 'VARIA' : (r.elem || 'DESCONHECIDO').toUpperCase();
+        if (!grupos[eu]) grupos[eu] = [];
+        grupos[eu].push(r);
+    });
+
+    const ordemUsada = [...ELEM_ORDEM, ...Object.keys(grupos).filter(k => !ELEM_ORDEM.includes(k))];
+
+    const buildCard = r => {
         const open = rituaisAbertos[r.nome] || false;
         const res  = rituaisResultados[r.nome];
-        const esc  = s => s.replace(/'/g, "\\'");
-        const eu   = (r.elem || 'DESCONHECIDO').toUpperCase();
+        const eu   = (r.elem || 'DESCONHECIDO').toUpperCase().includes('/') ? 'VARIA' : (r.elem || 'DESCONHECIDO').toUpperCase();
         const resHtml = res ? `<div class="ritual-resultado"><div><div class="res-tipo">${res.expr}</div><div class="res-num ${res.cls}">${res.total}</div><div class="res-det">${res.detalhe}</div></div><div class="res-tag ${res.cls}">${res.label}</div></div>` : '';
-        const presets = (r.dadosSugeridos || []).map(d => `<button class="ritual-preset-btn" onclick="rituaisPreset(event,'${esc(r.nome)}','${esc(d)}')">${d}</button>`).join('');
+        const safeNome = r.nome.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+        const presets = (r.dadosSugeridos || []).map(d => `<button class="ritual-preset-btn" data-preset="${d.replace(/"/g,'&quot;')}" data-nome="${safeNome}">${d}</button>`).join('');
         const inputId = `ritual-input-${r.nome.replace(/\W+/g,'_')}`;
-        const bodyHtml = open ? `<div class="ritual-card-body"><div class="ritual-desc-txt">${r.desc || '—'}</div><div class="ritual-meta-grid"><div class="ritual-meta-item">Execução <span>${r.exec || '—'}</span></div><div class="ritual-meta-item">Alcance <span>${r.alcance || '—'}</span></div><div class="ritual-meta-item">Duração <span>${r.dur || '—'}</span></div><div class="ritual-meta-item">Conjuração <span>${r.conjuracao || '—'}</span></div></div><div class="ritual-rolar-section"><div class="ritual-rolar-title">🎲 Rolar dado do ritual</div><div class="ritual-rolar-row"><input type="text" class="ritual-dado-input" id="${inputId}" placeholder="ex: 1d20" value="${r.dadosSugeridos?.[0] || '1d20'}">${presets ? `<div class="ritual-dado-presets">${presets}</div>` : ''}<button class="ritual-btn-rolar" onclick="rituaisRolar(event,'${esc(r.nome)}','${inputId}')">🎲 Rolar</button></div></div>${resHtml}<div style="margin-top:10px;text-align:right;"><button onclick="removerRitual('${esc(r.nome)}')" style="background:none;border:1px solid #2a0030;color:#555;font-size:0.7rem;font-family:'Share Tech Mono',monospace;padding:3px 10px;border-radius:4px;cursor:pointer;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#555'">🗑 Remover</button></div></div>` : '';
-        return `<div class="ritual-card-f"><div class="ritual-card-hdr" onclick="rituaisToggle('${esc(r.nome)}')"><div class="ritual-hdr-esq"><div class="ritual-card-nome">${r.nome}</div><div class="ritual-badges"><span class="rbadge rbadge-${eu}">${r.elem || 'Desconhecido'}</span>${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}</div></div><div class="ritual-toggle">${open ? '▲' : '▼'}</div></div>${bodyHtml}</div>`;
-    }).join('');
+        const bodyHtml = open ? `
+        <div class="ritual-card-body">
+          <div class="ritual-desc-txt">${r.desc || '—'}</div>
+          <div class="ritual-meta-grid">
+            <div class="ritual-meta-item">Execução <span>${r.exec || '—'}</span></div>
+            <div class="ritual-meta-item">Alcance <span>${r.alcance || '—'}</span></div>
+            <div class="ritual-meta-item">Duração <span>${r.dur || '—'}</span></div>
+            <div class="ritual-meta-item">Conjuração <span>${r.conjuracao || '—'}</span></div>
+          </div>
+          <div class="ritual-rolar-section">
+            <div class="ritual-rolar-title">🎲 Rolar dado do ritual</div>
+            <div class="ritual-rolar-row">
+              <input type="text" class="ritual-dado-input" id="${inputId}" placeholder="ex: 1d20" value="${(r.dadosSugeridos?.[0] || '1d20').replace(/"/g,'&quot;')}">
+              ${presets ? `<div class="ritual-dado-presets">${presets}</div>` : ''}
+              <button class="ritual-btn-rolar" data-rolar="${safeNome}" data-input="${inputId}">🎲 Rolar</button>
+            </div>
+          </div>
+          ${resHtml}
+          <div style="margin-top:10px;text-align:right;">
+            <button class="ritual-btn-remover" data-remover="${safeNome}" style="background:none;border:1px solid #2a0030;color:#555;font-size:0.7rem;font-family:'Share Tech Mono',monospace;padding:3px 10px;border-radius:4px;cursor:pointer;">🗑 Remover</button>
+          </div>
+        </div>` : '';
+        return `<div class="ritual-card-f"><div class="ritual-card-hdr" data-toggle="${safeNome}"><div class="ritual-hdr-esq"><div class="ritual-card-nome">${r.nome}</div><div class="ritual-badges">${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}</div></div><div class="ritual-toggle">${open ? '▲' : '▼'}</div></div>${bodyHtml}</div>`;
+    };
+
+    let html = '';
+    ordemUsada.forEach(eu => {
+        if (!grupos[eu]) return;
+        const cor    = ELEM_COR[eu]   || '#aaa';
+        const borda  = ELEM_BORDA[eu] || '#333';
+        const bg     = ELEM_BG[eu]    || '#111';
+        const icon   = ELEM_ICON[eu]  || '◆';
+        const label  = eu.charAt(0) + eu.slice(1).toLowerCase();
+        html += `<div style="display:flex;align-items:center;gap:10px;padding:8px 14px;margin-top:14px;margin-bottom:6px;background:${bg};border:1px solid ${borda};border-radius:8px;">
+            <span style="font-size:1rem;">${icon}</span>
+            <span style="font-size:0.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:${cor};font-family:'Oswald',sans-serif;">${label}</span>
+            <span style="margin-left:auto;font-size:0.6rem;color:#444;font-family:'Share Tech Mono',monospace;">${grupos[eu].length} ritual${grupos[eu].length !== 1 ? 'is' : ''}</span>
+        </div>`;
+        html += grupos[eu].map(buildCard).join('');
+    });
+
+    lista.innerHTML = html;
+
+    // Event delegation — evita problemas de escape em onclick inline
+    lista.onclick = function(e) {
+        // Remover ritual (verificar ANTES do toggle, pois o botão está dentro do card)
+        const btnRem = e.target.closest('[data-remover]');
+        if (btnRem) { e.stopPropagation(); removerRitual(btnRem.dataset.remover); return; }
+        // Rolar dado
+        const btnRolar = e.target.closest('[data-rolar]');
+        if (btnRolar) { e.stopPropagation(); rituaisRolar(e, btnRolar.dataset.rolar, btnRolar.dataset.input); return; }
+        // Preset
+        const btnPreset = e.target.closest('[data-preset]');
+        if (btnPreset) { e.stopPropagation(); const inp = document.getElementById(`ritual-input-${btnPreset.dataset.nome.replace(/\W+/g,'_')}`); if (inp) inp.value = btnPreset.dataset.preset; return; }
+        // Toggle card (por último)
+        const hdr = e.target.closest('[data-toggle]');
+        if (hdr) { rituaisToggle(hdr.dataset.toggle); return; }
+    };
+    lista.onmouseover = function(e) {
+        const btn = e.target.closest('.ritual-btn-remover');
+        if (btn) btn.style.color = 'var(--red)';
+    };
+    lista.onmouseout = function(e) {
+        const btn = e.target.closest('.ritual-btn-remover');
+        if (btn) btn.style.color = '#555';
+    };
 }
 
 function rituaisToggle(nome) { rituaisAbertos[nome] = !rituaisAbertos[nome]; rituaisRender(); }
@@ -4415,29 +4823,267 @@ function rituaisRolar(e, nome, inputId) {
 }
 
 function removerRitual(nome) {
-    if (!confirm(`Remover "${nome}" da ficha?`)) return;
     estado.rituaisPersonagem = (estado.rituaisPersonagem || []).filter(r => r.nome !== nome);
     salvarEstado(); rituaisRender(); mostrarToast('🗑 RITUAL REMOVIDO');
 }
 
-function abrirModalRitual() { document.getElementById('modal-ritual').style.display = 'flex'; document.getElementById('modal-ritual-busca').value = ''; renderModalRituais(); }
+// ══ MODAL RITUAL — estado interno ══
+let _mritTab  = 'todos';   // 'todos' | 'homebrew'
+let _mritElem = 'Todos';   // elemento selecionado
+
+function abrirModalRitual() {
+    _mritTab  = 'todos';
+    _mritElem = 'Todos';
+    document.getElementById('modal-ritual').style.display = 'flex';
+    const inp = document.getElementById('mrit-busca');
+    if (inp) inp.value = '';
+    _mritAtualizarTabs();
+    _mritAtualizarElems();
+    renderModalRituais();
+}
 function fecharModalRitual() { document.getElementById('modal-ritual').style.display = 'none'; }
 
-function renderModalRituais() {
-    const busca = document.getElementById('modal-ritual-busca').value.toLowerCase();
-    const meus  = (estado.rituaisPersonagem || []).map(r => r.nome);
-    const lista = document.getElementById('modal-rituais-lista');
-    const filtrados = RITUAIS_DATA.filter(r => r.nome.toLowerCase().includes(busca) || r.elem.toLowerCase().includes(busca));
-    lista.innerHTML = filtrados.map(r => {
-        const jatem = meus.includes(r.nome);
-        const eu = (r.elem || 'DESCONHECIDO').toUpperCase();
-        return `<div style="background:#0a0015;border:1px solid var(--border);border-radius:6px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;"><div><div style="font-size:0.85rem;font-weight:700;">${r.nome}</div><span class="rbadge rbadge-${eu}" style="margin-top:3px;display:inline-block;">${r.elem}</span><span class="rbadge rbadge-src" style="margin-top:3px;">${r.src}</span></div><button onclick="adicionarRitual('${r.nome.replace(/'/g,"\\'")}',${jatem})" style="background:${jatem?'#1a0033':'var(--purple-dark)'};border:1px solid ${jatem?'#3a0063':'var(--purple)'};color:${jatem?'#555':'white'};font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;padding:5px 12px;border-radius:4px;cursor:${jatem?'default':'pointer'};white-space:nowrap;">${jatem ? '✓ Adicionado' : '+ Adicionar'}</button></div>`;
-    }).join('');
+function mritTrocarTab(tab) {
+    _mritTab  = tab;
+    _mritElem = 'Todos';
+    _mritAtualizarTabs();
+    _mritAtualizarElems();
+    renderModalRituais();
 }
 
-function adicionarRitual(nome, jatem) {
+function _mritAtualizarTabs() {
+    document.getElementById('mrit-tab-todos').classList.toggle('ativo', _mritTab === 'todos');
+    document.getElementById('mrit-tab-homebrew').classList.toggle('ativo', _mritTab === 'homebrew');
+}
+
+function mritFiltroElem(elem) {
+    _mritElem = elem;
+    _mritAtualizarElems();
+    renderModalRituais();
+}
+
+function _mritAtualizarElems() {
+    document.querySelectorAll('.mrit-elem-btn').forEach(btn => {
+        // encontra a classe "e*" do botão
+        const eClass = [...btn.classList].find(c => c.startsWith('e'));
+        const mapa = { eTodos:'Todos', eCONHECIMENTO:'CONHECIMENTO', eENERGIA:'ENERGIA', eMORTE:'MORTE', eSANGUE:'SANGUE', eMEDO:'MEDO', eVARIA:'VARIA' };
+        const val = eClass ? mapa[eClass] : null;
+        if (val !== undefined) btn.classList.toggle('sel', val === _mritElem);
+    });
+}
+
+function _getHomebrewRituais() {
+    const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'guest';
+    const key  = user + '_homebrew_rituais';
+    return JSON.parse(localStorage.getItem(key) || '[]');
+}
+
+// normaliza elemento para fins de comparação
+function _normElem(e) {
+    if (!e) return 'DESCONHECIDO';
+    const s = e.toUpperCase();
+    // plurielemento (ex: SANGUE/CONHECIMENTO) → VARIA
+    if (s.includes('/')) return 'VARIA';
+    return s;
+}
+
+function renderModalRituais() {
+    const busca = (document.getElementById('mrit-busca')?.value || '').toLowerCase();
+    const meus  = (estado.rituaisPersonagem || []).map(r => r.nome);
+    const lista = document.getElementById('modal-rituais-lista');
+
+    // Fonte de dados conforme tab
+    let fonte = [];
+    if (_mritTab === 'todos') {
+        fonte = RITUAIS_DATA.map(r => ({ ...r, _hb: false }));
+    } else {
+        fonte = _getHomebrewRituais().map(r => ({
+            nome: r.nome || r.titulo || '—',
+            elem: r.elemento || r.elem || 'DESCONHECIDO',
+            src:  'Homebrew',
+            exec: r.exec || '—',
+            alcance: r.alcance || '—',
+            dur: r.duracao || r.dur || '—',
+            conjuracao: r.conjuracao || '—',
+            desc: r.desc || r.descricao || '',
+            dadosSugeridos: r.dado ? [r.dado] : [],
+            custom: true,
+            _hb: true
+        }));
+    }
+
+    // Filtro busca + elemento
+    const filtrados = fonte.filter(r => {
+        const ne = _normElem(r.elem);
+        const elemOk = _mritElem === 'Todos' || ne === _mritElem;
+        const buscaOk = !busca || (r.nome || '').toLowerCase().includes(busca) || (r.elem || '').toLowerCase().includes(busca);
+        return elemOk && buscaOk;
+    });
+
+    if (!filtrados.length) {
+        lista.innerHTML = '<div class="mrit-vazio"><div class="mrit-vazio-icon">⬡</div><div class="mrit-vazio-txt">Nenhum ritual encontrado</div></div>';
+        const cnt = document.getElementById('mrit-count');
+        if (cnt) cnt.textContent = '';
+        return;
+    }
+
+    // Agrupar por elemento
+    const ORDEM_ELEM = ['CONHECIMENTO','ENERGIA','MORTE','SANGUE','MEDO','VARIA','DESCONHECIDO'];
+    const grupos = {};
+    filtrados.forEach(r => {
+        const ne = _normElem(r.elem);
+        if (!grupos[ne]) grupos[ne] = [];
+        grupos[ne].push(r);
+    });
+
+    // Nomes de exibição + ícones
+    const ELEM_META = {
+        CONHECIMENTO:{ label:'Conhecimento', icon:'📖' },
+        ENERGIA:     { label:'Energia',      icon:'⚡' },
+        MORTE:       { label:'Morte',        icon:'💀' },
+        SANGUE:      { label:'Sangue',       icon:'🩸' },
+        MEDO:        { label:'Medo',         icon:'👁' },
+        VARIA:       { label:'Varia',        icon:'◈' },
+        DESCONHECIDO:{ label:'Desconhecido', icon:'?' }
+    };
+
+    function elemBadge(elem) {
+        const ne = _normElem(elem);
+        return `<span class="rbadge rbadge-${ne}">${elem || 'Desconhecido'}</span>`;
+    }
+
+    let html = '';
+    let total = 0;
+    const ordemUsada = [...ORDEM_ELEM, ...Object.keys(grupos).filter(k => !ORDEM_ELEM.includes(k))];
+    // Mapa de dados por id para o toggle de descrição
+    window._mritDescData = {};
+
+    ordemUsada.forEach(ne => {
+        if (!grupos[ne]) return;
+        const meta  = ELEM_META[ne] || { label: ne, icon: '◆' };
+        html += `<div class="mrit-sep s${ne}">
+          <div class="mrit-sep-dot"></div>
+          <div class="mrit-sep-label">${meta.icon} ${meta.label}</div>
+          <div class="mrit-sep-line"></div>
+          <span style="font-size:0.55rem;font-family:'Share Tech Mono',monospace;color:#2a1a3a;flex-shrink:0;">${grupos[ne].length}</span>
+        </div>`;
+        grupos[ne].forEach((r, i) => {
+            total++;
+            const jatem   = meus.includes(r.nome);
+            const hbBadge = r._hb ? '<span class="mrit-item-hb">Homebrew</span>' : '';
+            const nomeEsc = r.nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const delay   = Math.min(i * 20, 200);
+            const itemId  = `mrit-desc-${total}`;
+            // Guarda dados separadamente para evitar problemas de escape
+            window._mritDescData[itemId] = {
+                desc: r.desc || '',
+                exec: r.exec || '',
+                alcance: r.alcance || '',
+                dur: r.dur || '',
+                conjuracao: r.conjuracao || ''
+            };
+            html += `
+              <div class="mrit-item e${ne}" style="animation-delay:${delay}ms" data-desc-id="${itemId}">
+                <div class="mrit-item-row">
+                  <div class="mrit-item-esq">
+                    <div class="mrit-item-nome">${r.nome}</div>
+                    <div class="mrit-item-tags">
+                      ${elemBadge(r.elem)}
+                      ${hbBadge}
+                      <span class="mrit-item-src">${r.src || ''}</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+                    <span id="${itemId}-chevron" style="font-size:0.65rem;color:#444;transition:transform 0.2s;">▼</span>
+                    <button
+                      class="mrit-btn-add ${jatem ? 'tem' : 'pode'}"
+                      data-add-nome="${r.nome.replace(/"/g,'&quot;')}"
+                      data-add-hb="${r._hb}"
+                      data-add-jatem="${jatem}"
+                      title="${jatem ? 'Já adicionado' : 'Adicionar ritual'}"
+                      ${jatem ? 'disabled' : ''}>
+                      ${jatem ? '✓' : '+'}
+                    </button>
+                  </div>
+                </div>
+                <div id="${itemId}" class="mrit-desc-panel" style="display:none;"></div>
+              </div>`;
+        });
+    });
+
+    lista.innerHTML = html;
+
+    // Event delegation — sem onclick inline, funciona com qualquer nome de ritual
+    lista.onclick = function(e) {
+        // Botão +
+        const btnAdd = e.target.closest('.mrit-btn-add');
+        if (btnAdd) {
+            e.stopPropagation();
+            if (btnAdd.dataset.addJatem === 'true') return;
+            adicionarRitual(btnAdd.dataset.addNome, false, btnAdd.dataset.addHb === 'true');
+            return;
+        }
+        // Toggle descrição — clique no item inteiro
+        const item = e.target.closest('[data-desc-id]');
+        if (item) { mritToggleDesc(item.dataset.descId); }
+    };
+
+    const cnt = document.getElementById('mrit-count');
+    if (cnt) cnt.textContent = total + ' ritual' + (total !== 1 ? 'is' : '') + ' encontrado' + (total !== 1 ? 's' : '');
+}
+
+function mritToggleDesc(id) {
+    const panel   = document.getElementById(id);
+    const chevron = document.getElementById(id + '-chevron');
+    if (!panel) return;
+    const isOpen = panel.style.display !== 'none';
+    if (isOpen) {
+        panel.style.display = 'none';
+        if (chevron) chevron.style.transform = '';
+    } else {
+        // Preenche o conteúdo na primeira abertura
+        if (!panel.dataset.loaded) {
+            const d = (window._mritDescData || {})[id] || {};
+            const metaItens = [
+                d.exec       ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Execução</span><span class="mrit-desc-meta-val">${d.exec}</span></div>` : '',
+                d.alcance    ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Alcance</span><span class="mrit-desc-meta-val">${d.alcance}</span></div>` : '',
+                d.dur        ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Duração</span><span class="mrit-desc-meta-val">${d.dur}</span></div>` : '',
+                d.conjuracao ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Conjuração</span><span class="mrit-desc-meta-val">${d.conjuracao}</span></div>` : '',
+            ].filter(Boolean).join('');
+            panel.innerHTML =
+                (metaItens ? `<div class="mrit-desc-meta">${metaItens}</div>` : '') +
+                `<div class="mrit-desc-txt">${d.desc || '<em style="color:#555">Sem descrição disponível.</em>'}</div>`;
+            panel.dataset.loaded = '1';
+        }
+        panel.style.display = 'block';
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+    }
+}
+
+function adicionarRitual(nome, jatem, isHb) {
     if (jatem) return;
-    const dados = RITUAIS_DATA.find(r => r.nome === nome); if (!dados) return;
+    let dados;
+    if (isHb) {
+        // Busca nos rituais homebrew
+        const hbLista = _getHomebrewRituais();
+        const hbItem  = hbLista.find(r => (r.nome || r.titulo) === nome);
+        if (!hbItem) return;
+        dados = {
+            nome: hbItem.nome || hbItem.titulo || '—',
+            elem: hbItem.elemento || hbItem.elem || 'DESCONHECIDO',
+            src:  'Homebrew',
+            exec: hbItem.exec || '—',
+            alcance: hbItem.alcance || '—',
+            dur: hbItem.duracao || hbItem.dur || '—',
+            conjuracao: hbItem.conjuracao || '—',
+            desc: hbItem.desc || hbItem.descricao || '',
+            dadosSugeridos: hbItem.dado ? [hbItem.dado] : [],
+            custom: true
+        };
+    } else {
+        dados = RITUAIS_DATA.find(r => r.nome === nome);
+        if (!dados) return;
+    }
     if (!estado.rituaisPersonagem) estado.rituaisPersonagem = [];
     estado.rituaisPersonagem.push({ ...dados });
     salvarEstado(); renderModalRituais(); rituaisRender();
@@ -4487,7 +5133,8 @@ function buildHabFichaView() {
     const labels = { classe:'Habilidades de Classe', trilha:'Habilidades de Trilha', paranormal:'Poderes Paranormais', poder_classe:'Poderes de Classe', origem:'Habilidades de Origem', treinamento_especial:'Treinamento Especial' };
     let html = '';
     Object.entries(grupos).forEach(([tipo, habs]) => {
-        html += `<div style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px;margin-top:14px;">${labels[tipo]||tipo}</div>`;
+        const icones = { classe:'⚔', trilha:'◈', paranormal:'✦', poder_classe:'◆', origem:'◉', treinamento_especial:'⊕', outro:'▸' };
+        html += `<div style="display:flex;align-items:center;gap:8px;font-size:0.68rem;letter-spacing:3px;color:var(--purple-neon);text-transform:uppercase;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:7px 12px;margin-bottom:10px;margin-top:16px;position:relative;z-index:1;"><span style="color:var(--purple);font-size:0.75rem;">${icones[tipo]||'▸'}</span><span>${labels[tipo]||tipo}</span><span style="margin-left:auto;font-size:0.55rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">${habs.length}</span></div>`;
         html += habs.map(h => buildPoderCard(h, true)).join('');
     });
     return html;
