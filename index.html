@@ -1223,9 +1223,20 @@ body { transition: background 0.6s ease; }
                     );
                     if (snap.exists()) {
                         const agentesFirebase = Object.values(snap.val());
-                        // Atualiza cache local com os dados do Firebase
-                        localStorage.setItem(chaveCache, JSON.stringify(agentesFirebase));
-                        _renderAgentes(agentesFirebase, lista, contador);
+                        // Merge: preserva fotoCostum do cache local se o Firebase não tiver
+                        const cacheAtual = JSON.parse(localStorage.getItem(chaveCache)) || [];
+                        const agentesComFoto = agentesFirebase.map(ag => {
+                            if (ag.fotoCostum) return ag;
+                            // Tenta recuperar foto da chave separada
+                            const fotoSep = localStorage.getItem(getPrefix() + 'foto_ficha_' + ag.id);
+                            if (fotoSep) return { ...ag, fotoCostum: fotoSep };
+                            // Fallback: cache local anterior
+                            const cached = cacheAtual.find(c => String(c.id) === String(ag.id));
+                            if (cached && cached.fotoCostum) return { ...ag, fotoCostum: cached.fotoCostum };
+                            return ag;
+                        });
+                        localStorage.setItem(chaveCache, JSON.stringify(agentesComFoto));
+                        _renderAgentes(agentesComFoto, lista, contador);
                         return;
                     } else {
                         // Usuário não tem agentes no Firebase
@@ -1258,8 +1269,16 @@ body { transition: background 0.6s ease; }
 
             lista.innerHTML = '';
             agentes.forEach((agente, index) => {
-                let fotoSrc = agente.fotoCostum;
+                // Prioridade: Firebase (agente.fotoCostum) → chave separada nova → estado legado → avatar
+                let fotoSrc = agente.fotoCostum || null;
+
                 if (!fotoSrc) {
+                    // Chave separada (nova — foto salva sem ocupar quota do estado)
+                    fotoSrc = localStorage.getItem(getPrefix() + 'foto_ficha_' + agente.id) || null;
+                }
+
+                if (!fotoSrc) {
+                    // Fallback legado: foto dentro do estado salvo (formato antigo)
                     const estadoSalvo = localStorage.getItem(getPrefix() + 'estado_ficha_' + agente.id);
                     if (estadoSalvo) {
                         try {
@@ -1268,6 +1287,7 @@ body { transition: background 0.6s ease; }
                         } catch(e) {}
                     }
                 }
+
                 if (!fotoSrc) fotoSrc = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(agente.nome)}`;
 
                 lista.innerHTML += `

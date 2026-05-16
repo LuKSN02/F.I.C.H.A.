@@ -278,6 +278,13 @@
         }
         .nex-box-edit:hover::after { opacity: 1; color: var(--purple-neon); }
 
+        /* nex-row 4 colunas (modo NEX & Experiência) */
+        .nex-row { display: flex; gap: 8px; width: 100%; margin-top: 8px; flex-wrap: wrap; }
+        .nex-row .nex-box { flex: 1; min-width: 0; }
+
+        /* Botão regras opcionais hover */
+        #btn-regra-opc:hover { border-color: var(--purple) !important; color: var(--purple-neon) !important; }
+
         .card-recursos { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
         .recurso-row { display: flex; flex-direction: column; gap: 4px; }
         .recurso-header { display: flex; justify-content: space-between; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; }
@@ -976,7 +983,7 @@
   </div>
 </nav>
 
-<input type="file" id="foto-input" accept="image/*">
+<input type="file" id="foto-input" accept="image/*,.gif">
 
 <!-- MODAL CROPPER FOTO AGENTE -->
 <div class="foto-crop-overlay" id="foto-crop-overlay">
@@ -1013,7 +1020,7 @@
       <div class="value-field" id="display-origem">—</div>
       <div class="label-field">Classe</div>
       <div style="color:var(--purple-neon);font-size:0.95rem;font-weight:700;" id="display-classe">—</div>
-      <div style="margin-top:8px;font-size:0.6rem;color:#444;letter-spacing:1px;font-family:'Share Tech Mono',monospace;">▸ Clique na foto para alterar</div>
+      <div style="margin-top:8px;font-size:0.6rem;color:#444;letter-spacing:1px;font-family:'Share Tech Mono',monospace;">▸ Clique na foto para alterar · GIFs animados são suportados</div>
     </div>
 
     <div class="card-atributos">
@@ -1083,6 +1090,19 @@
         <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="pe-val">3</div><div class="lbl">PE/turno</div></div>
         <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="desl-val">9m</div><div class="lbl">Deslocamento</div></div>
       </div>
+
+      <!-- Botão Regras Opcionais -->
+      <button onclick="abrirModalRegraOpc()" style="
+          width:100%; margin-top:8px;
+          background:transparent; border:1px solid var(--border);
+          color:var(--text-dim); font-family:'Oswald',sans-serif;
+          font-size:0.72rem; font-weight:700; letter-spacing:2px;
+          text-transform:uppercase; padding:7px 12px; border-radius:6px;
+          cursor:pointer; transition:0.2s; display:flex; align-items:center;
+          justify-content:center; gap:8px;">
+        <span id="regra-opc-indicator" style="display:none;width:7px;height:7px;border-radius:50%;background:var(--purple-neon);box-shadow:0 0 6px var(--purple-neon);flex-shrink:0;"></span>
+        ⚙ REGRAS OPCIONAIS
+      </button>
     </div>
 
     <div class="card-recursos">
@@ -1099,30 +1119,51 @@
           <button class="btn-recurso big" onclick="ajustarRecurso('vida',5)">»</button>
         </div>
       </div>
-      <div class="recurso-row">
-        <div class="recurso-header">
-          <span style="color:var(--purple-neon);letter-spacing:2px;">SANIDADE</span>
-          <span class="recurso-val"><span id="san-atual">20</span> / <span id="san-max">20</span></span>
+
+      <!-- Sanidade + Esforço (ocultos no modo "Jogando sem Sanidade") -->
+      <div id="bloco-san-esf">
+        <div class="recurso-row">
+          <div class="recurso-header">
+            <span style="color:var(--purple-neon);letter-spacing:2px;">SANIDADE</span>
+            <span class="recurso-val"><span id="san-atual">20</span> / <span id="san-max">20</span></span>
+          </div>
+          <div class="barra-track"><div class="barra-fill barra-san" id="barra-san" style="width:100%"></div></div>
+          <div class="recurso-controles">
+            <button class="btn-recurso big" onclick="ajustarRecurso('san',-5)">«</button>
+            <button class="btn-recurso"     onclick="ajustarRecurso('san',-1)">‹</button>
+            <button class="btn-recurso"     onclick="ajustarRecurso('san',1)">›</button>
+            <button class="btn-recurso big" onclick="ajustarRecurso('san',5)">»</button>
+          </div>
         </div>
-        <div class="barra-track"><div class="barra-fill barra-san" id="barra-san" style="width:100%"></div></div>
-        <div class="recurso-controles">
-          <button class="btn-recurso big" onclick="ajustarRecurso('san',-5)">«</button>
-          <button class="btn-recurso"     onclick="ajustarRecurso('san',-1)">‹</button>
-          <button class="btn-recurso"     onclick="ajustarRecurso('san',1)">›</button>
-          <button class="btn-recurso big" onclick="ajustarRecurso('san',5)">»</button>
+        <div class="recurso-row">
+          <div class="recurso-header">
+            <span style="color:var(--orange);letter-spacing:2px;">ESFORÇO</span>
+            <span class="recurso-val"><span id="esf-atual">10</span> / <span id="esf-max">10</span></span>
+          </div>
+          <div class="barra-track"><div class="barra-fill barra-esforco" id="barra-esforco" style="width:100%"></div></div>
+          <div class="recurso-controles">
+            <button class="btn-recurso big" onclick="ajustarRecurso('esf',-5)">«</button>
+            <button class="btn-recurso"     onclick="ajustarRecurso('esf',-1)">‹</button>
+            <button class="btn-recurso"     onclick="ajustarRecurso('esf',1)">›</button>
+            <button class="btn-recurso big" onclick="ajustarRecurso('esf',5)">»</button>
+          </div>
         </div>
       </div>
-      <div class="recurso-row">
-        <div class="recurso-header">
-          <span style="color:var(--orange);letter-spacing:2px;">ESFORÇO</span>
-          <span class="recurso-val"><span id="esf-atual">10</span> / <span id="esf-max">10</span></span>
-        </div>
-        <div class="barra-track"><div class="barra-fill barra-esforco" id="barra-esforco" style="width:100%"></div></div>
-        <div class="recurso-controles">
-          <button class="btn-recurso big" onclick="ajustarRecurso('esf',-5)">«</button>
-          <button class="btn-recurso"     onclick="ajustarRecurso('esf',-1)">‹</button>
-          <button class="btn-recurso"     onclick="ajustarRecurso('esf',1)">›</button>
-          <button class="btn-recurso big" onclick="ajustarRecurso('esf',5)">»</button>
+
+      <!-- Determinação (visível apenas no modo "Jogando sem Sanidade") -->
+      <div id="bloco-determinacao" style="display:none;">
+        <div class="recurso-row">
+          <div class="recurso-header">
+            <span style="color:#00bcd4;letter-spacing:2px;">DETERMINAÇÃO</span>
+            <span class="recurso-val"><span id="det-atual">23</span> / <span id="det-max">23</span></span>
+          </div>
+          <div class="barra-track"><div class="barra-fill" id="barra-determinacao" style="width:100%;background:linear-gradient(90deg,#006070,#00bcd4);"></div></div>
+          <div class="recurso-controles">
+            <button class="btn-recurso big" onclick="ajustarRecurso('det',-5)">«</button>
+            <button class="btn-recurso"     onclick="ajustarRecurso('det',-1)">‹</button>
+            <button class="btn-recurso"     onclick="ajustarRecurso('det',1)">›</button>
+            <button class="btn-recurso big" onclick="ajustarRecurso('det',5)">»</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1876,6 +1917,62 @@
     <div style="display:flex;gap:8px;justify-content:flex-end;">
       <button onclick="fecharModalAtaque()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Cancelar</button>
       <button onclick="adicionarAtaque()" style="background:var(--purple);border:none;color:white;font-family:'Oswald',sans-serif;font-weight:700;padding:8px 18px;border-radius:4px;cursor:pointer;">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Regras Opcionais -->
+<div id="modal-regra-opc" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:#0d0010;border:1px solid var(--purple);border-radius:14px;padding:0;max-width:440px;width:92%;box-shadow:0 0 50px var(--purple-glow);overflow:hidden;">
+
+    <!-- Header com banner -->
+    <div style="position:relative;height:72px;overflow:hidden;background:#060010;">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0040 0%,#050010 100%);"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 20px;">
+        <div>
+          <div style="font-size:0.6rem;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;font-family:'Share Tech Mono',monospace;">Sobrevivendo ao Horror</div>
+          <div style="font-size:1.1rem;font-weight:700;letter-spacing:2px;color:white;text-shadow:0 0 16px var(--purple-glow);">⚙ REGRAS OPCIONAIS</div>
+        </div>
+        <button onclick="fecharModalRegraOpc()" style="background:transparent;border:1px solid #333;color:#666;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:0.9rem;transition:0.2s;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.borderColor='#666';this.style.color='white'" onmouseout="this.style.borderColor='#333';this.style.color='#666'">✕</button>
+      </div>
+      <!-- scanlines decorativo -->
+      <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.15) 3px,rgba(0,0,0,0.15) 4px);pointer-events:none;"></div>
+    </div>
+
+    <!-- Corpo -->
+    <div style="padding:20px;">
+
+      <!-- Toggle 1: NEX & Experiência -->
+      <div style="background:#080015;border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+          <div style="flex:1;">
+            <div style="font-size:0.95rem;font-weight:700;color:white;margin-bottom:4px;">NEX &amp; Experiência</div>
+            <div style="font-size:0.75rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:1.4;">Substitui a opção de NEX pela opção de Nível e NEX separados</div>
+          </div>
+          <!-- Toggle switch -->
+          <div onclick="toggleRegraOpc('nexExp')" id="toggle-nexExp" style="flex-shrink:0;width:108px;height:34px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;border:1px solid var(--border);margin-top:2px;">
+            <div id="toggle-nexExp-off" style="flex:1;display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:1px;transition:0.2s;">DESLIGADO</div>
+            <div id="toggle-nexExp-on"  style="flex:1;display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:1px;transition:0.2s;">LIGADO</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toggle 2: Jogando sem Sanidade -->
+      <div style="background:#080015;border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+          <div style="flex:1;">
+            <div style="font-size:0.95rem;font-weight:700;color:white;margin-bottom:4px;">Jogando sem Sanidade</div>
+            <div style="font-size:0.75rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:1.4;">Substitui as barras de Sanidade e Esforço pela barra de Determinação</div>
+          </div>
+          <!-- Toggle switch -->
+          <div onclick="toggleRegraOpc('semSan')" id="toggle-semSan" style="flex-shrink:0;width:108px;height:34px;border-radius:6px;overflow:hidden;cursor:pointer;display:flex;border:1px solid var(--border);margin-top:2px;">
+            <div id="toggle-semSan-off" style="flex:1;display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:1px;transition:0.2s;">DESLIGADO</div>
+            <div id="toggle-semSan-on"  style="flex:1;display:flex;align-items:center;justify-content:center;font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:1px;transition:0.2s;">LIGADO</div>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="fecharModalRegraOpc()" style="width:100%;background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:2px;padding:10px;border-radius:6px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">CONFIRMAR</button>
     </div>
   </div>
 </div>
@@ -3165,16 +3262,23 @@ window.onload = function() {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = function(ev) {
-            // GIF: pula o cropper e salva direto para preservar a animação
-            if (file.type === 'image/gif') {
+            // GIF ou WebP animado: pula o cropper e salva direto para preservar a animação
+            const isGif = file.type === 'image/gif';
+            const isWebp = file.type === 'image/webp';
+            if (isGif || isWebp) {
                 const base64 = ev.target.result;
                 document.getElementById('foto-agente').src = base64;
                 estado.fotoCostum = base64;
+                // Salva foto em chave separada (evita estourar quota com o estado)
+                try { localStorage.setItem(getPrefix() + `foto_ficha_${ficha?.id}`, base64); } catch(e) { console.warn('foto localStorage:', e); }
                 if (ficha) {
-                    ficha.fotoCostum = base64;
-                    salvarAgente();
+                    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+                    const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+                    if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
                 }
-                salvarEstado(); mostrarToast('📷 FOTO ATUALIZADA');
+                salvarEstado();
+                sincronizarAgenteFirebase();
+                mostrarToast('📷 FOTO ATUALIZADA');
                 document.getElementById('foto-input').value = '';
                 return;
             }
@@ -3212,50 +3316,38 @@ window.onload = function() {
 async function carregarFicha() {
     const params  = new URLSearchParams(window.location.search);
     const id      = params.get('id');
-
-    // Se vier da criação, sincroniza o usuário na sessão antes de tudo
-    const usuarioUrl = params.get('usuario');
-    if (usuarioUrl) {
-        if (!sessionStorage.getItem('ficha_user')) sessionStorage.setItem('ficha_user', usuarioUrl);
-        if (!localStorage.getItem('ficha_user_ativo')) localStorage.setItem('ficha_user_ativo', usuarioUrl);
-    }
-
     const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
 
-    // ── 1. Firebase — fonte de verdade para o agente ────────────────
-    if (id && window._firebaseDB && usuario) {
+    // 1) Tenta carregar agente do localStorage (cache local)
+    const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+    if (id) ficha = agentesLocal.find(a => String(a.id) === String(id));
+    if (!ficha && agentesLocal.length > 0) ficha = agentesLocal[agentesLocal.length - 1];
+
+    // 2) Se não achou localmente, busca no Firebase
+    if (!ficha && id && window._firebaseDB && usuario) {
         try {
-            const snap = await window._firebaseGet(
-                window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`)
-            );
+            const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`));
             if (snap.exists()) {
                 ficha = snap.val();
-                // Sincroniza cache local
-                const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-                const idx = agentesLocal.findIndex(a => String(a.id) === String(id));
-                if (idx === -1) agentesLocal.push(ficha);
-                else agentesLocal[idx] = ficha;
-                localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentesLocal));
+                // Re-sincroniza cache local
+                const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+                if (!agentes.find(a => String(a.id) === String(id))) {
+                    agentes.push(ficha);
+                    localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes));
+                }
             }
-        } catch(e) { console.warn('Firebase indisponível, usando cache local:', e); }
-    }
-
-    // ── 2. Fallback localStorage se Firebase não retornou ──────────
-    if (!ficha) {
-        const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-        if (id) ficha = agentesLocal.find(a => String(a.id) === String(id));
-        if (!ficha && agentesLocal.length > 0) ficha = agentesLocal[agentesLocal.length - 1];
+        } catch(e) { console.error('Erro ao buscar agente no Firebase:', e); }
     }
 
     if (!ficha) { document.getElementById('display-nome').textContent = 'Agente não encontrado'; return; }
 
-    // ── 3. Firebase — fonte de verdade para o estado ────────────────
-    let estadoCarregado = false;
-    if (window._firebaseDB) {
+    // 3) Tenta carregar estado do localStorage (cache)
+    const estadoSalvo = localStorage.getItem(getPrefix() + `estado_ficha_${ficha.id}`);
+
+    // 4) Se não tem local, busca no Firebase
+    if (!estadoSalvo && window._firebaseDB) {
         try {
-            const snapE = await window._firebaseGet(
-                window._firebaseRef(window._firebaseDB, `fichas/${ficha.id}/estado`)
-            );
+            const snapE = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `fichas/${ficha.id}/estado`));
             if (snapE.exists()) {
                 const parsed = snapE.val();
                 estado = {
@@ -3268,72 +3360,77 @@ async function carregarFicha() {
                 if (!estado.rituaisPersonagem)     estado.rituaisPersonagem = [];
                 if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
                 if (!estado.progressao)            estado.progressao = {};
-                // Atualiza cache local
+                // Guarda no cache local
                 localStorage.setItem(getPrefix() + `estado_ficha_${ficha.id}`, JSON.stringify(estado));
-                estadoCarregado = true;
+                sincronizarAgenteFirebase();
+                renderFicha();
+                carregarFotoSalva();
+                return;
             }
-        } catch(e) { console.warn('Firebase indisponível para estado, usando cache local:', e); }
+        } catch(e) { console.error('Erro ao buscar estado no Firebase:', e); }
     }
 
-    // ── 4. Fallback localStorage para o estado ───────────────────────
-    if (!estadoCarregado) {
-        const estadoSalvo = localStorage.getItem(getPrefix() + `estado_ficha_${ficha.id}`);
-        if (estadoSalvo) {
-            const parsed = JSON.parse(estadoSalvo);
-            estado = {
-                ...estado, ...parsed,
-                vida: { ...estado.vida, ...(parsed.vida || {}) },
-                san:  { ...estado.san,  ...(parsed.san  || {}) },
-                esf:  { ...estado.esf,  ...(parsed.esf  || {}) },
-            };
-            if (!estado.logRolagens)           estado.logRolagens = [];
-            if (!estado.rituaisPersonagem)     estado.rituaisPersonagem = [];
-            if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
-            if (!estado.progressao)            estado.progressao = {};
-        } else {
-            // Primeiro acesso: inicializa estado do zero com os atributos da ficha
-            const calc = calcRecursosPorNex('5%', ficha.classe, ficha.atributos);
-            estado.vida = { max: calc.pvMax, atual: calc.pvMax };
-            estado.san  = { max: calc.sanMax, atual: calc.sanMax };
-            estado.esf  = { max: calc.peMax, atual: calc.peMax };
-            estado.progressao = { nex: '5%', pe: calc.pe, desl: '9m' };
+    if (estadoSalvo) {
+        const parsed = JSON.parse(estadoSalvo);
+        // Merge profundo para preservar os sub-objetos (vida, san, esf)
+        estado = {
+            ...estado,
+            ...parsed,
+            vida: { ...estado.vida, ...(parsed.vida || {}) },
+            san:  { ...estado.san,  ...(parsed.san  || {}) },
+            esf:  { ...estado.esf,  ...(parsed.esf  || {}) },
+        };
+        if (!estado.logRolagens)           estado.logRolagens = [];
+        if (!estado.rituaisPersonagem)     estado.rituaisPersonagem = [];
+        if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
+        if (!estado.progressao)            estado.progressao = {};
+    } else {
+        // Primeiro acesso: calcula máximos pelos atributos e classe
+        const calc = calcRecursosPorNex('5%', ficha.classe, ficha.atributos);
+        estado.vida = { max: calc.pvMax, atual: calc.pvMax };
+        estado.san  = { max: calc.sanMax, atual: calc.sanMax };
+        estado.esf  = { max: calc.peMax, atual: calc.peMax };
+        estado.progressao = { nex: '5%', pe: calc.pe, desl: '9m' };
 
-            if (ficha.pericias) ficha.pericias.forEach(p => {
-                estado.pericias[p] = { bonus: 0, outros: 0, treinada: true };
-            });
+        if (ficha.pericias) ficha.pericias.forEach(p => {
+            estado.pericias[p] = { bonus: 0, outros: 0, treinada: true };
+        });
 
-            if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
-            const classeNorm = ficha.classe || '';
-            const nexInicial = classeNorm.toLowerCase() === 'sobrevivente' ? 'Estágio 1' : '5%';
-            const habsIniciais = (HABILIDADES_DB.classe || []).filter(h =>
-                h.classe?.toLowerCase() === classeNorm.toLowerCase() && h.nex === nexInicial
-            );
-            habsIniciais.forEach(h => {
-                if (!estado.habilidadesPersonagem.some(x => x.nome === h.nome))
-                    estado.habilidadesPersonagem.push({ ...h });
-            });
-            if (Array.isArray(ficha.habilidadesIniciais)) {
-                ficha.habilidadesIniciais.forEach(h => {
-                    if (!estado.habilidadesPersonagem.some(x => x.nome === h.nome)) {
-                        let encontrado = null;
-                        for (const cat of Object.keys(HABILIDADES_DB)) {
-                            const arr = HABILIDADES_DB[cat];
-                            if (Array.isArray(arr)) { encontrado = arr.find(x => x.nome === h.nome); if (encontrado) break; }
-                        }
-                        estado.habilidadesPersonagem.push(encontrado ? { ...encontrado } : { ...h });
-                    }
-                });
+        // Adicionar automaticamente as habilidades de NEX 5% (ou Estágio 1) da classe
+        if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
+        const classeNorm = ficha.classe || '';
+        const nexInicial = classeNorm.toLowerCase() === 'sobrevivente' ? 'Estágio 1' : '5%';
+        const habsIniciais = (HABILIDADES_DB.classe || []).filter(h =>
+            h.classe?.toLowerCase() === classeNorm.toLowerCase() && h.nex === nexInicial
+        );
+        habsIniciais.forEach(h => {
+            if (!estado.habilidadesPersonagem.some(x => x.nome === h.nome)) {
+                estado.habilidadesPersonagem.push({ ...h });
             }
+        });
+        // Adicionar habilidades iniciais da classe salvas no criar.html (exceto as de NEX específico)
+        if (Array.isArray(ficha.habilidadesIniciais)) {
+            ficha.habilidadesIniciais.forEach(h => {
+                if (!estado.habilidadesPersonagem.some(x => x.nome === h.nome)) {
+                    let encontrado = null;
+                    for (const cat of Object.keys(HABILIDADES_DB)) {
+                        const arr = HABILIDADES_DB[cat];
+                        if (Array.isArray(arr)) { encontrado = arr.find(x => x.nome === h.nome); if (encontrado) break; }
+                    }
+                    estado.habilidadesPersonagem.push(encontrado ? { ...encontrado } : { ...h });
+                }
+            });
         }
     }
-
     sincronizarAgenteFirebase();
     renderFicha();
+    carregarFotoSalva();
 }
 
 function sincronizarAgenteFirebase() {
   const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
-  if (window._firebaseDB && ficha && usuario) {
+  if (!window._firebaseDB || !ficha || !usuario) return;
+  try {
     // Path com usuário: agentes/{usuario}/{id} — evita mistura entre jogadores
     const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${ficha.id}`);
     window._firebaseSet(agenteRef, {
@@ -3345,8 +3442,8 @@ function sincronizarAgenteFirebase() {
       nivel:     ficha.nivel     || 1,
       atributos: ficha.atributos || {},
       fotoCostum: estado.fotoCostum || ficha.fotoCostum || '',
-    });
-  }
+    }).catch(err => console.warn('sincronizarAgenteFirebase erro:', err));
+  } catch(e) { console.warn('sincronizarAgenteFirebase:', e); }
 }
 
 // ══════════════════════════════════════════════
@@ -3359,7 +3456,7 @@ function renderFicha() {
     document.getElementById('display-origem').textContent = ficha.origem || '—';
     document.getElementById('display-classe').textContent = ficha.classe || '—';
     document.getElementById('display-criado').textContent = ficha.criadoEm || '—';
-    const fotoSrc = estado.fotoCostum || ficha.fotoCostum || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
+    const fotoSrc = estado.fotoCostum || ficha.fotoCostum || localStorage.getItem(getPrefix() + `foto_ficha_${ficha?.id}`) || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
     document.getElementById('foto-agente').src = fotoSrc;
     document.title = `F.I.C.H.A. – ${ficha.nome}`;
     const atribs = ficha.atributos || {};
@@ -3401,6 +3498,7 @@ if (btnPortrait && ficha) {
     document.getElementById('esquiva-val').textContent    = defesa;
     document.getElementById('defesa-detalhe').textContent = `= 10 + AGI(${agi>0?'+'+agi:agi})`;
     atualizarBarras(); renderPericias(); renderHabilidades(); renderInventario(); renderAtaques(); renderLog();
+    inicializarRegraOpc();
     const d = estado.descricao;
     document.getElementById('desc-personalidade').value = d.personalidade||ficha.personalidade||'';
     document.getElementById('desc-ideal').value         = d.ideal||ficha.ideal||'';
@@ -3545,9 +3643,27 @@ function limparLog(){ estado.logRolagens=[]; salvarEstado(); renderLog(); mostra
 // ══════════════════════════════════════════════
 function atualizarBarras() {
     ['vida','san','esf'].forEach(r=>{ const el=estado[r],pct=Math.max(0,Math.min(100,(el.atual/el.max)*100)),suf=r==='esf'?'esforco':r; document.getElementById(`${r}-atual`).textContent=el.atual; document.getElementById(`${r}-max`).textContent=el.max; document.getElementById(`barra-${suf}`).style.width=pct+'%'; });
+    // Determinação (modo sem sanidade)
+    if (estado.det && document.getElementById('det-atual')) {
+        const det = estado.det;
+        document.getElementById('det-atual').textContent = det.atual;
+        document.getElementById('det-max').textContent   = det.max;
+        const pct = Math.max(0, Math.min(100, (det.atual / det.max) * 100));
+        const bar = document.getElementById('barra-determinacao');
+        if (bar) bar.style.width = pct + '%';
+    }
 }
 
-function ajustarRecurso(tipo,delta){ const r=estado[tipo]; r.atual=Math.max(0,Math.min(r.max,r.atual+delta)); atualizarBarras(); salvarEstado(); }
+function ajustarRecurso(tipo, delta) {
+    if (!estado[tipo]) {
+        if (tipo === 'det') estado.det = { atual: 23, max: 23 };
+        else return;
+    }
+    const r = estado[tipo];
+    r.atual = Math.max(0, Math.min(r.max, r.atual + delta));
+    atualizarBarras();
+    salvarEstado();
+}
 
 // ══════════════════════════════════════════════
 // PERÍCIAS
@@ -4774,39 +4890,157 @@ function trocarAba(nome,btnClicado) {
 // UTILITÁRIOS
 // ══════════════════════════════════════════════
 function salvarEstado() {
-    if (!ficha) return;
+  if (!ficha) return;
 
-    // ── localStorage (cache offline imediato) ──────────────────────
-    localStorage.setItem(getPrefix() + `estado_ficha_${ficha.id}`, JSON.stringify(estado));
+  // ── Separa a foto do estado para não estourar quota ──────────────────────
+  // A foto (que pode ser um GIF de vários MB) é salva separadamente.
+  // O estado principal nunca carrega a imagem em base64.
+  const { fotoCostum, ...estadoSemFoto } = estado;
 
-    // ── Firebase (fonte de verdade) ────────────────────────────────
-    if (window._firebaseDB) {
-        const dbRef = window._firebaseRef(window._firebaseDB, `fichas/${ficha.id}/estado`);
-        window._firebaseSet(dbRef, estado).catch(err => console.warn('Firebase salvar estado erro:', err));
+  // Salva estado sem foto no localStorage (evita QuotaExceededError)
+  try {
+    localStorage.setItem(getPrefix() + `estado_ficha_${ficha.id}`, JSON.stringify(estadoSemFoto));
+  } catch(e) {
+    console.warn('localStorage cheio ao salvar estado:', e);
+  }
+
+  // Salva a foto separadamente no localStorage (chave própria)
+  if (fotoCostum) {
+    try {
+      localStorage.setItem(getPrefix() + `foto_ficha_${ficha.id}`, fotoCostum);
+    } catch(e) {
+      console.warn('localStorage cheio ao salvar foto:', e);
     }
+  }
+
+  // Salva no Firebase (sem a foto no estado — ela vai em agentes/{user}/{id}.fotoCostum)
+  if (window._firebaseDB) {
+    const dbRef = window._firebaseRef(window._firebaseDB, `fichas/${ficha.id}/estado`);
+    window._firebaseSet(dbRef, estadoSemFoto).catch(err => console.error('Firebase estado erro:', err));
+    // Sincroniza agente (inclui fotoCostum) para que portrait.html leia corretamente
+    sincronizarAgenteFirebase();
+  }
 }
 
-// Salva o objeto `ficha` (metadados do agente) no Firebase + cache local
-function salvarAgente() {
-    if (!ficha) return;
-
-    // Cache local
-    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-    const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-    if (idx !== -1) agentes[idx] = { ...agentes[idx], ...ficha };
-    else agentes.push(ficha);
-    localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes));
-
-    // Firebase
-    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
-    if (window._firebaseDB && usuario) {
-        window._firebaseSet(
-            window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${ficha.id}`),
-            ficha
-        ).catch(err => console.warn('Firebase salvar agente erro:', err));
-    }
+// Carrega a foto salva separadamente (localStorage ou agente)
+function carregarFotoSalva() {
+  if (!ficha) return;
+  // Prioridade: estado em memória > localStorage separado > agente.fotoCostum
+  if (estado.fotoCostum) return; // já tem em memória
+  const fotoLocal = localStorage.getItem(getPrefix() + `foto_ficha_${ficha.id}`);
+  if (fotoLocal) {
+    estado.fotoCostum = fotoLocal;
+    document.getElementById('foto-agente').src = fotoLocal;
+  }
 }
 function mostrarToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+
+// ══════════════════════════════════════════════
+// REGRAS OPCIONAIS
+// ══════════════════════════════════════════════
+
+// Estado das regras opcionais (persiste no estado)
+// estado.regraOpc = { nexExp: false, semSan: false }
+
+function _getRegraCfg() {
+    if (!estado.regraOpc) estado.regraOpc = { nexExp: false, semSan: false };
+    return estado.regraOpc;
+}
+
+function abrirModalRegraOpc() {
+    _renderToggleUI();
+    document.getElementById('modal-regra-opc').style.display = 'flex';
+}
+
+function fecharModalRegraOpc() {
+    document.getElementById('modal-regra-opc').style.display = 'none';
+}
+
+function _renderToggleUI() {
+    const cfg = _getRegraCfg();
+    _aplicarToggleVisual('nexExp', cfg.nexExp);
+    _aplicarToggleVisual('semSan', cfg.semSan);
+}
+
+function _aplicarToggleVisual(key, ativo) {
+    const elOff = document.getElementById(`toggle-${key}-off`);
+    const elOn  = document.getElementById(`toggle-${key}-on`);
+    if (!elOff || !elOn) return;
+    if (ativo) {
+        elOff.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;font-family:\'Oswald\',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:1px;background:transparent;color:#444;transition:0.2s;';
+        elOn.style.cssText  = 'flex:1;display:flex;align-items:center;justify-content:center;font-family:\'Oswald\',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:1px;background:var(--purple);color:white;transition:0.2s;';
+    } else {
+        elOff.style.cssText = 'flex:1;display:flex;align-items:center;justify-content:center;font-family:\'Oswald\',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:1px;background:var(--purple-dark);color:var(--purple-neon);transition:0.2s;';
+        elOn.style.cssText  = 'flex:1;display:flex;align-items:center;justify-content:center;font-family:\'Oswald\',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:1px;background:transparent;color:#444;transition:0.2s;';
+    }
+}
+
+function toggleRegraOpc(key) {
+    const cfg = _getRegraCfg();
+    cfg[key] = !cfg[key];
+    estado.regraOpc = cfg;
+    _aplicarToggleVisual(key, cfg[key]);
+    _aplicarRegraOpcUI();
+    salvarEstado();
+    // Indicador visual no botão principal
+    const ind = document.getElementById('regra-opc-indicator');
+    if (ind) ind.style.display = (cfg.nexExp || cfg.semSan) ? 'block' : 'none';
+}
+
+function _aplicarRegraOpcUI() {
+    const cfg = _getRegraCfg();
+
+    // ── Modo "Jogando sem Sanidade" ──────────────────────────────
+    const blocoSanEsf = document.getElementById('bloco-san-esf');
+    const blocoDet    = document.getElementById('bloco-determinacao');
+    if (blocoSanEsf) blocoSanEsf.style.display = cfg.semSan ? 'none' : '';
+    if (blocoDet)    blocoDet.style.display    = cfg.semSan ? '' : 'none';
+
+    // Inicializa determinação se ainda não existe no estado
+    if (cfg.semSan && !estado.det) {
+        const pvMax = estado.vida?.max || 20;
+        const peMax = estado.esf?.max  || 10;
+        // Determinação = metade de (PV + PE), arredondado
+        const detMax = Math.max(1, Math.round((pvMax + peMax) / 2));
+        estado.det = { max: detMax, atual: detMax };
+    }
+    if (cfg.semSan) {
+        document.getElementById('det-atual').textContent = estado.det?.atual ?? 23;
+        document.getElementById('det-max').textContent   = estado.det?.max   ?? 23;
+        const pct = Math.max(0, Math.min(100, ((estado.det?.atual || 0) / (estado.det?.max || 1)) * 100));
+        document.getElementById('barra-determinacao').style.width = pct + '%';
+    }
+
+    // ── Modo "NEX & Experiência" ─────────────────────────────────
+    const nexRow = document.querySelector('.nex-row');
+    if (nexRow) {
+        if (cfg.nexExp) {
+            // Mostra 4 boxes: Nível, XP, PE/turno, Deslocamento
+            nexRow.innerHTML = `
+                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="nex-nivel-val">${estado.regraOpc?.nivelVal || '1'}</div><div class="lbl">Nível</div></div>
+                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="nex-xp-val">${estado.regraOpc?.xpVal || '0'} XP</div><div class="lbl">Experiência</div></div>
+                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="pe-val">${document.getElementById('pe-val')?.textContent || '3'}</div><div class="lbl">PE/turno</div></div>
+                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="desl-val">${document.getElementById('desl-val')?.textContent || '9m'}</div><div class="lbl">Deslocamento</div></div>`;
+            nexRow.style.gridTemplateColumns = 'repeat(4, 1fr)';
+        } else {
+            // Restaura os 3 boxes originais
+            nexRow.innerHTML = `
+                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="nex-val">${estado.progressao?.nex || '5%'}</div><div class="lbl">NEX</div></div>
+                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="pe-val">${estado.progressao?.pe || '3'}</div><div class="lbl">PE/turno</div></div>
+                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="desl-val">${estado.progressao?.desl || '9m'}</div><div class="lbl">Deslocamento</div></div>`;
+            nexRow.style.gridTemplateColumns = '';
+        }
+    }
+}
+
+// Chamado no init para restaurar o estado salvo das regras
+function inicializarRegraOpc() {
+    const cfg = _getRegraCfg();
+    _renderToggleUI();
+    _aplicarRegraOpcUI();
+    const ind = document.getElementById('regra-opc-indicator');
+    if (ind) ind.style.display = (cfg.nexExp || cfg.semSan) ? 'block' : 'none';
+}
 
 // ══════════════════════════════════════════════
 // RITUAIS
@@ -5515,8 +5749,10 @@ function salvarAtributos() {
         if (el) ficha.atributos[k] = Math.max(-1, parseInt(el.value) || 0);
     });
 
-    // Persistir agente (Firebase + cache local)
-    salvarAgente();
+    // Persistir no localStorage
+    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+    const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+    if (idx !== -1) { agentes[idx].atributos = ficha.atributos; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
 
     // Recalcular recursos pela classe + NEX atual
     const nex  = estado.progressao?.nex || '5%';
@@ -5718,11 +5954,15 @@ function salvarNex() {
             const base64 = canvas.toDataURL('image/jpeg', 0.92);
             document.getElementById('foto-agente').src = base64;
             estado.fotoCostum = base64;
+            // Salva foto em chave separada (evita estourar quota com o estado)
+            try { localStorage.setItem(getPrefix() + `foto_ficha_${ficha?.id}`, base64); } catch(e) { console.warn('foto localStorage:', e); }
             if (ficha) {
-                ficha.fotoCostum = base64;
-                salvarAgente();
+                const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+                const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+                if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
             }
             salvarEstado();
+            sincronizarAgenteFirebase();
             mostrarToast('📷 FOTO ATUALIZADA');
             cancelarFotoCrop();
         }
@@ -5755,9 +5995,13 @@ function salvarNex() {
             // Atualiza display
             document.getElementById('display-nome').textContent = ficha.nome + (ficha.codinome ? ` "${ficha.codinome}"` : '');
             document.title = `F.I.C.H.A. – ${ficha.nome}`;
-            // Salva agente (Firebase + cache local) e estado
-            salvarAgente();
+            // Salva no estado
             if (estado) { estado.nome = novoNome; salvarEstado(); }
+            // Atualiza lista de agentes
+            const chave = getPrefix() + 'lista_agentes';
+            const agentes = JSON.parse(localStorage.getItem(chave)) || [];
+            const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+            if (idx !== -1) { agentes[idx].nome = novoNome; localStorage.setItem(chave, JSON.stringify(agentes)); }
             fecharModalRenomear();
             mostrarToast('✎ NOME ATUALIZADO');
         }
