@@ -2176,7 +2176,7 @@ const RITUAIS_DATA = [
   { nome:"Ritual de Derreter Criaturas de Sangue", elem:"SANGUE", src:"Desconjuração", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Segurar uma corrente com sangue escorrendo e focar no símbolo.", desc:"Causa 4d10+5 em criaturas de Sangue ou 2d10 em outras criaturas. Funciona apenas em criaturas, não em humanos.", dadosSugeridos:["4d10+5","2d10"] },
   { nome:"Ritual de Ódio Incontrolável", elem:"SANGUE", src:"Desconjuração / Calamidade", exec:"1 ação", alcance:"Pessoal / Curto", dur:"1d4+2 rodadas", conjuracao:"Cortar a mão, botá-la no olho enquanto se concentra no símbolo.", desc:"Gasta 8 PO. Por 1d4+2 rodadas, +2d6 de dano corpo-a-corpo e vantagem em força/ataques.", dadosSugeridos:["2d6","1d4+2"] },
   { nome:"Ritual de Armadura de Sangue", elem:"SANGUE", src:"Desconjuração / Calamidade / Sinais / Hexatombe", exec:"1 ação", alcance:"Pessoal / Aliado próximo", dur:"Cena", conjuracao:"Se concentrar no símbolo.", desc:"Cria uma armadura de sangue. Gasta 1 PE: +5 de armadura." },
-  { nome:"Ritual de Paralisia de Sangue", elem:"SANGUE", src:"Desconjuração", exec:"1 ação", alcance:"Toque / Marcado", dur:"1d4 rodadas", conjuracao:"Marcar o símbolo no alvo, enrolar arame farpado no braço até sangrar e focar no símbolo.", desc:"Paralisa o alvo por 1d4 rodadas. O alvo faz um teste de Poder a cada rodada para tentar se libertar." },
+  { nome:"Ritual de Paralisia de Sangue", elem:"SANGUE", src:"Desconjuração", exec:"1 ação", alcance:"Toque / Marcado", dur:"1d4 rodadas", conjuracao:"Marcar o símbolo no alvo, enrolar arame farpado no braço até sangrar e focar no símbolo.", desc:"Paralisa o alvo por 1d4 rodadas. O alvo faz um teste de Fortitude a cada rodada para tentar se libertar." },
   { nome:"Ritual de Toque da Morte", elem:"MORTE", src:"Desconjuração", exec:"Toque", alcance:"Toque", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Faz o corpo do alvo envelhecer até definhar completamente, causando 4d10 de dano.", dadosSugeridos:["4d10"] },
   { nome:"Ritual de Levitação", elem:"DESCONHECIDO", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Concentração", conjuracao:"Desconhecida", desc:"Levita qualquer objeto à distância." },
   { nome:"Ritual de Fortalecimento Sensorial", elem:"SANGUE", src:"Calamidade", exec:"1 ação", alcance:"Pessoal", dur:"Cena", conjuracao:"Cortar a palma da mão.", desc:"Gasta 1 PE. Ganha um dado extra em testes de Percepção, Investigação, Luta e Pontaria." },
@@ -2225,6 +2225,54 @@ const RITUAIS_DATA = [
   { nome:"Passagem de Conhecimento Expandido", elem:"SANGUE/CONHECIMENTO", src:"Arquivos Secretos #1", exec:"1 dia", alcance:"Curto", dur:"Permanente", conjuracao:"Sangue/Conhecimento 4º círculo. Requer conhecer Passagem de Conhecimento.", desc:"Versão avançada criada por Agatha. Afeta de 2 a 10 pessoas (sempre em número par), divididas em grupos. Os corpos de um grupo ficam presos em caixões por 1d6+1 dias enquanto as consciências habitam os corpos do outro grupo. Ao trocar, os personagens assumem atributos e habilidades do novo corpo." },
   { nome:"Vínculo de Sangue", elem:"SANGUE", src:"Arquivos Secretos #2 (Juan)", exec:"Padrão", alcance:"Curto", dur:"Cena", conjuracao:"Sangue 4º círculo.", desc:"Manifesta símbolo no conjurador e num alvo em alcance curto. Sempre que o conjurador sofre dano, metade é transferida para o alvo. Pode ser invertido. Resistência (Fortitude DT 20) evita. Versão diabólica: DT 25, médio." },
 
+
+  // ── SOBREVIVENDO AO HORROR — rituais mecânicos completos ──────────────────
+  { nome:"Esfoliar", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", alvo:"1 ser", dur:"Instantânea", conjuracao:"Sangue 1º círculo. Resistência: Reflexos parcial.",
+    desc:"Projeta agulhas e lâminas rubras que causam 3d4+3 de dano de corte e deixam o alvo sangrando. Resistência evita condição e reduz dano à metade. Discente (+2 PE, 2º): médio, 5d4+5, explosão 6m. Verdadeiro (+5 PE, 3º): longo, 10d4+10, explosão 6m — resistência não evita condição.",
+    dadosSugeridos:["3d4+3","5d4+5","10d4+10"] },
+  { nome:"Sede de Adrenalina", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Reação", alcance:"Pessoal", alvo:"Você", dur:"Instantânea", conjuracao:"Sangue 2º círculo. Uso: 1 vez por rodada.",
+    desc:"Ao falhar em Acrobacia ou Atletismo, pode repetir usando Presença. Ou ao sofrer dano de impacto, reduz 20 desse dano. Se reduzir a 0, fica 1 rodada atordoado. Discente (+3 PE): redução 40. Verdadeiro (+7 PE, 4º+afinidade): redução 70." },
+  { nome:"Odor da Caçada", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", alvo:"Você", dur:"Cena", conjuracao:"Sangue 3º círculo.",
+    desc:"Recebe faro. Em cenas de perseguição, +5 em Atletismo e não perde PV por esforço extra (desde que o alvo emita odores). Na próxima cena, fica com fome e sede. Discente (+4 PE): toque, 1 ser. Verdadeiro (+9 PE+afinidade): curto, até 5 seres." },
+  { nome:"Martírio de Sangue", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", alvo:"Você", dur:"Veja texto", conjuracao:"Sangue 4º círculo.",
+    desc:"Você se entrega ao Sangue: faro, visão no escuro, cura acelerada 10, +10 em testes de ataque e dano corpo a corpo e Defesa, 30 PV temp, ataques desarmados +1 dado (letais). Não pode conjurar rituais. –3d20 em perícias sociais. Ao fim da cena, torna-se permanentemente criatura de Sangue (personagem perdido). Discente (+5 PE+afinidade): bônus +20, 50 PV temp.",
+    dadosSugeridos:["1d4"] },
+  { nome:"Apagar as Luzes", elem:"MORTE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", alvo:"Você", dur:"Instantânea", conjuracao:"Morte 1º círculo.",
+    desc:"Apaga todas as fontes de luz em alcance curto (natural ou paranormal). Você recebe visão no escuro até o fim da cena. Discente (+2 PE, 2º): alcance longo para apagar luzes. Verdadeiro (+5 PE, 3º): como discente + até 5 aliados também recebem visão no escuro." },
+  { nome:"Língua Morta", elem:"MORTE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Toque", alvo:"1 cadáver", dur:"Sustentada", conjuracao:"Morte 2º círculo.",
+    desc:"Reanima um cadáver forçadamente para responder até 3 perguntas (1 por rodada). Ao final da 3ª resposta, o cadáver vira esqueleto de Lodo. A clareza das respostas fica a critério do mestre. Discente (+3 PE): até 4 rodadas; ao final, vira enraizado. Verdadeiro (+7 PE, 4º+afinidade): até 5 rodadas; ao final, vira marionete." },
+  { nome:"Fedor Pútrido", elem:"MORTE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", alvo:"Você", dur:"Sustentada", conjuracao:"Morte 3º círculo.",
+    desc:"Seu corpo para de funcionar biologicamente e você cheira como cadáver. Animais se afastam, –3d20 em Diplomacia, +5 Furtividade, +10 para fingir de morto, visibilidade –1 em furtividade enquanto parado. Por rodada ativa: 1d4 de dano de Morte que ignora resistências. Discente (+4 PE): toque, 1 ser voluntário. Verdadeiro (+9 PE+afinidade): curto, até 5 voluntários.",
+    dadosSugeridos:["1d4"] },
+  { nome:"Singularidade Temporal", elem:"MORTE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", alvo:"1 objeto não paranormal Médio", dur:"Instantânea", conjuracao:"Morte 4º círculo. Resistência: Fortitude (se em uso por alguém).",
+    desc:"Avança o tempo de um objeto ao seu estado de decomposição máximo. Pode danificá-lo (–5 em testes) ou destruí-lo conforme sua natureza. Discente (+5 PE): objeto Grande. Verdadeiro (+10 PE): objeto Enorme." },
+  { nome:"Desfazer Sinapses", elem:"CONHECIMENTO", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", alvo:"1 ser", dur:"Instantânea", conjuracao:"Conhecimento 1º círculo. Resistência: Vontade parcial.",
+    desc:"Inexiste neurônios do alvo: 2d6+2 de dano de Conhecimento + condição frustrado 1 rodada. Resistência: metade do dano, evita condição. Alvo precisa ter cérebro. Discente (+2 PE, 2º): longo, 3d6+3, até 5 seres. Verdadeiro (+5 PE, 3º): extremo, 8d6+8, condição esmorecido (ou frustrado se resistir).",
+    dadosSugeridos:["2d6+2","3d6+3","8d6+8"] },
+  { nome:"Aurora da Verdade", elem:"CONHECIMENTO", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", alvo:"Esfera 3m de raio", dur:"Sustentada", conjuracao:"Conhecimento 2º círculo. Resistência: Vontade parcial.",
+    desc:"Aura dourada que força seres na área a falar apenas a verdade (inclusive o conjurador). Resistência: pode mentir. Seres invisíveis/camuflados na área são revelados por sigilos. Discente (+3 PE): médio, esfera 9m, conjurador não afetado. Verdadeiro (+7 PE, 4º+afinidade): como discente + duração cena, ouve tudo falado na área à distância." },
+  { nome:"Relembrar Fragmento", elem:"CONHECIMENTO", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Toque", alvo:"1 objeto escrito", dur:"Instantânea", conjuracao:"Conhecimento 3º círculo.",
+    desc:"Restaura um texto danificado ao momento de sua última anotação enquanto o conjurador tocá-lo. Não funciona em objetos destruídos por meios paranormais. Discente (+4 PE): objeto permanece restaurado até fim da missão. Verdadeiro (+9 PE+afinidade): altera o objeto de forma imperceptível conforme a vontade do conjurador; permanente até fim da missão." },
+  { nome:"Pronunciar Sigilo", elem:"CONHECIMENTO", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", alvo:"1 ser", dur:"Instantânea/Veja texto", conjuracao:"Conhecimento 4º círculo. Resistência: Vontade parcial.",
+    desc:"Pronuncia um Sigilo causando um dos efeitos: Esquecer (atordoado 1d4+1 rodadas; resistência: desprevenido 1d4 rodadas); Cegar (cego; resistência: ofuscado 1d4 rodadas); Inexistir (desaparece 1d4+1 rodadas; resistência: 1 rodada; retorna ao local ou raio 18m). Discente (+5 PE): extremo. Verdadeiro (+10 PE+afinidade): até 5 seres.",
+    dadosSugeridos:["1d4+1","1d4"] },
+  { nome:"Overlock", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Reação", alcance:"Pessoal", alvo:"Você", dur:"Instantânea", conjuracao:"Energia 1º círculo.",
+    desc:"Após falhar em Tecnologia com um eletrônico, pode conjurar para tentar novamente via descarga caótica. Desafio: jogo de estátua (mestre interrompe música; não pode se mover). Se passar: obtém a informação. O aparelho fica inutilizável (tomado por vírus paranormal). Discente (+2 PE, 2º): falha só com 2 erros. Verdadeiro (+5 PE, 3º): falha só com 3 erros." },
+  { nome:"Backup", elem:"ENERGIA", src:"Arquivos Secretos #4", exec:"Padrão", alcance:"Curto", alvo:"Veja texto", dur:"24 horas", conjuracao:"Energia 2º círculo.",
+    desc:"Cria um chamariz com sua aparência em espaço vazio (realiza movimentos simples, pode dizer 1 frase). Conexão em raio 50km. Pode gastar reação para trocar de lugar com o chamariz (–2d4 SAN). Dissipa se receber dano ou conjurador sair do raio. Discente (+2 PE, 2º): duração permanente; pode ver/ouvir pela cópia cobrindo olhos (fica cego, surdo e pasmo). Verdadeiro (+5 PE, 3º): como discente + pode falar e escolher aparência da cópia; ao trocar de lugar pode dissipá-la causando 6d6 de dano de Energia (Reflexos metade) em raio curto das duas posições.",
+    dadosSugeridos:["2d4","6d6"] },
+  // ── ARQUIVOS SECRETOS #2 ─────────────────────────────────────────────────
+  { nome:"Mapa Sanguíneo", elem:"SANGUE", src:"Arquivos Secretos #2", exec:"Padrão", alcance:"Toque", alvo:"1 superfície", dur:"Cena", conjuracao:"Sangue 2º círculo. Resistência: Vontade evita.",
+    desc:"Toca uma superfície e desenha um mapa com sangue mostrando em tempo real a localização de todos os seres em raio 1km. Seres podem resistir. Discente (+3 PE): também revela condição de saúde dos que falharam (ileso/ferido/machucado/morrendo)." },
+  { nome:"Capturar Momento", elem:"MORTE", src:"Arquivos Secretos #2", exec:"Padrão", alcance:"Médio", alvo:"Esfera 18m de raio", dur:"Cena", conjuracao:"Morte 2º círculo.",
+    desc:"Cria um símbolo que captura todos os seres na área. Discente (+3 PE): pode gastar ação padrão para fazer o símbolo explodir causando 4d8 de dano de Morte em todos capturados (Fortitude metade). Verdadeiro (+7 PE, 3º): dano 8d8.",
+    dadosSugeridos:["4d8","8d8"] },
+  { nome:"Labirinto Mental", elem:"CONHECIMENTO", src:"Arquivos Secretos #2", exec:"Padrão", alcance:"Médio", alvo:"1 pessoa", dur:"1d4 rodadas", conjuracao:"Conhecimento 2º círculo. Resistência: Vontade evita.",
+    desc:"Prende a mente do alvo em um labirinto. Pela duração, o alvo gasta ações se movendo em direção aleatória. No início de cada turno pode repetir o teste de resistência. Discente (+3 PE): alcance longo. Verdadeiro (+7 PE, 3º): longo, duração cena (ainda pode tentar se libertar).",
+    dadosSugeridos:["1d4"] },
+  { nome:"Rajada Caótica", elem:"ENERGIA", src:"Arquivos Secretos #2", exec:"Padrão", alcance:"Médio", alvo:"1 ser", dur:"Instantânea", conjuracao:"Energia 2º círculo. Resistência: Reflexos reduz dano à metade.",
+    desc:"Projeta um raio de Energia que causa 8d6 de dano de Energia. Discente (+3 PE): 8d8. Verdadeiro (+7 PE, 3º): 8d10 em 1 ser; nos próximos turnos pode gastar ação padrão para disparar outro raio com mesmo efeito.",
+    dadosSugeridos:["8d6","8d8","8d10"] },
   // ── VARIA ──────────────────────────────────────────────────────────────────
   { nome:"Amaldiçoar Arma", elem:"VARIA", src:"Livro Base", exec:"Padrão", alcance:"Toque", alvo:"1 arma corpo a corpo ou pacote de munição", dur:"Cena", conjuracao:"Ao aprender este ritual, escolha um elemento entre Conhecimento, Energia, Morte e Sangue. O ritual passa a ser desse elemento.",
     desc:"Quando aprender este ritual, escolha um elemento entre Conhecimento, Energia, Morte e Sangue. Este ritual passa a ser do elemento escolhido. Você imbui a arma ou munições com o elemento, fazendo com que causem +1d6 de dano do tipo do elemento. Discente (+2 PE): muda o bônus de dano para +2d6. Requer 2º círculo. Verdadeiro (+5 PE): muda o bônus de dano para +4d6. Requer 3º círculo e afinidade.",
@@ -3123,9 +3171,8 @@ window.onload = function() {
                 document.getElementById('foto-agente').src = base64;
                 estado.fotoCostum = base64;
                 if (ficha) {
-                    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-                    const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-                    if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
+                    ficha.fotoCostum = base64;
+                    salvarAgente();
                 }
                 salvarEstado(); mostrarToast('📷 FOTO ATUALIZADA');
                 document.getElementById('foto-input').value = '';
@@ -3165,38 +3212,50 @@ window.onload = function() {
 async function carregarFicha() {
     const params  = new URLSearchParams(window.location.search);
     const id      = params.get('id');
+
+    // Se vier da criação, sincroniza o usuário na sessão antes de tudo
+    const usuarioUrl = params.get('usuario');
+    if (usuarioUrl) {
+        if (!sessionStorage.getItem('ficha_user')) sessionStorage.setItem('ficha_user', usuarioUrl);
+        if (!localStorage.getItem('ficha_user_ativo')) localStorage.setItem('ficha_user_ativo', usuarioUrl);
+    }
+
     const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
 
-    // 1) Tenta carregar agente do localStorage (cache local)
-    const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-    if (id) ficha = agentesLocal.find(a => String(a.id) === String(id));
-    if (!ficha && agentesLocal.length > 0) ficha = agentesLocal[agentesLocal.length - 1];
-
-    // 2) Se não achou localmente, busca no Firebase
-    if (!ficha && id && window._firebaseDB && usuario) {
+    // ── 1. Firebase — fonte de verdade para o agente ────────────────
+    if (id && window._firebaseDB && usuario) {
         try {
-            const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`));
+            const snap = await window._firebaseGet(
+                window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`)
+            );
             if (snap.exists()) {
                 ficha = snap.val();
-                // Re-sincroniza cache local
-                const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-                if (!agentes.find(a => String(a.id) === String(id))) {
-                    agentes.push(ficha);
-                    localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes));
-                }
+                // Sincroniza cache local
+                const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+                const idx = agentesLocal.findIndex(a => String(a.id) === String(id));
+                if (idx === -1) agentesLocal.push(ficha);
+                else agentesLocal[idx] = ficha;
+                localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentesLocal));
             }
-        } catch(e) { console.error('Erro ao buscar agente no Firebase:', e); }
+        } catch(e) { console.warn('Firebase indisponível, usando cache local:', e); }
+    }
+
+    // ── 2. Fallback localStorage se Firebase não retornou ──────────
+    if (!ficha) {
+        const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+        if (id) ficha = agentesLocal.find(a => String(a.id) === String(id));
+        if (!ficha && agentesLocal.length > 0) ficha = agentesLocal[agentesLocal.length - 1];
     }
 
     if (!ficha) { document.getElementById('display-nome').textContent = 'Agente não encontrado'; return; }
 
-    // 3) Tenta carregar estado do localStorage (cache)
-    const estadoSalvo = localStorage.getItem(getPrefix() + `estado_ficha_${ficha.id}`);
-
-    // 4) Se não tem local, busca no Firebase
-    if (!estadoSalvo && window._firebaseDB) {
+    // ── 3. Firebase — fonte de verdade para o estado ────────────────
+    let estadoCarregado = false;
+    if (window._firebaseDB) {
         try {
-            const snapE = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `fichas/${ficha.id}/estado`));
+            const snapE = await window._firebaseGet(
+                window._firebaseRef(window._firebaseDB, `fichas/${ficha.id}/estado`)
+            );
             if (snapE.exists()) {
                 const parsed = snapE.val();
                 estado = {
@@ -3209,67 +3268,65 @@ async function carregarFicha() {
                 if (!estado.rituaisPersonagem)     estado.rituaisPersonagem = [];
                 if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
                 if (!estado.progressao)            estado.progressao = {};
-                // Guarda no cache local
+                // Atualiza cache local
                 localStorage.setItem(getPrefix() + `estado_ficha_${ficha.id}`, JSON.stringify(estado));
-                sincronizarAgenteFirebase();
-                renderFicha();
-                return;
+                estadoCarregado = true;
             }
-        } catch(e) { console.error('Erro ao buscar estado no Firebase:', e); }
+        } catch(e) { console.warn('Firebase indisponível para estado, usando cache local:', e); }
     }
 
-    if (estadoSalvo) {
-        const parsed = JSON.parse(estadoSalvo);
-        // Merge profundo para preservar os sub-objetos (vida, san, esf)
-        estado = {
-            ...estado,
-            ...parsed,
-            vida: { ...estado.vida, ...(parsed.vida || {}) },
-            san:  { ...estado.san,  ...(parsed.san  || {}) },
-            esf:  { ...estado.esf,  ...(parsed.esf  || {}) },
-        };
-        if (!estado.logRolagens)           estado.logRolagens = [];
-        if (!estado.rituaisPersonagem)     estado.rituaisPersonagem = [];
-        if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
-        if (!estado.progressao)            estado.progressao = {};
-    } else {
-        // Primeiro acesso: calcula máximos pelos atributos e classe
-        const calc = calcRecursosPorNex('5%', ficha.classe, ficha.atributos);
-        estado.vida = { max: calc.pvMax, atual: calc.pvMax };
-        estado.san  = { max: calc.sanMax, atual: calc.sanMax };
-        estado.esf  = { max: calc.peMax, atual: calc.peMax };
-        estado.progressao = { nex: '5%', pe: calc.pe, desl: '9m' };
+    // ── 4. Fallback localStorage para o estado ───────────────────────
+    if (!estadoCarregado) {
+        const estadoSalvo = localStorage.getItem(getPrefix() + `estado_ficha_${ficha.id}`);
+        if (estadoSalvo) {
+            const parsed = JSON.parse(estadoSalvo);
+            estado = {
+                ...estado, ...parsed,
+                vida: { ...estado.vida, ...(parsed.vida || {}) },
+                san:  { ...estado.san,  ...(parsed.san  || {}) },
+                esf:  { ...estado.esf,  ...(parsed.esf  || {}) },
+            };
+            if (!estado.logRolagens)           estado.logRolagens = [];
+            if (!estado.rituaisPersonagem)     estado.rituaisPersonagem = [];
+            if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
+            if (!estado.progressao)            estado.progressao = {};
+        } else {
+            // Primeiro acesso: inicializa estado do zero com os atributos da ficha
+            const calc = calcRecursosPorNex('5%', ficha.classe, ficha.atributos);
+            estado.vida = { max: calc.pvMax, atual: calc.pvMax };
+            estado.san  = { max: calc.sanMax, atual: calc.sanMax };
+            estado.esf  = { max: calc.peMax, atual: calc.peMax };
+            estado.progressao = { nex: '5%', pe: calc.pe, desl: '9m' };
 
-        if (ficha.pericias) ficha.pericias.forEach(p => {
-            estado.pericias[p] = { bonus: 0, outros: 0, treinada: true };
-        });
-
-        // Adicionar automaticamente as habilidades de NEX 5% (ou Estágio 1) da classe
-        if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
-        const classeNorm = ficha.classe || '';
-        const nexInicial = classeNorm.toLowerCase() === 'sobrevivente' ? 'Estágio 1' : '5%';
-        const habsIniciais = (HABILIDADES_DB.classe || []).filter(h =>
-            h.classe?.toLowerCase() === classeNorm.toLowerCase() && h.nex === nexInicial
-        );
-        habsIniciais.forEach(h => {
-            if (!estado.habilidadesPersonagem.some(x => x.nome === h.nome)) {
-                estado.habilidadesPersonagem.push({ ...h });
-            }
-        });
-        // Adicionar habilidades iniciais da classe salvas no criar.html (exceto as de NEX específico)
-        if (Array.isArray(ficha.habilidadesIniciais)) {
-            ficha.habilidadesIniciais.forEach(h => {
-                if (!estado.habilidadesPersonagem.some(x => x.nome === h.nome)) {
-                    let encontrado = null;
-                    for (const cat of Object.keys(HABILIDADES_DB)) {
-                        const arr = HABILIDADES_DB[cat];
-                        if (Array.isArray(arr)) { encontrado = arr.find(x => x.nome === h.nome); if (encontrado) break; }
-                    }
-                    estado.habilidadesPersonagem.push(encontrado ? { ...encontrado } : { ...h });
-                }
+            if (ficha.pericias) ficha.pericias.forEach(p => {
+                estado.pericias[p] = { bonus: 0, outros: 0, treinada: true };
             });
+
+            if (!estado.habilidadesPersonagem) estado.habilidadesPersonagem = [];
+            const classeNorm = ficha.classe || '';
+            const nexInicial = classeNorm.toLowerCase() === 'sobrevivente' ? 'Estágio 1' : '5%';
+            const habsIniciais = (HABILIDADES_DB.classe || []).filter(h =>
+                h.classe?.toLowerCase() === classeNorm.toLowerCase() && h.nex === nexInicial
+            );
+            habsIniciais.forEach(h => {
+                if (!estado.habilidadesPersonagem.some(x => x.nome === h.nome))
+                    estado.habilidadesPersonagem.push({ ...h });
+            });
+            if (Array.isArray(ficha.habilidadesIniciais)) {
+                ficha.habilidadesIniciais.forEach(h => {
+                    if (!estado.habilidadesPersonagem.some(x => x.nome === h.nome)) {
+                        let encontrado = null;
+                        for (const cat of Object.keys(HABILIDADES_DB)) {
+                            const arr = HABILIDADES_DB[cat];
+                            if (Array.isArray(arr)) { encontrado = arr.find(x => x.nome === h.nome); if (encontrado) break; }
+                        }
+                        estado.habilidadesPersonagem.push(encontrado ? { ...encontrado } : { ...h });
+                    }
+                });
+            }
         }
     }
+
     sincronizarAgenteFirebase();
     renderFicha();
 }
@@ -4717,16 +4774,37 @@ function trocarAba(nome,btnClicado) {
 // UTILITÁRIOS
 // ══════════════════════════════════════════════
 function salvarEstado() {
-  if (!ficha) return;
+    if (!ficha) return;
 
-  // Continua salvando local (fallback)
-  localStorage.setItem(getPrefix() + `estado_ficha_${ficha.id}`, JSON.stringify(estado));
+    // ── localStorage (cache offline imediato) ──────────────────────
+    localStorage.setItem(getPrefix() + `estado_ficha_${ficha.id}`, JSON.stringify(estado));
 
-  // Salva no Firebase
-  if (window._firebaseDB) {
-    const dbRef = window._firebaseRef(window._firebaseDB, `fichas/${ficha.id}/estado`);
-    window._firebaseSet(dbRef, estado).catch(err => console.error('Firebase erro:', err));
-  }
+    // ── Firebase (fonte de verdade) ────────────────────────────────
+    if (window._firebaseDB) {
+        const dbRef = window._firebaseRef(window._firebaseDB, `fichas/${ficha.id}/estado`);
+        window._firebaseSet(dbRef, estado).catch(err => console.warn('Firebase salvar estado erro:', err));
+    }
+}
+
+// Salva o objeto `ficha` (metadados do agente) no Firebase + cache local
+function salvarAgente() {
+    if (!ficha) return;
+
+    // Cache local
+    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+    const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+    if (idx !== -1) agentes[idx] = { ...agentes[idx], ...ficha };
+    else agentes.push(ficha);
+    localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes));
+
+    // Firebase
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    if (window._firebaseDB && usuario) {
+        window._firebaseSet(
+            window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${ficha.id}`),
+            ficha
+        ).catch(err => console.warn('Firebase salvar agente erro:', err));
+    }
 }
 function mostrarToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
 
@@ -5437,10 +5515,8 @@ function salvarAtributos() {
         if (el) ficha.atributos[k] = Math.max(-1, parseInt(el.value) || 0);
     });
 
-    // Persistir no localStorage
-    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-    const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-    if (idx !== -1) { agentes[idx].atributos = ficha.atributos; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
+    // Persistir agente (Firebase + cache local)
+    salvarAgente();
 
     // Recalcular recursos pela classe + NEX atual
     const nex  = estado.progressao?.nex || '5%';
@@ -5643,9 +5719,8 @@ function salvarNex() {
             document.getElementById('foto-agente').src = base64;
             estado.fotoCostum = base64;
             if (ficha) {
-                const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-                const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-                if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
+                ficha.fotoCostum = base64;
+                salvarAgente();
             }
             salvarEstado();
             mostrarToast('📷 FOTO ATUALIZADA');
@@ -5680,13 +5755,9 @@ function salvarNex() {
             // Atualiza display
             document.getElementById('display-nome').textContent = ficha.nome + (ficha.codinome ? ` "${ficha.codinome}"` : '');
             document.title = `F.I.C.H.A. – ${ficha.nome}`;
-            // Salva no estado
+            // Salva agente (Firebase + cache local) e estado
+            salvarAgente();
             if (estado) { estado.nome = novoNome; salvarEstado(); }
-            // Atualiza lista de agentes
-            const chave = getPrefix() + 'lista_agentes';
-            const agentes = JSON.parse(localStorage.getItem(chave)) || [];
-            const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-            if (idx !== -1) { agentes[idx].nome = novoNome; localStorage.setItem(chave, JSON.stringify(agentes)); }
             fecharModalRenomear();
             mostrarToast('✎ NOME ATUALIZADO');
         }

@@ -7,6 +7,31 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
+            authDomain: "ficha-op-c9df8.firebaseapp.com",
+            databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com",
+            projectId: "ficha-op-c9df8",
+            storageBucket: "ficha-op-c9df8.firebasestorage.app",
+            messagingSenderId: "5463680704",
+            appId: "1:5463680704:web:3d6296c296699f4d41af25"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db  = getDatabase(app);
+
+        window._firebaseDB  = db;
+        window._firebaseRef = ref;
+        window._firebaseSet = set;
+        window._firebaseGet = get;
+    </script>
+
     <style>
 
     /* ===== SISTEMA DE TEMAS - ORDEM PARANORMAL ===== */
@@ -1380,7 +1405,7 @@ function renderResumo() {
 // ══════════════════════════════════════════════
 // SALVAR
 // ══════════════════════════════════════════════
-function finalizarFicha() {
+async function finalizarFicha() {
     const nome       = document.getElementById('input-nome').value.trim();
     const codinome   = document.getElementById('input-codinome').value.trim();
     const idade      = document.getElementById('input-idade').value;
@@ -1392,26 +1417,46 @@ function finalizarFicha() {
     const id = Date.now();
     fichaIdCriada = id;
 
-    // Habilidades da classe que NÃO são de NEX específico (não contêm "NEX" no nome)
+    // Habilidades da classe que NÃO são de NEX específico
     const habsClasse = (HABILIDADES_CLASSE[classe] || []).filter(h => !h.nome.includes('NEX'));
-    const habilidadesIniciais = habsClasse.map(h => ({ nome: h.nome, desc: h.desc, tipo: 'classe', elem: 'NEUTRO', nex: '5%', src: 'Livro Base' }));
+    const habilidadesIniciais = habsClasse.map(h => ({
+        nome: h.nome, desc: h.desc, tipo: 'classe', elem: 'NEUTRO', nex: '5%', src: 'Livro Base'
+    }));
 
     const ficha = {
         id, nome, codinome, idade, nivel, origem, classe,
-        atributos:    { ...atributosValores },
-        pericias:     [...periciasSelected],
+        atributos:         { ...atributosValores },
+        pericias:          [...periciasSelected],
         habilidadesIniciais,
-        personalidade: document.getElementById('input-personalidade').value,
-        ideal:         document.getElementById('input-ideal').value,
-        vinculo:       document.getElementById('input-vinculo').value,
-        fraqueza:      document.getElementById('input-fraqueza').value,
-        historia:      document.getElementById('input-historia').value,
-        criadoEm:      new Date().toLocaleDateString('pt-BR'),
+        personalidade:     document.getElementById('input-personalidade').value,
+        ideal:             document.getElementById('input-ideal').value,
+        vinculo:           document.getElementById('input-vinculo').value,
+        fraqueza:          document.getElementById('input-fraqueza').value,
+        historia:          document.getElementById('input-historia').value,
+        criadoEm:          new Date().toLocaleDateString('pt-BR'),
     };
 
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+
+    // ── 1. Firebase (fonte de verdade) ──────────────────────────────
+    let firebaseOk = false;
+    if (window._firebaseDB && window._firebaseSet && window._firebaseRef && usuario) {
+        try {
+            await window._firebaseSet(
+                window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`),
+                ficha
+            );
+            firebaseOk = true;
+        } catch (e) {
+            console.warn('Erro ao salvar agente no Firebase, usando localStorage como fallback:', e);
+        }
+    }
+
+    // ── 2. localStorage (cache offline / fallback) ───────────────────
     const chave = getPrefix() + 'lista_agentes';
     const agentes = JSON.parse(localStorage.getItem(chave)) || [];
-    agentes.push(ficha);
+    // Evita duplicatas (re-criação após erro)
+    if (!agentes.find(a => String(a.id) === String(id))) agentes.push(ficha);
     localStorage.setItem(chave, JSON.stringify(agentes));
 
     document.getElementById('modal-nome').textContent   = nome + (codinome ? ` "${codinome}"` : '');
@@ -1419,7 +1464,13 @@ function finalizarFicha() {
     document.getElementById('modal-sucesso').classList.add('show');
 }
 
-function irParaFicha()    { window.location.href = `ficha.html?id=${fichaIdCriada}`; }
+function irParaFicha() {
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const url = usuario
+        ? `ficha.html?id=${fichaIdCriada}&usuario=${encodeURIComponent(usuario)}`
+        : `ficha.html?id=${fichaIdCriada}`;
+    window.location.href = url;
+}
 function irParaAgentes()  { window.location.href = 'index.html?view=agentes'; }
 function criarNovo()      { window.location.reload(); }
 </script>
