@@ -143,6 +143,9 @@
         --card:        #091628;
         --border:      #1a3a6e;
         --text-dim:    #6a8aaa;
+        --danger:      #e84040;
+        --red:         #e84040;
+        --green:       #39d353;
     }
 
     .btn-temas {
@@ -648,7 +651,7 @@
 </optgroup>
 <optgroup label="── Suplementos ──">
     <option>Agente de Campo</option><option>Artista Marcial</option><option>Caçador</option>
-    <option>Contrabandista</option><option>Cultista Arrependido</option><option>Espiã</option>
+    <option>Contrabandista</option><option>Espiã</option>
     <option>Ex-Cultista</option><option>Especialista em TI</option><option>Fazendeiro</option>
     <option>Filho da Rua</option><option>Hacker</option><option>Jornalista</option>
     <option>Médico de Guerra</option><option>Mercenária</option><option>Nerd</option>
@@ -669,7 +672,6 @@
     <option>Motorista</option><option>Nerd Entusiasta</option><option>Profetizado</option>
     <option>Psicólogo</option><option>Repórter Investigativo</option>
 </optgroup>
-                </optgroup>
             </select>
             <div class="alerta-campo">⚠ Selecione uma origem</div>
         </div>
@@ -868,18 +870,18 @@ const TOTAL_PONTOS = 4; // pontos totais para distribuir
 const PERICIAS = [
     { nome:'Acrobacia',     atrib:'AGI' }, { nome:'Adestramento',  atrib:'PRE' },
     { nome:'Artes',         atrib:'PRE' }, { nome:'Atletismo',     atrib:'FOR' },
-    { nome:'Ciências',      atrib:'INT' }, { nome:'Crime',         atrib:'AGI' },
-    { nome:'Diplomacia',    atrib:'PRE' }, { nome:'Enganação',     atrib:'PRE' },
-    { nome:'Fortitude',     atrib:'VIG' }, { nome:'Furtividade',   atrib:'AGI' },
-    { nome:'Iniciativa',    atrib:'AGI' }, { nome:'Intimidação',   atrib:'PRE' },
-    { nome:'Intuição',      atrib:'PRE' }, { nome:'Investigação',  atrib:'INT' },
-    { nome:'Luta',          atrib:'FOR' }, { nome:'Medicina',      atrib:'INT' },
-    { nome:'Ocultismo',     atrib:'INT' }, { nome:'Percepção',     atrib:'PRE' },
-    { nome:'Pilotagem',     atrib:'AGI' }, { nome:'Pontaria',      atrib:'AGI' },
-    { nome:'Profissão',     atrib:'INT' }, { nome:'Reflexos',      atrib:'AGI' },
-    { nome:'Religião',      atrib:'INT' }, { nome:'Resistência',   atrib:'VIG' },
-    { nome:'Sobrevivência', atrib:'INT' }, { nome:'Tecnologia',    atrib:'INT' },
-    { nome:'Vontade',       atrib:'PRE' },
+    { nome:'Atualidades',   atrib:'INT' }, { nome:'Ciências',      atrib:'INT' },
+    { nome:'Crime',         atrib:'AGI' }, { nome:'Diplomacia',    atrib:'PRE' },
+    { nome:'Enganação',     atrib:'PRE' }, { nome:'Fortitude',     atrib:'VIG' },
+    { nome:'Furtividade',   atrib:'AGI' }, { nome:'Iniciativa',    atrib:'AGI' },
+    { nome:'Intimidação',   atrib:'PRE' }, { nome:'Intuição',      atrib:'PRE' },
+    { nome:'Investigação',  atrib:'INT' }, { nome:'Luta',          atrib:'FOR' },
+    { nome:'Medicina',      atrib:'INT' }, { nome:'Ocultismo',     atrib:'INT' },
+    { nome:'Percepção',     atrib:'PRE' }, { nome:'Pilotagem',     atrib:'AGI' },
+    { nome:'Pontaria',      atrib:'AGI' }, { nome:'Profissão',     atrib:'INT' },
+    { nome:'Reflexos',      atrib:'AGI' }, { nome:'Religião',      atrib:'PRE' },
+    { nome:'Sobrevivência', atrib:'INT' }, { nome:'Tática',        atrib:'INT' },
+    { nome:'Tecnologia',    atrib:'INT' }, { nome:'Vontade',       atrib:'PRE' },
 ];
 
 const HABILIDADES_CLASSE = {
