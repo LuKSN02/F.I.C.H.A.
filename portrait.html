@@ -759,6 +759,1359 @@ body.layout-hud .sub-row { margin-top: 2px; }
 body.layout-hud .right-group { display: none; }
 
 /* ============================================================
+   LAYOUT 6 — RITUAL (ocultista, moldura de círculo cósmico)
+   Inspirado nos rituais e entidades de Ordem Paranormal
+   ============================================================ */
+body.layout-ritual {
+  width: 340px;
+}
+
+body.layout-ritual .portrait {
+  width: 340px;
+  height: auto;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 14px 14px;
+  background: radial-gradient(ellipse at center, rgba(10,2,20,0.98) 0%, rgba(2,0,6,0.99) 100%);
+  border: 1px solid rgba(100,30,160,0.5);
+  box-shadow:
+    0 0 40px rgba(90,0,140,0.4),
+    inset 0 0 60px rgba(60,0,100,0.2);
+  position: relative;
+  overflow: visible;
+  animation: ritualFadeIn 0.8s ease both;
+}
+
+@keyframes ritualFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Pentagrama decorativo no fundo */
+body.layout-ritual .portrait::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 280px;
+  height: 280px;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle at center, transparent 38%, rgba(90,0,140,0.07) 39%, transparent 40%),
+    radial-gradient(circle at center, transparent 60%, rgba(90,0,140,0.05) 61%, transparent 62%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Linha superior decorativa de runas */
+body.layout-ritual .portrait::after {
+  content: '✦  ORD  ·  REA  ·  LIT  ·  AS  ✦';
+  position: absolute;
+  top: 6px;
+  left: 0; right: 0;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.38rem;
+  letter-spacing: 4px;
+  color: rgba(120,40,200,0.5);
+  pointer-events: none;
+}
+
+/* Foto circular com anel de ritual */
+body.layout-ritual .foto-wrap {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid rgba(90,0,140,0.6);
+  box-shadow:
+    0 0 0 6px rgba(40,0,70,0.8),
+    0 0 0 8px rgba(90,0,140,0.3),
+    0 0 0 14px rgba(20,0,40,0.6),
+    0 0 30px rgba(120,0,200,0.5),
+    inset 0 0 20px rgba(0,0,0,0.7);
+  flex-shrink: 0;
+  z-index: 2;
+  position: relative;
+  margin-bottom: 10px;
+  animation: ritualRing 6s linear infinite;
+}
+
+@keyframes ritualRing {
+  0%   { box-shadow: 0 0 0 6px rgba(40,0,70,0.8), 0 0 0 8px rgba(90,0,140,0.3), 0 0 0 14px rgba(20,0,40,0.6), 0 0 30px rgba(120,0,200,0.5), inset 0 0 20px rgba(0,0,0,0.7); }
+  50%  { box-shadow: 0 0 0 6px rgba(40,0,70,0.8), 0 0 0 8px rgba(130,0,200,0.5), 0 0 0 14px rgba(20,0,40,0.6), 0 0 50px rgba(160,0,255,0.6), inset 0 0 20px rgba(0,0,0,0.7); }
+  100% { box-shadow: 0 0 0 6px rgba(40,0,70,0.8), 0 0 0 8px rgba(90,0,140,0.3), 0 0 0 14px rgba(20,0,40,0.6), 0 0 30px rgba(120,0,200,0.5), inset 0 0 20px rgba(0,0,0,0.7); }
+}
+
+body.layout-ritual #death-overlay { border-radius: 50%; }
+
+/* Nome ghostado como título acima das barras */
+body.layout-ritual .nome-ghost {
+  display: block;
+  position: relative;
+  text-align: center;
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 1.4rem;
+  color: rgba(160,60,220,0.25);
+  letter-spacing: 8px;
+  pointer-events: none;
+  margin-bottom: -8px;
+  z-index: 0;
+}
+
+body.layout-ritual .stats-col {
+  width: 100%;
+  padding: 0;
+  gap: 8px;
+  align-items: stretch;
+  height: auto;
+  z-index: 2;
+  position: relative;
+}
+
+body.layout-ritual .bars-wrap {
+  margin-bottom: 0;
+  gap: 4px;
+}
+
+body.layout-ritual .stat-bar {
+  height: 24px;
+  background: rgba(30,0,50,0.7);
+  border: 1px solid rgba(90,0,140,0.3);
+}
+
+body.layout-ritual .stat-bar-vida { background: rgba(80,0,30,0.6); border-color: rgba(140,0,60,0.4); }
+body.layout-ritual .stat-bar-san  { background: rgba(20,0,60,0.6); border-color: rgba(60,0,140,0.4); }
+body.layout-ritual .stat-bar-esf  { background: rgba(50,30,0,0.6); border-color: rgba(120,70,0,0.4); }
+
+body.layout-ritual .info-panel {
+  background: rgba(10,0,20,0.8);
+  border: 1px solid rgba(90,0,140,0.35);
+  border-radius: 3px;
+  padding: 7px 10px;
+}
+
+body.layout-ritual .info-panel::before {
+  background: linear-gradient(90deg, transparent, rgba(130,0,200,0.7), transparent);
+}
+
+body.layout-ritual .nome {
+  text-shadow: 0 0 14px rgba(160,40,240,0.7), 1px 1px 0 #000;
+  color: #e8c8ff;
+}
+
+body.layout-ritual .nex-badge {
+  border-color: rgba(120,0,200,0.6);
+  color: rgba(180,100,255,0.9);
+  box-shadow: 0 0 6px rgba(120,0,200,0.4);
+  background: rgba(15,0,30,0.9);
+}
+
+body.layout-ritual .pe-val {
+  color: rgba(180,100,255,0.9);
+}
+
+/* ============================================================
+   LAYOUT 7 — TERMINAL (estilo console antigo, texto puro)
+   Inspirado nos sistemas da Ordo Realitas / OMBP
+   ============================================================ */
+body.layout-terminal {
+  width: 480px;
+}
+
+body.layout-terminal .portrait {
+  width: 480px;
+  height: auto;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 12px 16px 12px;
+  background: rgba(0,4,0,0.97);
+  border: 1px solid var(--green);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.5),
+    0 0 20px var(--green-glow),
+    inset 0 0 40px rgba(0,0,0,0.6);
+  position: relative;
+  gap: 8px;
+  animation: termBoot 0.4s steps(3) both;
+}
+
+@keyframes termBoot {
+  from { opacity: 0; clip-path: inset(0 0 100% 0); }
+  to   { opacity: 1; clip-path: inset(0 0 0% 0); }
+}
+
+/* Barra de título do terminal */
+body.layout-terminal .portrait::before {
+  content: 'ORDO REALITAS — SISTEMA SEGURO v4.1 ██ ACESSO AUTORIZADO';
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.4rem;
+  letter-spacing: 2px;
+  color: var(--green-bright);
+  border-bottom: 1px solid var(--green);
+  padding-bottom: 6px;
+  margin-bottom: 0;
+  text-transform: uppercase;
+}
+
+body.layout-terminal .portrait::after {
+  content: '█';
+  position: absolute;
+  bottom: 14px;
+  right: 18px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--green-bright);
+  animation: blink 1s step-end infinite;
+  pointer-events: none;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Ocultar foto no terminal — só texto */
+body.layout-terminal .foto-wrap {
+  display: none;
+}
+
+body.layout-terminal .nome-ghost { display: none; }
+
+body.layout-terminal .stats-col {
+  padding: 0;
+  gap: 0;
+  height: auto;
+  flex-direction: column;
+}
+
+/* Linha de ID acima das barras */
+body.layout-terminal .info-panel {
+  order: -1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(20,80,20,0.5);
+  border-radius: 0;
+  padding: 0 0 7px 0;
+  margin-bottom: 8px;
+}
+body.layout-terminal .info-panel::before { display: none; }
+
+body.layout-terminal .nome-label-small {
+  font-size: 0.38rem;
+  color: var(--green);
+  letter-spacing: 3px;
+}
+
+body.layout-terminal .nome {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--green-bright);
+  text-shadow: 0 0 8px var(--green-glow);
+  letter-spacing: 3px;
+}
+body.layout-terminal .nome::before { content: '> '; color: var(--green); }
+
+body.layout-terminal .sub-row { margin-top: 4px; gap: 6px; }
+
+body.layout-terminal .nex-badge {
+  font-size: 0.5rem;
+  letter-spacing: 1.5px;
+}
+
+body.layout-terminal .classe-tag {
+  font-size: 0.5rem;
+  letter-spacing: 1.5px;
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green-bright);
+}
+
+body.layout-terminal .origem-txt {
+  color: var(--text-dim);
+}
+
+body.layout-terminal .right-group {
+  align-items: flex-start;
+  margin-top: 4px;
+}
+
+body.layout-terminal .pe-label,
+body.layout-terminal .pe-val,
+body.layout-terminal .pe-desl {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--green-bright);
+}
+
+body.layout-terminal .bars-wrap {
+  margin-bottom: 0;
+  gap: 3px;
+}
+
+body.layout-terminal .stat-bar {
+  height: 20px;
+  background: rgba(0,8,0,0.8);
+  border: 1px solid rgba(20,80,20,0.5);
+  border-radius: 1px;
+}
+
+/* Labels do terminal: texto descritivo */
+body.layout-terminal .stat-label {
+  font-size: 0.5rem;
+  color: var(--green);
+  letter-spacing: 1.5px;
+  width: 24px;
+}
+
+body.layout-terminal .stat-val,
+body.layout-terminal .stat-max {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--green-bright);
+  text-shadow: 0 0 6px var(--green-glow);
+}
+
+body.layout-terminal .stat-sep {
+  color: var(--green);
+}
+
+body.layout-terminal .stat-bar-vida .stat-fill { background: linear-gradient(90deg, #cc0000, #ff4444); }
+body.layout-terminal .stat-bar-san  .stat-fill { background: linear-gradient(90deg, #0044aa, #2299ff); }
+body.layout-terminal .stat-bar-esf  .stat-fill { background: linear-gradient(90deg, #776600, #ddcc00); }
+
+/* ============================================================
+   LAYOUT 8 — FICHA (prontuário OMBP, estilo documento secreto)
+   Inspirado nos arquivos confidenciais da Ordem Paranormal
+   ============================================================ */
+body.layout-ficha {
+  width: 560px;
+}
+
+body.layout-ficha .portrait {
+  width: 560px;
+  height: 170px;
+  flex-direction: row;
+  align-items: stretch;
+  padding: 0;
+  background: rgba(2,6,3,0.97);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--green-bright);
+  border-top: 3px solid var(--green);
+  box-shadow: 0 6px 40px rgba(0,0,0,0.8), 0 0 20px var(--green-glow);
+  position: relative;
+  overflow: hidden;
+  animation: fichaSlide 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+@keyframes fichaSlide {
+  from { transform: translateY(-16px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+/* Marca d'água CONFIDENCIAL */
+body.layout-ficha .portrait::after {
+  content: 'CONFIDENCIAL';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-20deg);
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 3.5rem;
+  color: rgba(45,122,58,0.04);
+  letter-spacing: 10px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 0;
+}
+
+/* Cabeçalho OMBP no topo */
+body.layout-ficha .portrait::before {
+  content: 'OMBP · PRONTUÁRIO DE AGENTE · ACESSO RESTRITO';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.35rem;
+  letter-spacing: 3px;
+  color: rgba(45,122,58,0.5);
+  text-align: center;
+  padding: 2px 0;
+  background: rgba(0,20,0,0.5);
+  border-bottom: 1px solid rgba(20,80,20,0.4);
+  z-index: 3;
+}
+
+/* Foto quadrada com borda de prontuário */
+body.layout-ficha .foto-wrap {
+  width: 130px;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  border-right: 2px solid var(--green);
+  box-shadow: none;
+  flex-shrink: 0;
+  position: relative;
+  margin-top: 14px;
+  height: calc(100% - 14px);
+}
+
+body.layout-ficha .foto-wrap::after {
+  display: block;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.5) 100%);
+}
+
+/* Número de ID na foto */
+body.layout-ficha .foto-wrap::before {
+  content: '#ID-7749';
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.38rem;
+  color: rgba(255,255,255,0.4);
+  padding: 3px;
+  background: rgba(0,0,0,0.6);
+  z-index: 4;
+  letter-spacing: 2px;
+}
+
+body.layout-ficha #death-overlay { border-radius: 0; }
+
+body.layout-ficha .nome-ghost { display: none; }
+
+body.layout-ficha .stats-col {
+  flex: 1;
+  padding: 18px 14px 10px;
+  gap: 6px;
+  justify-content: flex-start;
+  z-index: 2;
+  position: relative;
+}
+
+body.layout-ficha .bars-wrap {
+  margin-bottom: 0;
+  gap: 3px;
+  order: 2;
+}
+
+body.layout-ficha .stat-bar {
+  height: 20px;
+  background: rgba(0,8,0,0.6);
+  border: 1px solid rgba(20,80,20,0.4);
+  border-radius: 2px;
+}
+
+body.layout-ficha .stat-val,
+body.layout-ficha .stat-max {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+}
+
+body.layout-ficha .info-panel {
+  order: 1;
+  background: rgba(0,8,2,0.6);
+  border: 1px solid rgba(20,80,20,0.5);
+  padding: 5px 8px;
+  margin-bottom: 0;
+  border-radius: 2px;
+}
+
+body.layout-ficha .info-panel::before {
+  height: 1px;
+  background: linear-gradient(90deg, var(--green-bright) 30%, transparent);
+}
+
+body.layout-ficha .nome {
+  font-size: 0.9rem;
+}
+
+body.layout-ficha .nome-label-small {
+  content: '▸ ID AGENTE';
+  font-size: 0.4rem;
+  color: var(--green);
+  letter-spacing: 3px;
+}
+
+body.layout-ficha .sub-row {
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+body.layout-ficha .right-group {
+  align-self: flex-end;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+body.layout-ficha .pe-label {
+  font-size: 0.38rem;
+  letter-spacing: 1px;
+}
+
+body.layout-ficha .pe-val {
+  font-size: 0.7rem;
+}
+
+/* ============================================================
+   LAYOUT 9 — TARÔ (carta de baralho ocultista)
+   Foto centrada em moldura de carta, runas nas bordas
+   ============================================================ */
+body.layout-taro {
+  width: 300px;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+body.layout-taro .portrait {
+  width: 300px;
+  height: auto;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 16px 16px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(180,130,0,0.08) 0%, transparent 60%),
+    rgba(4,3,1,0.98);
+  border: 2px solid var(--gold);
+  box-shadow:
+    0 0 0 5px rgba(4,3,1,0.9),
+    0 0 0 7px var(--gold-light),
+    0 0 0 10px rgba(4,3,1,0.9),
+    0 0 40px rgba(180,130,0,0.3),
+    inset 0 0 60px rgba(0,0,0,0.6);
+  position: relative;
+  gap: 10px;
+  animation: taroReveal 0.7s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+@keyframes taroReveal {
+  from { opacity: 0; transform: rotateY(20deg) scale(0.94); }
+  to   { opacity: 1; transform: rotateY(0deg)  scale(1); }
+}
+
+/* Título no topo da carta */
+body.layout-taro .portrait::before {
+  content: '✦ ORDO REALITAS ✦';
+  position: absolute;
+  top: 9px; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.42rem;
+  letter-spacing: 4px;
+  color: var(--gold-light);
+  text-shadow: 0 0 8px rgba(180,130,0,0.6);
+  pointer-events: none;
+}
+
+/* Ornamento inferior */
+body.layout-taro .portrait::after {
+  content: '· · ·';
+  position: absolute;
+  bottom: 7px; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.5rem;
+  color: rgba(180,130,0,0.4);
+  letter-spacing: 6px;
+  pointer-events: none;
+}
+
+/* Foto central da carta */
+body.layout-taro .foto-wrap {
+  width: 150px;
+  height: 180px;
+  border-radius: 4px;
+  border: 1px solid var(--gold);
+  box-shadow:
+    0 0 0 3px rgba(4,3,1,0.9),
+    0 0 0 4px rgba(180,130,0,0.3),
+    0 0 20px rgba(180,130,0,0.25),
+    inset 0 0 20px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+  position: relative;
+}
+
+body.layout-taro .foto-wrap::after {
+  display: block;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.7) 100%);
+  border-radius: 3px;
+}
+
+body.layout-taro #death-overlay { border-radius: 4px; }
+
+/* Nome sobreposto na foto */
+body.layout-taro .nome-ghost {
+  display: block;
+  position: absolute;
+  bottom: 6px;
+  left: 0; right: 0;
+  text-align: center;
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 0.95rem;
+  color: #fff;
+  letter-spacing: 3px;
+  text-shadow: 0 0 16px rgba(180,130,0,0.7), 0 2px 6px #000;
+  z-index: 3;
+  pointer-events: none;
+  padding: 0 6px;
+}
+
+body.layout-taro .stats-col {
+  width: 100%;
+  padding: 0;
+  gap: 6px;
+  height: auto;
+  z-index: 2;
+}
+
+body.layout-taro .bars-wrap {
+  margin-bottom: 0;
+  gap: 3px;
+}
+
+body.layout-taro .stat-bar {
+  height: 22px;
+  background: rgba(10,6,0,0.7);
+  border: 1px solid rgba(130,90,0,0.35);
+  border-radius: 2px;
+}
+
+body.layout-taro .stat-bar-vida .stat-fill { background: linear-gradient(90deg, #8b0000, #dd2222); }
+body.layout-taro .stat-bar-san  .stat-fill { background: linear-gradient(90deg, #001a55, #1155cc); }
+body.layout-taro .stat-bar-esf  .stat-fill { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+
+body.layout-taro .stat-val,
+body.layout-taro .stat-max {
+  color: #f0d890;
+  text-shadow: 0 0 6px rgba(180,130,0,0.5);
+}
+
+body.layout-taro .stat-label {
+  color: rgba(180,130,0,0.6);
+}
+
+body.layout-taro .info-panel {
+  background: rgba(8,5,0,0.8);
+  border: 1px solid rgba(130,90,0,0.4);
+  border-top: 1px solid var(--gold);
+  border-radius: 2px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+}
+
+body.layout-taro .info-panel::before {
+  background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+}
+
+body.layout-taro .nome {
+  color: #f0d890;
+  text-shadow: 0 0 10px rgba(180,130,0,0.6), 1px 1px 0 #000;
+}
+
+body.layout-taro .nome-label-small { color: rgba(130,90,0,0.7); }
+
+body.layout-taro .nex-badge {
+  border-color: rgba(130,90,0,0.6);
+  color: var(--gold-light);
+  box-shadow: 0 0 6px rgba(130,90,0,0.3);
+  background: rgba(8,5,0,0.9);
+}
+
+body.layout-taro .classe-tag {
+  background: var(--gold);
+  color: #111;
+}
+
+body.layout-taro .pe-val { color: var(--gold-light); }
+
+body.layout-taro .right-group { display: none; }
+
+/* ============================================================
+   LAYOUT 10 — RADAR (sonar tático da Ordo Realitas)
+   Barras circulares, estilo HUD de varredura
+   ============================================================ */
+body.layout-radar {
+  width: 420px;
+  align-items: flex-start;
+}
+
+body.layout-radar .portrait {
+  width: 420px;
+  height: 180px;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 14px 10px 10px;
+  background: rgba(0,6,4,0.97);
+  border: 1px solid rgba(0,180,100,0.3);
+  border-left: 3px solid var(--green-bright);
+  box-shadow: 0 0 30px rgba(0,200,100,0.15), inset 0 0 50px rgba(0,0,0,0.7);
+  position: relative;
+  overflow: hidden;
+  animation: radarPing 0.6s ease both;
+}
+
+@keyframes radarPing {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Linha de varredura animada */
+body.layout-radar .portrait::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--green-bright), transparent);
+  opacity: 0.3;
+  animation: radarSweep 3s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes radarSweep {
+  from { left: -2px; opacity: 0.4; }
+  to   { left: 102%; opacity: 0; }
+}
+
+/* Grid de fundo estilo sonar */
+body.layout-radar .portrait::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(0,180,80,0.04) 18px, rgba(0,180,80,0.04) 19px),
+    repeating-linear-gradient(90deg, transparent, transparent 18px, rgba(0,180,80,0.04) 18px, rgba(0,180,80,0.04) 19px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Foto em forma de hexágono visual (clip-path) */
+body.layout-radar .foto-wrap {
+  width: 130px;
+  height: 150px;
+  border-radius: 4px;
+  border: 1px solid rgba(0,200,100,0.5);
+  box-shadow:
+    0 0 14px rgba(0,200,100,0.3),
+    inset 0 0 16px rgba(0,0,0,0.6);
+  flex-shrink: 0;
+  z-index: 2;
+  position: relative;
+  clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
+}
+
+body.layout-radar .foto-wrap::after {
+  display: block;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,180,80,0.08) 0%, transparent 50%);
+}
+
+body.layout-radar #death-overlay { border-radius: 4px; }
+
+body.layout-radar .nome-ghost { display: none; }
+
+body.layout-radar .stats-col {
+  z-index: 2;
+  padding-left: 14px;
+  gap: 5px;
+}
+
+body.layout-radar .bars-wrap {
+  margin-bottom: 0;
+  gap: 4px;
+}
+
+body.layout-radar .stat-bar {
+  height: 26px;
+  background: rgba(0,14,8,0.8);
+  border: 1px solid rgba(0,100,50,0.4);
+  border-radius: 2px;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 30%, 100% 100%, 0 100%);
+}
+
+body.layout-radar .stat-bar-vida .stat-fill { background: linear-gradient(90deg, #aa0000, #ff3333); }
+body.layout-radar .stat-bar-san  .stat-fill { background: linear-gradient(90deg, #004499, #1188ff); }
+body.layout-radar .stat-bar-esf  .stat-fill { background: linear-gradient(90deg, #886600, #ddcc00); }
+
+body.layout-radar .stat-val,
+body.layout-radar .stat-max {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1rem;
+  color: #aaffcc;
+  text-shadow: 0 0 6px rgba(0,200,100,0.5);
+}
+
+body.layout-radar .stat-label {
+  color: rgba(0,200,100,0.5);
+  font-size: 0.45rem;
+}
+
+body.layout-radar .stat-sep { color: rgba(0,200,100,0.4); }
+
+body.layout-radar .info-panel {
+  background: rgba(0,10,6,0.8);
+  border: 1px solid rgba(0,100,50,0.4);
+  border-left: 2px solid var(--green-bright);
+  border-radius: 2px;
+  padding: 6px 10px;
+}
+
+body.layout-radar .info-panel::before {
+  background: linear-gradient(90deg, var(--green-bright), transparent);
+}
+
+body.layout-radar .nome {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #aaffcc;
+  text-shadow: 0 0 10px rgba(0,220,100,0.5);
+  letter-spacing: 2px;
+}
+
+body.layout-radar .nex-badge {
+  border-color: rgba(0,150,70,0.6);
+  color: #66ffaa;
+  box-shadow: 0 0 6px rgba(0,180,80,0.3);
+}
+
+body.layout-radar .pe-val { color: #66ffaa; text-shadow: 0 0 6px rgba(0,200,100,0.4); }
+body.layout-radar .pe-label { color: rgba(0,180,80,0.5); }
+body.layout-radar .pe-desl { color: rgba(0,180,80,0.5); }
+
+/* ============================================================
+   LAYOUT 11 — RPG (bordas douradas, estilo grimório medieval)
+   Pergaminho ornamentado com cantos decorativos
+   ============================================================ */
+body.layout-rpg {
+  width: 580px;
+}
+
+body.layout-rpg .portrait {
+  width: 580px;
+  height: 200px;
+  flex-direction: row;
+  align-items: stretch;
+  padding: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(80,40,0,0.15) 0%, transparent 50%),
+    rgba(6,4,1,0.98);
+  border: 2px solid var(--gold);
+  box-shadow:
+    0 0 0 1px rgba(4,2,0,0.9),
+    0 0 0 3px rgba(100,60,0,0.4),
+    0 0 40px rgba(150,100,0,0.3),
+    inset 0 0 60px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: visible;
+  animation: rpgUnfurl 0.6s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+@keyframes rpgUnfurl {
+  from { opacity: 0; clip-path: inset(0 50% 0 50%); }
+  to   { opacity: 1; clip-path: inset(0 0% 0 0%); }
+}
+
+/* Cantos ornamentais (pseudo-elementos nos cantos via box-shadow) */
+body.layout-rpg .portrait::before {
+  content: '✦';
+  position: absolute;
+  top: -9px; left: -9px;
+  width: 18px; height: 18px;
+  background: rgba(6,4,1,0.98);
+  color: var(--gold-light);
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 18px;
+  box-shadow: 0 0 8px rgba(180,130,0,0.5);
+  z-index: 5;
+}
+
+body.layout-rpg .portrait::after {
+  content: '✦';
+  position: absolute;
+  top: -9px; right: -9px;
+  width: 18px; height: 18px;
+  background: rgba(6,4,1,0.98);
+  color: var(--gold-light);
+  font-size: 0.7rem;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 8px rgba(180,130,0,0.5);
+  z-index: 5;
+}
+
+/* Seção da foto com moldura lateral dourada */
+body.layout-rpg .foto-wrap {
+  width: 150px;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  border-right: 2px solid var(--gold);
+  box-shadow: 4px 0 20px rgba(150,100,0,0.2);
+  flex-shrink: 0;
+  position: relative;
+}
+
+body.layout-rpg .foto-wrap::after {
+  display: block;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent 50%, rgba(6,4,1,0.4) 100%);
+}
+
+body.layout-rpg #death-overlay { border-radius: 0; }
+
+/* Nome ghostado grande */
+body.layout-rpg .nome-ghost {
+  display: block;
+  position: absolute;
+  top: 4px; right: 10px;
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 3rem;
+  color: rgba(100,60,0,0.12);
+  letter-spacing: 5px;
+  pointer-events: none;
+  line-height: 1;
+}
+
+body.layout-rpg .stats-col {
+  flex: 1;
+  padding: 14px 16px 10px;
+  gap: 6px;
+  position: relative;
+  z-index: 2;
+}
+
+body.layout-rpg .bars-wrap {
+  margin-bottom: 0;
+  gap: 4px;
+}
+
+body.layout-rpg .stat-bar {
+  height: 26px;
+  background: rgba(12,7,0,0.7);
+  border: 1px solid rgba(120,80,0,0.4);
+  border-radius: 1px;
+  box-shadow: inset 0 1px 0 rgba(180,130,0,0.08);
+}
+
+body.layout-rpg .stat-bar-vida .stat-fill {
+  background: linear-gradient(90deg, #6b0000, #cc2200, #ff4422);
+  box-shadow: 2px 0 8px rgba(200,30,0,0.5);
+}
+body.layout-rpg .stat-bar-san .stat-fill {
+  background: linear-gradient(90deg, #001133, #003399, #2266dd);
+  box-shadow: 2px 0 8px rgba(30,80,200,0.5);
+}
+body.layout-rpg .stat-bar-esf .stat-fill {
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), #ffe080);
+  box-shadow: 2px 0 8px rgba(180,130,0,0.5);
+}
+
+body.layout-rpg .stat-val,
+body.layout-rpg .stat-max {
+  color: #f0d890;
+  text-shadow: 0 1px 6px rgba(180,130,0,0.5);
+  font-size: 1.1rem;
+}
+
+body.layout-rpg .stat-label {
+  color: rgba(180,130,0,0.55);
+  font-size: 0.44rem;
+  letter-spacing: 2px;
+}
+
+body.layout-rpg .stat-sep { color: rgba(180,130,0,0.4); }
+
+body.layout-rpg .info-panel {
+  background: rgba(10,6,0,0.7);
+  border: 1px solid rgba(130,90,0,0.5);
+  border-top: 1px solid var(--gold);
+  border-radius: 1px;
+  padding: 6px 10px;
+  position: relative;
+}
+
+body.layout-rpg .info-panel::before {
+  background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+}
+
+/* Cantos da info-panel */
+body.layout-rpg .info-panel::after {
+  content: '◆';
+  position: absolute;
+  top: -6px; right: 8px;
+  font-size: 0.5rem;
+  color: var(--gold);
+  background: rgba(10,6,0,0.9);
+  padding: 0 3px;
+  line-height: 1;
+}
+
+body.layout-rpg .nome {
+  color: #f0d890;
+  font-size: 1rem;
+  text-shadow: 0 0 12px rgba(180,130,0,0.55), 1px 1px 2px #000;
+  letter-spacing: 1.5px;
+}
+
+body.layout-rpg .nome-label-small {
+  color: rgba(130,90,0,0.7);
+  letter-spacing: 4px;
+}
+
+body.layout-rpg .nex-badge {
+  border-color: rgba(130,90,0,0.7);
+  color: var(--gold-light);
+  box-shadow: 0 0 6px rgba(130,90,0,0.35);
+  background: rgba(10,6,0,0.95);
+}
+
+body.layout-rpg .classe-tag {
+  background: var(--gold);
+  color: #111;
+  font-size: 0.5rem;
+}
+
+body.layout-rpg .origem-txt { color: rgba(130,90,0,0.6); }
+
+body.layout-rpg .pe-val {
+  color: var(--gold-light);
+  text-shadow: 0 0 6px rgba(180,130,0,0.4);
+}
+
+body.layout-rpg .pe-label { color: rgba(130,90,0,0.5); }
+body.layout-rpg .pe-desl  { color: rgba(130,90,0,0.5); }
+
+body.layout-rpg .btn-ficha {
+  border-color: var(--gold);
+  box-shadow: 0 0 10px rgba(130,90,0,0.3);
+}
+
+body.layout-rpg .btn-ficha:hover {
+  background: rgba(100,60,0,0.3);
+  border-color: var(--gold-light);
+  box-shadow: 0 0 20px rgba(180,130,0,0.4);
+}
+
+/* ============================================================
+   LAYOUT 12 — CARTEIRINHA (crachá de identificação da OMBP)
+   Estilo carteira estudantil / crachá de agente classificado
+   ============================================================ */
+body.layout-carteirinha {
+  width: 360px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+body.layout-carteirinha .portrait {
+  width: 360px;
+  height: auto;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  background: rgba(3,8,4,0.99);
+  border: 1.5px solid var(--green);
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.8),
+    0 8px 40px rgba(0,0,0,0.9),
+    0 0 20px var(--green-glow);
+  position: relative;
+  overflow: hidden;
+  gap: 0;
+  animation: cardFlip 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+@keyframes cardFlip {
+  from { opacity: 0; transform: perspective(600px) rotateX(12deg) scale(0.96); }
+  to   { opacity: 1; transform: perspective(600px) rotateX(0deg)  scale(1); }
+}
+
+/* Faixa de topo colorida (header do crachá) */
+.carteirinha-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px 7px;
+  background: linear-gradient(90deg, var(--green-dark), var(--green), var(--green-dark));
+  border-bottom: 2px solid var(--green-bright);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.carteirinha-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 6px,
+    rgba(255,255,255,0.03) 6px,
+    rgba(255,255,255,0.03) 7px
+  );
+  pointer-events: none;
+}
+
+.cart-org {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  line-height: 1;
+}
+
+.cart-org-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.35rem;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.cart-logo {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.3);
+  box-shadow: 0 0 8px rgba(255,255,255,0.1);
+}
+
+/* Corpo principal do crachá */
+.carteirinha-body {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  padding: 14px 14px 12px;
+  gap: 14px;
+  position: relative;
+}
+
+/* Faixa lateral de cor (decorativa) */
+.carteirinha-body::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--green-bright), var(--green), transparent);
+  border-radius: 0 0 0 10px;
+}
+
+/* Foto do agente */
+body.layout-carteirinha .foto-wrap {
+  width: 88px;
+  height: 110px;
+  border-radius: 5px;
+  border: 2px solid var(--green);
+  box-shadow:
+    0 0 0 2px rgba(0,0,0,0.6),
+    0 4px 16px rgba(0,0,0,0.7),
+    0 0 12px var(--green-glow);
+  flex-shrink: 0;
+  position: relative;
+  align-self: flex-start;
+}
+
+body.layout-carteirinha .foto-wrap::after {
+  display: block;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 65%, rgba(0,0,0,0.55) 100%);
+  border-radius: 3px;
+}
+
+/* Número de registro abaixo da foto */
+body.layout-carteirinha .foto-wrap::before {
+  content: 'REG. OMBP';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.33rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 1.5px;
+  padding: 2px 0 2px;
+  background: rgba(0,0,0,0.55);
+  border-radius: 0 0 3px 3px;
+  z-index: 3;
+}
+
+body.layout-carteirinha #death-overlay { border-radius: 4px; }
+
+/* Coluna de dados do agente */
+.carteirinha-dados {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.cart-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.cart-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.36rem;
+  letter-spacing: 2.5px;
+  color: var(--green);
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.cart-valor {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 0 10px var(--green-glow);
+  line-height: 1.1;
+}
+
+.cart-valor-sm {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--white);
+  letter-spacing: 1px;
+}
+
+.cart-divider {
+  height: 1px;
+  background: linear-gradient(90deg, var(--green-bright), transparent);
+  opacity: 0.25;
+  margin: 1px 0;
+}
+
+.cart-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.cart-row .cart-campo { flex: 1; min-width: 0; }
+
+/* Tags NEX e Classe */
+.cart-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 1px;
+}
+
+/* Barras de status no rodapé */
+.carteirinha-stats {
+  padding: 0 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: relative;
+}
+
+.carteirinha-stats::before {
+  content: '▸ STATUS VITAL';
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.35rem;
+  letter-spacing: 3px;
+  color: var(--green);
+  opacity: 0.5;
+  margin-bottom: 5px;
+}
+
+body.layout-carteirinha .stat-bar {
+  height: 18px;
+  background: rgba(0,8,2,0.7);
+  border: 1px solid rgba(20,80,20,0.4);
+  border-radius: 2px;
+}
+
+body.layout-carteirinha .stat-val,
+body.layout-carteirinha .stat-max {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+}
+
+body.layout-carteirinha .stat-label {
+  font-size: 0.38rem;
+  width: 20px;
+}
+
+/* Rodapé do crachá */
+.carteirinha-footer {
+  border-top: 1px solid rgba(20,80,20,0.4);
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0,6,2,0.6);
+  border-radius: 0 0 9px 9px;
+}
+
+.cart-barcode {
+  display: flex;
+  gap: 1px;
+  align-items: center;
+  height: 16px;
+}
+
+.cart-barcode span {
+  display: block;
+  height: 100%;
+  background: var(--green-bright);
+  opacity: 0.6;
+  border-radius: 1px;
+}
+
+.cart-serial {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.38rem;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
+}
+
+.cart-validade {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.38rem;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-align: right;
+}
+
+/* Ocultar elementos padrão que não são usados */
+body.layout-carteirinha .portrait > .foto-wrap,
+body.layout-carteirinha .portrait > .stats-col {
+  display: none;
+}
+
+/* ============================================================
    SELETOR DE LAYOUT
    ============================================================ */
 .layout-switcher {
@@ -953,6 +2306,180 @@ body.layout-hud .right-group { display: none; }
   border-radius: 1px;
   opacity: 0.7;
 }
+
+/* Preview miniatura: Ritual */
+.lp-ritual .lp-ritual-ring {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(130,0,200,0.7);
+  transform: translate(-50%, -55%);
+  box-shadow: 0 0 4px rgba(130,0,200,0.5);
+}
+.lp-ritual .lp-ritual-bar {
+  position: absolute;
+  left: 2px; right: 2px;
+  height: 2px;
+  top: 8px;
+  border-radius: 1px;
+  background: var(--accent1);
+  opacity: 0.7;
+}
+
+/* Preview miniatura: Terminal */
+.lp-terminal .lp-term-line {
+  position: absolute;
+  left: 2px;
+  width: 90%;
+  height: 1.5px;
+  background: var(--green-bright);
+  border-radius: 1px;
+  opacity: 0.7;
+  top: 2px;
+}
+.lp-terminal .lp-term-cursor {
+  position: absolute;
+  left: 2px; bottom: 3px;
+  width: 4px; height: 7px;
+  background: var(--green-bright);
+  opacity: 0.8;
+  animation: blink 1s step-end infinite;
+}
+
+/* Preview miniatura: Prontuário */
+.lp-ficha .lp-ficha-left {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 7px;
+  background: var(--green);
+  opacity: 0.5;
+  border-right: 1px solid var(--green-bright);
+}
+.lp-ficha .lp-ficha-line {
+  position: absolute;
+  left: 9px; right: 2px;
+  height: 1.5px;
+  top: 3px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 1px;
+}
+.lp-ficha .lp-ficha-bar {
+  position: absolute;
+  left: 9px; right: 2px;
+  height: 2px;
+  top: 11px;
+  border-radius: 1px;
+  background: var(--accent1);
+  opacity: 0.7;
+}
+
+/* Preview miniatura: Tarô */
+.lp-taro .lp-taro-frame {
+  position: absolute;
+  inset: 1px;
+  border: 1px solid var(--gold);
+  border-radius: 1px;
+  opacity: 0.6;
+}
+.lp-taro .lp-taro-circle {
+  position: absolute;
+  left: 50%; top: 3px;
+  width: 8px; height: 10px;
+  background: rgba(130,90,0,0.4);
+  transform: translateX(-50%);
+  border-radius: 1px;
+}
+.lp-taro .lp-taro-bar {
+  position: absolute;
+  left: 2px; right: 2px;
+  height: 2px;
+  border-radius: 1px;
+  opacity: 0.7;
+}
+
+/* Preview miniatura: Radar */
+.lp-radar .lp-radar-hex {
+  position: absolute;
+  left: 2px; top: 2px;
+  width: 11px; height: 14px;
+  background: rgba(0,150,70,0.3);
+  border: 1px solid rgba(0,200,100,0.5);
+  clip-path: polygon(10% 0%, 90% 0%, 100% 15%, 100% 85%, 90% 100%, 10% 100%, 0% 85%, 0% 15%);
+}
+.lp-radar .lp-radar-bar {
+  position: absolute;
+  left: 15px; right: 2px;
+  height: 3px;
+  border-radius: 1px;
+  background: rgba(0,200,100,0.6);
+}
+.lp-radar .lp-radar-sweep {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(0,200,100,0.4);
+  left: 40%;
+}
+
+/* Preview miniatura: RPG */
+.lp-rpg .lp-rpg-left {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 8px;
+  background: rgba(130,90,0,0.4);
+  border-right: 1px solid var(--gold);
+}
+.lp-rpg .lp-rpg-frame {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(130,90,0,0.5);
+}
+.lp-rpg .lp-rpg-bar {
+  position: absolute;
+  left: 10px; right: 2px;
+  height: 2px;
+  border-radius: 1px;
+  opacity: 0.8;
+}
+
+/* Preview miniatura: Carteirinha */
+.lp-carteirinha .lp-cart-header {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 5px;
+  background: var(--green);
+  border-bottom: 1px solid var(--green-bright);
+  opacity: 0.8;
+}
+.lp-carteirinha .lp-cart-foto {
+  position: absolute;
+  left: 2px; top: 7px;
+  width: 7px; height: 9px;
+  background: rgba(45,122,58,0.4);
+  border: 1px solid var(--green);
+  border-radius: 1px;
+}
+.lp-carteirinha .lp-cart-line {
+  position: absolute;
+  left: 11px; right: 2px;
+  height: 1.5px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 1px;
+}
+.lp-carteirinha .lp-cart-footer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: rgba(0,0,0,0.4);
+  border-top: 1px solid rgba(20,80,20,0.4);
+}
+
+/* Carteirinha: mostrar/ocultar baseado no layout */
+body:not(.layout-carteirinha) #portrait-carteirinha { display: none !important; }
+body.layout-carteirinha #portrait { display: none !important; }
+body.layout-carteirinha #portrait-carteirinha { display: flex !important; flex-direction: column; }
+body.layout-carteirinha { width: 360px; }
 
 /* ============================================================
    SELETOR DE TEMA (idêntico ao original)
@@ -1218,6 +2745,120 @@ body.layout-hud .right-group { display: none; }
   </div>
 </div>
 
+<!-- ====== CARTEIRINHA LAYOUT (estrutura separada, exibida via CSS) ====== -->
+<div class="portrait portrait-carteirinha" id="portrait-carteirinha" style="display:none;">
+
+  <!-- HEADER -->
+  <div class="carteirinha-header">
+    <div>
+      <div class="cart-org">ORDEM PARANORMAL</div>
+      <div class="cart-org-sub">Organização Mundial do Bizarro e do Paranormal</div>
+    </div>
+    <div class="cart-logo">☽</div>
+  </div>
+
+  <!-- BODY -->
+  <div class="carteirinha-body">
+
+    <!-- Foto -->
+    <div class="foto-wrap" style="width:88px;height:110px;border-radius:5px;">
+      <img id="cart-foto-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Foto" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;">
+      <div id="cart-death-overlay" style="position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:5;border-radius:4px;transition:opacity 2s ease;"></div>
+    </div>
+
+    <!-- Dados -->
+    <div class="carteirinha-dados">
+
+      <div class="cart-campo">
+        <div class="cart-label">Nome / Codinome</div>
+        <div class="cart-valor" id="cart-nome-txt">— AGENTE —</div>
+      </div>
+
+      <div class="cart-divider"></div>
+
+      <div class="cart-row">
+        <div class="cart-campo">
+          <div class="cart-label">Classe</div>
+          <div class="cart-valor-sm" id="cart-classe-txt">—</div>
+        </div>
+        <div class="cart-campo">
+          <div class="cart-label">Origem</div>
+          <div class="cart-valor-sm" id="cart-origem-txt">—</div>
+        </div>
+      </div>
+
+      <div class="cart-row">
+        <div class="cart-campo">
+          <div class="cart-label">NEX</div>
+          <div class="cart-valor-sm" id="cart-nex-txt">5%</div>
+        </div>
+        <div class="cart-campo">
+          <div class="cart-label">PE / Desl.</div>
+          <div class="cart-valor-sm"><span id="cart-pe-txt">3 PE</span> · <span id="cart-desl-txt">9m</span></div>
+        </div>
+      </div>
+
+      <div class="cart-divider"></div>
+
+      <div class="cart-campo">
+        <div class="cart-label">Nível de Acesso</div>
+        <div class="cart-badges">
+          <div class="nex-badge" id="cart-nex-badge">NEX 5%</div>
+          <div class="classe-tag" id="cart-classe-badge">—</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BARRAS -->
+  <div class="carteirinha-stats">
+    <div class="stat-bar stat-bar-vida" id="cart-bar-vida">
+      <div class="stat-fill" id="cart-fill-vida"></div>
+      <span class="stat-label">PV</span>
+      <div class="stat-item">
+        <span class="stat-val" id="cart-vida-atual">20</span>
+        <span class="stat-sep">/</span>
+        <span class="stat-max" id="cart-vida-max">20</span>
+      </div>
+    </div>
+    <div class="stat-bar stat-bar-san" id="cart-bar-san">
+      <div class="stat-fill" id="cart-fill-san"></div>
+      <span class="stat-label">PS</span>
+      <div class="stat-item">
+        <span class="stat-val" id="cart-san-atual">20</span>
+        <span class="stat-sep">/</span>
+        <span class="stat-max" id="cart-san-max">20</span>
+      </div>
+    </div>
+    <div class="stat-bar stat-bar-esf" id="cart-bar-esf">
+      <div class="stat-fill" id="cart-fill-esf"></div>
+      <span class="stat-label">PE</span>
+      <div class="stat-item">
+        <span class="stat-val" id="cart-esf-atual">10</span>
+        <span class="stat-sep">/</span>
+        <span class="stat-max" id="cart-esf-max">10</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="carteirinha-footer">
+    <div class="cart-barcode" id="cart-barcode">
+      <span style="width:1px"></span><span style="width:2px"></span><span style="width:1px"></span>
+      <span style="width:3px"></span><span style="width:1px"></span><span style="width:2px"></span>
+      <span style="width:1px"></span><span style="width:1px"></span><span style="width:3px"></span>
+      <span style="width:1px"></span><span style="width:2px"></span><span style="width:1px"></span>
+    </div>
+    <div class="cart-serial" id="cart-serial">OP-0000-0000</div>
+    <div class="cart-validade">
+      <div>VALIDADE</div>
+      <div>PERMANENTE</div>
+    </div>
+  </div>
+
+</div>
+
 <!-- ====== SELETOR DE LAYOUT ====== -->
 <div class="layout-switcher" id="layout-switcher">
   <div class="layout-panel" id="layout-panel">
@@ -1277,11 +2918,88 @@ body.layout-hud .right-group { display: none; }
         HUD Superior
       </div>
 
+      <div class="layout-opt" data-layout="ritual" onclick="aplicarLayout('ritual')">
+        <div class="layout-preview lp-ritual">
+          <div class="lp-ritual-ring"></div>
+          <div class="lp-ritual-bar"></div>
+          <div class="lp-ritual-bar" style="top:12px;"></div>
+        </div>
+        ✦ Ritual
+      </div>
+
+      <div class="layout-opt" data-layout="terminal" onclick="aplicarLayout('terminal')">
+        <div class="layout-preview lp-terminal">
+          <div class="lp-term-line"></div>
+          <div class="lp-term-line" style="top:5px;width:70%;"></div>
+          <div class="lp-term-line" style="top:9px;width:55%;"></div>
+          <div class="lp-term-cursor"></div>
+        </div>
+        Terminal
+      </div>
+
+      <div class="layout-opt" data-layout="ficha" onclick="aplicarLayout('ficha')">
+        <div class="layout-preview lp-ficha">
+          <div class="lp-ficha-left"></div>
+          <div class="lp-ficha-line"></div>
+          <div class="lp-ficha-line" style="top:7px;width:40%;"></div>
+          <div class="lp-ficha-bar"></div>
+          <div class="lp-ficha-bar" style="top:14px;background:var(--accent2);"></div>
+        </div>
+        Prontuário
+      </div>
+
+      <div class="layout-opt" data-layout="taro" onclick="aplicarLayout('taro')">
+        <div class="layout-preview lp-taro">
+          <div class="lp-taro-frame"></div>
+          <div class="lp-taro-circle"></div>
+          <div class="lp-taro-bar" style="top:14px;background:var(--accent1);"></div>
+          <div class="lp-taro-bar" style="top:15px;background:var(--accent2);display:none;"></div>
+        </div>
+        ✦ Tarô
+      </div>
+
+      <div class="layout-opt" data-layout="radar" onclick="aplicarLayout('radar')">
+        <div class="layout-preview lp-radar">
+          <div class="lp-radar-hex"></div>
+          <div class="lp-radar-sweep"></div>
+          <div class="lp-radar-bar" style="top:3px;"></div>
+          <div class="lp-radar-bar" style="top:7px;background:rgba(0,200,100,0.4);"></div>
+          <div class="lp-radar-bar" style="top:11px;background:rgba(0,200,100,0.3);"></div>
+        </div>
+        ◎ Radar
+      </div>
+
+      <div class="layout-opt" data-layout="rpg" onclick="aplicarLayout('rpg')">
+        <div class="layout-preview lp-rpg">
+          <div class="lp-rpg-frame"></div>
+          <div class="lp-rpg-left"></div>
+          <div class="lp-rpg-bar" style="top:3px;background:var(--accent1);"></div>
+          <div class="lp-rpg-bar" style="top:7px;background:var(--accent2);"></div>
+          <div class="lp-rpg-bar" style="top:11px;background:var(--gold);"></div>
+        </div>
+        ◆ RPG
+      </div>
+
+      <div class="layout-opt" data-layout="carteirinha" onclick="aplicarLayout('carteirinha')">
+        <div class="layout-preview lp-carteirinha">
+          <div class="lp-cart-header"></div>
+          <div class="lp-cart-foto"></div>
+          <div class="lp-cart-line" style="top:8px;"></div>
+          <div class="lp-cart-line" style="top:11px;width:50%;"></div>
+          <div class="lp-cart-line" style="top:14px;width:65%;"></div>
+          <div class="lp-cart-footer"></div>
+        </div>
+        ▣ Carteirinha
+      </div>
+
     </div>
     <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.42rem;color:#334;letter-spacing:1px;line-height:1.8;">
-      ▸ OBS CLASSICO/BANNER/COMPACTO: 600px<br>
-      ▸ OBS VERTICAL: 280px<br>
-      ▸ OBS HUD: 600px × altura automática
+      ▸ CLASSICO/BANNER/COMPACTO: 600px<br>
+      ▸ VERTICAL: 280px · HUD: 600px<br>
+      ▸ RITUAL: 340px · TERMINAL: 480px<br>
+      ▸ PRONTUÁRIO: 560px · TARÔ: 300px<br>
+      ▸ RADAR: 420px · RPG: 580px<br>
+      ▸ CARTEIRINHA: 360px
     </div>
   </div>
   <button class="layout-toggle-btn" onclick="toggleLayoutPanel()" title="Mudar layout">
@@ -1417,6 +3135,31 @@ function aplicarAgente(ficha, est) {
     document.getElementById('pe-txt').textContent    = pe + ' PE';
     document.getElementById('desl-txt').textContent  = desl;
     requestAnimationFrame(fitNome);
+    // Sincronizar carteirinha
+    const cartNome = document.getElementById('cart-nome-txt');
+    if (cartNome) cartNome.textContent = `"${nomeExibir.toUpperCase()}"`;
+    const cartFoto = document.getElementById('cart-foto-img');
+    if (cartFoto) cartFoto.src = fotoSrc;
+    const cartClasse = document.getElementById('cart-classe-txt');
+    if (cartClasse) cartClasse.textContent = ficha.classe || '—';
+    const cartOrigem = document.getElementById('cart-origem-txt');
+    if (cartOrigem) cartOrigem.textContent = ficha.origem || '—';
+    const cartNex = document.getElementById('cart-nex-txt');
+    if (cartNex) cartNex.textContent = nex;
+    const cartPe = document.getElementById('cart-pe-txt');
+    if (cartPe) cartPe.textContent = pe + ' PE';
+    const cartDesl = document.getElementById('cart-desl-txt');
+    if (cartDesl) cartDesl.textContent = desl;
+    const cartNexBadge = document.getElementById('cart-nex-badge');
+    if (cartNexBadge) cartNexBadge.textContent = 'NEX ' + nex;
+    const cartClasseBadge = document.getElementById('cart-classe-badge');
+    if (cartClasseBadge) cartClasseBadge.textContent = ficha.classe || '—';
+    // Serial aleatório baseado no nome
+    const cartSerial = document.getElementById('cart-serial');
+    if (cartSerial) {
+      const seed = nomeExibir.split('').reduce((a,c) => a + c.charCodeAt(0), 0);
+      cartSerial.textContent = 'OP-' + String(seed % 9000 + 1000) + '-' + String((seed * 7) % 9000 + 1000);
+    }
     if (est) {
         const v = est.vida || {}, s = est.san || {}, e = est.esf || {};
         atualizarStat('vida', v.atual ?? 0, v.max ?? 20);
@@ -1456,14 +3199,26 @@ function atualizarStat(tipo, atual, max) {
         if (bar) bar.style.animation = pct <= 25 && atual > 0 ? 'pulseBar 1s ease infinite' : '';
 
         const overlay = document.getElementById('death-overlay');
+        const cartOverlay = document.getElementById('cart-death-overlay');
         const bars = document.querySelectorAll('.stat-bar');
         if (atual <= 0) {
             if (overlay) overlay.classList.add('morto');
+            if (cartOverlay) cartOverlay.style.opacity = '1';
             bars.forEach(b => b.classList.add('morto-bar'));
         } else {
             if (overlay) overlay.classList.remove('morto');
+            if (cartOverlay) cartOverlay.style.opacity = '0';
             bars.forEach(b => b.classList.remove('morto-bar'));
         }
+    }
+
+    // Espelhar valores na carteirinha
+    const cartMap = { vida: ['cart-vida-atual','cart-vida-max','cart-fill-vida'], san: ['cart-san-atual','cart-san-max','cart-fill-san'], esf: ['cart-esf-atual','cart-esf-max','cart-fill-esf'] };
+    if (cartMap[tipo]) {
+        const [aId, mId, fId] = cartMap[tipo];
+        const a = document.getElementById(aId); if (a) a.textContent = atual;
+        const m = document.getElementById(mId); if (m) m.textContent = max;
+        const f = document.getElementById(fId); if (f) f.style.width = (max > 0 ? Math.max(0,Math.min(100,(atual/max)*100)) : 0) + '%';
     }
 }
 
@@ -1617,7 +3372,14 @@ else window.addEventListener('load', tentarIniciar);
     banner:    'Banner',
     compacto:  'Compacto',
     vertical:  'Vertical',
-    hud:       'HUD'
+    hud:       'HUD',
+    ritual:    'Ritual',
+    terminal:  'Terminal',
+    ficha:     'Prontuário',
+    taro:      'Tarô',
+    radar:     'Radar',
+    rpg:       'RPG',
+    carteirinha: 'Carteirinha'
   };
 
   // ---- Tema ----
@@ -1664,7 +3426,7 @@ else window.addEventListener('load', tentarIniciar);
   };
 
   window.aplicarLayout = function(layout) {
-    ['classico','banner','compacto','vertical','hud'].forEach(l => {
+    ['classico','banner','compacto','vertical','hud','ritual','terminal','ficha','taro','radar','rpg','carteirinha'].forEach(l => {
       document.body.classList.remove('layout-' + l);
     });
     document.body.classList.add('layout-' + layout);
