@@ -804,7 +804,11 @@
 </footer>
 
 <!-- Firebase SDKs -->
-<script type="module">
+<script>
+        let _resolveFirebaseReady;
+        window._firebaseReady = new Promise(resolve => { _resolveFirebaseReady = resolve; });
+    </script>
+    <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -831,6 +835,7 @@ window._firebaseDB  = rtdb;
 window._firebaseRef = dbRef;
 window._firebaseSet = dbSet;
 window._firebaseGet = dbGet;
+_resolveFirebaseReady();
 
 // Salva imagem no RTDB como base64 (evita CORS do Firebase Storage)
 window._uploadImagemPerfil = async function(uid, tipo, base64DataUrl) {
@@ -856,7 +861,8 @@ onAuthStateChanged(auth, async user => {
         const nomeUsuario = user.displayName || user.email.replace('@ficha.local', '');
         document.getElementById('status-dot').className = 'status-dot online';
         document.getElementById('status-txt').textContent = nomeUsuario;
-        atualizarAvatar();
+        await window._firebaseReady;
+        await atualizarAvatar();
 
         // Checa se veio de link de convite
         const params = new URLSearchParams(window.location.search);

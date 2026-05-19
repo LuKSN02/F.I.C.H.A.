@@ -1004,7 +1004,11 @@ body {
 </style>
 
 <!-- ===== FIREBASE INIT ===== -->
-<script type="module">
+<script>
+    let _resolveFirebaseReady;
+    window._firebaseReady = new Promise(resolve => { _resolveFirebaseReady = resolve; });
+  </script>
+  <script type="module">
   import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -1026,6 +1030,7 @@ body {
   window._firebaseRef = ref;
   window._firebaseSet = set;
   window._firebaseGet = get;
+  _resolveFirebaseReady();
 
   // Salva imagem no RTDB como base64 (evita CORS do Firebase Storage)
   window._uploadImagemPerfil = async function(uid, tipo, base64DataUrl) {
@@ -2407,10 +2412,11 @@ function showToast(msg, cor) {
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 400); }, 2800);
 }
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
   if (!usuario) { window.location.href = 'index.html'; return; }
-  atualizarAvatar();
+  await window._firebaseReady;
+  await atualizarAvatar();
   renderLista('ameacas', carregar('ameacas'));
   renderLista('habilidades', carregar('habilidades'));
   renderLista('rituais', carregar('rituais'));

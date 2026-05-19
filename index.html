@@ -791,6 +791,13 @@
     </footer>
     
 
+    <script>
+        // Promise que resolve quando o Firebase estiver pronto
+        // Garante que atualizarAvatar() nunca rode antes de _firebaseDB estar disponível
+        let _resolveFirebaseReady;
+        window._firebaseReady = new Promise(resolve => { _resolveFirebaseReady = resolve; });
+    </script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -815,6 +822,8 @@
         window._firebaseSet    = set;
         window._firebaseGet    = get;
         window._firebaseRemove = remove;
+        // Sinaliza que o Firebase está pronto para scripts globais
+        _resolveFirebaseReady();
 
         // Salva imagem diretamente no Realtime Database como base64
         // Evita CORS do Firebase Storage — não requer domínio autorizado
@@ -841,8 +850,8 @@
             return signOut(auth);
         };
 
-        // onAuthStateChanged — sem guarda, sempre atualiza a UI corretamente
-        onAuthStateChanged(auth, user => {
+        // onAuthStateChanged — _firebaseDB já está pronto aqui pois o módulo inicializou tudo antes de registrar este listener
+        onAuthStateChanged(auth, async user => {
             if (user) {
                 const usuario = user.displayName || user.email.replace('@ficha.local', '');
                 sessionStorage.setItem('ficha_user', usuario);
@@ -851,7 +860,7 @@
                 localStorage.setItem('ficha_uid_firebase', user.uid);
 
                 document.getElementById('modal-login-overlay').classList.add('d-none');
-                atualizarAvatar();
+                await atualizarAvatar();
                 const params = new URLSearchParams(window.location.search);
                 if (params.get('view') === 'agentes') mostrarAgentes();
                 else { mostrarInicio(); carregarAgentes(); }
@@ -961,13 +970,13 @@
         /* =============================================
            NAVEGAÇÃO
         ============================================= */
-        window.onload = function () {
-            // onAuthStateChanged já restaura a sessão automaticamente
-            // Se já tiver usuário no storage (sessão ativa), inicializa a UI
+        window.onload = async function () {
             const usuario = getUsuarioLogado();
             if (usuario) {
                 document.getElementById('modal-login-overlay').classList.add('d-none');
-                atualizarAvatar();
+                // Aguarda Firebase estar pronto antes de buscar o avatar
+                await window._firebaseReady;
+                await atualizarAvatar();
                 const params = new URLSearchParams(window.location.search);
                 if (params.get('view') === 'agentes') mostrarAgentes();
                 else carregarAgentes();
