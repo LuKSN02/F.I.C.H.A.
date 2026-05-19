@@ -795,8 +795,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-        import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-
         const firebaseConfig = {
             apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
             authDomain: "ficha-op-c9df8.firebaseapp.com",
@@ -807,45 +805,34 @@
             appId: "1:5463680704:web:3d6296c296699f4d41af25"
         };
 
-        const app     = initializeApp(firebaseConfig);
-        const auth    = getAuth(app);
-        const db      = getDatabase(app);
-        const storage = getStorage(app);
+        const app  = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db   = getDatabase(app);
 
-        // Expõe Firebase Database e Storage para scripts globais
-        window._firebaseDB         = db;
-        window._firebaseRef        = ref;
-        window._firebaseSet        = set;
-        window._firebaseGet        = get;
-        window._firebaseRemove     = remove;
-        window._firebaseStorage    = storage;
-        window._firebaseStorageRef = storageRef;
-        window._firebaseUploadStr  = uploadString;
-        window._firebaseGetURL     = getDownloadURL;
+        // Expõe Firebase Realtime Database para scripts globais
+        window._firebaseDB     = db;
+        window._firebaseRef    = ref;
+        window._firebaseSet    = set;
+        window._firebaseGet    = get;
+        window._firebaseRemove = remove;
 
-        // Upload de imagem base64 para o Firebase Storage e retorna a URL pública
+        // Salva imagem diretamente no Realtime Database como base64
+        // Evita CORS do Firebase Storage — não requer domínio autorizado
         window._uploadImagemPerfil = async function(uid, tipo, base64DataUrl) {
-            // tipo = 'foto' ou 'banner'
-            const ext = base64DataUrl.startsWith('data:image/gif') ? 'gif' : 'jpg';
-            const path = `perfis/${uid}/${tipo}.${ext}`;
-            const sRef = storageRef(storage, path);
-            const snapshot = await uploadString(sRef, base64DataUrl, 'data_url');
-            return await getDownloadURL(snapshot.ref);
+            await set(ref(db, `perfis_imgs/${uid}/${tipo}`), base64DataUrl);
+            return base64DataUrl; // retorna o próprio base64 como "URL"
         };
 
-        // Converte nome de usuário em email interno do Firebase
         function toEmail(usuario) {
             return `${usuario.trim().toLowerCase()}@ficha.local`;
         }
 
-        // Expõe funções de auth para o script global abaixo
         window._fbLogin = async function(usuario, senha) {
             return signInWithEmailAndPassword(auth, toEmail(usuario), senha);
         };
 
         window._fbCadastro = async function(usuario, senha) {
             const cred = await createUserWithEmailAndPassword(auth, toEmail(usuario), senha);
-            // Salva o nome de usuário no displayName para recuperar depois
             await updateProfile(cred.user, { displayName: usuario });
             return cred;
         };
@@ -854,14 +841,12 @@
             return signOut(auth);
         };
 
-        // Observa estado de autenticação
+        // onAuthStateChanged — sem guarda, sempre atualiza a UI corretamente
         onAuthStateChanged(auth, user => {
             if (user) {
                 const usuario = user.displayName || user.email.replace('@ficha.local', '');
-                // Salva no sessionStorage/localStorage para o resto do sistema continuar funcionando
                 sessionStorage.setItem('ficha_user', usuario);
                 localStorage.setItem('ficha_user_ativo', usuario);
-                // Salva o UID para uso nas campanhas
                 localStorage.setItem('ficha_uid', user.uid);
                 localStorage.setItem('ficha_uid_firebase', user.uid);
 
@@ -1095,7 +1080,6 @@
         function toggleDropdown(e) {
             e.stopPropagation();
             document.getElementById('temas-dropdown').classList.remove('open');
-            document.getElementById('avatar-dropdown').classList.toggle('open');
         }
 
         /* =============================================
@@ -1103,7 +1087,6 @@
         ============================================= */
         function toggleTemas(e) {
             e.stopPropagation();
-            document.getElementById('avatar-dropdown').classList.remove('open');
             document.getElementById('temas-dropdown').classList.toggle('open');
         }
 
@@ -1120,7 +1103,6 @@
         // Fecha dropdowns ao clicar fora
         document.addEventListener('click', function() {
             document.getElementById('temas-dropdown').classList.remove('open');
-            document.getElementById('avatar-dropdown').classList.remove('open');
         });
 
         // Restaura tema salvo ao carregar
@@ -1137,7 +1119,6 @@
 
 function abrirSeletorFoto(e) {
     e.stopPropagation();
-    document.getElementById('avatar-dropdown').classList.remove('open');
     document.getElementById('input-foto-perfil').click();
 }
 
@@ -1181,26 +1162,21 @@ async function confirmarCrop() {
     const canvas = cropperInstance.getCroppedCanvas({ width: 300, height: 300 });
     if (!canvas) return;
     const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-    // Salva base64 no cache local e exibe imediatamente (UX rápida)
     const perfil = getPerfilLocal();
     perfil.foto  = dataUrl;
     setPerfilLocal(perfil);
+    // Exibe imediatamente na navbar e no painel
     await atualizarAvatar();
-    cancelarCrop();
-    // Atualiza avatar no painel de perfil, se estiver aberto
     const avatarEl = document.getElementById('perfil-avatar-img');
     if (avatarEl) avatarEl.innerHTML = `<img src="${dataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
-    // Faz upload pro Firebase Storage e salva a URL no DB
+    cancelarCrop();
+    // Salva no Firebase (RTDB — sem CORS)
     const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
     if (uid && window._uploadImagemPerfil) {
         try {
-            const url = await window._uploadImagemPerfil(uid, 'foto', dataUrl);
-            perfil.foto = url; // substitui base64 pela URL pública
-            setPerfilLocal(perfil);
+            await window._uploadImagemPerfil(uid, 'foto', dataUrl);
             await salvarPerfilFirebase(perfil);
-            await atualizarAvatar(); // atualiza com a URL final
-            if (avatarEl) avatarEl.innerHTML = `<img src="${url}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
-        } catch(e) { console.warn('Upload foto erro:', e); await salvarPerfilFirebase(perfil); }
+        } catch(e) { console.warn('Upload foto erro:', e); }
     } else {
         await salvarPerfilFirebase(perfil);
     }
@@ -1231,23 +1207,33 @@ function setPerfilLocal(dados) {
 
 async function salvarPerfilFirebase(dados) {
     const u = getUsuarioLogado(); if (!u) return;
-    if (window._firebaseDB) {
-        try {
-            // Remove base64 antes de salvar no DB (imagens ficam no Storage)
-            const dadosSemBase64 = Object.assign({}, dados);
-            if (dadosSemBase64.foto   && dadosSemBase64.foto.startsWith('data:'))   delete dadosSemBase64.foto;
-            if (dadosSemBase64.banner && dadosSemBase64.banner.startsWith('data:')) delete dadosSemBase64.banner;
-            await window._firebaseSet(window._firebaseRef(window._firebaseDB, `perfis/${u}`), dadosSemBase64);
-        } catch(e) { console.warn('Perfil firebase erro:', e); }
-    }
+    if (!window._firebaseDB || !window._firebaseSet || !window._firebaseRef) return;
+    try {
+        // Salva dados do perfil (sem as imagens — ficam em perfis_imgs)
+        const d = Object.assign({}, dados);
+        delete d.foto;
+        delete d.banner;
+        await window._firebaseSet(window._firebaseRef(window._firebaseDB, `perfis/${u}`), d);
+    } catch(e) { console.warn('Perfil firebase erro:', e); }
 }
 
 async function carregarPerfilFirebase(usuario) {
     if (!window._firebaseDB || !window._firebaseGet || !window._firebaseRef) return null;
     try {
-        const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis/${usuario}`));
-        return snap.exists() ? snap.val() : null;
-    } catch(e) { return null; }
+        const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
+        // Carrega dados do perfil e imagens em paralelo
+        const [snapPerfil, snapImgs] = await Promise.all([
+            window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis/${usuario}`)),
+            uid ? window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis_imgs/${uid}`)) : Promise.resolve(null)
+        ]);
+        const perfil = snapPerfil.exists() ? snapPerfil.val() : {};
+        if (snapImgs && snapImgs.exists()) {
+            const imgs = snapImgs.val();
+            if (imgs.foto)   perfil.foto   = imgs.foto;
+            if (imgs.banner) perfil.banner = imgs.banner;
+        }
+        return Object.keys(perfil).length ? perfil : null;
+    } catch(e) { console.warn('Carregar perfil erro:', e); return null; }
 }
 
 async function abrirPainelPerfil(e) {
@@ -1497,25 +1483,21 @@ async function _salvarBannerBase64(base64) {
     const banner = document.getElementById('perfil-banner');
     banner.style.backgroundImage = `url('${base64}')`;
     banner.style.backgroundSize  = 'cover';
-    // Salva base64 no cache local para uso offline
     perfil.banner = base64;
     setPerfilLocal(perfil);
-    // Faz upload pro Firebase Storage e salva a URL no DB
+    // Salva no Firebase RTDB (sem CORS)
     const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
     if (uid && window._uploadImagemPerfil) {
         try {
-            const url = await window._uploadImagemPerfil(uid, 'banner', base64);
-            perfil.banner = url; // substitui base64 pela URL pública
-            setPerfilLocal(perfil);
+            await window._uploadImagemPerfil(uid, 'banner', base64);
             await salvarPerfilFirebase(perfil);
-        } catch(e) { console.warn('Upload banner erro:', e); await salvarPerfilFirebase(perfil); }
+        } catch(e) { console.warn('Upload banner erro:', e); }
     } else {
         await salvarPerfilFirebase(perfil);
     }
 }
 
-/* ── Painel de perfil: atualização do avatar removida daqui —
-   a função confirmarCrop já faz o upload e chama atualizarAvatar() ── */
+/* confirmarCrop já atualiza o painel — duplicata removida */
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

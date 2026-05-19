@@ -808,7 +808,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { getDatabase, ref as dbRef, set as dbSet, get as dbGet } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 // ══ CONFIG FIREBASE ══
@@ -822,24 +821,21 @@ const firebaseConfig = {
     appId: "1:5463680704:web:3d6296c296699f4d41af25"
 };
 
-const app     = initializeApp(firebaseConfig);
-const db      = getFirestore(app);
-const auth    = getAuth(app);
-const storage = getStorage(app);
-const rtdb    = getDatabase(app);
+const app   = initializeApp(firebaseConfig);
+const db    = getFirestore(app);
+const auth  = getAuth(app);
+const rtdb  = getDatabase(app);
 
-// Expõe Realtime Database para as funções de perfil (global)
+// Expõe RTDB para funções globais de perfil
 window._firebaseDB  = rtdb;
 window._firebaseRef = dbRef;
 window._firebaseSet = dbSet;
 window._firebaseGet = dbGet;
 
+// Salva imagem no RTDB como base64 (evita CORS do Firebase Storage)
 window._uploadImagemPerfil = async function(uid, tipo, base64DataUrl) {
-    const ext = base64DataUrl.startsWith('data:image/gif') ? 'gif' : 'jpg';
-    const path = `perfis/${uid}/${tipo}.${ext}`;
-    const sRef = storageRef(storage, path);
-    const snapshot = await uploadString(sRef, base64DataUrl, 'data_url');
-    return await getDownloadURL(snapshot.ref);
+    await dbSet(dbRef(rtdb, `perfis_imgs/${uid}/${tipo}`), base64DataUrl);
+    return base64DataUrl;
 };
 
 // ══ ESTADO GLOBAL ══
@@ -1285,20 +1281,30 @@ function getPerfilLocal() { return _perfilCache; }
 function setPerfilLocal(dados) { _perfilCache = dados || {}; }
 async function salvarPerfilFirebase(dados) {
     const u = getUsuarioLogado(); if (!u) return;
-    if (!window._firebaseDB || !window._firebaseRef || !window._firebaseSet) return;
+    if (!window._firebaseDB || !window._firebaseSet || !window._firebaseRef) return;
     try {
-        const dadosSemBase64 = Object.assign({}, dados);
-        if (dadosSemBase64.foto   && dadosSemBase64.foto.startsWith('data:'))   delete dadosSemBase64.foto;
-        if (dadosSemBase64.banner && dadosSemBase64.banner.startsWith('data:')) delete dadosSemBase64.banner;
-        await window._firebaseSet(window._firebaseRef(window._firebaseDB, `perfis/${u}`), dadosSemBase64);
+        const d = Object.assign({}, dados);
+        delete d.foto;
+        delete d.banner;
+        await window._firebaseSet(window._firebaseRef(window._firebaseDB, `perfis/${u}`), d);
     } catch(e) { console.warn('Perfil firebase erro:', e); }
 }
 async function carregarPerfilFirebase(usuario) {
-    if (!window._firebaseDB || !window._firebaseRef || !window._firebaseGet) return null;
+    if (!window._firebaseDB || !window._firebaseGet || !window._firebaseRef) return null;
     try {
-        const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis/${usuario}`));
-        return snap.exists() ? snap.val() : null;
-    } catch(e) { return null; }
+        const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
+        const [snapPerfil, snapImgs] = await Promise.all([
+            window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis/${usuario}`)),
+            uid ? window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis_imgs/${uid}`)) : Promise.resolve(null)
+        ]);
+        const perfil = snapPerfil.exists() ? snapPerfil.val() : {};
+        if (snapImgs && snapImgs.exists()) {
+            const imgs = snapImgs.val();
+            if (imgs.foto)   perfil.foto   = imgs.foto;
+            if (imgs.banner) perfil.banner = imgs.banner;
+        }
+        return Object.keys(perfil).length ? perfil : null;
+    } catch(e) { console.warn('Carregar perfil erro:', e); return null; }
 }
 
 window.abrirPainelPerfil = async function(e) {
@@ -1470,12 +1476,10 @@ window.confirmarCrop = async function() {
     const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
     if (uid && window._uploadImagemPerfil) {
         try {
-            const url = await window._uploadImagemPerfil(uid, 'foto', dataUrl);
-            perfil.foto = url; setPerfilLocal(perfil);
+            await window._uploadImagemPerfil(uid, 'foto', dataUrl);
             await salvarPerfilFirebase(perfil);
             atualizarAvatar();
-            if (avatarEl) avatarEl.innerHTML = `<img src="${url}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
-        } catch(e) { console.warn('Upload foto erro:', e); await salvarPerfilFirebase(perfil); }
+        } catch(e) { console.warn('Upload foto erro:', e); }
     } else { await salvarPerfilFirebase(perfil); }
 };
 window.cancelarCrop = function() {
@@ -1521,14 +1525,13 @@ async function _salvarBannerBase64(base64) {
     const banner = document.getElementById('perfil-banner');
     banner.style.backgroundImage = `url('${base64}')`;
     banner.style.backgroundSize  = 'cover';
-    // Upload pro Firebase Storage
+    // Salva no RTDB (sem CORS)
     const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
     if (uid && window._uploadImagemPerfil) {
         try {
-            const url = await window._uploadImagemPerfil(uid, 'banner', base64);
-            perfil.banner = url; setPerfilLocal(perfil);
+            await window._uploadImagemPerfil(uid, 'banner', base64);
             await salvarPerfilFirebase(perfil);
-        } catch(e) { console.warn('Upload banner erro:', e); await salvarPerfilFirebase(perfil); }
+        } catch(e) { console.warn('Upload banner erro:', e); }
     } else { await salvarPerfilFirebase(perfil); }
 }
 
