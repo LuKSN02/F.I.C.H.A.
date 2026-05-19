@@ -120,9 +120,6 @@
         --card:        #091628;
         --border:      #1a3a6e;
         --text-dim:    #6a8aaa;
-        --red:         #e84040;
-        --red-dark:    #7a0000;
-        --green:       #39d353;
     }
 
     .btn-temas {
@@ -140,7 +137,7 @@
         background: var(--tema-primary); color: white;
         box-shadow: 0 0 12px rgba(var(--tema-glow-rgb),0.4);
     }
-    .temas-wrapper { position: relative; display: inline-block; z-index: 1050; }
+    .temas-wrapper { position: relative; display: inline-block; }
     .temas-dropdown {
         position: absolute; right: 0; top: 46px;
         background: #0d0d0d;
@@ -148,7 +145,7 @@
         border-radius: 10px; min-width: 210px;
         padding: 8px 0;
         box-shadow: 0 8px 30px rgba(0,0,0,0.7);
-        z-index: 1051; display: none;
+        z-index: 1001; display: none;
     }
     .temas-dropdown.open { display: block; }
     .temas-dropdown .td-header {
@@ -187,8 +184,7 @@ body {
 }
 
 /* ── NAVBAR ── */
-.custom-nav { background-color: black; border-bottom: 2px solid #333; position: relative; z-index: 1040; }
-.custom-nav .navbar-collapse { overflow: visible !important; }
+.custom-nav { background-color: black; border-bottom: 2px solid #333; }
 .nav-link { font-weight: 700; }
 .nav-link:hover { color: var(--tema-primary-light) !important; }
 .navbar-brand { font-weight: 700; }
@@ -642,16 +638,16 @@ body {
 /* ── AVATAR ── */
 .avatar-wrapper { position: relative; display: inline-block; cursor: pointer; }
 .avatar-circle {
-  width: 46px; height: 46px; border-radius: 50%;
+  width: 38px; height: 38px; border-radius: 50%;
   border: 2px solid #8a2be2; background: #1a0033;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.2rem; font-weight: 700; color: #bc6ff1;
+  font-size: 1rem; font-weight: 700; color: #bc6ff1;
   overflow: hidden; transition: 0.2s; user-select: none;
 }
 .avatar-circle:hover { border-color: #bc6ff1; box-shadow: 0 0 10px rgba(138,43,226,0.5); }
 .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
 .avatar-dropdown {
-  position: absolute; right: 0; top: 54px;
+  position: absolute; right: 0; top: 46px;
   background: #0d0d0d; border: 1px solid #3a0063;
   border-radius: 10px; min-width: 180px; padding: 10px 0;
   box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 1000; display: none;
@@ -833,81 +829,6 @@ body {
   margin-top: 40px; line-height: 2;
 }
 
-/* Botão de editar item próprio na comunidade */
-.btn-editar-comunidade {
-  background: transparent;
-  border: 1px solid #444;
-  color: #888;
-  font-family: 'Oswald', sans-serif;
-  font-size: 0.8rem; font-weight: 700;
-  padding: 6px 14px; border-radius: 5px;
-  cursor: pointer; transition: 0.2s; white-space: nowrap;
-}
-.btn-editar-comunidade:hover { border-color: var(--purple); color: var(--purple-neon); }
-
-.btn-deletar-comunidade {
-  background: transparent;
-  border: 1px solid #441111;
-  color: #884444;
-  font-family: 'Oswald', sans-serif;
-  font-size: 0.8rem; font-weight: 700;
-  padding: 6px 10px; border-radius: 5px;
-  cursor: pointer; transition: 0.2s; white-space: nowrap;
-}
-.btn-deletar-comunidade:hover { border-color: #cc1111; color: #ff4444; }
-
-.community-item-card.meu-item { border-color: rgba(var(--tema-glow-rgb), 0.3); }
-
-/* Modal de edição de item da comunidade */
-#modal-editar-comunidade {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.92); z-index: 10002;
-  align-items: center; justify-content: center;
-}
-#modal-editar-comunidade.show { display: flex; }
-.modal-editar-box {
-  background: #0a000f; border: 1px solid var(--purple);
-  border-radius: 12px; padding: 28px;
-  max-width: 560px; width: 94%;
-  max-height: 85vh; overflow-y: auto;
-  box-shadow: 0 0 40px rgba(var(--tema-glow-rgb), 0.3);
-  font-family: 'Oswald', sans-serif;
-}
-.modal-editar-titulo {
-  font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase;
-  color: #555; margin-bottom: 18px;
-  font-family: 'Share Tech Mono', monospace;
-}
-.modal-editar-box .med-field-label {
-  font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase;
-  color: #666; display: block; margin-bottom: 5px;
-  font-family: 'Share Tech Mono', monospace;
-}
-.modal-editar-box .med-field-input {
-  width: 100%; background: #0d0015; border: 1px solid #2a1040;
-  color: white; font-family: 'Oswald', sans-serif; font-size: 0.9rem;
-  padding: 9px 12px; border-radius: 6px; outline: none; box-sizing: border-box;
-  transition: border-color 0.2s; margin-bottom: 14px;
-}
-.modal-editar-box .med-field-input:focus { border-color: var(--purple); }
-.modal-editar-box .med-field-textarea {
-  width: 100%; background: #0d0015; border: 1px solid #2a1040;
-  color: white; font-family: 'Oswald', sans-serif; font-size: 0.85rem;
-  padding: 9px 12px; border-radius: 6px; outline: none; box-sizing: border-box;
-  resize: vertical; min-height: 90px; transition: border-color 0.2s;
-  margin-bottom: 14px;
-}
-.modal-editar-box .med-field-textarea:focus { border-color: var(--purple); }
-.modal-editar-aviso {
-  font-size: 0.65rem; color: #555; font-family: 'Share Tech Mono', monospace;
-  letter-spacing: 1px; margin-bottom: 18px;
-  padding: 8px 12px; border: 1px solid #1a1a1a; border-radius: 4px;
-  background: #0a0a0a;
-}
-.modal-editar-footer {
-  display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px;
-}
-
 /* ===== RESPONSIVIDADE MOBILE ===== */
 @media (max-width: 576px) {
     /* Navbar: logo menor */
@@ -952,14 +873,6 @@ body {
     .modal-overlay { padding: 10px; }
 }
 
-/* Navbar intermediária (lg): evita esmagamento */
-@media (min-width: 992px) and (max-width: 1199px) {
-    .navbar-brand { font-size: 1.2rem !important; }
-    .navbar-brand img { width: 48px !important; height: 48px !important; }
-    .btn-temas { font-size: 0.75rem; padding: 5px 10px; margin-right: 8px; }
-    .nav-link { padding-left: 0.5rem !important; padding-right: 0.5rem !important; font-size: 0.9rem; }
-}
-
 /* ===== AVATAR DE PERFIL ===== */
 .avatar-wrapper { position: relative; display: inline-block; cursor: pointer; }
 .avatar-circle {
@@ -980,7 +893,7 @@ body {
 }
 #perfil-overlay.show { display: flex; }
 .perfil-card {
-    background: #111115; border-radius: 14px; width: min(340px, 95vw);
+    background: #111115; border-radius: 14px; width: 340px;
     overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
     position: relative; font-family: 'Oswald', sans-serif;
 }
@@ -989,7 +902,6 @@ body {
     background: linear-gradient(135deg, var(--tema-primary-dark), #000);
     background-size: cover; background-position: center;
     position: relative; cursor: pointer; transition: filter 0.2s;
-    overflow: hidden;
 }
 .perfil-banner:hover .perfil-banner-edit { opacity: 1; }
 .perfil-banner-edit {
@@ -997,13 +909,8 @@ body {
     display: flex; align-items: center; justify-content: center;
     opacity: 0; transition: 0.2s; font-size: 0.7rem; letter-spacing: 2px;
     color: #ccc; font-family: 'Share Tech Mono', monospace;
-    z-index: 1;
 }
-.banner-img-animado {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%; object-fit: cover; z-index: 0;
-}
-.perfil-avatar-wrap { position: absolute; top: 72px; left: 18px; cursor: pointer; z-index: 10; }
+.perfil-avatar-wrap { position: absolute; bottom: -38px; left: 18px; cursor: pointer; }
 .perfil-avatar {
     width: 76px; height: 76px; border-radius: 50%; border: 4px solid #111115;
     background: #222; overflow: hidden; display: flex; align-items: center; justify-content: center;
@@ -1020,7 +927,7 @@ body {
     border-color: var(--perfil-borda, var(--tema-primary));
     box-shadow: 0 0 12px var(--perfil-borda, var(--tema-primary));
 }
-.perfil-top-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 2; }
+.perfil-top-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
 .perfil-top-btn {
     background: rgba(0,0,0,0.6); border: 1px solid #333; color: #aaa;
     font-size: 0.7rem; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: 0.2s;
@@ -1060,7 +967,7 @@ body {
     z-index: 10000; align-items: center; justify-content: center;
 }
 .perfil-edit-overlay.show { display: flex; }
-.perfil-edit-box { background: #0d0d0d; border: 1px solid var(--tema-primary-dark); border-radius: 12px; padding: 24px; width: min(320px, 92vw); box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3); }
+.perfil-edit-box { background: #0d0d0d; border: 1px solid var(--tema-primary-dark); border-radius: 12px; padding: 24px; width: 320px; box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3); }
 .perfil-edit-title { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #666; margin-bottom: 14px; font-family: 'Share Tech Mono', monospace; }
 .perfil-edit-input, .perfil-edit-textarea { width: 100%; background: #1a1a1f; border: 1px solid #333; color: white; font-family: 'Oswald', sans-serif; font-size: 0.95rem; padding: 9px 12px; border-radius: 6px; outline: none; transition: border-color 0.2s; resize: vertical; }
 .perfil-edit-input:focus, .perfil-edit-textarea:focus { border-color: var(--tema-primary); }
@@ -1094,53 +1001,6 @@ body {
 .banner-crop-btn-cancel { background: transparent; border-color: #333; color: #555; }
 .banner-crop-btn-cancel:hover { border-color: #666; color: #888; }
 
-/* ===== ANIMAÇÕES PARANORMAIS ===== */
-#particle-canvas {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none; z-index: 0; opacity: 0.4;
-}
-
-/* NOTA: main-tabs NÃO usa isolation:isolate nem transform na animação para o dropdown de Temas funcionar */
-.tab-content-area { isolation: isolate; }
-.modal-overlay, #perfil-overlay, .crop-overlay,
-.banner-crop-overlay, .perfil-edit-overlay,
-.share-modal-overlay { isolation: isolate; }
-
-/* Entrada da navbar */
-@keyframes navDrop {
-    from { opacity: 0; transform: translateY(-18px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-.custom-nav { animation: navDrop 0.55s ease forwards; }
-
-/* Entrada das abas principais — SEM transform para não criar stacking context */
-@keyframes tabsSlide {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-.main-tabs { animation: tabsSlide 0.5s ease 0.15s both; }
-
-/* Entrada do conteúdo da aba */
-@keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-.tab-pane.active { animation: fadeSlideUp 0.45s cubic-bezier(.22,.68,0,1.2) forwards; }
-
-/* Cards de item com entrada escalonada */
-@keyframes cardPop {
-    from { opacity: 0; transform: translateY(16px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-.item-card.anim-in { animation: cardPop 0.35s cubic-bezier(.22,.68,0,1.2) both; }
-
-/* Glow nos cards ao hover */
-.item-card { transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s; }
-
-/* Transição suave do tema */
-body { transition: background 0.5s ease; }
-
 </style>
 
 <!-- ===== FIREBASE INIT ===== -->
@@ -1148,6 +1008,7 @@ body { transition: background 0.5s ease; }
   import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
@@ -1164,11 +1025,24 @@ body { transition: background 0.5s ease; }
   const db  = getDatabase(app);
 
   // Expõe para os scripts globais da página
-  window._firebaseApp = app;
-  window._firebaseDB  = db;
-  window._firebaseRef = ref;
-  window._firebaseSet = set;
-  window._firebaseGet = get;
+  const storage = getStorage(app);
+  window._firebaseApp        = app;
+  window._firebaseDB         = db;
+  window._firebaseRef        = ref;
+  window._firebaseSet        = set;
+  window._firebaseGet        = get;
+  window._firebaseStorage    = storage;
+  window._firebaseStorageRef = storageRef;
+  window._firebaseUploadStr  = uploadString;
+  window._firebaseGetURL     = getDownloadURL;
+
+  window._uploadImagemPerfil = async function(uid, tipo, base64DataUrl) {
+    const ext = base64DataUrl.startsWith('data:image/gif') ? 'gif' : 'jpg';
+    const path = `perfis/${uid}/${tipo}.${ext}`;
+    const sRef = storageRef(storage, path);
+    const snapshot = await uploadString(sRef, base64DataUrl, 'data_url');
+    return await getDownloadURL(snapshot.ref);
+  };
 
   // Observa autenticação: se o usuário não estiver logado, redireciona
   const auth = getAuth(app);
@@ -1176,11 +1050,9 @@ body { transition: background 0.5s ease; }
     if (user) {
       const usuario = user.displayName || user.email.replace('@ficha.local', '');
       sessionStorage.setItem('ficha_user', usuario);
-      // UID no localStorage para compatibilidade com campanhas/badges cross-page
+      localStorage.setItem('ficha_user_ativo', usuario);
       localStorage.setItem('ficha_uid', user.uid);
       localStorage.setItem('ficha_uid_firebase', user.uid);
-      // Remove resíduo de versões antigas que gravavam o nome no localStorage
-      localStorage.removeItem('ficha_user_ativo');
     }
     // Não redireciona aqui — o window.load já cuida disso
   });
@@ -1204,23 +1076,8 @@ body { transition: background 0.5s ease; }
         <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
         <a class="nav-link px-3 active" href="homebrew.html">Homebrew</a>
       </div>
-      <!-- Mobile: Temas + Perfil dentro do menu hambúrguer -->
-      <div class="d-lg-none px-3 pb-3 pt-2">
-          <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
-          <div style="font-size:0.6rem;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:8px;font-family:'Oswald',sans-serif;">Tema</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-              <button onclick="aplicarTema('medo');toggleNavbar()" style="background:rgba(58,123,213,0.15);border:1px solid #3a7bd5;color:#7ab3f5;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Medo</button>
-              <button onclick="aplicarTema('sangue');toggleNavbar()" style="background:rgba(204,17,17,0.15);border:1px solid #cc1111;color:#ff4444;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Sangue</button>
-              <button onclick="aplicarTema('morte');toggleNavbar()" style="background:rgba(136,136,136,0.15);border:1px solid #888;color:#ccc;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Morte</button>
-              <button onclick="aplicarTema('conhecimento');toggleNavbar()" style="background:rgba(200,150,12,0.15);border:1px solid #c8960c;color:#f5c842;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Conhecimento</button>
-              <button onclick="aplicarTema('energia');toggleNavbar()" style="background:rgba(155,48,217,0.15);border:1px solid #9b30d9;color:#d070ff;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Energia</button>
-          </div>
-          <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
-          <button onclick="abrirPainelPerfil(event);toggleNavbar()" style="width:100%;background:transparent;border:1px solid var(--tema-primary,#3a7bd5);color:var(--tema-primary-light,#7ab3f5);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;">👤 Ver Perfil</button>
-          <button onclick="fazerLogout();toggleNavbar()" style="width:100%;background:transparent;border:1px solid #552222;color:#ff6666;padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;margin-top:8px;">✕ Sair</button>
-      </div>
     </div>
-    <div class="d-none d-lg-flex align-items-center flex-shrink-0" style="justify-content:flex-end;">
+    <div class="d-none d-lg-flex align-items-center" style="min-width:200px;justify-content:flex-end;">
       <div class="temas-wrapper" id="temas-wrapper">
         <button class="btn-temas" onclick="toggleTemas(event)">⬡ Temas</button>
         <div class="temas-dropdown" id="temas-dropdown">
@@ -1763,8 +1620,7 @@ body { transition: background 0.5s ease; }
    UTILITÁRIOS
 ═══════════════════════════════════════════════ */
 function getPrefix() {
-  // Lê APENAS do sessionStorage — nunca do localStorage
-  return (sessionStorage.getItem('ficha_user') || 'guest') + '_';
+  return (sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'guest') + '_';
 }
 
 function storageKey(tipo) { return getPrefix() + 'homebrew_' + tipo; }
@@ -2159,7 +2015,7 @@ function abrirModalAdicionarFicha(indexFiltrado) {
     _hbItemParaAdicionar = item;
 
     // Descobre fichas do usuário a partir do localStorage
-    const usuario = sessionStorage.getItem('ficha_user') || '';
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
     const fichas  = [];
     for (let k of Object.keys(localStorage)) {
         // As fichas são salvas como "{usuario}_ficha_{fichaId}_estado" no localStorage
@@ -2318,7 +2174,7 @@ async function abrirModalCompartilhar(tipo, indexFiltrado) {
   if (!codigo) {
     // Gera novo código e publica no Firebase
     codigo = gerarCodigoCompartilhamento();
-    const autor = sessionStorage.getItem('ficha_user') || 'anon';
+    const autor = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'anon';
 
     const db = await _getFirebaseDB();
     if (db) {
@@ -2478,175 +2334,6 @@ async function importarItem(codigo, tipo, btnEl) {
   }
 }
 
-/* ══════════════════════════════════════════════
-   EDITAR ITEM DA COMUNIDADE (somente o autor)
-══════════════════════════════════════════════ */
-let _editando = null; // { codigo, tipo, dados }
-
-function abrirModalEditarComunidade(codigo, tipo) {
-  const autor = sessionStorage.getItem('ficha_user') || '';
-  // Busca dados no Firebase para preencher o modal
-  (async () => {
-    const db = await _getFirebaseDB();
-    if (!db) return;
-    const snap = await window._firebaseGet(window._firebaseRef(db, `homebrew_compartilhado/${codigo}`));
-    if (!snap.exists()) { showToast('⚠ Item não encontrado.', '#aa2200'); return; }
-
-    const dados = snap.val();
-    // Verificação de segurança no cliente (o Firebase Rules deve reforçar no servidor)
-    if (dados.autor !== autor) { showToast('⛔ Você não é o autor deste item.', '#aa2200'); return; }
-
-    _editando = { codigo, tipo, dados };
-    const item = dados.item || {};
-
-    // Preenche campos base
-    document.getElementById('med-codigo').value    = codigo;
-    document.getElementById('med-tipo').value      = tipo;
-    document.getElementById('med-nome').value      = item.nome || '';
-    document.getElementById('med-sub').value       = item.sub || item.subTipo || '';
-    document.getElementById('med-descricao').value = (item.descricao || '').replace(/<[^>]+>/g, '');
-
-    // Campos extras conforme tipo
-    const extrasEl = document.getElementById('med-campos-extras');
-    extrasEl.innerHTML = '';
-
-    if (tipo === 'rituais') {
-      extrasEl.innerHTML = `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div>
-            <label class="med-field-label">Elemento</label>
-            <input class="med-field-input" id="med-rit-elemento" value="${item.elemento||''}">
-          </div>
-          <div>
-            <label class="med-field-label">Círculo</label>
-            <input class="med-field-input" id="med-rit-circulo" value="${item.circulo||''}">
-          </div>
-          <div>
-            <label class="med-field-label">Execução</label>
-            <input class="med-field-input" id="med-rit-execucao" value="${item.execucao||''}">
-          </div>
-          <div>
-            <label class="med-field-label">Alcance</label>
-            <input class="med-field-input" id="med-rit-alcance" value="${item.alcance||''}">
-          </div>
-        </div>`;
-    } else if (tipo === 'itens') {
-      extrasEl.innerHTML = `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div>
-            <label class="med-field-label">Dano</label>
-            <input class="med-field-input" id="med-it-dano" value="${item.dano||''}">
-          </div>
-          <div>
-            <label class="med-field-label">Tipo de Dano</label>
-            <input class="med-field-input" id="med-it-tipodano" value="${item.tipoDano||''}">
-          </div>
-        </div>`;
-    } else if (tipo === 'ameacas') {
-      extrasEl.innerHTML = `
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div>
-            <label class="med-field-label">Tipo</label>
-            <input class="med-field-input" id="med-am-tipo" value="${item.tipo||''}">
-          </div>
-          <div>
-            <label class="med-field-label">Elemento</label>
-            <input class="med-field-input" id="med-am-elemento" value="${item.elemento||''}">
-          </div>
-        </div>`;
-    }
-
-    document.getElementById('modal-editar-comunidade').classList.add('show');
-  })();
-}
-
-function fecharModalEditarComunidade() {
-  document.getElementById('modal-editar-comunidade').classList.remove('show');
-  _editando = null;
-}
-
-async function salvarEdicaoComunidade() {
-  if (!_editando) return;
-
-  const { codigo, tipo, dados } = _editando;
-
-  const nome = document.getElementById('med-nome').value.trim();
-  if (!nome) { showToast('⚠ Nome é obrigatório.', '#aa2200'); return; }
-
-  // Monta item atualizado preservando todos os campos originais
-  const itemAtualizado = {
-    ...dados.item,
-    nome,
-    sub: document.getElementById('med-sub').value.trim() || dados.item?.sub || '',
-    descricao: document.getElementById('med-descricao').value,
-  };
-
-  // Campos extras por tipo
-  if (tipo === 'rituais') {
-    itemAtualizado.elemento = document.getElementById('med-rit-elemento')?.value || itemAtualizado.elemento;
-    itemAtualizado.circulo  = document.getElementById('med-rit-circulo')?.value  || itemAtualizado.circulo;
-    itemAtualizado.execucao = document.getElementById('med-rit-execucao')?.value || itemAtualizado.execucao;
-    itemAtualizado.alcance  = document.getElementById('med-rit-alcance')?.value  || itemAtualizado.alcance;
-    itemAtualizado.sub = (itemAtualizado.elemento || '') + ' · ' + (itemAtualizado.circulo || '') + 'º Círculo';
-  } else if (tipo === 'itens') {
-    const danoEl    = document.getElementById('med-it-dano');
-    const tipoEl    = document.getElementById('med-it-tipodano');
-    if (danoEl)  itemAtualizado.dano     = danoEl.value;
-    if (tipoEl)  itemAtualizado.tipoDano = tipoEl.value;
-  } else if (tipo === 'ameacas') {
-    const tipoEl = document.getElementById('med-am-tipo');
-    const elemEl = document.getElementById('med-am-elemento');
-    if (tipoEl) itemAtualizado.tipo     = tipoEl.value;
-    if (elemEl) itemAtualizado.elemento = elemEl.value;
-    itemAtualizado.sub = (itemAtualizado.tipo || '') + ' · ' + (itemAtualizado.elemento || '');
-  }
-
-  const btn = document.querySelector('#modal-editar-comunidade button[onclick="salvarEdicaoComunidade()"]');
-  if (btn) { btn.textContent = '⏳ Salvando...'; btn.disabled = true; }
-
-  try {
-    const db = await _getFirebaseDB();
-    if (!db) throw new Error('Firebase indisponível');
-
-    // Usa update() para modificar apenas os campos necessários sem sobrescrever tudo
-    const { update, remove } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-    const dbRef = window._firebaseRef(db, `homebrew_compartilhado/${codigo}`);
-
-    await update(dbRef, {
-      editadoEm: new Date().toISOString(),
-      item: itemAtualizado,
-    });
-
-    showToast('✦ Item atualizado na comunidade!', 'var(--purple)');
-    fecharModalEditarComunidade();
-    carregarComunidadeTipo(tipo);
-
-  } catch(e) {
-    console.error('Erro ao salvar edição:', e);
-    showToast('⚠ Erro ao salvar: ' + (e?.message || 'verifique o console.'), '#aa2200');
-    if (btn) { btn.textContent = '✔ Salvar alterações'; btn.disabled = false; }
-  }
-}
-
-async function deletarItemComunidade(codigo, tipo) {
-  if (!confirm('Remover este item da comunidade? Esta ação é irreversível.')) return;
-
-  try {
-    const db = await _getFirebaseDB();
-    if (!db) throw new Error('Firebase indisponível');
-
-    const { remove } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-    const dbRef = window._firebaseRef(db, `homebrew_compartilhado/${codigo}`);
-    await remove(dbRef);
-
-    showToast('✦ Item removido da comunidade.', '#555');
-    carregarComunidadeTipo(tipo);
-  } catch(e) {
-    console.error('Erro ao deletar:', e);
-    showToast('⚠ Erro ao remover: ' + (e?.message || 'verifique o console.'), '#aa2200');
-  }
-}
-
 /* ── Aba Comunidade: lista pública ── */
 let _communityTabAtiva = 'itens';
 
@@ -2685,34 +2372,27 @@ async function carregarComunidadeTipo(tipo) {
     }
 
     const meusImportados = new Set(carregar(tipo).filter(i => i._shareCode).map(i => i._shareCode));
-    const autor = sessionStorage.getItem('ficha_user') || '';
+    const autor = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
 
     container.innerHTML = doTipo.map(([codigo, dados]) => {
       const item  = dados.item || {};
       const ja    = meusImportados.has(codigo);
       const meu   = dados.autor === autor;
-      const editadoEm = dados.editadoEm
-        ? `<span style="font-size:0.58rem;color:#333;font-family:'Share Tech Mono',monospace;margin-left:8px;">editado</span>` : '';
-
-      const botaoAcao = meu
-        ? `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
-             <span style="font-size:0.65rem;color:var(--purple-neon);font-family:'Share Tech Mono',monospace;white-space:nowrap;">✦ seu</span>
-             <button class="btn-editar-comunidade" onclick="abrirModalEditarComunidade('${codigo}','${tipo}')">✎ Editar</button>
-             <button class="btn-deletar-comunidade" onclick="deletarItemComunidade('${codigo}','${tipo}')" title="Remover da comunidade">✕</button>
-           </div>`
+      const botao = meu
+        ? `<span style="font-size:0.7rem;color:var(--purple-neon);font-family:'Share Tech Mono',monospace;">✦ seu</span>`
         : `<button class="btn-importar" ${ja ? 'disabled' : ''} onclick="importarItem('${codigo}','${tipo}',this)">${ja ? '✔ Importado' : '↓ Importar'}</button>`;
 
       return `
-        <div class="community-item-card${meu ? ' meu-item' : ''}">
+        <div class="community-item-card">
           <div class="community-item-header">
             <div>
-              <div class="community-item-name">${item.nome || '—'}${editadoEm}</div>
+              <div class="community-item-name">${item.nome || '—'}</div>
               <div class="community-item-meta">${item.sub || item.subTipo || tipo}</div>
               <div class="community-item-author">por @${dados.autor || '?'}</div>
             </div>
-            ${botaoAcao}
+            ${botao}
           </div>
-          ${item.descricao ? `<div style="font-size:0.78rem;color:#666;margin-top:6px;line-height:1.5;">${(item.descricao||'').replace(/<[^>]+>/g,'').substring(0,120)}…</div>` : ''}
+          ${item.descricao ? `<div style="font-size:0.78rem;color:#666;margin-top:6px;line-height:1.5;">${item.descricao.replace(/<[^>]+>/g,'').substring(0,120)}…</div>` : ''}
           <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
             <div style="font-size:0.6rem;color:#333;font-family:'Share Tech Mono',monospace;">${codigo}</div>
           </div>
@@ -2739,7 +2419,7 @@ function showToast(msg, cor) {
 }
 
 window.addEventListener('load', () => {
-  const usuario = sessionStorage.getItem('ficha_user');
+  const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
   if (!usuario) { window.location.href = 'index.html'; return; }
   atualizarAvatar();
   renderLista('ameacas', carregar('ameacas'));
@@ -2779,117 +2459,7 @@ window.addEventListener('load', () => {
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     MODAL EDITAR ITEM DA COMUNIDADE
-══════════════════════════════════════════ -->
-<div id="modal-editar-comunidade" onclick="if(event.target===this)fecharModalEditarComunidade()">
-  <div class="modal-editar-box">
-    <div class="modal-editar-titulo">▸ EDITAR ITEM PUBLICADO</div>
-    <div class="modal-editar-aviso">
-      ⚠ Apenas você pode editar este item. As alterações ficam visíveis para toda a comunidade imediatamente.
-    </div>
-
-    <input type="hidden" id="med-codigo">
-    <input type="hidden" id="med-tipo">
-
-    <label class="med-field-label">Nome *</label>
-    <input class="med-field-input" id="med-nome" type="text" placeholder="Nome do item">
-
-    <label class="med-field-label">Subtítulo / Tipo</label>
-    <input class="med-field-input" id="med-sub" type="text" placeholder="ex: Arma · Balístico">
-
-    <label class="med-field-label">Descrição</label>
-    <textarea class="med-field-textarea" id="med-descricao" placeholder="Descrição do item..."></textarea>
-
-    <!-- Campos extras dinâmicos preenchidos por JS conforme o tipo -->
-    <div id="med-campos-extras"></div>
-
-    <div class="modal-editar-footer">
-      <button onclick="fecharModalEditarComunidade()"
-        style="background:transparent;border:1px solid #333;color:#666;font-family:'Oswald',sans-serif;
-               font-size:0.85rem;padding:9px 20px;border-radius:5px;cursor:pointer;">
-        Cancelar
-      </button>
-      <button onclick="salvarEdicaoComunidade()"
-        style="background:var(--purple);border:none;color:white;font-family:'Oswald',sans-serif;
-               font-size:0.85rem;font-weight:700;padding:9px 22px;border-radius:5px;cursor:pointer;
-               transition:0.2s;" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
-        ✔ Salvar alterações
-      </button>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- ===== PARTÍCULAS + ANIMAÇÕES HOMEBREW ===== -->
-<script>
-(function() {
-    // ── Canvas de partículas ──
-    const canvas = document.createElement('canvas');
-    canvas.id = 'particle-canvas';
-    document.body.prepend(canvas);
-    const ctx = canvas.getContext('2d');
-    let W, H, particles = [];
-
-    function getRgb() {
-        return getComputedStyle(document.documentElement)
-            .getPropertyValue('--tema-glow-rgb').trim() || '58,123,213';
-    }
-    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-
-    function Particle() { this.reset(); }
-    Particle.prototype.reset = function() {
-        this.x = Math.random() * W; this.y = Math.random() * H;
-        this.r = Math.random() * 1.6 + 0.3;
-        this.vx = (Math.random() - 0.5) * 0.3; this.vy = -(Math.random() * 0.45 + 0.1);
-        this.alpha = Math.random() * 0.55 + 0.08;
-        this.life = Math.random() * 220 + 80; this.age = 0;
-    };
-    Particle.prototype.update = function() {
-        this.x += this.vx; this.y += this.vy; this.age++;
-        if (Math.random() < 0.025) this.alpha = Math.random() * 0.5 + 0.05;
-        if (this.age > this.life || this.y < -8) this.reset();
-    };
-    Particle.prototype.draw = function(rgb) {
-        ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${rgb},${this.alpha})`; ctx.fill();
-    };
-
-    resize();
-    for (let i = 0; i < 80; i++) { const p = new Particle(); p.age = Math.random() * p.life; particles.push(p); }
-    window.addEventListener('resize', resize);
-
-    function loop() {
-        ctx.clearRect(0, 0, W, H);
-        const rgb = getRgb();
-        particles.forEach(p => { p.update(); p.draw(rgb); });
-        requestAnimationFrame(loop);
-    }
-    loop();
-
-    // ── Anima cards ao renderizar ──
-    window._animarHomebrewCards = function() {
-        document.querySelectorAll('.item-card:not(.anim-in)').forEach((card, i) => {
-            card.classList.add('anim-in');
-            card.style.animationDelay = (i * 0.06) + 's';
-        });
-    };
-
-    // ── Intercepts trocarMainTab para re-animar conteúdo ──
-    window.addEventListener('load', function() {
-        const _orig = window.trocarMainTab;
-        if (typeof _orig === 'function') {
-            window.trocarMainTab = function(tab) {
-                _orig.apply(this, arguments);
-                setTimeout(window._animarHomebrewCards, 80);
-            };
-        }
-        // Anima cards já na tela
-        setTimeout(window._animarHomebrewCards, 300);
-    });
-})();
-</script>
     <script>
 
         /* ===== SISTEMA DE TEMAS ===== */
@@ -2937,11 +2507,11 @@ document.getElementById('modal-compartilhar').addEventListener('click', function
         <button class="perfil-top-btn" onclick="event.stopPropagation();abrirEditPerfil('status')">✎ Status</button>
         <button class="perfil-top-btn danger" onclick="event.stopPropagation();fazerLogout()">✕ Sair</button>
       </div>
-    </div>
-    <div class="perfil-avatar-wrap" id="perfil-avatar-wrap" onclick="event.stopPropagation();perfilClicarAvatar()">
-      <div class="perfil-avatar" id="perfil-avatar-img">
-        <span id="perfil-avatar-iniciais"></span>
-        <div class="perfil-avatar-edit">📷</div>
+      <div class="perfil-avatar-wrap" id="perfil-avatar-wrap" onclick="event.stopPropagation();perfilClicarAvatar()">
+        <div class="perfil-avatar" id="perfil-avatar-img">
+          <span id="perfil-avatar-iniciais"></span>
+          <div class="perfil-avatar-edit">📷</div>
+        </div>
       </div>
     </div>
     <div class="perfil-body">
@@ -3017,59 +2587,24 @@ document.getElementById('modal-compartilhar').addEventListener('click', function
    PAINEL DE PERFIL — HOMEBREW
 ============================================= */
 function _getUsuario() {
-    // Lê APENAS do sessionStorage — nunca do localStorage
-    return sessionStorage.getItem('ficha_user') || '';
+    return sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
 }
 function _getAvatarKey() { return _getUsuario() + '_foto_perfil'; }
-function _getPerfilKey() { return 'perfil_' + _getUsuario(); }
-
-/* IndexedDB para imagens grandes */
-const _imgDB = (function() {
-    const DB_NAME = 'fichaImagens', STORE = 'imagens', VER = 1;
-    let _db = null;
-    function open() {
-        if (_db) return Promise.resolve(_db);
-        return new Promise((res, rej) => {
-            const req = indexedDB.open(DB_NAME, VER);
-            req.onupgradeneeded = e => e.target.result.createObjectStore(STORE);
-            req.onsuccess = e => { _db = e.target.result; res(_db); };
-            req.onerror   = e => rej(e.target.error);
-        });
-    }
-    return {
-        async set(key, value) {
-            const db = await open();
-            return new Promise((res, rej) => {
-                const tx = db.transaction(STORE, 'readwrite');
-                tx.objectStore(STORE).put(value, key);
-                tx.oncomplete = res; tx.onerror = e => rej(e.target.error);
-            });
-        },
-        async get(key) {
-            const db = await open();
-            return new Promise((res, rej) => {
-                const req = db.transaction(STORE, 'readonly').objectStore(STORE).get(key);
-                req.onsuccess = () => res(req.result ?? null);
-                req.onerror   = e => rej(e.target.error);
-            });
-        }
-    };
-})();
-function _getPerfilLocal() {
-    try { return JSON.parse(localStorage.getItem(_getPerfilKey())) || {}; } catch(e) { return {}; }
-}
-function _setPerfilLocal(dados) {
-    const u = _getUsuario(); if (!u) return;
-    dados._usuario = u;
-    localStorage.setItem(_getPerfilKey(), JSON.stringify(dados));
-}
+// ── Perfil: sem localStorage — Firebase é a única fonte de verdade ──
+let _perfilCache = {};
+function _getPerfilLocal() { return _perfilCache; }
+function _setPerfilLocal(dados) { _perfilCache = dados || {}; }
 async function _salvarPerfilFirebase(dados) {
     try {
         const db  = await _getFirebaseDB();
         const ref = window._firebaseRef;
         const set = window._firebaseSet;
         if (!db || !ref || !set) return;
-        await set(ref(db, `perfis/${_getUsuario()}`), dados);
+        // Remove base64 antes de salvar no DB (imagens ficam no Storage)
+        const dadosSemBase64 = Object.assign({}, dados);
+        if (dadosSemBase64.foto   && dadosSemBase64.foto.startsWith('data:'))   delete dadosSemBase64.foto;
+        if (dadosSemBase64.banner && dadosSemBase64.banner.startsWith('data:')) delete dadosSemBase64.banner;
+        await set(ref(db, `perfis/${_getUsuario()}`), dadosSemBase64);
     } catch(e) { console.warn('Perfil firebase erro:', e); }
 }
 async function _carregarPerfilFirebase() {
@@ -3089,39 +2624,18 @@ async function atualizarAvatar() {
     const circle   = document.getElementById('avatar-circle');
     if (!circle) return;
 
-    // Migra foto do localStorage (formato antigo) para IndexedDB
-    try {
-        const key = _getAvatarKey();
-        const jaTemNoIDB = await _imgDB.get(key);
-        if (!jaTemNoIDB) {
-            const fotoLS = localStorage.getItem(key);
-            if (fotoLS) { await _imgDB.set(key, fotoLS); localStorage.removeItem(key); }
-        }
-    } catch(e) {}
+    // Mostra iniciais enquanto carrega
+    circle.innerHTML = `<span>${iniciais}</span>`;
 
-    const perfilLocal = _getPerfilLocal();
-    const fotoLocal   = (await _imgDB.get(_getAvatarKey())) || perfilLocal.foto || '';
-    circle.innerHTML  = fotoLocal
-        ? `<img src="${fotoLocal}" alt="avatar">`
-        : `<span>${iniciais}</span>`;
-    if (perfilLocal.corBorda) {
-        circle.style.borderColor = perfilLocal.corBorda;
-        circle.style.boxShadow   = `0 0 8px ${perfilLocal.corBorda}`;
-    }
-
-    // Atualiza com a foto do Firebase (fonte de verdade)
+    // Sempre busca do Firebase — única fonte de verdade
     const perfilFB = await _carregarPerfilFirebase();
     if (perfilFB) {
-        const perfilAtualizado = { ...perfilLocal, ...perfilFB };
-        _setPerfilLocal(perfilAtualizado);
-        const fotoFB = perfilAtualizado.foto || '';
-        if (fotoFB) await _imgDB.set(_getAvatarKey(), fotoFB);
-        circle.innerHTML = fotoFB
-            ? `<img src="${fotoFB}" alt="avatar">`
-            : `<span>${iniciais}</span>`;
-        if (perfilAtualizado.corBorda) {
-            circle.style.borderColor = perfilAtualizado.corBorda;
-            circle.style.boxShadow   = `0 0 8px ${perfilAtualizado.corBorda}`;
+        _setPerfilLocal(perfilFB);
+        const foto = perfilFB.foto || '';
+        circle.innerHTML = foto ? `<img src="${foto}" alt="avatar">` : `<span>${iniciais}</span>`;
+        if (perfilFB.corBorda) {
+            circle.style.borderColor = perfilFB.corBorda;
+            circle.style.boxShadow   = `0 0 8px ${perfilFB.corBorda}`;
         }
     }
 }
@@ -3130,15 +2644,10 @@ window.abrirPainelPerfil = async function(e) {
     if (e) e.stopPropagation();
     const usuario = _getUsuario(); if (!usuario) return;
     document.getElementById('perfil-overlay').classList.add('show');
-    // Sempre carrega do Firebase primeiro (fonte de verdade)
+    // Sempre busca do Firebase — sem localStorage
     const fb = await _carregarPerfilFirebase();
-    let perfil;
-    if (fb) {
-        perfil = fb;
-        _setPerfilLocal(perfil);
-    } else {
-        perfil = _getPerfilLocal();
-    }
+    const perfil = fb || {};
+    _setPerfilLocal(perfil);
     _renderPainel(usuario, perfil);
 };
 
@@ -3161,10 +2670,8 @@ async function _renderPainel(usuario, perfil) {
     }
     // Banner
     const banner = document.getElementById('perfil-banner');
-    const bannerKey = _getUsuario() + '_banner_perfil';
-    const bannerData = (await _imgDB.get(bannerKey)) || perfil.banner || null;
-    if (bannerData) { _aplicarBannerNaUI(bannerData, !!perfil.bannerAnimado); }
-    else { banner.style.backgroundImage = ''; const imgAnt = banner.querySelector('.banner-img-animado'); if (imgAnt) imgAnt.remove(); }
+    if (perfil.banner) { banner.style.backgroundImage = `url('${perfil.banner}')`; banner.style.backgroundSize = 'cover'; }
+    else { banner.style.backgroundImage = ''; }
     // Status
     const statusEl = document.getElementById('perfil-status-display');
     if (perfil.status) { statusEl.textContent = '💬 ' + perfil.status; statusEl.classList.remove('vazio'); }
@@ -3176,7 +2683,7 @@ async function _renderPainel(usuario, perfil) {
     // Pronomes
     document.getElementById('perfil-pronomes-display').textContent = perfil.pronomes || '';
     // Data
-    if (!perfil.dataEntrada) { perfil.dataEntrada = new Date().toLocaleDateString('pt-BR'); _setPerfilLocal(perfil); }
+    if (!perfil.dataEntrada) { perfil.dataEntrada = new Date().toLocaleDateString('pt-BR'); _setPerfilLocal(perfil); _salvarPerfilFirebase(perfil); }
     document.getElementById('perfil-membro-desde').textContent = '▸ Membro desde ' + perfil.dataEntrada;
     // Badges
     const badgesEl = document.getElementById('perfil-badges');
@@ -3255,48 +2762,10 @@ window.perfilClicarBanner = function() { document.getElementById('input-banner-p
 
 /* — Cropper avatar — */
 let _cropInst = null;
-// Detecta se um arquivo é animado (GIF ou WebP animado)
-async function isAnimatedImage(file) {
-    if (file.type === 'image/gif') return true;
-    if (file.type === 'image/webp') {
-        const buf = await file.slice(0, 64).arrayBuffer();
-        const str = String.fromCharCode(...new Uint8Array(buf));
-        return str.includes('ANIM');
-    }
-    return false;
-}
-
-function _aplicarBannerNaUI(base64, animado) {
-    const banner = document.getElementById('perfil-banner');
-    if (!banner) return;
-    const imgAnt = banner.querySelector('.banner-img-animado');
-    if (imgAnt) imgAnt.remove();
-    if (animado) {
-        banner.style.backgroundImage = ''; banner.style.backgroundSize = '';
-        const img = document.createElement('img');
-        img.src = base64; img.className = 'banner-img-animado'; img.alt = 'banner animado';
-        banner.insertBefore(img, banner.firstChild);
-    } else {
-        banner.style.backgroundImage = `url('${base64}')`; banner.style.backgroundSize = 'cover';
-    }
-}
-
 window.salvarFotoPerfil = function(event) {
     const file = event.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = async function(e) {
-        const animado = await isAnimatedImage(file);
-if (animado) {
-            window.abrirGifCrop(e.target.result, 'avatar', async function(resultDataUrl, isAnim) {
-                await _imgDB.set(_getAvatarKey(), resultDataUrl);
-                const perfil = _getPerfilLocal(); perfil.foto = resultDataUrl; perfil.fotoAnimada = isAnim; _setPerfilLocal(perfil);
-                await _salvarPerfilFirebase(perfil); await atualizarAvatar();
-                const avatarEl = document.getElementById('perfil-avatar-img');
-                if (avatarEl) avatarEl.innerHTML = `<img src="${resultDataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
-            });
-            document.getElementById('input-foto-perfil').value = '';
-            return;
-        }
+    reader.onload = function(e) {
         const img = document.getElementById('crop-img');
         if (_cropInst) { _cropInst.destroy(); _cropInst = null; }
         img.src = e.target.result;
@@ -3312,12 +2781,22 @@ window.confirmarCrop = async function() {
     const canvas = _cropInst.getCroppedCanvas({ width: 300, height: 300 });
     if (!canvas) return;
     const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-    await _imgDB.set(_getAvatarKey(), dataUrl);
-    const perfil = _getPerfilLocal(); perfil.foto = dataUrl; perfil.fotoAnimada = false; _setPerfilLocal(perfil);
-    await _salvarPerfilFirebase(perfil);
+    // Exibe imediatamente (UX rápida)
+    const perfil = _getPerfilLocal(); perfil.foto = dataUrl; _setPerfilLocal(perfil);
     await atualizarAvatar(); window.cancelarCrop();
     const avatarEl = document.getElementById('perfil-avatar-img');
     if (avatarEl) avatarEl.innerHTML = `<img src="${dataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
+    // Upload pro Firebase Storage
+    const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
+    if (uid && window._uploadImagemPerfil) {
+        try {
+            const url = await window._uploadImagemPerfil(uid, 'foto', dataUrl);
+            perfil.foto = url; _setPerfilLocal(perfil);
+            await _salvarPerfilFirebase(perfil);
+            await atualizarAvatar();
+            if (avatarEl) avatarEl.innerHTML = `<img src="${url}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
+        } catch(e) { console.warn('Upload foto erro:', e); await _salvarPerfilFirebase(perfil); }
+    } else { await _salvarPerfilFirebase(perfil); }
 };
 window.cancelarCrop = function() {
     document.getElementById('crop-overlay').classList.remove('show');
@@ -3330,15 +2809,8 @@ let _bannerCropInst = null;
 window.salvarBannerPerfil = function(event) {
     const file = event.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = async function(ev) {
-        const animado = await isAnimatedImage(file);
-        if (animado) {
-            window.abrirGifCrop(ev.target.result, 'banner', async function(resultDataUrl, isAnim) {
-                _salvarBannerB64(resultDataUrl, isAnim);
-            });
-            document.getElementById('input-banner-perfil').value = '';
-            return;
-        }
+    reader.onload = function(ev) {
+        if (file.type === 'image/gif') { _salvarBannerB64(ev.target.result); document.getElementById('input-banner-perfil').value = ''; return; }
         const img = document.getElementById('banner-crop-img');
         if (_bannerCropInst) { _bannerCropInst.destroy(); _bannerCropInst = null; }
         img.src = ev.target.result;
@@ -3353,7 +2825,7 @@ window.confirmarBannerCrop = function() {
     if (!_bannerCropInst) return;
     const canvas = _bannerCropInst.getCroppedCanvas({ width: 680, height: 140 });
     if (!canvas) return;
-    _salvarBannerB64(canvas.toDataURL('image/jpeg', 0.9), false);
+    _salvarBannerB64(canvas.toDataURL('image/jpeg', 0.9));
     window.cancelarBannerCrop();
 };
 window.cancelarBannerCrop = function() {
@@ -3361,373 +2833,34 @@ window.cancelarBannerCrop = function() {
     if (_bannerCropInst) { _bannerCropInst.destroy(); _bannerCropInst = null; }
     document.getElementById('input-banner-perfil').value = '';
 };
-async function _salvarBannerB64(base64, animado) {
-    const bannerKey = _getUsuario() + '_banner_perfil';
-    await _imgDB.set(bannerKey, base64);
-    const perfil = _getPerfilLocal();
-    perfil.banner = null; // não armazena base64 grande no localStorage
-    perfil.bannerAnimado = !!animado;
-    perfil.temBanner = true;
-    _setPerfilLocal(perfil);
-    await _salvarPerfilFirebase({ ...perfil, banner: base64, bannerAnimado: !!animado });
-    _aplicarBannerNaUI(base64, !!animado);
+async function _salvarBannerB64(base64) {
+    const perfil = _getPerfilLocal(); perfil.banner = base64; _setPerfilLocal(perfil);
+    // Exibe imediatamente
+    const banner = document.getElementById('perfil-banner');
+    banner.style.backgroundImage = `url('${base64}')`; banner.style.backgroundSize = 'cover';
+    // Upload pro Firebase Storage
+    const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
+    if (uid && window._uploadImagemPerfil) {
+        try {
+            const url = await window._uploadImagemPerfil(uid, 'banner', base64);
+            perfil.banner = url; _setPerfilLocal(perfil);
+            await _salvarPerfilFirebase(perfil);
+        } catch(e) { console.warn('Upload banner erro:', e); await _salvarPerfilFirebase(perfil); }
+    } else { await _salvarPerfilFirebase(perfil); }
 }
 
 async function fazerLogout() {
     if (!confirm('Deseja sair da conta?')) return;
-    const usuario = _getUsuario();
     try {
         const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
         const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
         if (getApps().length > 0) await signOut(getAuth(getApps()[0]));
     } catch(e) {}
-    sessionStorage.clear();
+    sessionStorage.removeItem('ficha_user');
     localStorage.removeItem('ficha_user_ativo');
-    if (usuario) {
-        localStorage.removeItem(usuario + '_lista_agentes');
-        localStorage.removeItem('perfil_' + usuario);
-    }
     window.location.href = 'index.html';
 }
-
-    function toggleNavbar() {
-        const nav = document.getElementById('navbarNav');
-        if (nav && nav.classList.contains('show')) nav.classList.remove('show');
-    }
 </script>
 
-
-<script>
-
-/* ============================================================
-   GIF CROP MODULE
-   ============================================================ */
-(function() {
-  if (window._gifCropModuleLoaded) return;
-  window._gifCropModuleLoaded = true;
-
-  function _loadScript(src) {
-    return new Promise((res, rej) => {
-      if (document.querySelector('script[src="' + src + '"]')) { res(); return; }
-      const s = document.createElement('script');
-      s.src = src; s.onload = res; s.onerror = rej;
-      document.head.appendChild(s);
-    });
-  }
-
-  async function _ensureGifLibs() {
-    await _loadScript('https://cdn.jsdelivr.net/npm/omggif@1.0.10/omggif.js');
-    await _loadScript('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js');
-  }
-
-  // Cria um blob URL para o worker do gif.js, evitando o bloqueio de CORS
-  async function _getWorkerScript() {
-    if (window._gifWorkerBlobUrl) return window._gifWorkerBlobUrl;
-    try {
-      const resp = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
-      const text = await resp.text();
-      const blob = new Blob([text], { type: 'application/javascript' });
-      window._gifWorkerBlobUrl = URL.createObjectURL(blob);
-      return window._gifWorkerBlobUrl;
-    } catch(e) {
-      return 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js';
-    }
-  }
-
-  window._gifCropState = null;
-
-  function _criarGifCropUI() {
-    if (document.getElementById('gif-crop-overlay')) return;
-    const div = document.createElement('div');
-    div.id = 'gif-crop-overlay';
-    div.innerHTML = `
-    <style>
-    #gif-crop-overlay {
-        display:none; position:fixed; inset:0; background:rgba(0,0,0,0.97);
-        z-index:999999; flex-direction:column; align-items:center;
-        justify-content:center; gap:14px; padding:20px; font-family:'Oswald',sans-serif;
-    }
-    #gif-crop-overlay.show { display:flex; }
-    #gif-crop-label { font-size:0.65rem; letter-spacing:3px; color:#666; text-transform:uppercase; align-self:flex-start; }
-    #gif-crop-stage {
-        position:relative; overflow:hidden; border:1px solid var(--tema-primary,#3a7bd5);
-        background:#000; cursor:crosshair; user-select:none; max-width:90vw; max-height:55vh;
-    }
-    #gif-crop-preview { display:block; width:100%; height:100%; object-fit:contain; pointer-events:none; }
-    #gif-crop-box {
-        position:absolute; border:2px solid #fff;
-        box-shadow:0 0 0 9999px rgba(0,0,0,0.55); cursor:move; box-sizing:border-box;
-    }
-    #gif-crop-box::after {
-        content:''; position:absolute; inset:0;
-        background: repeating-linear-gradient(0deg,transparent,transparent 33.3%,rgba(255,255,255,0.15) 33.3%,rgba(255,255,255,0.15) 33.4%),
-                    repeating-linear-gradient(90deg,transparent,transparent 33.3%,rgba(255,255,255,0.15) 33.3%,rgba(255,255,255,0.15) 33.4%);
-    }
-    .gif-crop-handle { position:absolute; width:12px; height:12px; background:#fff; border:1px solid #333; border-radius:2px; }
-    .gif-crop-handle.nw { top:-6px; left:-6px; cursor:nw-resize; }
-    .gif-crop-handle.ne { top:-6px; right:-6px; cursor:ne-resize; }
-    .gif-crop-handle.sw { bottom:-6px; left:-6px; cursor:sw-resize; }
-    .gif-crop-handle.se { bottom:-6px; right:-6px; cursor:se-resize; }
-    #gif-crop-info { font-size:0.7rem; color:#555; letter-spacing:1px; }
-    #gif-crop-progress { display:none; font-size:0.75rem; color:var(--tema-primary-light,#7ab3f5); letter-spacing:2px; text-align:center; }
-    .gif-crop-btns { display:flex; gap:10px; }
-    .gif-crop-btn { font-family:'Oswald',sans-serif; font-size:0.75rem; letter-spacing:1px; padding:8px 22px; border-radius:3px; cursor:pointer; transition:0.2s; border:1px solid; }
-    .gif-crop-btn-ok { background:rgba(0,40,80,0.7); border-color:var(--tema-primary,#3a7bd5); color:var(--tema-primary-light,#7ab3f5); }
-    .gif-crop-btn-ok:hover { background:var(--tema-primary-dark,#0d2a5e); }
-    .gif-crop-btn-cancel { background:transparent; border-color:#333; color:#555; }
-    .gif-crop-btn-cancel:hover { border-color:#666; color:#888; }
-    </style>
-    <div id="gif-crop-label">▸ AJUSTAR IMAGEM ANIMADA</div>
-    <div id="gif-crop-stage">
-        <img id="gif-crop-preview" src="" alt="gif preview">
-        <div id="gif-crop-box">
-            <div class="gif-crop-handle nw"></div>
-            <div class="gif-crop-handle ne"></div>
-            <div class="gif-crop-handle sw"></div>
-            <div class="gif-crop-handle se"></div>
-        </div>
-    </div>
-    <div id="gif-crop-info">Arraste para mover &bull; Cantos para redimensionar</div>
-    <div id="gif-crop-progress"></div>
-    <div class="gif-crop-btns">
-        <button class="gif-crop-btn gif-crop-btn-ok" onclick="window.confirmarGifCrop()">&#10004; CONFIRMAR</button>
-        <button class="gif-crop-btn gif-crop-btn-cancel" onclick="window.cancelarGifCrop()">&#10005; CANCELAR</button>
-    </div>`;
-    document.body.appendChild(div);
-    _initGifCropInteraction();
-  }
-
-  function _initGifCropInteraction() {
-    const stage = document.getElementById('gif-crop-stage');
-    const box   = document.getElementById('gif-crop-box');
-    let drag = null;
-
-    function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
-    function stageSize() { return { w: stage.offsetWidth, h: stage.offsetHeight }; }
-
-    function onDown(e) {
-      e.preventDefault();
-      const cl  = e.target.classList;
-      const bx  = { l: box.offsetLeft, t: box.offsetTop, w: box.offsetWidth, h: box.offsetHeight };
-      const px  = e.clientX || (e.touches && e.touches[0].clientX);
-      const py  = e.clientY || (e.touches && e.touches[0].clientY);
-      if      (cl.contains('nw')) drag = { type:'nw', startX:px, startY:py, startBox:{...bx} };
-      else if (cl.contains('ne')) drag = { type:'ne', startX:px, startY:py, startBox:{...bx} };
-      else if (cl.contains('sw')) drag = { type:'sw', startX:px, startY:py, startBox:{...bx} };
-      else if (cl.contains('se')) drag = { type:'se', startX:px, startY:py, startBox:{...bx} };
-      else if (e.target === box || box.contains(e.target))
-        drag = { type:'move', startX:px, startY:py, startBox:{...bx} };
-      else {
-        const r = stage.getBoundingClientRect();
-        drag = { type:'new', startX:px, startY:py, originX: px-r.left, originY: py-r.top };
-      }
-    }
-
-    function onMove(e) {
-      if (!drag) return;
-      e.preventDefault();
-      const px  = e.clientX || (e.touches && e.touches[0].clientX);
-      const py  = e.clientY || (e.touches && e.touches[0].clientY);
-      const dx  = px - drag.startX, dy = py - drag.startY;
-      const { w: SW, h: SH } = stageSize();
-      const ratio = window._gifCropState ? window._gifCropState.ratio : 0;
-      const MIN   = 20;
-      let { l, t, w, h } = drag.startBox || { l:0, t:0, w:MIN, h:MIN };
-
-      if (drag.type === 'move') {
-        l = clamp(l + dx, 0, SW - w);
-        t = clamp(t + dy, 0, SH - h);
-      } else if (drag.type === 'new') {
-        const r  = stage.getBoundingClientRect();
-        const cx = clamp(px - r.left, 0, SW);
-        const cy = clamp(py - r.top,  0, SH);
-        w = Math.abs(cx - drag.originX);
-        h = ratio ? w / ratio : Math.abs(cy - drag.originY);
-        l = Math.min(cx, drag.originX);
-        t = Math.min(cy, drag.originY);
-        drag.startBox = { l, t, w, h }; drag.startX = px; drag.startY = py;
-      } else {
-        const sb = drag.startBox;
-        if (drag.type === 'se') {
-          w = clamp(sb.w + dx, MIN, SW - sb.l);
-          h = ratio ? w / ratio : clamp(sb.h + dy, MIN, SH - sb.t);
-          l = sb.l; t = sb.t;
-        } else if (drag.type === 'sw') {
-          w = clamp(sb.w - dx, MIN, sb.l + sb.w);
-          h = ratio ? w / ratio : clamp(sb.h + dy, MIN, SH - sb.t);
-          l = sb.l + sb.w - w; t = sb.t;
-        } else if (drag.type === 'ne') {
-          w = clamp(sb.w + dx, MIN, SW - sb.l);
-          h = ratio ? w / ratio : clamp(sb.h - dy, MIN, sb.t + sb.h);
-          l = sb.l; t = sb.t + sb.h - h;
-        } else if (drag.type === 'nw') {
-          w = clamp(sb.w - dx, MIN, sb.l + sb.w);
-          h = ratio ? w / ratio : clamp(sb.h - dy, MIN, sb.t + sb.h);
-          l = sb.l + sb.w - w; t = sb.t + sb.h - h;
-        }
-      }
-
-      box.style.left   = clamp(l, 0, SW - MIN) + 'px';
-      box.style.top    = clamp(t, 0, SH - MIN) + 'px';
-      box.style.width  = clamp(w, MIN, SW - clamp(l,0,SW-MIN)) + 'px';
-      box.style.height = clamp(h, MIN, SH - clamp(t,0,SH-MIN)) + 'px';
-    }
-
-    function onUp() { drag = null; }
-
-    stage.addEventListener('mousedown', onDown);
-    box.addEventListener('mousedown',   onDown);
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup',   onUp);
-    stage.addEventListener('touchstart',   onDown, {passive:false});
-    document.addEventListener('touchmove', onMove, {passive:false});
-    document.addEventListener('touchend',  onUp);
-  }
-
-  window.abrirGifCrop = async function(gifDataUrl, mode, onDone) {
-    await _ensureGifLibs();
-    _criarGifCropUI();
-
-    const ratio = (mode === 'banner') ? (680/140) : 1;
-
-    // Decodifica frames
-    let frames = [];
-    try {
-      const binary = atob(gifDataUrl.split(',')[1]);
-      const bytes  = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-      const gr = new GifReader(bytes);
-      const fw = gr.width, fh = gr.height;
-      for (let i = 0; i < gr.numFrames(); i++) {
-        const info   = gr.frameInfo(i);
-        const pixels = new Uint8ClampedArray(fw * fh * 4);
-        gr.decodeAndBlitFrameRGBA(i, pixels);
-        frames.push({ imageData: new ImageData(pixels, fw, fh), delay: info.delay * 10, width: fw, height: fh });
-      }
-    } catch(e) { console.warn('GIF decode:', e); frames = []; }
-
-    window._gifCropState = { gifDataUrl, frames, mode, ratio, onDone };
-
-    const preview  = document.getElementById('gif-crop-preview');
-    const stage    = document.getElementById('gif-crop-stage');
-    const box      = document.getElementById('gif-crop-box');
-    const progress = document.getElementById('gif-crop-progress');
-
-    preview.src = gifDataUrl;
-    progress.style.display = 'none';
-    document.getElementById('gif-crop-overlay').classList.add('show');
-
-    function initBox() {
-      const sw = stage.offsetWidth, sh = stage.offsetHeight;
-      let bw, bh;
-      if (mode === 'banner') {
-        bw = sw * 0.9; bh = bw / ratio;
-        if (bh > sh * 0.9) { bh = sh * 0.9; bw = bh * ratio; }
-      } else {
-        bw = bh = Math.min(sw, sh) * 0.8;
-      }
-      box.style.left   = ((sw - bw) / 2) + 'px';
-      box.style.top    = ((sh - bh) / 2) + 'px';
-      box.style.width  = bw + 'px';
-      box.style.height = bh + 'px';
-    }
-
-    if (preview.complete && preview.naturalWidth > 0) { initBox(); }
-    else { preview.onload = initBox; }
-  };
-
-  window.confirmarGifCrop = async function() {
-    if (!window._gifCropState) return;
-    const { gifDataUrl, frames, mode, onDone } = window._gifCropState;
-
-    const stage    = document.getElementById('gif-crop-stage');
-    const box      = document.getElementById('gif-crop-box');
-    const progress = document.getElementById('gif-crop-progress');
-
-    const sl = box.offsetLeft, st = box.offsetTop;
-    const bw = box.offsetWidth, bh = box.offsetHeight;
-    const sw = stage.offsetWidth,  sh = stage.offsetHeight;
-    const outW = (mode === 'banner') ? 680 : 300;
-    const outH = (mode === 'banner') ? 140 : 300;
-
-    // Fallback: sem frames decodificados — crop estático
-    if (!frames || frames.length === 0) {
-      const tmp = document.createElement('canvas');
-      tmp.width = outW; tmp.height = outH;
-      const ctx = tmp.getContext('2d', { willReadFrequently: true });
-      const img = new Image();
-      img.onload = function() {
-        const ir = img.naturalWidth / img.naturalHeight;
-        const sr = sw / sh;
-        let dw, dh, ox, oy;
-        if (ir > sr) { dw = sw; dh = sw/ir; ox = 0; oy = (sh-dh)/2; }
-        else         { dh = sh; dw = sh*ir; oy = 0; ox = (sw-dw)/2; }
-        ctx.drawImage(img, (sl-ox)*(img.naturalWidth/dw), (st-oy)*(img.naturalHeight/dh),
-                          bw*(img.naturalWidth/dw), bh*(img.naturalHeight/dh), 0, 0, outW, outH);
-        onDone(tmp.toDataURL('image/jpeg', 0.92), false);
-        window.cancelarGifCrop();
-      };
-      img.src = gifDataUrl;
-      return;
-    }
-
-    progress.style.display = 'block';
-    progress.textContent   = '⏳ Processando frames...';
-
-    const nw = frames[0].width, nh = frames[0].height;
-    const ir = nw / nh, sr = sw / sh;
-    let dw, dh, ox, oy;
-    if (ir > sr) { dw = sw; dh = sw/ir; ox = 0; oy = (sh-dh)/2; }
-    else         { dh = sh; dw = sh*ir; oy = 0; ox = (sw-dw)/2; }
-
-    const sx = Math.max(0, (sl-ox) * (nw/dw));
-    const sy = Math.max(0, (st-oy) * (nh/dh));
-    const sW = Math.min(bw * (nw/dw), nw - sx);
-    const sH = Math.min(bh * (nh/dh), nh - sy);
-
-    try {
-      await _ensureGifLibs();
-      const workerScript = await _getWorkerScript();
-      const gif = new GIF({
-        workers: 2, quality: 5, width: outW, height: outH,
-        workerScript: workerScript
-      });
-      const tmp = document.createElement('canvas');
-      tmp.width = outW; tmp.height = outH;
-      const ctx = tmp.getContext('2d', { willReadFrequently: true });
-      const src = document.createElement('canvas');
-      src.width = nw; src.height = nh;
-
-      for (let i = 0; i < frames.length; i++) {
-        progress.textContent = '⏳ Frame ' + (i+1) + '/' + frames.length + '...';
-        src.getContext('2d', { willReadFrequently: true }).putImageData(frames[i].imageData, 0, 0);
-        ctx.clearRect(0, 0, outW, outH);
-        ctx.drawImage(src, sx, sy, sW, sH, 0, 0, outW, outH);
-        gif.addFrame(ctx, { copy: true, delay: frames[i].delay || 100 });
-      }
-
-      gif.on('progress', p => { progress.textContent = '⚙️ Encodando... ' + Math.round(p*100) + '%'; });
-      gif.on('finished', function(blob) {
-        const r = new FileReader();
-        r.onload = function(ev) { onDone(ev.target.result, true); window.cancelarGifCrop(); };
-        r.readAsDataURL(blob);
-      });
-      gif.render();
-    } catch(err) {
-      console.error('GIF encode error:', err);
-      progress.textContent = '❌ Erro ao processar. Usando original.';
-      setTimeout(() => { onDone(gifDataUrl, true); window.cancelarGifCrop(); }, 1500);
-    }
-  };
-
-  window.cancelarGifCrop = function() {
-    const o = document.getElementById('gif-crop-overlay');
-    if (o) o.classList.remove('show');
-    window._gifCropState = null;
-  };
-
-})();
-
-</script>
 </body>
 </html>

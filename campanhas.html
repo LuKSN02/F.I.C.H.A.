@@ -120,9 +120,6 @@
         --card:        #091628;
         --border:      #1a3a6e;
         --text-dim:    #6a8aaa;
-        --red:         #e84040;
-        --red-dark:    #7a0000;
-        --green:       #39d353;
     }
 
     .btn-temas {
@@ -180,7 +177,7 @@
             background-attachment: fixed; color: white; min-height: 100vh;
             display: flex; flex-direction: column;
         }
-        .custom-nav { background: black; border-bottom: 2px solid #222; position: relative; z-index: 1040; overflow: visible; }
+        .custom-nav { background: black; border-bottom: 2px solid #222; }
         .nav-link:hover { color: #ff0000 !important; }
 
         /* ── ESTADO DE CARREGAMENTO ── */
@@ -405,7 +402,7 @@
         }
         #perfil-overlay.show { display: flex; }
         .perfil-card {
-            background: #111115; border-radius: 14px; width: min(340px, 95vw);
+            background: #111115; border-radius: 14px; width: 340px;
             overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
             position: relative; font-family: 'Oswald', sans-serif;
         }
@@ -414,7 +411,6 @@
             background: linear-gradient(135deg, var(--tema-primary-dark), #000);
             background-size: cover; background-position: center;
             position: relative; cursor: pointer; transition: filter 0.2s;
-            overflow: hidden;
         }
         .perfil-banner:hover .perfil-banner-edit { opacity: 1; }
         .perfil-banner-edit {
@@ -422,13 +418,8 @@
             display: flex; align-items: center; justify-content: center;
             opacity: 0; transition: 0.2s; font-size: 0.7rem; letter-spacing: 2px;
             color: #ccc; font-family: 'Share Tech Mono', monospace;
-            z-index: 1;
         }
-        .banner-img-animado {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%; object-fit: cover; z-index: 0;
-        }
-        .perfil-avatar-wrap { position: absolute; top: 72px; left: 18px; cursor: pointer; z-index: 10; }
+        .perfil-avatar-wrap { position: absolute; bottom: -38px; left: 18px; cursor: pointer; }
         .perfil-avatar {
             width: 76px; height: 76px; border-radius: 50%; border: 4px solid #111115;
             background: #222; overflow: hidden;
@@ -447,7 +438,7 @@
             border-color: var(--perfil-borda, var(--tema-primary));
             box-shadow: 0 0 12px var(--perfil-borda, var(--tema-primary));
         }
-        .perfil-top-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 2; }
+        .perfil-top-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
         .perfil-top-btn {
             background: rgba(0,0,0,0.6); border: 1px solid #333; color: #aaa;
             font-size: 0.7rem; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: 0.2s;
@@ -496,7 +487,7 @@
         .perfil-edit-overlay.show { display: flex; }
         .perfil-edit-box {
             background: #0d0d0d; border: 1px solid var(--tema-primary-dark);
-            border-radius: 12px; padding: 24px; width: min(320px, 92vw);
+            border-radius: 12px; padding: 24px; width: 320px;
             box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3);
         }
         .perfil-edit-title { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #666; margin-bottom: 14px; font-family: 'Share Tech Mono', monospace; }
@@ -562,12 +553,12 @@
             cursor: pointer;
         }
         .avatar-circle {
-            width: 46px; height: 46px;
+            width: 38px; height: 38px;
             border-radius: 50%;
             border: 2px solid var(--tema-primary);
             background: var(--tema-primary-dark);
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; font-weight: 700; color: var(--tema-primary-light);
+            font-size: 1rem; font-weight: 700; color: var(--tema-primary-light);
             overflow: hidden;
             transition: 0.2s;
             user-select: none;
@@ -609,57 +600,6 @@
     /* Modal: ocupa tela toda em mobile */
     .modal-box { padding: 20px 16px; }
 }
-
-/* Navbar intermediária (lg): evita esmagamento */
-@media (min-width: 992px) and (max-width: 1199px) {
-    .navbar-brand { font-size: 1.2rem !important; }
-    .navbar-brand img { width: 48px !important; height: 48px !important; }
-    .btn-temas { font-size: 0.75rem; padding: 5px 10px; margin-right: 8px; }
-    .nav-link { padding-left: 0.5rem !important; padding-right: 0.5rem !important; font-size: 0.9rem; }
-}
-
-/* ===== ANIMAÇÕES PARANORMAIS ===== */
-#particle-canvas {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none; z-index: 0; opacity: 0.38;
-}
-
-/* Sem position:relative nos elementos principais para evitar flickering */
-.custom-nav { isolation: isolate; }
-.page-wrapper { isolation: isolate; }
-.modal-overlay, #perfil-overlay, .crop-overlay,
-.banner-crop-overlay, .perfil-edit-overlay,
-#loading-screen { isolation: isolate; }
-
-/* Navbar */
-@keyframes navDrop {
-    from { opacity: 0; transform: translateY(-18px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-.custom-nav { animation: navDrop 0.55s ease forwards; }
-
-/* Conteúdo principal */
-@keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(28px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-.page-wrapper { animation: fadeSlideUp 0.6s cubic-bezier(.22,.68,0,1.2) 0.1s both; }
-
-/* Cards de campanha com entrada escalonada */
-@keyframes cardPop {
-    from { opacity: 0; transform: translateY(14px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-.camp-card.anim-in { animation: cardPop 0.38s cubic-bezier(.22,.68,0,1.2) both; }
-
-/* Detalhe da campanha */
-.camp-detalhe.show { animation: fadeSlideUp 0.4s cubic-bezier(.22,.68,0,1.2) both; }
-.camp-header { animation: fadeSlideUp 0.4s ease 0.05s both; }
-
-/* Transição de tema */
-body { transition: background 0.5s ease; }
-
     </style>
 </head>
 <body>
@@ -685,25 +625,10 @@ body { transition: background 0.5s ease; }
                 <a class="nav-link px-3 active" href="campanhas.html">Campanhas</a>
                 <a class="nav-link px-3" href="homebrew.html">Homebrew</a>
             </div>
-            <!-- Mobile: Temas + Perfil dentro do menu hambúrguer -->
-            <div class="d-lg-none px-3 pb-3 pt-2">
-                <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
-                <div style="font-size:0.6rem;letter-spacing:2px;color:#555;text-transform:uppercase;margin-bottom:8px;font-family:'Oswald',sans-serif;">Tema</div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-                    <button onclick="aplicarTema('medo');toggleNavbar()" style="background:rgba(58,123,213,0.15);border:1px solid #3a7bd5;color:#7ab3f5;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Medo</button>
-                    <button onclick="aplicarTema('sangue');toggleNavbar()" style="background:rgba(204,17,17,0.15);border:1px solid #cc1111;color:#ff4444;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Sangue</button>
-                    <button onclick="aplicarTema('morte');toggleNavbar()" style="background:rgba(136,136,136,0.15);border:1px solid #888;color:#ccc;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Morte</button>
-                    <button onclick="aplicarTema('conhecimento');toggleNavbar()" style="background:rgba(200,150,12,0.15);border:1px solid #c8960c;color:#f5c842;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Conhecimento</button>
-                    <button onclick="aplicarTema('energia');toggleNavbar()" style="background:rgba(155,48,217,0.15);border:1px solid #9b30d9;color:#d070ff;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Energia</button>
-                </div>
-                <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
-                <button onclick="abrirPainelPerfil(event);toggleNavbar()" style="width:100%;background:transparent;border:1px solid var(--tema-primary);color:var(--tema-primary-light);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;">👤 Ver Perfil</button>
-                <button onclick="fazerLogout();toggleNavbar()" style="width:100%;background:transparent;border:1px solid #552222;color:#ff6666;padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;margin-top:8px;">✕ Sair</button>
-            </div>
         </div>
 
         <!-- Avatar de perfil -->
-        <div class="d-none d-lg-flex align-items-center flex-shrink-0" style="justify-content: flex-end;">
+        <div class="d-none d-lg-flex align-items-center" style="min-width: 200px; justify-content: flex-end;">
 
             <!-- Botão Temas -->
             <div class="temas-wrapper" id="temas-wrapper">
@@ -883,6 +808,7 @@ body { transition: background 0.5s ease; }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // ══ CONFIG FIREBASE ══
 const firebaseConfig = {
@@ -895,9 +821,18 @@ const firebaseConfig = {
     appId: "1:5463680704:web:3d6296c296699f4d41af25"
 };
 
-const app  = initializeApp(firebaseConfig);
-const db   = getFirestore(app);
-const auth = getAuth(app);
+const app     = initializeApp(firebaseConfig);
+const db      = getFirestore(app);
+const auth    = getAuth(app);
+const storage = getStorage(app);
+
+window._uploadImagemPerfil = async function(uid, tipo, base64DataUrl) {
+    const ext = base64DataUrl.startsWith('data:image/gif') ? 'gif' : 'jpg';
+    const path = `perfis/${uid}/${tipo}.${ext}`;
+    const sRef = storageRef(storage, path);
+    const snapshot = await uploadString(sRef, base64DataUrl, 'data_url');
+    return await getDownloadURL(snapshot.ref);
+};
 
 // ══ ESTADO GLOBAL ══
 let currentUser   = null;
@@ -910,13 +845,11 @@ onAuthStateChanged(auth, async user => {
     if (user) {
         currentUser = user;
 
-        // Salva o UID no localStorage (necessário para campanhas/badges cross-page)
+        // Salva o UID permanente para referência
         localStorage.setItem('ficha_uid', user.uid);
         localStorage.setItem('ficha_uid_firebase', user.uid);
-        // Usuário logado fica APENAS no sessionStorage — nunca no localStorage
+
         const nomeUsuario = user.displayName || user.email.replace('@ficha.local', '');
-        sessionStorage.setItem('ficha_user', nomeUsuario);
-        localStorage.removeItem('ficha_user_ativo'); // limpa resíduo de versões antigas
         document.getElementById('status-dot').className = 'status-dot online';
         document.getElementById('status-txt').textContent = nomeUsuario;
         atualizarAvatar();
@@ -1026,7 +959,7 @@ function renderAgentes(agentes, isMestre) {
         el.innerHTML = `<div class="empty-state"><div class="icon">👤</div><div>Nenhum agente na campanha ainda.</div></div>`;
         return;
     }
-    const usuario = sessionStorage.getItem('ficha_user') || '';
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
     el.innerHTML = agentes.map(a => `
         <div class="agente-camp-card">
             <img class="agente-camp-foto" src="${a.foto || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(a.nome)}`}" alt="${a.nome}">
@@ -1153,32 +1086,12 @@ window.copiarConvite = function() {
 };
 
 // ══ VINCULAR AGENTE ══
-window.abrirModalVincularAgente = async function() {
-    const usuario = sessionStorage.getItem('ficha_user') || '';
+window.abrirModalVincularAgente = function() {
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const prefix  = usuario ? usuario + '_' : '';
+    const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
     const lista   = document.getElementById('lista-agentes-locais');
     agentesSelecionados.clear();
-
-    // Busca agentes do Firebase (fonte de verdade)
-    let agentes = [];
-    if (window._firebaseDB && window._firebaseGet && window._firebaseRef) {
-        try {
-            const { getDatabase, ref, get } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
-            const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
-            if (getApps().length > 0) {
-                const rtdb = getDatabase(getApps()[0]);
-                const snap = await get(ref(rtdb, `agentes/${usuario}`));
-                if (snap.exists()) agentes = Object.values(snap.val());
-            }
-        } catch(e) {
-            // Fallback: cache local se Firebase falhar
-            const prefix = usuario ? usuario + '_' : '';
-            agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
-        }
-    } else {
-        // Fallback offline
-        const prefix = usuario ? usuario + '_' : '';
-        agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
-    }
 
     if (agentes.length === 0) {
         lista.innerHTML = `<div class="empty-state"><div class="icon">👤</div><div>Nenhum agente local encontrado.<br><a href="criar.html" style="color:var(--purple-neon);">Crie um agente primeiro!</a></div></div>`;
@@ -1195,8 +1108,6 @@ window.abrirModalVincularAgente = async function() {
             </div>`;
         }).join('');
     }
-    // Guarda agentes em memória para vincularAgentes usar
-    window._agentesParaVincular = agentes;
     document.getElementById('modal-vincular').classList.add('show');
 };
 
@@ -1212,8 +1123,9 @@ window.toggleSelecionarAgente = function(i) {
 
 window.vincularAgentes = async function() {
     if (agentesSelecionados.size === 0) { mostrarToast('⚠ Selecione ao menos um agente'); return; }
-    const usuario = sessionStorage.getItem('ficha_user') || '';
-    const agentes = window._agentesParaVincular || [];
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const prefix  = usuario ? usuario + '_' : '';
+    const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
 
     try {
         for (const i of agentesSelecionados) {
@@ -1296,39 +1208,31 @@ window.sairCampanha = async function() {
 
 // ══ UTILITÁRIOS ══
 function getNomeLocal() {
-    const usuario = sessionStorage.getItem('ficha_user') || '';
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
     return usuario || `Agente_${currentUser.uid.slice(0,6)}`;
 }
 
-function atualizarAvatar() {
-    const usuario = sessionStorage.getItem('ficha_user') || '';
+async function atualizarAvatar() {
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
     if (!usuario) return;
     const iniciais = usuario.substring(0, 2).toUpperCase();
-    const chaveAvatar = usuario + '_foto_perfil';
     const circle = document.getElementById('avatar-circle');
     if (!circle) return;
-
-    // Migra do localStorage para IndexedDB se necessário, depois exibe
-    _imgDB.get(chaveAvatar).then(async fotoIDB => {
-        if (!fotoIDB) {
-            // Tenta migrar do localStorage (formato antigo)
-            const fotoLS = localStorage.getItem(chaveAvatar);
-            if (fotoLS) {
-                await _imgDB.set(chaveAvatar, fotoLS);
-                localStorage.removeItem(chaveAvatar);
-                fotoIDB = fotoLS;
-            }
-            // Fallback: tenta do perfil local
-            if (!fotoIDB) {
-                try { const p = JSON.parse(localStorage.getItem('perfil_' + usuario) || '{}'); fotoIDB = p.foto || ''; } catch(e) {}
-            }
+    // Mostra iniciais enquanto carrega
+    circle.innerHTML = `<span id="avatar-iniciais">${iniciais}</span>`;
+    // Sempre busca do Firebase — única fonte de verdade
+    const perfilFB = await carregarPerfilFirebase(usuario);
+    if (perfilFB) {
+        setPerfilLocal(perfilFB);
+        const foto = perfilFB.foto || '';
+        if (foto) {
+            circle.innerHTML = `<img src="${foto}" alt="foto de perfil">`;
         }
-        if (fotoIDB) {
-            circle.innerHTML = `<img src="${fotoIDB}" alt="foto de perfil">`;
-        } else {
-            circle.innerHTML = `<span id="avatar-iniciais">${iniciais}</span>`;
+        if (perfilFB.corBorda) {
+            circle.style.borderColor = perfilFB.corBorda;
+            circle.style.boxShadow   = `0 0 8px ${perfilFB.corBorda}`;
         }
-    });
+    }
 }
 
 window.voltarLista = function() {
@@ -1365,57 +1269,12 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
    PAINEL DE PERFIL
 ============================================= */
 function getUsuarioLogado() {
-    // Lê APENAS do sessionStorage — nunca do localStorage
-    return sessionStorage.getItem('ficha_user') || null;
+    return sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
 }
-function getAvatarKey() {
-    return getUsuarioLogado() + '_foto_perfil';
-}
-
-/* IndexedDB para imagens grandes */
-const _imgDB = (function() {
-    const DB_NAME = 'fichaImagens', STORE = 'imagens', VER = 1;
-    let _db = null;
-    function open() {
-        if (_db) return Promise.resolve(_db);
-        return new Promise((res, rej) => {
-            const req = indexedDB.open(DB_NAME, VER);
-            req.onupgradeneeded = e => e.target.result.createObjectStore(STORE);
-            req.onsuccess = e => { _db = e.target.result; res(_db); };
-            req.onerror   = e => rej(e.target.error);
-        });
-    }
-    return {
-        async set(key, value) {
-            const db = await open();
-            return new Promise((res, rej) => {
-                const tx = db.transaction(STORE, 'readwrite');
-                tx.objectStore(STORE).put(value, key);
-                tx.oncomplete = res; tx.onerror = e => rej(e.target.error);
-            });
-        },
-        async get(key) {
-            const db = await open();
-            return new Promise((res, rej) => {
-                const req = db.transaction(STORE, 'readonly').objectStore(STORE).get(key);
-                req.onsuccess = () => res(req.result ?? null);
-                req.onerror   = e => rej(e.target.error);
-            });
-        }
-    };
-})();
-function getPerfilKey(usuario) {
-    return 'perfil_' + (usuario || getUsuarioLogado() || '');
-}
-function getPerfilLocal() {
-    const u = getUsuarioLogado(); if (!u) return {};
-    try { return JSON.parse(localStorage.getItem(getPerfilKey(u))) || {}; } catch(e) { return {}; }
-}
-function setPerfilLocal(dados) {
-    const u = getUsuarioLogado(); if (!u) return;
-    dados._usuario = u;
-    localStorage.setItem(getPerfilKey(u), JSON.stringify(dados));
-}
+// ── Perfil: sem localStorage — Firebase é a única fonte de verdade ──
+let _perfilCache = {};
+function getPerfilLocal() { return _perfilCache; }
+function setPerfilLocal(dados) { _perfilCache = dados || {}; }
 async function salvarPerfilFirebase(dados) {
     const u = getUsuarioLogado(); if (!u) return;
     try {
@@ -1424,7 +1283,11 @@ async function salvarPerfilFirebase(dados) {
         const apps = getApps();
         if (apps.length > 0) {
             const rtdb = getDatabase(apps[0]);
-            await set(ref(rtdb, `perfis/${u}`), dados);
+            // Remove base64 antes de salvar no DB (imagens ficam no Storage)
+            const dadosSemBase64 = Object.assign({}, dados);
+            if (dadosSemBase64.foto   && dadosSemBase64.foto.startsWith('data:'))   delete dadosSemBase64.foto;
+            if (dadosSemBase64.banner && dadosSemBase64.banner.startsWith('data:')) delete dadosSemBase64.banner;
+            await set(ref(rtdb, `perfis/${u}`), dadosSemBase64);
         }
     } catch(e) { console.warn('Perfil firebase erro:', e); }
 }
@@ -1446,23 +1309,20 @@ window.abrirPainelPerfil = async function(e) {
     if (e) e.stopPropagation();
     const usuario = getUsuarioLogado(); if (!usuario) return;
     document.getElementById('perfil-overlay').classList.add('show');
-    // Sempre carrega do Firebase primeiro (fonte de verdade)
+    // Sempre busca do Firebase — sem localStorage
     const perfilFB = await carregarPerfilFirebase(usuario);
-    let perfil;
-    if (perfilFB) {
-        perfil = perfilFB;
+    {
+        const perfil = perfilFB || {};
         setPerfilLocal(perfil);
-    } else {
-        perfil = getPerfilLocal();
+        renderPainelPerfil(usuario, perfil);
     }
-    renderPainelPerfil(usuario, perfil);
 };
 
 async function renderPainelPerfil(usuario, perfil) {
     document.getElementById('perfil-username').textContent = usuario;
     document.getElementById('perfil-handle').textContent   = '@' + usuario;
     const avatarEl  = document.getElementById('perfil-avatar-img');
-    const fotoSalva = (await _imgDB.get(getAvatarKey())) || perfil.foto || '';
+    const fotoSalva = perfil.foto || '';
     const iniciais  = usuario.substring(0,2).toUpperCase();
     if (fotoSalva) {
         avatarEl.innerHTML = `<img src="${fotoSalva}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
@@ -1477,10 +1337,8 @@ async function renderPainelPerfil(usuario, perfil) {
         document.querySelectorAll('.cor-btn').forEach(b => b.classList.toggle('ativa', b.dataset.cor === corBorda));
     }
     const banner = document.getElementById('perfil-banner');
-    const bannerKey = getUsuarioLogado() + '_banner_perfil';
-    const bannerData = (await _imgDB.get(bannerKey)) || perfil.banner || null;
-    if (bannerData) { _aplicarBannerNaUI(bannerData, !!perfil.bannerAnimado); }
-    else { banner.style.backgroundImage = ''; const imgAnt = banner.querySelector('.banner-img-animado'); if (imgAnt) imgAnt.remove(); }
+    if (perfil.banner) { banner.style.backgroundImage = `url('${perfil.banner}')`; banner.style.backgroundSize = 'cover'; }
+    else { banner.style.backgroundImage = ''; }
     const statusEl = document.getElementById('perfil-status-display');
     if (perfil.status) { statusEl.textContent = '💬 ' + perfil.status; statusEl.classList.remove('vazio'); }
     else { statusEl.textContent = 'Clique para adicionar um recado...'; statusEl.classList.add('vazio'); }
@@ -1489,7 +1347,7 @@ async function renderPainelPerfil(usuario, perfil) {
     else { bioEl.textContent = 'Nenhuma descrição ainda...'; bioEl.classList.add('vazio'); }
     document.getElementById('perfil-pronomes-display').textContent = perfil.pronomes || '';
     const dataEntrada = perfil.dataEntrada || new Date().toLocaleDateString('pt-BR');
-    if (!perfil.dataEntrada) { perfil.dataEntrada = dataEntrada; setPerfilLocal(perfil); }
+    if (!perfil.dataEntrada) { perfil.dataEntrada = dataEntrada; setPerfilLocal(perfil); salvarPerfilFirebase(perfil); }
     document.getElementById('perfil-membro-desde').textContent = '▸ Membro desde ' + dataEntrada;
     await renderBadges(usuario);
 }
@@ -1499,7 +1357,7 @@ async function renderBadges(usuario) {
     badgesEl.innerHTML = `<span class="perfil-badge badge-membro">⚡ Membro</span>`;
     // badge Mestre — verifica campanhas que o usuário criou (já temos o db Firestore aqui)
     try {
-        const uid = currentUser ? currentUser.uid : (localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase'));
+        const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
         if (uid && typeof db !== 'undefined') {
             const { query: q, collection: col, where: wh, getDocs: gd } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
             const snap = await gd(q(col(db, 'campanhas'), wh('mestreUid', '==', uid)));
@@ -1585,50 +1443,10 @@ window.perfilClicarBanner = function() {
 
 /* — Cropper avatar — */
 let cropperInstance = null;
-// Detecta se um arquivo é animado (GIF ou WebP animado)
-async function isAnimatedImage(file) {
-    if (file.type === 'image/gif') return true;
-    if (file.type === 'image/webp') {
-        const buf = await file.slice(0, 64).arrayBuffer();
-        const str = String.fromCharCode(...new Uint8Array(buf));
-        return str.includes('ANIM');
-    }
-    return false;
-}
-
-function _aplicarBannerNaUI(base64, animado) {
-    const banner = document.getElementById('perfil-banner');
-    if (!banner) return;
-    const imgAnt = banner.querySelector('.banner-img-animado');
-    if (imgAnt) imgAnt.remove();
-    if (animado) {
-        banner.style.backgroundImage = '';
-        banner.style.backgroundSize  = '';
-        const img = document.createElement('img');
-        img.src = base64; img.className = 'banner-img-animado'; img.alt = 'banner animado';
-        banner.insertBefore(img, banner.firstChild);
-    } else {
-        banner.style.backgroundImage = `url('${base64}')`;
-        banner.style.backgroundSize  = 'cover';
-    }
-}
-
 window.salvarFotoPerfil = function(event) {
     const file = event.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = async function(e) {
-        const animado = await isAnimatedImage(file);
-if (animado) {
-            window.abrirGifCrop(e.target.result, 'avatar', async function(resultDataUrl, isAnim) {
-                await _imgDB.set(getAvatarKey(), resultDataUrl);
-                const perfil = getPerfilLocal(); perfil.foto = resultDataUrl; perfil.fotoAnimada = isAnim;
-                setPerfilLocal(perfil); await salvarPerfilFirebase(perfil); atualizarAvatar();
-                const avatarEl = document.getElementById('perfil-avatar-img');
-                if (avatarEl) avatarEl.innerHTML = `<img src="${resultDataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
-            });
-            document.getElementById('input-foto-perfil').value = '';
-            return;
-        }
+    reader.onload = function(e) {
         const cropImg = document.getElementById('crop-img');
         if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
         cropImg.src = e.target.result;
@@ -1644,15 +1462,25 @@ window.confirmarCrop = async function() {
     const canvas = cropperInstance.getCroppedCanvas({ width: 300, height: 300 });
     if (!canvas) return;
     const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-    await _imgDB.set(getAvatarKey(), dataUrl);
+    // Exibe imediatamente (UX rápida)
     const perfil = getPerfilLocal();
-    perfil.foto  = dataUrl; perfil.fotoAnimada = false;
+    perfil.foto  = dataUrl;
     setPerfilLocal(perfil);
-    await salvarPerfilFirebase(perfil);
     atualizarAvatar();
     window.cancelarCrop();
     const avatarEl = document.getElementById('perfil-avatar-img');
     if (avatarEl) avatarEl.innerHTML = `<img src="${dataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
+    // Upload pro Firebase Storage
+    const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
+    if (uid && window._uploadImagemPerfil) {
+        try {
+            const url = await window._uploadImagemPerfil(uid, 'foto', dataUrl);
+            perfil.foto = url; setPerfilLocal(perfil);
+            await salvarPerfilFirebase(perfil);
+            atualizarAvatar();
+            if (avatarEl) avatarEl.innerHTML = `<img src="${url}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
+        } catch(e) { console.warn('Upload foto erro:', e); await salvarPerfilFirebase(perfil); }
+    } else { await salvarPerfilFirebase(perfil); }
 };
 window.cancelarCrop = function() {
     document.getElementById('crop-overlay').classList.remove('show');
@@ -1665,15 +1493,8 @@ let _bannerCropperInstance = null;
 window.salvarBannerPerfil = function(event) {
     const file = event.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = async function(ev) {
-        const animado = await isAnimatedImage(file);
-        if (animado) {
-            window.abrirGifCrop(ev.target.result, 'banner', async function(resultDataUrl, isAnim) {
-                _salvarBannerBase64(resultDataUrl, isAnim);
-            });
-            document.getElementById('input-banner-perfil').value = '';
-            return;
-        }
+    reader.onload = function(ev) {
+        if (file.type === 'image/gif') { _salvarBannerBase64(ev.target.result); document.getElementById('input-banner-perfil').value = ''; return; }
         const cropImg = document.getElementById('banner-crop-img');
         if (_bannerCropperInstance) { _bannerCropperInstance.destroy(); _bannerCropperInstance = null; }
         cropImg.src = ev.target.result;
@@ -1688,7 +1509,7 @@ window.confirmarBannerCrop = function() {
     if (!_bannerCropperInstance) return;
     const canvas = _bannerCropperInstance.getCroppedCanvas({ width: 680, height: 140 });
     if (!canvas) return;
-    _salvarBannerBase64(canvas.toDataURL('image/jpeg', 0.9), false);
+    _salvarBannerBase64(canvas.toDataURL('image/jpeg', 0.9));
     window.cancelarBannerCrop();
 };
 window.cancelarBannerCrop = function() {
@@ -1696,31 +1517,33 @@ window.cancelarBannerCrop = function() {
     if (_bannerCropperInstance) { _bannerCropperInstance.destroy(); _bannerCropperInstance = null; }
     document.getElementById('input-banner-perfil').value = '';
 };
-async function _salvarBannerBase64(base64, animado) {
-    const bannerKey = getUsuarioLogado() + '_banner_perfil';
-    await _imgDB.set(bannerKey, base64);
+async function _salvarBannerBase64(base64) {
     const perfil = getPerfilLocal();
-    perfil.banner = null; // não armazena base64 grande no localStorage
-    perfil.bannerAnimado = !!animado;
-    perfil.temBanner = true;
+    perfil.banner = base64;
     setPerfilLocal(perfil);
-    await salvarPerfilFirebase({ ...perfil, banner: base64, bannerAnimado: !!animado });
-    _aplicarBannerNaUI(base64, !!animado);
+    // Exibe imediatamente
+    const banner = document.getElementById('perfil-banner');
+    banner.style.backgroundImage = `url('${base64}')`;
+    banner.style.backgroundSize  = 'cover';
+    // Upload pro Firebase Storage
+    const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
+    if (uid && window._uploadImagemPerfil) {
+        try {
+            const url = await window._uploadImagemPerfil(uid, 'banner', base64);
+            perfil.banner = url; setPerfilLocal(perfil);
+            await salvarPerfilFirebase(perfil);
+        } catch(e) { console.warn('Upload banner erro:', e); await salvarPerfilFirebase(perfil); }
+    } else { await salvarPerfilFirebase(perfil); }
 }
 
 window.fazerLogout = async function() {
     if (!confirm('Deseja sair da conta?')) return;
-    const usuario = sessionStorage.getItem('ficha_user');
     const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
     const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
     const apps = getApps();
     if (apps.length > 0) await signOut(getAuth(apps[0]));
-    sessionStorage.clear();
+    sessionStorage.removeItem('ficha_user');
     localStorage.removeItem('ficha_user_ativo');
-    if (usuario) {
-        localStorage.removeItem(usuario + '_lista_agentes');
-        localStorage.removeItem('perfil_' + usuario);
-    }
     window.location.href = 'index.html';
 };
 </script>
@@ -1734,11 +1557,11 @@ window.fazerLogout = async function() {
         <button class="perfil-top-btn" onclick="event.stopPropagation();abrirEditPerfil('status')">✎ Status</button>
         <button class="perfil-top-btn danger" onclick="event.stopPropagation();fazerLogout()">✕ Sair</button>
       </div>
-    </div>
-    <div class="perfil-avatar-wrap" id="perfil-avatar-wrap" onclick="event.stopPropagation();perfilClicarAvatar()">
-      <div class="perfil-avatar" id="perfil-avatar-img">
-        <span id="perfil-avatar-iniciais"></span>
-        <div class="perfil-avatar-edit">📷</div>
+      <div class="perfil-avatar-wrap" id="perfil-avatar-wrap" onclick="event.stopPropagation();perfilClicarAvatar()">
+        <div class="perfil-avatar" id="perfil-avatar-img">
+          <span id="perfil-avatar-iniciais"></span>
+          <div class="perfil-avatar-edit">📷</div>
+        </div>
       </div>
     </div>
     <div class="perfil-body">
@@ -1810,72 +1633,6 @@ window.fazerLogout = async function() {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- ===== PARTÍCULAS + ANIMAÇÕES CAMPANHAS ===== -->
-<script>
-(function() {
-    // ── Canvas de partículas ──
-    const canvas = document.createElement('canvas');
-    canvas.id = 'particle-canvas';
-    document.body.prepend(canvas);
-    const ctx = canvas.getContext('2d');
-    let W, H, particles = [];
-
-    function getRgb() {
-        return getComputedStyle(document.documentElement)
-            .getPropertyValue('--tema-glow-rgb').trim() || '58,123,213';
-    }
-    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-
-    function Particle() { this.reset(); }
-    Particle.prototype.reset = function() {
-        this.x = Math.random() * W; this.y = Math.random() * H;
-        this.r = Math.random() * 1.6 + 0.3;
-        this.vx = (Math.random() - 0.5) * 0.3; this.vy = -(Math.random() * 0.45 + 0.1);
-        this.alpha = Math.random() * 0.55 + 0.08;
-        this.life = Math.random() * 220 + 80; this.age = 0;
-    };
-    Particle.prototype.update = function() {
-        this.x += this.vx; this.y += this.vy; this.age++;
-        if (Math.random() < 0.025) this.alpha = Math.random() * 0.5 + 0.05;
-        if (this.age > this.life || this.y < -8) this.reset();
-    };
-    Particle.prototype.draw = function(rgb) {
-        ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${rgb},${this.alpha})`; ctx.fill();
-    };
-
-    resize();
-    for (let i = 0; i < 80; i++) { const p = new Particle(); p.age = Math.random() * p.life; particles.push(p); }
-    window.addEventListener('resize', resize);
-
-    function loop() {
-        ctx.clearRect(0, 0, W, H);
-        const rgb = getRgb();
-        particles.forEach(p => { p.update(); p.draw(rgb); });
-        requestAnimationFrame(loop);
-    }
-    loop();
-
-    // ── Anima cards de campanha ──
-    window._animarCampCards = function() {
-        document.querySelectorAll('.camp-card:not(.anim-in)').forEach((card, i) => {
-            card.classList.add('anim-in');
-            card.style.animationDelay = (i * 0.07) + 's';
-        });
-    };
-
-    // Observa mudanças no grid de campanhas para animar novos cards
-    const observer = new MutationObserver(() => {
-        setTimeout(window._animarCampCards, 60);
-    });
-    window.addEventListener('load', function() {
-        const grid = document.getElementById('lista-campanhas');
-        if (grid) observer.observe(grid, { childList: true });
-        setTimeout(window._animarCampCards, 400);
-    });
-})();
-</script>
     <script>
 
         /* ===== SISTEMA DE TEMAS ===== */
@@ -1909,344 +1666,6 @@ window.fazerLogout = async function() {
             });
         })();
 
-    
-    function toggleNavbar() {
-        const nav = document.getElementById('navbarNav');
-        if (nav && nav.classList.contains('show')) nav.classList.remove('show');
-    }
-</script>
-
-<script>
-
-/* ============================================================
-   GIF CROP MODULE
-   ============================================================ */
-(function() {
-  if (window._gifCropModuleLoaded) return;
-  window._gifCropModuleLoaded = true;
-
-  function _loadScript(src) {
-    return new Promise((res, rej) => {
-      if (document.querySelector('script[src="' + src + '"]')) { res(); return; }
-      const s = document.createElement('script');
-      s.src = src; s.onload = res; s.onerror = rej;
-      document.head.appendChild(s);
-    });
-  }
-
-  async function _ensureGifLibs() {
-    await _loadScript('https://cdn.jsdelivr.net/npm/omggif@1.0.10/omggif.js');
-    await _loadScript('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js');
-  }
-
-  // Cria um blob URL para o worker do gif.js, evitando o bloqueio de CORS
-  async function _getWorkerScript() {
-    if (window._gifWorkerBlobUrl) return window._gifWorkerBlobUrl;
-    try {
-      const resp = await fetch('https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js');
-      const text = await resp.text();
-      const blob = new Blob([text], { type: 'application/javascript' });
-      window._gifWorkerBlobUrl = URL.createObjectURL(blob);
-      return window._gifWorkerBlobUrl;
-    } catch(e) {
-      return 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js';
-    }
-  }
-
-  window._gifCropState = null;
-
-  function _criarGifCropUI() {
-    if (document.getElementById('gif-crop-overlay')) return;
-    const div = document.createElement('div');
-    div.id = 'gif-crop-overlay';
-    div.innerHTML = `
-    <style>
-    #gif-crop-overlay {
-        display:none; position:fixed; inset:0; background:rgba(0,0,0,0.97);
-        z-index:999999; flex-direction:column; align-items:center;
-        justify-content:center; gap:14px; padding:20px; font-family:'Oswald',sans-serif;
-    }
-    #gif-crop-overlay.show { display:flex; }
-    #gif-crop-label { font-size:0.65rem; letter-spacing:3px; color:#666; text-transform:uppercase; align-self:flex-start; }
-    #gif-crop-stage {
-        position:relative; overflow:hidden; border:1px solid var(--tema-primary,#3a7bd5);
-        background:#000; cursor:crosshair; user-select:none; max-width:90vw; max-height:55vh;
-    }
-    #gif-crop-preview { display:block; width:100%; height:100%; object-fit:contain; pointer-events:none; }
-    #gif-crop-box {
-        position:absolute; border:2px solid #fff;
-        box-shadow:0 0 0 9999px rgba(0,0,0,0.55); cursor:move; box-sizing:border-box;
-    }
-    #gif-crop-box::after {
-        content:''; position:absolute; inset:0;
-        background: repeating-linear-gradient(0deg,transparent,transparent 33.3%,rgba(255,255,255,0.15) 33.3%,rgba(255,255,255,0.15) 33.4%),
-                    repeating-linear-gradient(90deg,transparent,transparent 33.3%,rgba(255,255,255,0.15) 33.3%,rgba(255,255,255,0.15) 33.4%);
-    }
-    .gif-crop-handle { position:absolute; width:12px; height:12px; background:#fff; border:1px solid #333; border-radius:2px; }
-    .gif-crop-handle.nw { top:-6px; left:-6px; cursor:nw-resize; }
-    .gif-crop-handle.ne { top:-6px; right:-6px; cursor:ne-resize; }
-    .gif-crop-handle.sw { bottom:-6px; left:-6px; cursor:sw-resize; }
-    .gif-crop-handle.se { bottom:-6px; right:-6px; cursor:se-resize; }
-    #gif-crop-info { font-size:0.7rem; color:#555; letter-spacing:1px; }
-    #gif-crop-progress { display:none; font-size:0.75rem; color:var(--tema-primary-light,#7ab3f5); letter-spacing:2px; text-align:center; }
-    .gif-crop-btns { display:flex; gap:10px; }
-    .gif-crop-btn { font-family:'Oswald',sans-serif; font-size:0.75rem; letter-spacing:1px; padding:8px 22px; border-radius:3px; cursor:pointer; transition:0.2s; border:1px solid; }
-    .gif-crop-btn-ok { background:rgba(0,40,80,0.7); border-color:var(--tema-primary,#3a7bd5); color:var(--tema-primary-light,#7ab3f5); }
-    .gif-crop-btn-ok:hover { background:var(--tema-primary-dark,#0d2a5e); }
-    .gif-crop-btn-cancel { background:transparent; border-color:#333; color:#555; }
-    .gif-crop-btn-cancel:hover { border-color:#666; color:#888; }
-    </style>
-    <div id="gif-crop-label">▸ AJUSTAR IMAGEM ANIMADA</div>
-    <div id="gif-crop-stage">
-        <img id="gif-crop-preview" src="" alt="gif preview">
-        <div id="gif-crop-box">
-            <div class="gif-crop-handle nw"></div>
-            <div class="gif-crop-handle ne"></div>
-            <div class="gif-crop-handle sw"></div>
-            <div class="gif-crop-handle se"></div>
-        </div>
-    </div>
-    <div id="gif-crop-info">Arraste para mover &bull; Cantos para redimensionar</div>
-    <div id="gif-crop-progress"></div>
-    <div class="gif-crop-btns">
-        <button class="gif-crop-btn gif-crop-btn-ok" onclick="window.confirmarGifCrop()">&#10004; CONFIRMAR</button>
-        <button class="gif-crop-btn gif-crop-btn-cancel" onclick="window.cancelarGifCrop()">&#10005; CANCELAR</button>
-    </div>`;
-    document.body.appendChild(div);
-    _initGifCropInteraction();
-  }
-
-  function _initGifCropInteraction() {
-    const stage = document.getElementById('gif-crop-stage');
-    const box   = document.getElementById('gif-crop-box');
-    let drag = null;
-
-    function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
-    function stageSize() { return { w: stage.offsetWidth, h: stage.offsetHeight }; }
-
-    function onDown(e) {
-      e.preventDefault();
-      const cl  = e.target.classList;
-      const bx  = { l: box.offsetLeft, t: box.offsetTop, w: box.offsetWidth, h: box.offsetHeight };
-      const px  = e.clientX || (e.touches && e.touches[0].clientX);
-      const py  = e.clientY || (e.touches && e.touches[0].clientY);
-      if      (cl.contains('nw')) drag = { type:'nw', startX:px, startY:py, startBox:{...bx} };
-      else if (cl.contains('ne')) drag = { type:'ne', startX:px, startY:py, startBox:{...bx} };
-      else if (cl.contains('sw')) drag = { type:'sw', startX:px, startY:py, startBox:{...bx} };
-      else if (cl.contains('se')) drag = { type:'se', startX:px, startY:py, startBox:{...bx} };
-      else if (e.target === box || box.contains(e.target))
-        drag = { type:'move', startX:px, startY:py, startBox:{...bx} };
-      else {
-        const r = stage.getBoundingClientRect();
-        drag = { type:'new', startX:px, startY:py, originX: px-r.left, originY: py-r.top };
-      }
-    }
-
-    function onMove(e) {
-      if (!drag) return;
-      e.preventDefault();
-      const px  = e.clientX || (e.touches && e.touches[0].clientX);
-      const py  = e.clientY || (e.touches && e.touches[0].clientY);
-      const dx  = px - drag.startX, dy = py - drag.startY;
-      const { w: SW, h: SH } = stageSize();
-      const ratio = window._gifCropState ? window._gifCropState.ratio : 0;
-      const MIN   = 20;
-      let { l, t, w, h } = drag.startBox || { l:0, t:0, w:MIN, h:MIN };
-
-      if (drag.type === 'move') {
-        l = clamp(l + dx, 0, SW - w);
-        t = clamp(t + dy, 0, SH - h);
-      } else if (drag.type === 'new') {
-        const r  = stage.getBoundingClientRect();
-        const cx = clamp(px - r.left, 0, SW);
-        const cy = clamp(py - r.top,  0, SH);
-        w = Math.abs(cx - drag.originX);
-        h = ratio ? w / ratio : Math.abs(cy - drag.originY);
-        l = Math.min(cx, drag.originX);
-        t = Math.min(cy, drag.originY);
-        drag.startBox = { l, t, w, h }; drag.startX = px; drag.startY = py;
-      } else {
-        const sb = drag.startBox;
-        if (drag.type === 'se') {
-          w = clamp(sb.w + dx, MIN, SW - sb.l);
-          h = ratio ? w / ratio : clamp(sb.h + dy, MIN, SH - sb.t);
-          l = sb.l; t = sb.t;
-        } else if (drag.type === 'sw') {
-          w = clamp(sb.w - dx, MIN, sb.l + sb.w);
-          h = ratio ? w / ratio : clamp(sb.h + dy, MIN, SH - sb.t);
-          l = sb.l + sb.w - w; t = sb.t;
-        } else if (drag.type === 'ne') {
-          w = clamp(sb.w + dx, MIN, SW - sb.l);
-          h = ratio ? w / ratio : clamp(sb.h - dy, MIN, sb.t + sb.h);
-          l = sb.l; t = sb.t + sb.h - h;
-        } else if (drag.type === 'nw') {
-          w = clamp(sb.w - dx, MIN, sb.l + sb.w);
-          h = ratio ? w / ratio : clamp(sb.h - dy, MIN, sb.t + sb.h);
-          l = sb.l + sb.w - w; t = sb.t + sb.h - h;
-        }
-      }
-
-      box.style.left   = clamp(l, 0, SW - MIN) + 'px';
-      box.style.top    = clamp(t, 0, SH - MIN) + 'px';
-      box.style.width  = clamp(w, MIN, SW - clamp(l,0,SW-MIN)) + 'px';
-      box.style.height = clamp(h, MIN, SH - clamp(t,0,SH-MIN)) + 'px';
-    }
-
-    function onUp() { drag = null; }
-
-    stage.addEventListener('mousedown', onDown);
-    box.addEventListener('mousedown',   onDown);
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup',   onUp);
-    stage.addEventListener('touchstart',   onDown, {passive:false});
-    document.addEventListener('touchmove', onMove, {passive:false});
-    document.addEventListener('touchend',  onUp);
-  }
-
-  window.abrirGifCrop = async function(gifDataUrl, mode, onDone) {
-    await _ensureGifLibs();
-    _criarGifCropUI();
-
-    const ratio = (mode === 'banner') ? (680/140) : 1;
-
-    // Decodifica frames
-    let frames = [];
-    try {
-      const binary = atob(gifDataUrl.split(',')[1]);
-      const bytes  = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-      const gr = new GifReader(bytes);
-      const fw = gr.width, fh = gr.height;
-      for (let i = 0; i < gr.numFrames(); i++) {
-        const info   = gr.frameInfo(i);
-        const pixels = new Uint8ClampedArray(fw * fh * 4);
-        gr.decodeAndBlitFrameRGBA(i, pixels);
-        frames.push({ imageData: new ImageData(pixels, fw, fh), delay: info.delay * 10, width: fw, height: fh });
-      }
-    } catch(e) { console.warn('GIF decode:', e); frames = []; }
-
-    window._gifCropState = { gifDataUrl, frames, mode, ratio, onDone };
-
-    const preview  = document.getElementById('gif-crop-preview');
-    const stage    = document.getElementById('gif-crop-stage');
-    const box      = document.getElementById('gif-crop-box');
-    const progress = document.getElementById('gif-crop-progress');
-
-    preview.src = gifDataUrl;
-    progress.style.display = 'none';
-    document.getElementById('gif-crop-overlay').classList.add('show');
-
-    function initBox() {
-      const sw = stage.offsetWidth, sh = stage.offsetHeight;
-      let bw, bh;
-      if (mode === 'banner') {
-        bw = sw * 0.9; bh = bw / ratio;
-        if (bh > sh * 0.9) { bh = sh * 0.9; bw = bh * ratio; }
-      } else {
-        bw = bh = Math.min(sw, sh) * 0.8;
-      }
-      box.style.left   = ((sw - bw) / 2) + 'px';
-      box.style.top    = ((sh - bh) / 2) + 'px';
-      box.style.width  = bw + 'px';
-      box.style.height = bh + 'px';
-    }
-
-    if (preview.complete && preview.naturalWidth > 0) { initBox(); }
-    else { preview.onload = initBox; }
-  };
-
-  window.confirmarGifCrop = async function() {
-    if (!window._gifCropState) return;
-    const { gifDataUrl, frames, mode, onDone } = window._gifCropState;
-
-    const stage    = document.getElementById('gif-crop-stage');
-    const box      = document.getElementById('gif-crop-box');
-    const progress = document.getElementById('gif-crop-progress');
-
-    const sl = box.offsetLeft, st = box.offsetTop;
-    const bw = box.offsetWidth, bh = box.offsetHeight;
-    const sw = stage.offsetWidth,  sh = stage.offsetHeight;
-    const outW = (mode === 'banner') ? 680 : 300;
-    const outH = (mode === 'banner') ? 140 : 300;
-
-    // Fallback: sem frames decodificados — crop estático
-    if (!frames || frames.length === 0) {
-      const tmp = document.createElement('canvas');
-      tmp.width = outW; tmp.height = outH;
-      const ctx = tmp.getContext('2d', { willReadFrequently: true });
-      const img = new Image();
-      img.onload = function() {
-        const ir = img.naturalWidth / img.naturalHeight;
-        const sr = sw / sh;
-        let dw, dh, ox, oy;
-        if (ir > sr) { dw = sw; dh = sw/ir; ox = 0; oy = (sh-dh)/2; }
-        else         { dh = sh; dw = sh*ir; oy = 0; ox = (sw-dw)/2; }
-        ctx.drawImage(img, (sl-ox)*(img.naturalWidth/dw), (st-oy)*(img.naturalHeight/dh),
-                          bw*(img.naturalWidth/dw), bh*(img.naturalHeight/dh), 0, 0, outW, outH);
-        onDone(tmp.toDataURL('image/jpeg', 0.92), false);
-        window.cancelarGifCrop();
-      };
-      img.src = gifDataUrl;
-      return;
-    }
-
-    progress.style.display = 'block';
-    progress.textContent   = '⏳ Processando frames...';
-
-    const nw = frames[0].width, nh = frames[0].height;
-    const ir = nw / nh, sr = sw / sh;
-    let dw, dh, ox, oy;
-    if (ir > sr) { dw = sw; dh = sw/ir; ox = 0; oy = (sh-dh)/2; }
-    else         { dh = sh; dw = sh*ir; oy = 0; ox = (sw-dw)/2; }
-
-    const sx = Math.max(0, (sl-ox) * (nw/dw));
-    const sy = Math.max(0, (st-oy) * (nh/dh));
-    const sW = Math.min(bw * (nw/dw), nw - sx);
-    const sH = Math.min(bh * (nh/dh), nh - sy);
-
-    try {
-      await _ensureGifLibs();
-      const workerScript = await _getWorkerScript();
-      const gif = new GIF({
-        workers: 2, quality: 5, width: outW, height: outH,
-        workerScript: workerScript
-      });
-      const tmp = document.createElement('canvas');
-      tmp.width = outW; tmp.height = outH;
-      const ctx = tmp.getContext('2d', { willReadFrequently: true });
-      const src = document.createElement('canvas');
-      src.width = nw; src.height = nh;
-
-      for (let i = 0; i < frames.length; i++) {
-        progress.textContent = '⏳ Frame ' + (i+1) + '/' + frames.length + '...';
-        src.getContext('2d', { willReadFrequently: true }).putImageData(frames[i].imageData, 0, 0);
-        ctx.clearRect(0, 0, outW, outH);
-        ctx.drawImage(src, sx, sy, sW, sH, 0, 0, outW, outH);
-        gif.addFrame(ctx, { copy: true, delay: frames[i].delay || 100 });
-      }
-
-      gif.on('progress', p => { progress.textContent = '⚙️ Encodando... ' + Math.round(p*100) + '%'; });
-      gif.on('finished', function(blob) {
-        const r = new FileReader();
-        r.onload = function(ev) { onDone(ev.target.result, true); window.cancelarGifCrop(); };
-        r.readAsDataURL(blob);
-      });
-      gif.render();
-    } catch(err) {
-      console.error('GIF encode error:', err);
-      progress.textContent = '❌ Erro ao processar. Usando original.';
-      setTimeout(() => { onDone(gifDataUrl, true); window.cancelarGifCrop(); }, 1500);
-    }
-  };
-
-  window.cancelarGifCrop = function() {
-    const o = document.getElementById('gif-crop-overlay');
-    if (o) o.classList.remove('show');
-    window._gifCropState = null;
-  };
-
-})();
-
-</script>
+    </script>
 </body>
 </html>
