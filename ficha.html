@@ -899,26 +899,40 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
     authDomain: "ficha-op-c9df8.firebaseapp.com",
-    databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com", // ← ADICIONE ISSO
+    databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com",
     projectId: "ficha-op-c9df8",
     storageBucket: "ficha-op-c9df8.firebasestorage.app",
     messagingSenderId: "5463680704",
     appId: "1:5463680704:web:3d6296c296699f4d41af25"
-};
+  };
 
-  const app = initializeApp(firebaseConfig);
-  const db  = getDatabase(app);
+  const app  = initializeApp(firebaseConfig);
+  const db   = getDatabase(app);
+  const auth = getAuth(app);
 
   // Expõe globalmente para o restante do código
-  window._firebaseDB  = db;
-  window._firebaseRef = ref;
-  window._firebaseSet = set;
+  window._firebaseDB       = db;
+  window._firebaseRef      = ref;
+  window._firebaseSet      = set;
   window._firebaseOnValue  = onValue;
-  window._firebaseGet  = get;
+  window._firebaseGet      = get;
+
+  // Mantém sessionStorage atualizado mesmo quando ficha.html é aberto diretamente
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      const usuario = user.displayName || user.email.replace('@ficha.local', '');
+      sessionStorage.setItem('ficha_user', usuario);
+      sessionStorage.setItem('ficha_uid', user.uid);
+    } else {
+      sessionStorage.removeItem('ficha_user');
+      sessionStorage.removeItem('ficha_uid');
+    }
+  });
 </script>
 
 </head>
@@ -3644,7 +3658,27 @@ function bonusAtrib(v) { return v || 0; }
 // INIT
 // ══════════════════════════════════════════════
 window.onload = function() {
-    carregarFicha();
+    // Aguarda o Firebase Auth resolver o estado do usuário antes de carregar a ficha.
+    // Isso garante que sessionStorage('ficha_user') esteja preenchido mesmo quando
+    // ficha.html é aberto diretamente (não via index.html).
+    function aguardarUsuarioECarregar() {
+        const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
+        if (usuario || !window._firebaseDB) {
+            carregarFicha();
+        } else {
+            // Firebase Auth ainda não resolveu — tenta por até 3s
+            let tentativas = 0;
+            const intervalo = setInterval(function() {
+                tentativas++;
+                const u = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
+                if (u || tentativas >= 30) {
+                    clearInterval(intervalo);
+                    carregarFicha();
+                }
+            }, 100);
+        }
+    }
+    aguardarUsuarioECarregar();
     document.getElementById('foto-input').addEventListener('change', function(e) {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();

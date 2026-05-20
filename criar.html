@@ -12,6 +12,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
@@ -23,13 +24,26 @@
             appId: "1:5463680704:web:3d6296c296699f4d41af25"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db  = getDatabase(app);
+        const app  = initializeApp(firebaseConfig);
+        const db   = getDatabase(app);
+        const auth = getAuth(app);
 
         window._firebaseDB  = db;
         window._firebaseRef = ref;
         window._firebaseSet = set;
         window._firebaseGet = get;
+
+        // Mantém sessionStorage atualizado mesmo quando criar.html é aberto diretamente
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                const usuario = user.displayName || user.email.replace('@ficha.local', '');
+                sessionStorage.setItem('ficha_user', usuario);
+                sessionStorage.setItem('ficha_uid', user.uid);
+            } else {
+                sessionStorage.removeItem('ficha_user');
+                sessionStorage.removeItem('ficha_uid');
+            }
+        });
     </script>
 
     <style>
@@ -1438,7 +1452,17 @@ async function finalizarFicha() {
         criadoEm:          new Date().toLocaleDateString('pt-BR'),
     };
 
-    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    // Aguarda Firebase Auth resolver (pode demorar ~100-300ms na primeira visita)
+    const usuario = await new Promise(resolve => {
+        const u = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
+        if (u) { resolve(u); return; }
+        let tentativas = 0;
+        const intervalo = setInterval(() => {
+            tentativas++;
+            const u2 = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
+            if (u2 || tentativas >= 30) { clearInterval(intervalo); resolve(u2 || ''); }
+        }, 100);
+    });
 
     // ── 1. Firebase (fonte de verdade) ──────────────────────────────
     let firebaseOk = false;
