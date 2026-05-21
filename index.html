@@ -359,6 +359,97 @@
         text-transform: uppercase;
     }
 
+    /* ===== MODAL CONFIRM LOGOUT ===== */
+    #confirm-logout-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(6px);
+        z-index: 99998;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.2s;
+    }
+    #confirm-logout-overlay.show {
+        opacity: 1; pointer-events: all;
+    }
+    @keyframes confirmSlideIn {
+        from { opacity: 0; transform: translateY(16px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .confirm-box {
+        background: #0e0e0e;
+        border: 1px solid #2a2a2a;
+        border-radius: 4px;
+        padding: 32px 28px 24px;
+        width: 100%;
+        max-width: 340px;
+        margin: 16px;
+        position: relative;
+        animation: confirmSlideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .confirm-box::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 4px;
+        box-shadow: 0 0 60px rgba(var(--tema-glow-rgb), 0.08);
+        pointer-events: none;
+    }
+    .confirm-icon {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 90, 90, 0.3);
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 18px;
+        background: rgba(255, 60, 60, 0.07);
+    }
+    .confirm-icon svg { width: 20px; height: 20px; stroke: #ff6666; }
+    .confirm-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem; font-weight: 700;
+        letter-spacing: 2px; text-transform: uppercase;
+        text-align: center; color: #e0e0e0;
+        margin-bottom: 8px;
+    }
+    .confirm-desc {
+        text-align: center;
+        color: #555;
+        font-size: 0.82rem;
+        letter-spacing: 1px;
+        margin-bottom: 28px;
+        font-family: 'Oswald', sans-serif;
+    }
+    .confirm-actions {
+        display: flex; gap: 10px;
+    }
+    .confirm-btn {
+        flex: 1; padding: 11px;
+        border-radius: 4px;
+        font-family: 'Oswald', sans-serif;
+        font-size: 0.8rem; font-weight: 700;
+        letter-spacing: 2px; text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .confirm-btn-cancel {
+        background: transparent;
+        border: 1px solid #222;
+        color: #555;
+    }
+    .confirm-btn-cancel:hover { border-color: #444; color: #888; background: rgba(255,255,255,0.03); }
+    .confirm-btn-ok {
+        background: transparent;
+        border: 1px solid rgba(255, 80, 80, 0.35);
+        color: #ff7070;
+    }
+    .confirm-btn-ok:hover {
+        border-color: #ff5555;
+        color: #fff;
+        background: rgba(255, 60, 60, 0.12);
+        box-shadow: 0 0 16px rgba(255, 60, 60, 0.2);
+    }
+    .confirm-btn-ok:active, .confirm-btn-cancel:active { transform: scale(0.98); }
+
     /* ===== AVATAR DE PERFIL ===== */
     .avatar-wrapper {
         position: relative;
@@ -1001,7 +1092,26 @@ body { transition: background 0.6s ease; }
             <p class="login-error" id="login-erro"></p>
         </div>
     </div>
-            <!-- MODAL CROPPER -->
+        <!-- ===== MODAL CONFIRM LOGOUT ===== -->
+    <div id="confirm-logout-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+            </div>
+            <p class="confirm-title">Sair da conta</p>
+            <p class="confirm-desc">Deseja encerrar a sessão atual?</p>
+            <div class="confirm-actions">
+                <button class="confirm-btn confirm-btn-cancel" id="confirm-logout-cancel">Cancelar</button>
+                <button class="confirm-btn confirm-btn-ok" id="confirm-logout-ok">Sair</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- MODAL CROPPER -->
         <div class="crop-overlay" id="crop-overlay">
         <div class="crop-title">▸ AJUSTAR FOTO DE PERFIL</div>
         <div class="crop-area">
@@ -1311,8 +1421,31 @@ body { transition: background 0.6s ease; }
             }
         }
 
+        function mostrarConfirmLogout() {
+            return new Promise(resolve => {
+                const overlay = document.getElementById('confirm-logout-overlay');
+                const btnOk     = document.getElementById('confirm-logout-ok');
+                const btnCancel = document.getElementById('confirm-logout-cancel');
+                overlay.classList.add('show');
+                function fechar(resultado) {
+                    overlay.classList.remove('show');
+                    btnOk.removeEventListener('click', onOk);
+                    btnCancel.removeEventListener('click', onCancel);
+                    overlay.removeEventListener('click', onBackdrop);
+                    resolve(resultado);
+                }
+                function onOk()      { fechar(true);  }
+                function onCancel()  { fechar(false); }
+                function onBackdrop(e) { if (e.target === overlay) fechar(false); }
+                btnOk.addEventListener('click', onOk);
+                btnCancel.addEventListener('click', onCancel);
+                overlay.addEventListener('click', onBackdrop);
+            });
+        }
+
         async function fazerLogout() {
-            if (!confirm('Deseja sair da conta?')) return;
+            const confirmado = await mostrarConfirmLogout();
+            if (!confirmado) return;
             // Cancela listener em tempo real antes de deslogar
             if (_agentesListener) { _agentesListener(); _agentesListener = null; }
             const usuario = getUsuarioLogado();
