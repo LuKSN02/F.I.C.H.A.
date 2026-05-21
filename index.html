@@ -1600,26 +1600,60 @@ function getPerfilLocal() {
 
 function setPerfilLocal(dados) {
     const u = getUsuarioLogado(); if (!u) return;
-    // Sempre inclui o usuário no objeto salvo para validação futura
     dados._usuario = u;
-    localStorage.setItem(getPerfilKey(u), JSON.stringify(dados));
+    // Foto base64 pode ser muito grande para localStorage (limite ~5MB)
+    // → guarda separado no _imgDB (IndexedDB) e remove do objeto JSON
+    if (dados.foto) {
+        _imgDB.set(getAvatarKey(), dados.foto).catch(() => {});
+        const dadosSemFoto = { ...dados };
+        delete dadosSemFoto.foto;
+        try { localStorage.setItem(getPerfilKey(u), JSON.stringify(dadosSemFoto)); } catch(e) { console.warn('localStorage cheio:', e); }
+    } else {
+        try { localStorage.setItem(getPerfilKey(u), JSON.stringify(dados)); } catch(e) { console.warn('localStorage cheio:', e); }
+    }
 }
 
 async function salvarPerfilFirebase(dados) {
     const u = getUsuarioLogado(); if (!u) return;
-    if (window._firebaseDB) {
-        try {
-            const { ref, set } = { ref: window._firebaseRef, set: window._firebaseSet };
-            if (ref && set) await set(ref(window._firebaseDB, `perfis/${u}`), dados);
-        } catch(e) { console.warn('Perfil firebase erro:', e); }
-    }
+    if (!window._firebaseDB || !window._firebaseRef || !window._firebaseSet) return;
+    const ref = window._firebaseRef;
+    const set = window._firebaseSet;
+    try {
+        // Foto (base64 pode ser grande) → nó separado para não limitar o perfil
+        if (dados.foto) {
+            const fotoBase64 = dados.foto;
+            const fotoBytes  = Math.round(fotoBase64.length * 0.75); // bytes aproximados
+            if (fotoBytes > 9 * 1024 * 1024) {
+                // Acima de 9MB: Firebase rejeitaria — avisa o usuário
+                alert('A imagem é grande demais para sincronizar entre dispositivos (máx ~9MB). Tente uma imagem menor.');
+                return;
+            }
+            await set(ref(window._firebaseDB, `fotos_perfil/${u}`), fotoBase64);
+            // Salva no perfil apenas uma flag, não o base64 inteiro
+            const dadosSemFoto = { ...dados };
+            delete dadosSemFoto.foto;
+            dadosSemFoto.temFoto = true;
+            dadosSemFoto.fotoAnimada = !!dados.fotoAnimada;
+            await set(ref(window._firebaseDB, `perfis/${u}`), dadosSemFoto);
+        } else {
+            await set(ref(window._firebaseDB, `perfis/${u}`), dados);
+        }
+    } catch(e) { console.warn('Perfil firebase erro:', e); }
 }
 
 async function carregarPerfilFirebase(usuario) {
     if (!window._firebaseDB || !window._firebaseGet || !window._firebaseRef) return null;
     try {
-        const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis/${usuario}`));
-        return snap.exists() ? snap.val() : null;
+        // Busca perfil e foto em paralelo (foto fica em nó separado por ser grande)
+        const [snapPerfil, snapFoto] = await Promise.all([
+            window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis/${usuario}`)),
+            window._firebaseGet(window._firebaseRef(window._firebaseDB, `fotos_perfil/${usuario}`))
+        ]);
+        if (!snapPerfil.exists()) return null;
+        const perfil = snapPerfil.val();
+        // Reanexar a foto ao objeto de perfil para o restante do código funcionar normalmente
+        if (snapFoto.exists()) perfil.foto = snapFoto.val();
+        return perfil;
     } catch(e) { return null; }
 }
 
