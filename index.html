@@ -1414,12 +1414,21 @@ body { transition: background 0.6s ease; }
 
             let fotoSalva = await _imgDB.get(getAvatarKey());
 
-            // Fallback: tenta buscar do perfil salvo localmente
+            // Se não tem no cache local, busca do Firebase (outra máquina ou cache limpo)
             if (!fotoSalva) {
-                const perfil = getPerfilLocal ? getPerfilLocal() : null;
-                if (perfil && perfil.foto) {
-                    fotoSalva = perfil.foto;
+                const perfilFB = await carregarPerfilFirebase(usuario);
+                if (perfilFB && perfilFB.foto) {
+                    fotoSalva = perfilFB.foto;
+                    // Popula o cache local para próximas chamadas rápidas
                     await _imgDB.set(getAvatarKey(), fotoSalva);
+                    setPerfilLocal(perfilFB);
+                } else {
+                    // Último fallback: cache local
+                    const perfil = getPerfilLocal ? getPerfilLocal() : null;
+                    if (perfil && perfil.foto) {
+                        fotoSalva = perfil.foto;
+                        await _imgDB.set(getAvatarKey(), fotoSalva);
+                    }
                 }
             }
 
@@ -1551,12 +1560,20 @@ if (animado) {
     reader.readAsDataURL(file);
 }
 
-function confirmarCrop() {
+async function confirmarCrop() {
     if (!cropperInstance) return;
     const canvas = cropperInstance.getCroppedCanvas({ width: 300, height: 300 });
     if (!canvas) return;
     const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-    _imgDB.set(getAvatarKey(), dataUrl).then(() => atualizarAvatar());
+    // Salva localmente (cache rápido)
+    await _imgDB.set(getAvatarKey(), dataUrl);
+    // Salva no Firebase (fonte de verdade — sincroniza entre dispositivos)
+    const perfil = getPerfilLocal();
+    perfil.foto = dataUrl;
+    perfil.fotoAnimada = false;
+    setPerfilLocal(perfil);
+    await salvarPerfilFirebase(perfil);
+    atualizarAvatar();
     cancelarCrop();
 }
 
@@ -1631,9 +1648,15 @@ async function renderPainelPerfil(usuario, perfil) {
     document.getElementById('perfil-username').textContent = usuario;
     document.getElementById('perfil-handle').textContent   = '@' + usuario;
 
-    // Avatar
+    // Avatar — prioriza Firebase (fonte de verdade), depois cache local
     const avatarEl = document.getElementById('perfil-avatar-img');
-    const fotoSalva = (await _imgDB.get(getAvatarKey())) || perfil.foto || '';
+    const fotoFirebase = perfil.foto || '';
+    const fotoLocal    = await _imgDB.get(getAvatarKey()) || '';
+    const fotoSalva    = fotoFirebase || fotoLocal;
+    // Sincroniza cache local se o Firebase tem uma foto mais recente
+    if (fotoFirebase && fotoFirebase !== fotoLocal) {
+        await _imgDB.set(getAvatarKey(), fotoFirebase);
+    }
     const iniciais  = usuario.substring(0,2).toUpperCase();
     if (fotoSalva) {
         avatarEl.innerHTML = `<img src="${fotoSalva}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
