@@ -6,7 +6,7 @@
     <title>F.I.C.H.A. – Ficha do Agente</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
+    <link rel="icon" type="image/gif" href="ordem-paranormal-enigma-do-medo.gif">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <style>
@@ -479,6 +479,146 @@
         .footer-link { color: #888; text-decoration: none; }
         .footer-link:hover { color: var(--purple-neon); }
 
+        /* ══ CONDIÇÕES ══ */
+        .card-condicoes {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px 16px;
+        }
+        .cond-grid {
+            display: flex; flex-wrap: wrap; gap: 6px;
+        }
+        .cond-chip {
+            display: flex; align-items: center; gap: 5px;
+            background: #0d0010; border: 1px solid var(--border);
+            color: var(--text-dim); font-family: 'Oswald', sans-serif;
+            font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px;
+            padding: 5px 10px; border-radius: 99px; cursor: pointer;
+            transition: all 0.18s; user-select: none;
+            position: relative;
+        }
+        .cond-chip:hover { border-color: var(--purple); color: white; }
+        /* Tooltip nativo via title — e um tooltip CSS customizado */
+        .cond-chip[title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0a0018;
+            border: 1px solid var(--border);
+            color: #ccc;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            max-width: 280px;
+            white-space: pre-wrap;
+            text-align: left;
+            z-index: 9999;
+            pointer-events: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+            line-height: 1.5;
+        }
+        .cond-chip.ativa {
+            background: rgba(var(--tema-glow-rgb), 0.15);
+            border-color: var(--tema-primary);
+            color: white;
+            box-shadow: 0 0 8px rgba(var(--tema-glow-rgb), 0.3);
+        }
+        .cond-chip.cond-mental.ativa {
+            background: rgba(155,48,217,0.18);
+            border-color: #9b30d9; color: #d070ff;
+            box-shadow: 0 0 8px rgba(155,48,217,0.3);
+        }
+        .cond-chip.cond-estado.ativa {
+            background: rgba(245,168,35,0.12);
+            border-color: #f5a623; color: #f5c842;
+            box-shadow: 0 0 8px rgba(245,168,35,0.2);
+        }
+        /* Condição Morrendo — pulsante */
+        .cond-chip[data-cond="Morrendo"].ativa {
+            background: rgba(232,64,64,0.18);
+            border-color: var(--red);
+            color: #ff6666;
+            box-shadow: 0 0 10px rgba(232,64,64,0.4);
+            animation: chipMorrendo 1.2s ease infinite;
+        }
+        @keyframes chipMorrendo {
+            0%,100% { box-shadow: 0 0 6px rgba(232,64,64,0.3); }
+            50%      { box-shadow: 0 0 14px rgba(232,64,64,0.7); }
+        }
+        .cond-dot {
+            width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+        }
+
+        /* ══ CICATRIZES ══ */
+        .card-cicatrizes {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px 16px;
+        }
+        .cicatrizes-trilha {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+        .cic-grupo { display: flex; flex-direction: column; align-items: center; }
+        .cic-boxes { display: flex; gap: 4px; }
+        .cic-box {
+            width: 22px; height: 22px; border-radius: 4px;
+            border: 1px solid var(--border); background: #0d0010;
+            cursor: pointer; transition: all 0.18s; position: relative;
+        }
+        .cic-box:hover { border-color: var(--purple); background: #1a0033; }
+        .cic-box.marcada {
+            background: rgba(232,64,64,0.25); border-color: var(--red);
+            box-shadow: 0 0 6px rgba(232,64,64,0.35);
+        }
+        .cic-box.marcada::after {
+            content: '✕'; position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; color: var(--red); font-weight: 700;
+        }
+        .cic-sep {
+            color: #333; font-size: 0.55rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* ══ ABA ANOTAÇÕES ══ */
+        .anotacoes-grid {
+            display: flex; flex-direction: column; gap: 16px;
+        }
+        .anot-textarea {
+            background: #0d0010; border: 1px solid var(--border);
+            color: white; font-family: 'Oswald', sans-serif;
+            font-size: 0.88rem; width: 100%; padding: 10px 14px;
+            border-radius: 6px; resize: vertical; line-height: 1.6;
+            transition: border-color 0.2s;
+        }
+        .anot-textarea:focus { border-color: var(--purple); outline: none; }
+        .anot-textarea::placeholder { color: #2a2a3a; }
+
+        /* Contatos */
+        .contato-row {
+            display: grid; grid-template-columns: 1fr 1fr auto;
+            gap: 6px; align-items: center; margin-bottom: 6px;
+            animation: slideIn 0.2s ease;
+        }
+        .contato-input {
+            background: #0d0010; border: 1px solid var(--border);
+            color: white; font-family: 'Oswald', sans-serif;
+            font-size: 0.82rem; padding: 6px 10px; border-radius: 5px;
+            transition: border-color 0.2s; width: 100%;
+        }
+        .contato-input:focus { border-color: var(--purple); outline: none; }
+        .contato-input::placeholder { color: #2a2a3a; }
+        .btn-del-contato {
+            background: none; border: none; color: #333;
+            font-size: 0.9rem; cursor: pointer; padding: 4px 6px;
+            transition: color 0.2s;
+        }
+        .btn-del-contato:hover { color: var(--red); }
+
         /* ── MODAL CROPPER FOTO AGENTE ── */
         .foto-crop-overlay {
             display: none;
@@ -549,6 +689,7 @@
         @keyframes flashFail { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 14px var(--red); } }
         .row-critico { animation: flashCrit 0.6s ease; }
         .row-falha   { animation: flashFail 0.6s ease; }
+        @keyframes pulseCrit { 0%,100% { box-shadow: 0 0 3px #e84040; } 50% { box-shadow: 0 0 9px #e84040, 0 0 16px rgba(232,64,64,0.4); } }
 
         /* RITUAIS */
         .rituais-topo { margin-bottom: 14px; }
@@ -1106,6 +1247,10 @@
         <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="nex-val">5%</div><div class="lbl">NEX</div></div>
         <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="pe-val">3</div><div class="lbl">PE/turno</div></div>
         <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="desl-val">9m</div><div class="lbl">Deslocamento</div></div>
+        <div class="nex-box" id="nex-box-inic" title="Iniciativa = AGI + bônus de Reflexos" style="cursor:default;">
+          <div class="val" id="inic-val">+0</div>
+          <div class="lbl">Iniciativa</div>
+        </div>
       </div>
 
       <!-- Botão Regras Opcionais -->
@@ -1199,6 +1344,97 @@
         <div class="defesa-detalhe" id="defesa-detalhe">= 10 + AGI</div>
       </div>
     </div>
+
+    <!-- ══ CONDIÇÕES ══ -->
+    <div class="card-condicoes" id="card-condicoes">
+      <div class="sec-title" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span>Condições</span>
+        <button onclick="limparCondicoes()" style="background:transparent;border:1px solid var(--border);color:#444;font-family:'Share Tech Mono',monospace;font-size:0.55rem;padding:2px 8px;border-radius:3px;cursor:pointer;letter-spacing:1px;transition:0.2s;" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red-dark)'" onmouseout="this.style.color='#444';this.style.borderColor='var(--border)'">LIMPAR</button>
+      </div>
+      <div class="cond-grid" id="cond-grid">
+        <!-- Condições físicas -->
+        <div class="cond-chip" data-cond="Sangrando"    onclick="toggleCondicao(this)" title="Perde 1d4 PV no início de cada turno. Cura: Medicina DT 15 ou +10 PV curados."><span class="cond-dot" style="background:#e84040;"></span>Sangrando</div>
+        <div class="cond-chip" data-cond="Queimando"    onclick="toggleCondicao(this)" title="Perde 1d6 de dano de Fogo no início de cada turno. Gastar ação padrão apagando ou ser banhado em água."><span class="cond-dot" style="background:#f5a623;"></span>Queimando</div>
+        <div class="cond-chip" data-cond="Envenenado"   onclick="toggleCondicao(this)" title="Perde 1d6 de dano no início de cada turno (tipo conforme veneno). Fortitude DT do veneno para remover."><span class="cond-dot" style="background:#39d353;"></span>Envenenado</div>
+        <div class="cond-chip" data-cond="Cego"         onclick="toggleCondicao(this)" title="Não enxerga. –5 em testes de perícia que dependam de visão. Ataques sofrem –5 e alvos têm +5 na Defesa."><span class="cond-dot" style="background:#888;"></span>Cego</div>
+        <div class="cond-chip" data-cond="Surdo"        onclick="toggleCondicao(this)" title="Não ouve. Falha automática em testes de Percepção auditiva. –5 em testes que dependam de ouvir."><span class="cond-dot" style="background:#aaa;"></span>Surdo</div>
+        <div class="cond-chip" data-cond="Imobilizado"  onclick="toggleCondicao(this)" title="Não pode se mover. –5 na Defesa. Ataques corpo a corpo têm +5 de bônus contra você."><span class="cond-dot" style="background:#7ab3f5;"></span>Imobilizado</div>
+        <div class="cond-chip" data-cond="Agarrado"     onclick="toggleCondicao(this)" title="Não pode se mover ou fazer ações padrão. Pode gastar ação padrão para tentar se soltar (Atletismo ou Acrobacia vs Atletismo do agressor)."><span class="cond-dot" style="background:#a0c4ff;"></span>Agarrado</div>
+        <div class="cond-chip" data-cond="Caído"        onclick="toggleCondicao(this)" title="–5 em ataques corpo a corpo. Atacantes adjacentes têm +5 de bônus. Gastar ação de movimento para se levantar."><span class="cond-dot" style="background:#c8960c;"></span>Caído</div>
+        <div class="cond-chip" data-cond="Lento"        onclick="toggleCondicao(this)" title="Deslocamento reduzido à metade. Não pode usar reações."><span class="cond-dot" style="background:#888;"></span>Lento</div>
+        <div class="cond-chip" data-cond="Paralisado"   onclick="toggleCondicao(this)" title="Não pode agir. –5 na Defesa. Ataques corpo a corpo contra você são críticos automáticos."><span class="cond-dot" style="background:#c0c0ff;"></span>Paralisado</div>
+        <!-- Condições mentais -->
+        <div class="cond-chip cond-mental" data-cond="Abalado"     onclick="toggleCondicao(this)" title="–2 em todos os testes e rolagens de dano enquanto durar."><span class="cond-dot" style="background:#d070ff;"></span>Abalado</div>
+        <div class="cond-chip cond-mental" data-cond="Apavorado"   onclick="toggleCondicao(this)" title="–5 em todos os testes e rolagens de dano. Deve fugir da fonte do medo se puder."><span class="cond-dot" style="background:#9b30d9;"></span>Apavorado</div>
+        <div class="cond-chip cond-mental" data-cond="Em Pânico"   onclick="toggleCondicao(this)" title="Fica com 0 PV e perde a consciência. Quando recuperar consciência, fica apavorado."><span class="cond-dot" style="background:#3a0063;box-shadow:0 0 4px #9b30d9;"></span>Em Pânico</div>
+        <div class="cond-chip cond-mental" data-cond="Alucinando"  onclick="toggleCondicao(this)" title="O mestre descreve a realidade de forma distorcida. –2 em todos os testes de Percepção."><span class="cond-dot" style="background:#7ab3f5;"></span>Alucinando</div>
+        <div class="cond-chip cond-mental" data-cond="Confuso"     onclick="toggleCondicao(this)" title="No início do turno, role 1d6: 1–2 age aleatoriamente, 3–4 fica pasmo, 5–6 age normalmente."><span class="cond-dot" style="background:#ff9de2;"></span>Confuso</div>
+        <!-- Condições de estado -->
+        <div class="cond-chip cond-estado" data-cond="Surpreso"    onclick="toggleCondicao(this)" title="Perde a ação de reação e fica desprevenido no primeiro turno de combate."><span class="cond-dot" style="background:#f5c842;"></span>Surpreso</div>
+        <div class="cond-chip cond-estado" data-cond="Exausto"     onclick="toggleCondicao(this)" title="–2 em todos os testes, rolagens de dano e Defesa. Acumular 2 condições de exaustão deixa inconsciente."><span class="cond-dot" style="background:#f5a623;"></span>Exausto</div>
+        <div class="cond-chip cond-estado" data-cond="Fascinado"   onclick="toggleCondicao(this)" title="Fica parado, olhando para a fonte de fascinação. –5 em testes de Percepção contra outras ameaças."><span class="cond-dot" style="background:#7ab3f5;"></span>Fascinado</div>
+        <div class="cond-chip cond-estado" data-cond="Maldito"     onclick="toggleCondicao(this)" title="Efeito específico do ritual ou criatura responsável. Geralmente penalidades a testes ou vulnerabilidades."><span class="cond-dot" style="background:#e84040;box-shadow:0 0 4px #e84040;"></span>Maldito</div>
+        <div class="cond-chip cond-estado" data-cond="Atordoado"   onclick="toggleCondicao(this)" title="Perde todas as ações no turno (mas pode usar reações). –2 na Defesa."><span class="cond-dot" style="background:#ffe680;"></span>Atordoado</div>
+        <div class="cond-chip cond-estado" data-cond="Inconsciente" onclick="toggleCondicao(this)" title="Não pode agir, fica caído e perde a consciência. –5 na Defesa contra ataques corpo a corpo."><span class="cond-dot" style="background:#888;box-shadow:0 0 4px #aaa;"></span>Inconsciente</div>
+        <div class="cond-chip cond-estado" style="border-color:#7a0000;" data-cond="Morrendo"    onclick="toggleCondicao(this)" title="Está com 0 PV. Deve fazer teste de Fortitude DT 15 no início de cada turno ou morrer. Salvo com 1 PV ao receber qualquer cura."><span class="cond-dot" style="background:#e84040;box-shadow:0 0 6px #e84040;animation:pulseCrit 1s infinite;"></span>Morrendo</div>
+      </div>
+    </div>
+
+    <!-- ══ CICATRIZES MENTAIS ══ -->
+    <div class="card-cicatrizes" id="card-cicatrizes">
+      <div class="sec-title" style="margin-bottom:10px;">Cicatrizes Mentais</div>
+      <div style="font-size:0.58rem;letter-spacing:1px;color:#444;font-family:'Share Tech Mono',monospace;margin-bottom:10px;">▸ Marque ao acumular cicatrizes. A cada 4: perca 1 SAN máx. Em Críticas: perca 1 SAN máx adicional por cicatriz marcada.</div>
+      <!-- Trilha de cicatrizes — 20 caixas -->
+      <div class="cicatrizes-trilha" id="cicatrizes-trilha">
+        <div class="cic-grupo">
+          <div style="font-size:0.5rem;letter-spacing:2px;color:#444;font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:4px;">Leves</div>
+          <div class="cic-boxes" id="cic-leves">
+            <div class="cic-box" data-idx="0" onclick="toggleCicatriz(0)"></div>
+            <div class="cic-box" data-idx="1" onclick="toggleCicatriz(1)"></div>
+            <div class="cic-box" data-idx="2" onclick="toggleCicatriz(2)"></div>
+            <div class="cic-box" data-idx="3" onclick="toggleCicatriz(3)"></div>
+          </div>
+        </div>
+        <div class="cic-sep">▶</div>
+        <div class="cic-grupo">
+          <div style="font-size:0.5rem;letter-spacing:2px;color:#555;font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:4px;">Moderadas</div>
+          <div class="cic-boxes" id="cic-moderadas">
+            <div class="cic-box" data-idx="4" onclick="toggleCicatriz(4)"></div>
+            <div class="cic-box" data-idx="5" onclick="toggleCicatriz(5)"></div>
+            <div class="cic-box" data-idx="6" onclick="toggleCicatriz(6)"></div>
+            <div class="cic-box" data-idx="7" onclick="toggleCicatriz(7)"></div>
+          </div>
+        </div>
+        <div class="cic-sep">▶</div>
+        <div class="cic-grupo">
+          <div style="font-size:0.5rem;letter-spacing:2px;color:#884444;font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:4px;">Graves</div>
+          <div class="cic-boxes" id="cic-graves">
+            <div class="cic-box" data-idx="8" onclick="toggleCicatriz(8)"></div>
+            <div class="cic-box" data-idx="9" onclick="toggleCicatriz(9)"></div>
+            <div class="cic-box" data-idx="10" onclick="toggleCicatriz(10)"></div>
+            <div class="cic-box" data-idx="11" onclick="toggleCicatriz(11)"></div>
+          </div>
+        </div>
+        <div class="cic-sep">▶</div>
+        <div class="cic-grupo">
+          <div style="font-size:0.5rem;letter-spacing:2px;color:#cc1111;font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:4px;">Críticas</div>
+          <div class="cic-boxes" id="cic-criticas">
+            <div class="cic-box" data-idx="12" onclick="toggleCicatriz(12)" style="border-color:#5a0000;"></div>
+            <div class="cic-box" data-idx="13" onclick="toggleCicatriz(13)" style="border-color:#5a0000;"></div>
+            <div class="cic-box" data-idx="14" onclick="toggleCicatriz(14)" style="border-color:#5a0000;"></div>
+            <div class="cic-box" data-idx="15" onclick="toggleCicatriz(15)" style="border-color:#5a0000;"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Campo para descrever as cicatrizes -->
+      <div style="margin-top:10px;">
+        <textarea id="cicatrizes-desc" rows="2"
+          style="background:#0d0010;border:1px solid var(--border);color:#888;font-family:'Share Tech Mono',monospace;font-size:0.72rem;width:100%;padding:7px 10px;border-radius:5px;resize:none;outline:none;transition:border-color 0.2s;line-height:1.5;"
+          placeholder="Descreva as cicatrizes acumuladas..."
+          onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border)'"
+          oninput="salvarCicatrizes()"></textarea>
+      </div>
+    </div>
   </div>
 
   <!-- COLUNA DIREITA -->
@@ -1210,6 +1446,7 @@
       <button class="aba-btn"        data-aba="rituais"     onclick="trocarAba('rituais',this)">Rituais</button>
       <button class="aba-btn"        data-aba="inventario"  onclick="trocarAba('inventario',this)">Inventário</button>
       <button class="aba-btn"        data-aba="descricao"   onclick="trocarAba('descricao',this)">Descrição</button>
+      <button class="aba-btn"        data-aba="anotacoes"   onclick="trocarAba('anotacoes',this)">Anotações</button>
     </div>
 
     <!-- ABA COMBATE -->
@@ -1405,15 +1642,150 @@
 </div>
 
 
-    <!-- ABA DESCRIÇÃO -->
+    <!-- ABA DESCRIÇÃO (melhorada) -->
     <div class="aba-panel card-combate" id="aba-descricao">
       <div class="sec-title">Antecedente & Descrição</div>
-      <div class="descricao-field"><label>Personalidade</label><textarea rows="3" id="desc-personalidade" placeholder="Como o agente age e pensa..."></textarea></div>
-      <div class="descricao-field"><label>Ideal</label><textarea rows="2" id="desc-ideal" placeholder="O que motiva o agente..."></textarea></div>
-      <div class="descricao-field"><label>Vínculo</label><textarea rows="2" id="desc-vinculo" placeholder="Com quem ou o quê o agente se importa..."></textarea></div>
-      <div class="descricao-field"><label>Fraqueza / Segredo</label><textarea rows="2" id="desc-fraqueza" placeholder="O que assombra o agente..."></textarea></div>
-      <div class="descricao-field"><label>História</label><textarea rows="5" id="desc-historia" placeholder="A história completa do agente..."></textarea></div>
-      <button class="btn-novo-ataque" onclick="salvarDescricao()">💾 Salvar Descrição</button>
+
+      <!-- Linha: Origem + Classe (ambas travadas) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;display:block;margin-bottom:5px;">
+            Origem
+            <span id="origem-lock-badge" title="A origem é definida na criação do personagem e não pode ser alterada."
+              style="margin-left:6px;font-size:0.55rem;letter-spacing:1px;color:#555;font-family:'Share Tech Mono',monospace;vertical-align:middle;background:#0d0010;border:1px solid var(--border);border-radius:3px;padding:1px 6px;cursor:default;">🔒 TRAVADO</span>
+          </label>
+          <!-- Display travado da origem -->
+          <div id="desc-origem-locked"
+            style="background:#080010;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;font-size:0.88rem;width:100%;padding:7px 10px;border-radius:5px;display:flex;align-items:center;justify-content:space-between;min-height:36px;opacity:0.85;cursor:not-allowed;">
+            <span id="desc-origem-valor" style="font-weight:600;">—</span>
+            <span style="font-size:0.7rem;color:#444;">🔒</span>
+          </div>
+          <!-- Select oculto para compatibilidade com salvarDescricao() -->
+          <select id="desc-origem" style="display:none;" onchange="salvarDescricao()">
+            <option value="">— Selecionar —</option>
+            <option>Acadêmico</option><option>Amnésico</option><option>Artista</option>
+            <option>Celebridade</option><option>Criminoso</option><option>Cultista Arrependido</option>
+            <option>Desaparecido</option><option>Executivo</option><option>Investigador</option>
+            <option>Médico</option><option>Mercenário</option><option>Militar</option>
+            <option>Ocultista</option><option>Operário</option><option>Policial</option>
+            <option>Religioso</option><option>Ruínas</option><option>Servidor Público</option>
+            <option>Trambiqueiro</option><option>Universitário</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;display:block;margin-bottom:5px;">
+            Classe
+            <span id="classe-lock-badge" title="A classe é definida na criação do personagem e não pode ser alterada."
+              style="margin-left:6px;font-size:0.55rem;letter-spacing:1px;color:#555;font-family:'Share Tech Mono',monospace;vertical-align:middle;background:#0d0010;border:1px solid var(--border);border-radius:3px;padding:1px 6px;cursor:default;">🔒 TRAVADO</span>
+          </label>
+          <!-- Exibição bloqueada da classe -->
+          <div id="desc-classe-locked"
+            style="background:#080010;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;font-size:0.88rem;width:100%;padding:7px 10px;border-radius:5px;display:flex;align-items:center;justify-content:space-between;min-height:36px;opacity:0.85;cursor:not-allowed;">
+            <span id="desc-classe-valor" style="font-weight:600;">—</span>
+            <span style="font-size:0.7rem;color:#444;">🔒</span>
+          </div>
+          <!-- Select oculto mantido apenas para compatibilidade com salvarDescricao() -->
+          <select id="desc-classe-display" style="display:none;">
+            <option value="">—</option><option>Combatente</option><option>Especialista</option><option>Ocultista</option><option>Sobrevivente</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Botão destravar -->
+      <div style="margin-bottom:14px;">
+        <button id="btn-destravar-campos" onclick="abrirEnigmaDesbloqueio()"
+          style="background:transparent;border:1px solid var(--border);color:#555;font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:2px;padding:5px 14px;border-radius:4px;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:6px;"
+          onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--purple-neon)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='#555'">
+          🔓 DESTRAVAR ORIGEM &amp; CLASSE
+        </button>
+      </div>
+
+      <!-- Aparência física -->
+      <div class="descricao-field">
+        <label>Aparência Física</label>
+        <textarea rows="2" id="desc-aparencia" oninput="salvarDescricao()" placeholder="Altura, cor dos olhos, cabelo, marcas, cicatrizes visíveis..."></textarea>
+      </div>
+
+      <div class="descricao-field"><label>Personalidade</label><textarea rows="3" id="desc-personalidade" oninput="salvarDescricao()" placeholder="Como o agente age e pensa..."></textarea></div>
+      <div class="descricao-field"><label>Ideal</label><textarea rows="2" id="desc-ideal" oninput="salvarDescricao()" placeholder="O que motiva o agente..."></textarea></div>
+      <div class="descricao-field"><label>Vínculo</label><textarea rows="2" id="desc-vinculo" oninput="salvarDescricao()" placeholder="Com quem ou o quê o agente se importa..."></textarea></div>
+      <div class="descricao-field"><label>Fraqueza / Segredo</label><textarea rows="2" id="desc-fraqueza" oninput="salvarDescricao()" placeholder="O que assombra o agente..."></textarea></div>
+
+      <!-- Elemento paranormal -->
+      <div class="descricao-field">
+        <label>Elemento Paranormal</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;" id="desc-elem-btns">
+          <button class="desc-elem-btn" data-elem="medo"         onclick="selecionarElemDesc(this)" style="background:#0d0010;border:1px solid #1a3a6e;color:#6a8aaa;font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;padding:5px 12px;border-radius:99px;cursor:pointer;transition:0.2s;">👁 Medo</button>
+          <button class="desc-elem-btn" data-elem="morte"        onclick="selecionarElemDesc(this)" style="background:#0d0010;border:1px solid #2a2a2a;color:#666;font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;padding:5px 12px;border-radius:99px;cursor:pointer;transition:0.2s;">💀 Morte</button>
+          <button class="desc-elem-btn" data-elem="sangue"       onclick="selecionarElemDesc(this)" style="background:#0d0010;border:1px solid #3a0000;color:#884444;font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;padding:5px 12px;border-radius:99px;cursor:pointer;transition:0.2s;">🩸 Sangue</button>
+          <button class="desc-elem-btn" data-elem="energia"      onclick="selecionarElemDesc(this)" style="background:#0d0010;border:1px solid #3a0063;color:#7744aa;font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;padding:5px 12px;border-radius:99px;cursor:pointer;transition:0.2s;">⚡ Energia</button>
+          <button class="desc-elem-btn" data-elem="conhecimento" onclick="selecionarElemDesc(this)" style="background:#0d0010;border:1px solid #5a4000;color:#886a20;font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;padding:5px 12px;border-radius:99px;cursor:pointer;transition:0.2s;">📖 Conhecimento</button>
+        </div>
+      </div>
+
+      <div class="descricao-field"><label>História</label><textarea rows="6" id="desc-historia" oninput="salvarDescricao()" placeholder="A história completa do agente, como foi recrutado pela Ordem..."></textarea></div>
+      <div style="font-size:0.58rem;color:#333;font-family:'Share Tech Mono',monospace;margin-bottom:10px;">▸ A descrição é salva automaticamente conforme você digita.</div>
+    </div>
+
+    <!-- ABA ANOTAÇÕES (nova) -->
+    <div class="aba-panel card-combate" id="aba-anotacoes">
+      <div class="anotacoes-grid">
+
+        <!-- Objetivos da Missão -->
+        <div>
+          <div class="sec-title" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+            <span>🎯 Objetivos da Missão</span>
+            <span style="font-size:0.55rem;letter-spacing:1px;color:#333;font-family:'Share Tech Mono',monospace;">salvo automaticamente</span>
+          </div>
+          <div id="objetivos-lista" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;"></div>
+          <button onclick="adicionarObjetivo()" style="background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;padding:4px 12px;border-radius:4px;cursor:pointer;transition:0.2s;letter-spacing:1px;width:100%;" onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">+ Novo Objetivo</button>
+        </div>
+
+        <!-- Notas da sessão -->
+        <div>
+          <div class="sec-title" style="margin-bottom:8px;">📋 Notas da Sessão</div>
+          <textarea class="anot-textarea" id="anot-sessao" rows="6"
+            placeholder="Anotações rápidas da sessão atual, pistas encontradas, missões ativas..."
+            oninput="salvarAnotacoes()"></textarea>
+        </div>
+
+        <!-- Investigação / Pistas -->
+        <div>
+          <div class="sec-title" style="margin-bottom:8px;">🔍 Investigação & Pistas</div>
+          <textarea class="anot-textarea" id="anot-pistas" rows="5"
+            placeholder="Pistas coletadas, locais investigados, suspeitos, conexões paranormais..."
+            oninput="salvarAnotacoes()"></textarea>
+        </div>
+
+        <!-- Contatos & Aliados -->
+        <div>
+          <div class="sec-title" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span>👥 Contatos & Aliados</span>
+            <button onclick="adicionarContato()" style="background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;padding:4px 12px;border-radius:4px;cursor:pointer;transition:0.2s;letter-spacing:1px;" onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">+ Contato</button>
+          </div>
+          <div id="lista-contatos">
+            <div style="font-size:0.58rem;letter-spacing:1px;color:#333;font-family:'Share Tech Mono',monospace;text-align:center;padding:12px 0;">▸ Nenhum contato adicionado.</div>
+          </div>
+        </div>
+
+        <!-- Inimigos / Ameaças -->
+        <div>
+          <div class="sec-title" style="margin-bottom:8px;">☠️ Inimigos & Ameaças</div>
+          <textarea class="anot-textarea" id="anot-inimigos" rows="4"
+            placeholder="Entidades, cultistas, facções hostis e ameaças conhecidas..."
+            oninput="salvarAnotacoes()"></textarea>
+        </div>
+
+        <!-- Notas livres -->
+        <div>
+          <div class="sec-title" style="margin-bottom:8px;">📝 Notas Livres</div>
+          <textarea class="anot-textarea" id="anot-livre" rows="6"
+            placeholder="Espaço livre para qualquer anotação..."
+            oninput="salvarAnotacoes()"></textarea>
+        </div>
+
+      </div>
     </div>
   </div>
 </div>
@@ -2351,7 +2723,6 @@ const RITUAIS_DATA = [
   { nome:"Consumir Manancial", elem:"MORTE", circulo:1, src:"Livro de Regras", exec:"padrão", alcance:"pessoal", alvo:"você", dur:"instantânea",
     desc:"Você suga uma pequena porção do tempo de vida de plantas, insetos e até mesmo do solo ao redor, gerando lodo e recebendo 3d6 pontos de vida temporários. Os PV temporários desaparecem ao final da cena.",
     discente:"muda os PV temporários recebidos para 6d6. Requer 2º círculo.", discente_pe:"+2 PE",
-    verdadeiro:"muda o alvo para \"área: esfera com 6m de raio centrada em você\" e a resistência para \"Fortitude reduz à metade\". Em vez do normal, você suga energia de todos os seres vivos na área, causando 3d6 pontos de dano de Morte em cada um e recebendo PV temporários iguais ao dano total causado até o final da cena. Requer 3º círculo e afinidade.", verdadeiro_pe:"+5 PE",
     verdadeiro:"muda o alvo para \"área: esfera com 6m de raio centrada em você\" e a resistência para \"Fortitude reduz à metade\". Em vez do normal, você suga energia de todos os seres vivos na área, causando 3d6 pontos de dano de Morte em cada um e recebendo PV temporários iguais ao dano total causado até o final da cena. Requer 3º círculo e afinidade.", verdadeiro_pe:"+5 PE",
     dadosSugeridos:["3d6","6d6"] },
 
@@ -3877,6 +4248,12 @@ function renderFicha() {
     document.getElementById('display-origem').textContent = ficha.origem || '—';
     document.getElementById('display-classe').textContent = ficha.classe || '—';
     document.getElementById('display-criado').textContent = ficha.criadoEm || '—';
+    // Sincronizar campo de classe travado na aba Descrição
+    const selClasse = document.getElementById('desc-classe-display');
+    if (selClasse && ficha.classe) selClasse.value = ficha.classe;
+    atualizarClasseDisplay(ficha.classe || '—');
+    // Sincronizar campo de origem travado na aba Descrição
+    atualizarOrigemDisplay(ficha.origem || '—');
     const fotoSrc = estado.fotoCostum || ficha.fotoCostum || localStorage.getItem(getPrefix() + `foto_ficha_${ficha?.id}`) || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
     document.getElementById('foto-agente').src = fotoSrc;
     document.title = `F.I.C.H.A. – ${ficha.nome}`;
@@ -3918,6 +4295,12 @@ if (btnPortrait && ficha) {
     document.getElementById('defesa-val').textContent     = defesa;
     document.getElementById('esquiva-val').textContent    = defesa;
     document.getElementById('defesa-detalhe').textContent = `= 10 + AGI(${agi>0?'+'+agi:agi})`;
+    // Iniciativa = AGI + bônus de Reflexos (treinamento)
+    const reflexosEst = estado.pericias?.['Reflexos'] || {};
+    const refBonus = (reflexosEst.treinada ? 5 : 0) + (parseInt(reflexosEst.bonus)||0) + (parseInt(reflexosEst.outros)||0);
+    const inicTotal = agi + refBonus;
+    const inicEl = document.getElementById('inic-val');
+    if (inicEl) inicEl.textContent = (inicTotal >= 0 ? '+' : '') + inicTotal;
     atualizarBarras(); renderPericias(); renderHabilidades(); renderInventario(); renderAtaques(); renderLog();
     inicializarRegraOpc();
     const d = estado.descricao;
@@ -5290,11 +5673,6 @@ function adicionarItemCatalogoOP(idx) {
     mostrarToast(`✦ ${item.nome} ADICIONADO AO INVENTÁRIO`);
 }
 
-function salvarDescricao() {
-    estado.descricao={ personalidade:document.getElementById('desc-personalidade').value, ideal:document.getElementById('desc-ideal').value, vinculo:document.getElementById('desc-vinculo').value, fraqueza:document.getElementById('desc-fraqueza').value, historia:document.getElementById('desc-historia').value };
-    salvarEstado(); mostrarToast('✦ DESCRIÇÃO SALVA');
-}
-
 // ══════════════════════════════════════════════
 // ABAS
 // ══════════════════════════════════════════════
@@ -6468,6 +6846,470 @@ function salvarNex() {
         const nav = document.getElementById('navbarNav');
         if (nav && nav.classList.contains('show')) nav.classList.remove('show');
     }
+
+// ══════════════════════════════════════════════
+// OBJETIVOS DA MISSÃO
+// ══════════════════════════════════════════════
+let _objetivos = [];
+function adicionarObjetivo() {
+    _objetivos.push({ texto: '', concluido: false });
+    renderObjetivos();
+    salvarAnotacoes();
+}
+function removerObjetivo(idx) {
+    _objetivos.splice(idx, 1);
+    renderObjetivos();
+    salvarAnotacoes();
+}
+function toggleObjetivo(idx) {
+    if (_objetivos[idx]) _objetivos[idx].concluido = !_objetivos[idx].concluido;
+    renderObjetivos();
+    salvarAnotacoes();
+}
+function renderObjetivos() {
+    const lista = document.getElementById('objetivos-lista');
+    if (!lista) return;
+    if (_objetivos.length === 0) {
+        lista.innerHTML = '<div style="font-size:0.58rem;letter-spacing:1px;color:#333;font-family:\'Share Tech Mono\',monospace;text-align:center;padding:8px 0;">▸ Nenhum objetivo adicionado.</div>';
+        return;
+    }
+    lista.innerHTML = _objetivos.map((o, i) => `
+        <div style="display:flex;align-items:center;gap:8px;background:#0d0010;border:1px solid var(--border);border-radius:6px;padding:6px 10px;transition:border-color 0.15s;" class="${o.concluido ? 'obj-done' : ''}">
+            <div onclick="toggleObjetivo(${i})" style="width:16px;height:16px;border-radius:3px;border:1px solid ${o.concluido ? 'var(--green)' : 'var(--border)'};background:${o.concluido ? 'rgba(57,211,83,0.2)' : 'transparent'};cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:0.15s;">${o.concluido ? '<span style="color:var(--green);font-size:0.65rem;">✓</span>' : ''}</div>
+            <input class="contato-input" style="flex:1;${o.concluido ? 'text-decoration:line-through;color:#444;' : ''}" placeholder="Descreva o objetivo..." value="${o.texto || ''}"
+                   oninput="_objetivos[${i}].texto=this.value;salvarAnotacoes()">
+            <button class="btn-del-contato" onclick="removerObjetivo(${i})">✕</button>
+        </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+// CONDIÇÕES
+// ══════════════════════════════════════════════
+function toggleCondicao(chip) {
+    chip.classList.toggle('ativa');
+    salvarCondicoes();
+}
+function limparCondicoes() {
+    document.querySelectorAll('.cond-chip.ativa').forEach(c => c.classList.remove('ativa'));
+    salvarCondicoes();
+}
+function salvarCondicoes() {
+    const ativas = Array.from(document.querySelectorAll('.cond-chip.ativa')).map(c => c.dataset.cond);
+    const chave = getPrefix() + `condicoes_${ficha?.id}`;
+    try { localStorage.setItem(chave, JSON.stringify(ativas)); } catch(e) {}
+}
+function carregarCondicoes() {
+    const chave = getPrefix() + `condicoes_${ficha?.id}`;
+    try {
+        const saved = JSON.parse(localStorage.getItem(chave) || '[]');
+        document.querySelectorAll('.cond-chip').forEach(c => {
+            c.classList.toggle('ativa', saved.includes(c.dataset.cond));
+        });
+    } catch(e) {}
+}
+
+// ══════════════════════════════════════════════
+// CICATRIZES MENTAIS
+// ══════════════════════════════════════════════
+function toggleCicatriz(idx) {
+    const box = document.querySelector(`.cic-box[data-idx="${idx}"]`);
+    if (box) {
+        box.classList.toggle('marcada');
+        salvarCicatrizes();
+    }
+}
+function salvarCicatrizes() {
+    const marcadas = Array.from(document.querySelectorAll('.cic-box.marcada')).map(b => parseInt(b.dataset.idx));
+    const desc = document.getElementById('cicatrizes-desc')?.value || '';
+    const chave = getPrefix() + `cicatrizes_${ficha?.id}`;
+    try { localStorage.setItem(chave, JSON.stringify({ marcadas, desc })); } catch(e) {}
+}
+function carregarCicatrizes() {
+    const chave = getPrefix() + `cicatrizes_${ficha?.id}`;
+    try {
+        const saved = JSON.parse(localStorage.getItem(chave) || '{}');
+        if (saved.marcadas) {
+            saved.marcadas.forEach(idx => {
+                const box = document.querySelector(`.cic-box[data-idx="${idx}"]`);
+                if (box) box.classList.add('marcada');
+            });
+        }
+        if (saved.desc) {
+            const el = document.getElementById('cicatrizes-desc');
+            if (el) el.value = saved.desc;
+        }
+    } catch(e) {}
+}
+
+// ══════════════════════════════════════════════
+// ANOTAÇÕES
+// ══════════════════════════════════════════════
+let _anotacoesSaveTimer = null;
+function salvarAnotacoes() {
+    clearTimeout(_anotacoesSaveTimer);
+    _anotacoesSaveTimer = setTimeout(() => {
+        const dados = {
+            sessao:   document.getElementById('anot-sessao')?.value   || '',
+            pistas:   document.getElementById('anot-pistas')?.value   || '',
+            inimigos: document.getElementById('anot-inimigos')?.value || '',
+            livre:    document.getElementById('anot-livre')?.value    || '',
+            contatos: _contatos,
+            objetivos: _objetivos,
+        };
+        const chave = getPrefix() + `anotacoes_${ficha?.id}`;
+        try { localStorage.setItem(chave, JSON.stringify(dados)); } catch(e) {}
+    }, 600);
+}
+function carregarAnotacoes() {
+    const chave = getPrefix() + `anotacoes_${ficha?.id}`;
+    try {
+        const saved = JSON.parse(localStorage.getItem(chave) || '{}');
+        if (saved.sessao   && document.getElementById('anot-sessao'))   document.getElementById('anot-sessao').value   = saved.sessao;
+        if (saved.pistas   && document.getElementById('anot-pistas'))   document.getElementById('anot-pistas').value   = saved.pistas;
+        if (saved.inimigos && document.getElementById('anot-inimigos')) document.getElementById('anot-inimigos').value = saved.inimigos;
+        if (saved.livre    && document.getElementById('anot-livre'))    document.getElementById('anot-livre').value    = saved.livre;
+        if (saved.contatos) { _contatos = saved.contatos; renderContatos(); }
+        if (saved.objetivos) { _objetivos = saved.objetivos; renderObjetivos(); }
+    } catch(e) {}
+}
+
+// Contatos
+let _contatos = [];
+function adicionarContato() {
+    _contatos.push({ nome: '', tipo: '' });
+    renderContatos();
+    salvarAnotacoes();
+}
+function removerContato(idx) {
+    _contatos.splice(idx, 1);
+    renderContatos();
+    salvarAnotacoes();
+}
+function renderContatos() {
+    const lista = document.getElementById('lista-contatos');
+    if (!lista) return;
+    if (_contatos.length === 0) {
+        lista.innerHTML = '<div style="font-size:0.58rem;letter-spacing:1px;color:#333;font-family:\'Share Tech Mono\',monospace;text-align:center;padding:12px 0;">▸ Nenhum contato adicionado.</div>';
+        return;
+    }
+    lista.innerHTML = _contatos.map((c, i) => `
+        <div class="contato-row">
+            <input class="contato-input" placeholder="Nome do contato..." value="${c.nome || ''}"
+                   oninput="_contatos[${i}].nome=this.value;salvarAnotacoes()">
+            <input class="contato-input" placeholder="Relação / Tipo..." value="${c.tipo || ''}"
+                   oninput="_contatos[${i}].tipo=this.value;salvarAnotacoes()">
+            <button class="btn-del-contato" onclick="removerContato(${i})">✕</button>
+        </div>`).join('');
+}
+
+// Seleção de elemento na descrição
+function selecionarElemDesc(btn) {
+    document.querySelectorAll('.desc-elem-btn').forEach(b => {
+        b.style.opacity = '0.5';
+        b.style.fontWeight = '600';
+    });
+    btn.style.opacity = '1';
+    btn.style.fontWeight = '700';
+    btn.style.boxShadow = '0 0 10px rgba(var(--tema-glow-rgb),0.3)';
+    salvarDescricao();
+}
+
+// Atualiza o display-classe no card do personagem e o campo travado na aba Descrição
+function atualizarClasseDisplay(valor) {
+    const el = document.getElementById('display-classe');
+    if (el && valor) el.textContent = valor;
+    const lockVal = document.getElementById('desc-classe-valor');
+    if (lockVal) lockVal.textContent = valor || '—';
+    const sel = document.getElementById('desc-classe-display');
+    if (sel) sel.value = valor || '';
+}
+
+// Atualiza o display travado de origem
+function atualizarOrigemDisplay(valor) {
+    const el = document.getElementById('display-origem');
+    if (el && valor) el.textContent = valor;
+    const lockVal = document.getElementById('desc-origem-valor');
+    if (lockVal) lockVal.textContent = valor || '—';
+    const sel = document.getElementById('desc-origem');
+    if (sel) sel.value = valor || '';
+}
+
+// Salvar descrição (auto-debounced)
+let _descSaveTimer = null;
+function salvarDescricao() {
+    clearTimeout(_descSaveTimer);
+    _descSaveTimer = setTimeout(() => {
+        const dados = {
+            origem:       document.getElementById('desc-origem')?.value        || '',
+            aparencia:    document.getElementById('desc-aparencia')?.value     || '',
+            personalidade:document.getElementById('desc-personalidade')?.value || '',
+            ideal:        document.getElementById('desc-ideal')?.value         || '',
+            vinculo:      document.getElementById('desc-vinculo')?.value       || '',
+            fraqueza:     document.getElementById('desc-fraqueza')?.value      || '',
+            historia:     document.getElementById('desc-historia')?.value      || '',
+            elemento:     document.querySelector('.desc-elem-btn[style*="opacity: 1"]')?.dataset.elem || '',
+            classe:       document.getElementById('desc-classe-display')?.value || '',
+        };
+        const chave = getPrefix() + `descricao_${ficha?.id}`;
+        try { localStorage.setItem(chave, JSON.stringify(dados)); } catch(e) {}
+    }, 600);
+}
+function carregarDescricao() {
+    const chave = getPrefix() + `descricao_${ficha?.id}`;
+    try {
+        const saved = JSON.parse(localStorage.getItem(chave) || '{}');
+        ['origem','aparencia','personalidade','ideal','vinculo','fraqueza','historia'].forEach(k => {
+            const el = document.getElementById(`desc-${k}`);
+            if (el && saved[k]) el.value = saved[k];
+        });
+        // Atualiza o display travado de origem
+        if (saved.origem) atualizarOrigemDisplay(saved.origem);
+        else if (ficha?.origem) atualizarOrigemDisplay(ficha.origem);
+        if (saved.classe) {
+            const sel = document.getElementById('desc-classe-display');
+            if (sel) sel.value = saved.classe;
+            atualizarClasseDisplay(saved.classe);
+        } else if (ficha?.classe) {
+            // Fallback: usa a classe da ficha se não tiver salvo na descrição
+            atualizarClasseDisplay(ficha.classe);
+        }
+        if (saved.elemento) {
+            const btn = document.querySelector(`.desc-elem-btn[data-elem="${saved.elemento}"]`);
+            if (btn) selecionarElemDesc(btn);
+        }
+    } catch(e) {}
+}
+
+// Carregar todos os novos dados após a ficha estar pronta
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        carregarCondicoes();
+        carregarCicatrizes();
+        carregarAnotacoes();
+        carregarDescricao();
+        renderObjetivos();
+    }, 800);
+});
+
+// ══════════════════════════════════════════════
+// ENIGMA DE DESBLOQUEIO — ORIGEM & CLASSE
+// ══════════════════════════════════════════════
+const ENIGMAS = [
+    { p: 'Quantos atributos existem no sistema de Ordem Paranormal?', r: '5' },
+    { p: 'Qual o dado base de teste de atributo em Ordem Paranormal?', r: 'd20' },
+    { p: 'Quantas classes existem no sistema de Ordem Paranormal?', r: '4' },
+    { p: 'Qual recurso é usado para ativar poderes e rituais? (sigla)', r: 'pe' },
+    { p: 'Como se chama a organização dos agentes em Ordem Paranormal?', r: 'ordem' },
+    { p: 'Quantos círculos de rituais existem no sistema?', r: '4' },
+    { p: 'Qual atributo é base para calcular a Defesa? (sigla)', r: 'agi' },
+    { p: 'Qual é a sigla do atributo ligado à saúde física?', r: 'vig' },
+    { p: 'Qual é a sigla do atributo ligado à percepção e carisma?', r: 'pre' },
+    { p: 'Qual é o dano mínimo que pode ser causado num ataque?', r: '1' },
+    { p: 'Qual recurso representa a saúde mental do agente?', r: 'sanidade' },
+    { p: 'Quantos pontos de NEX iniciais um agente começa?', r: '5' },
+    { p: 'Qual é a sigla do atributo ligado à força física?', r: 'for' },
+    { p: 'Qual é a sigla do atributo ligado à inteligência?', r: 'int' },
+];
+
+let _enigmaAtual = null;
+let _camposTravados = true;
+
+function gerarNovoEnigma() {
+    _enigmaAtual = ENIGMAS[Math.floor(Math.random() * ENIGMAS.length)];
+    const el = document.getElementById('enigma-pergunta');
+    if (el) el.textContent = _enigmaAtual.p;
+    const resp = document.getElementById('enigma-resposta');
+    if (resp) { resp.value = ''; resp.focus(); }
+    const fb = document.getElementById('enigma-feedback');
+    if (fb) { fb.textContent = ''; fb.style.color = ''; }
+}
+
+function abrirEnigmaDesbloqueio() {
+    const modal = document.getElementById('modal-enigma');
+    if (!modal) return;
+    modal.style.display = 'flex';
+    gerarNovoEnigma();
+}
+
+function fecharEnigma() {
+    const modal = document.getElementById('modal-enigma');
+    if (modal) modal.style.display = 'none';
+}
+
+function verificarEnigma() {
+    if (!_enigmaAtual) return;
+    const resp = (document.getElementById('enigma-resposta')?.value || '').trim().toLowerCase();
+    const correta = _enigmaAtual.r.toLowerCase();
+    const fb = document.getElementById('enigma-feedback');
+
+    if (resp === correta) {
+        if (fb) { fb.textContent = '✓ Correto! Campos destravados.'; fb.style.color = 'var(--green)'; }
+        setTimeout(() => {
+            fecharEnigma();
+            destravaCampos();
+        }, 700);
+    } else {
+        if (fb) { fb.textContent = '✗ Resposta incorreta. Tente novamente.'; fb.style.color = 'var(--red)'; }
+        const inp = document.getElementById('enigma-resposta');
+        if (inp) { inp.style.borderColor = 'var(--red)'; setTimeout(() => { inp.style.borderColor = 'var(--border)'; inp.value = ''; inp.focus(); }, 800); }
+    }
+}
+
+function destravaCampos() {
+    _camposTravados = false;
+
+    // ── ORIGEM ──────────────────────────────────
+    const origemLocked = document.getElementById('desc-origem-locked');
+    const origemSelect = document.getElementById('desc-origem');
+    const origemBadge  = document.getElementById('origem-lock-badge');
+    if (origemLocked && origemSelect) {
+        // Mostra o select visível no lugar do display
+        origemSelect.style.display = '';
+        origemSelect.style.background = '#0d0010';
+        origemSelect.style.border = '1px solid var(--border)';
+        origemSelect.style.color = 'white';
+        origemSelect.style.fontFamily = "'Oswald', sans-serif";
+        origemSelect.style.fontSize = '0.88rem';
+        origemSelect.style.width = '100%';
+        origemSelect.style.padding = '7px 10px';
+        origemSelect.style.borderRadius = '5px';
+        origemSelect.style.cursor = 'pointer';
+        origemLocked.style.display = 'none';
+    }
+    if (origemBadge) {
+        origemBadge.textContent = '🔓 EDITÁVEL';
+        origemBadge.style.color = 'var(--green)';
+        origemBadge.style.borderColor = 'rgba(57,211,83,0.3)';
+    }
+
+    // ── CLASSE ──────────────────────────────────
+    const classeLocked = document.getElementById('desc-classe-locked');
+    const classeSelect = document.getElementById('desc-classe-display');
+    const classeBadge  = document.getElementById('classe-lock-badge');
+    if (classeLocked && classeSelect) {
+        classeSelect.style.display = '';
+        classeSelect.style.background = '#0d0010';
+        classeSelect.style.border = '1px solid var(--border)';
+        classeSelect.style.color = 'white';
+        classeSelect.style.fontFamily = "'Oswald', sans-serif";
+        classeSelect.style.fontSize = '0.88rem';
+        classeSelect.style.width = '100%';
+        classeSelect.style.padding = '7px 10px';
+        classeSelect.style.borderRadius = '5px';
+        classeSelect.style.cursor = 'pointer';
+        classeSelect.onchange = function() { salvarDescricao(); atualizarClasseDisplay(this.value); };
+        classeLocked.style.display = 'none';
+    }
+    if (classeBadge) {
+        classeBadge.textContent = '🔓 EDITÁVEL';
+        classeBadge.style.color = 'var(--green)';
+        classeBadge.style.borderColor = 'rgba(57,211,83,0.3)';
+    }
+
+    // Esconde o botão de destravar
+    const btnDes = document.getElementById('btn-destravar-campos');
+    if (btnDes) {
+        btnDes.textContent = '🔒 Travar novamente';
+        btnDes.onclick = travarCampos;
+        btnDes.style.color = 'var(--green)';
+        btnDes.style.borderColor = 'rgba(57,211,83,0.3)';
+    }
+
+    mostrarToast('🔓 CAMPOS DESTRAVADOS');
+}
+
+function travarCampos() {
+    _camposTravados = true;
+
+    // ── ORIGEM ──────────────────────────────────
+    const origemSelect = document.getElementById('desc-origem');
+    const origemLocked = document.getElementById('desc-origem-locked');
+    const origemBadge  = document.getElementById('origem-lock-badge');
+    if (origemSelect && origemLocked) {
+        // Atualiza o display com o valor atual antes de travar
+        const val = origemSelect.value;
+        const display = document.getElementById('desc-origem-valor');
+        if (display) display.textContent = val || '—';
+        origemSelect.style.display = 'none';
+        origemLocked.style.display = 'flex';
+    }
+    if (origemBadge) {
+        origemBadge.textContent = '🔒 TRAVADO';
+        origemBadge.style.color = '#555';
+        origemBadge.style.borderColor = 'var(--border)';
+    }
+
+    // ── CLASSE ──────────────────────────────────
+    const classeSelect = document.getElementById('desc-classe-display');
+    const classeLocked = document.getElementById('desc-classe-locked');
+    const classeBadge  = document.getElementById('classe-lock-badge');
+    if (classeSelect && classeLocked) {
+        const val = classeSelect.value;
+        const display = document.getElementById('desc-classe-valor');
+        if (display) display.textContent = val || '—';
+        classeSelect.style.display = 'none';
+        classeLocked.style.display = 'flex';
+    }
+    if (classeBadge) {
+        classeBadge.textContent = '🔒 TRAVADO';
+        classeBadge.style.color = '#555';
+        classeBadge.style.borderColor = 'var(--border)';
+    }
+
+    // Restaura o botão
+    const btnDes = document.getElementById('btn-destravar-campos');
+    if (btnDes) {
+        btnDes.innerHTML = '🔓 DESTRAVAR ORIGEM &amp; CLASSE';
+        btnDes.onclick = abrirEnigmaDesbloqueio;
+        btnDes.style.color = '#555';
+        btnDes.style.borderColor = 'var(--border)';
+    }
+
+    mostrarToast('🔒 CAMPOS TRAVADOS');
+}
 </script>
+<!-- ══ MODAL ENIGMA DE DESBLOQUEIO ══ -->
+<div id="modal-enigma" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(6px);z-index:10001;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:linear-gradient(160deg,#0d0018 0%,#060010 100%);border:1px solid var(--purple);border-radius:16px;max-width:400px;width:100%;box-shadow:0 0 60px var(--purple-glow);overflow:hidden;animation:mritIn 0.25s cubic-bezier(.22,.68,0,1.1) both;">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(90deg,rgba(var(--tema-glow-rgb),0.12) 0%,transparent 70%);border-bottom:1px solid rgba(var(--tema-glow-rgb),0.15);padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:0.6rem;letter-spacing:4px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:4px;">Verificação de Segurança</div>
+        <div style="font-size:1.05rem;font-weight:700;letter-spacing:2px;color:white;">🔓 DESTRAVAR CAMPOS</div>
+      </div>
+      <button onclick="fecharEnigma()" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#555;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:0.2s;" onmouseover="this.style.color='#ff6666';this.style.borderColor='rgba(255,60,60,0.3)'" onmouseout="this.style.color='#555';this.style.borderColor='rgba(255,255,255,0.08)'">✕</button>
+    </div>
+
+    <!-- Corpo -->
+    <div style="padding:24px;">
+      <div style="font-size:0.75rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:1.6;margin-bottom:20px;">
+        Origem e Classe são definidas na criação do agente.<br>Para editar, resolva o enigma abaixo:
+      </div>
+
+      <!-- Enigma display -->
+      <div id="enigma-pergunta-wrap" style="background:#080010;border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:16px;text-align:center;">
+        <div style="font-size:0.55rem;letter-spacing:3px;color:#444;font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:8px;">Enigma</div>
+        <div id="enigma-pergunta" style="font-size:1.1rem;font-weight:700;color:white;letter-spacing:1px;font-family:'Oswald',sans-serif;"></div>
+      </div>
+
+      <!-- Input resposta -->
+      <input id="enigma-resposta" type="text" placeholder="Digite sua resposta..."
+        style="background:#0d0010;border:1px solid var(--border);color:white;font-family:'Share Tech Mono',monospace;font-size:1rem;width:100%;padding:10px 14px;border-radius:8px;outline:none;margin-bottom:10px;transition:border-color 0.2s;letter-spacing:1px;"
+        onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border)'"
+        onkeydown="if(event.key==='Enter')verificarEnigma()">
+
+      <!-- Feedback -->
+      <div id="enigma-feedback" style="font-size:0.72rem;font-family:'Share Tech Mono',monospace;letter-spacing:1px;min-height:18px;margin-bottom:16px;text-align:center;"></div>
+
+      <!-- Botões -->
+      <div style="display:flex;gap:8px;">
+        <button onclick="gerarNovoEnigma()" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:1px;padding:10px;border-radius:8px;cursor:pointer;transition:0.2s;" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--purple-neon)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">↻ Outro</button>
+        <button onclick="verificarEnigma()" style="flex:2;background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:2px;padding:10px;border-radius:8px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='var(--purple)';this.style.boxShadow='0 0 14px var(--purple-glow)'" onmouseout="this.style.background='var(--purple-dark)';this.style.boxShadow='none'">✓ CONFIRMAR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

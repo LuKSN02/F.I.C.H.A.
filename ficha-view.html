@@ -2,11 +2,11 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>F.I.C.H.A. – Visualizar Agente</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
+    <link rel="icon" type="image/gif" href="ordem-paranormal-enigma-do-medo.gif">
     <style>
 
     /* ===== SISTEMA DE TEMAS - ORDEM PARANORMAL ===== */
@@ -183,6 +183,8 @@
             min-height: 100vh;
         }
         .custom-nav { background: black; border-bottom: 2px solid #222; }
+        .nav-link { font-weight: 700; }
+        .nav-link:hover { color: #ff0000 !important; }
 
         .readonly-badge {
             display: inline-flex; align-items: center; gap: 6px;
@@ -682,8 +684,8 @@ function renderFicha(agente, estado) {
     const nome = agente.nome || '—';
     const codinome = agente.codinome ? ` "${agente.codinome}"` : '';
     document.getElementById('display-nome').textContent   = nome + codinome;
-    document.getElementById('display-origem').textContent = agente.origem || '—';
-    document.getElementById('display-classe').textContent = agente.classe || '—';
+    document.getElementById('display-origem').textContent = agente.origem || estado.descricao?.origem || '—';
+    document.getElementById('display-classe').textContent = agente.classe || estado.descricao?.classe || '—';
     document.getElementById('display-player').textContent = agente.fotoCostum ? '' : '—';
     document.title = `F.I.C.H.A. – ${nome} (visão)`;
 
@@ -839,6 +841,7 @@ function renderInventario(itens, invStats) {
 
 function renderDescricao(desc) {
     const campos = [
+        { key:'aparencia',     label:'Aparência' },
         { key:'personalidade', label:'Personalidade' },
         { key:'ideal',         label:'Ideal' },
         { key:'vinculo',       label:'Vínculo' },
@@ -846,12 +849,17 @@ function renderDescricao(desc) {
         { key:'historia',      label:'História' },
     ];
     const el = document.getElementById('lista-descricao');
+    const elementoHtml = desc.elemento ? `
+        <div style="margin-bottom:14px;">
+            <div style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">Elemento Paranormal</div>
+            <div style="background:#0d0010;border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--purple-neon);line-height:1.6;letter-spacing:2px;font-weight:700;">${desc.elemento}</div>
+        </div>` : '';
     const html = campos.filter(c => desc[c.key]).map(c => `
         <div style="margin-bottom:14px;">
             <div style="font-size:0.6rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">${c.label}</div>
             <div style="background:#0d0010;border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:#aaa;line-height:1.6;">${desc[c.key]}</div>
         </div>`).join('');
-    el.innerHTML = html || `<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Nenhuma descrição registrada.</p>`;
+    el.innerHTML = (elementoHtml + html) || `<p style="color:var(--text-dim);font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ Nenhuma descrição registrada.</p>`;
 }
 
 function mostrarErro(msg) {
