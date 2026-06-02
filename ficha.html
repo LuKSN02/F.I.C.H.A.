@@ -4142,7 +4142,23 @@ window.onload = function() {
 // ══════════════════════════════════════════════
 // FICHA — CARREGAR
 // ══════════════════════════════════════════════
+
+// ── Remove duplicatas de lista_agentes que possam ter se acumulado ──────────
+function deduplicarAgentesLocais() {
+    const chave = getPrefix() + 'lista_agentes';
+    const agentes = JSON.parse(localStorage.getItem(chave)) || [];
+    const vistos = new Map();
+    // Mantém sempre o último (mais atualizado) para cada id
+    agentes.forEach(a => vistos.set(String(a.id), a));
+    const dedup = [...vistos.values()];
+    if (dedup.length !== agentes.length) {
+        localStorage.setItem(chave, JSON.stringify(dedup));
+    }
+    return dedup;
+}
+
 async function carregarFicha() {
+    deduplicarAgentesLocais(); // limpa duplicatas antes de qualquer leitura
     const params  = new URLSearchParams(window.location.search);
     const id      = params.get('id');
     const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
@@ -4158,12 +4174,12 @@ async function carregarFicha() {
             const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`));
             if (snap.exists()) {
                 ficha = snap.val();
-                // Re-sincroniza cache local
-                const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-                if (!agentes.find(a => String(a.id) === String(id))) {
-                    agentes.push(ficha);
-                    localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes));
-                }
+                // Re-sincroniza cache local — garante que não haja duplicatas por tipo (string vs number)
+                let agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+                // Remove todas as entradas com o mesmo id antes de inserir (evita duplicata por tipo misto)
+                agentes = agentes.filter(a => String(a.id) !== String(id));
+                agentes.push(ficha);
+                localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes));
             }
         } catch(e) { console.error('Erro ao buscar agente no Firebase:', e); }
     }

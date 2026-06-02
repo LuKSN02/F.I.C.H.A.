@@ -2166,17 +2166,31 @@ function abrirModalAdicionarFicha(indexFiltrado) {
     _hbItemParaAdicionar = item;
 
     // Descobre fichas do usuário a partir do localStorage
+    // ficha.html salva como "{usuario}_estado_ficha_{fichaId}"
+    // Também suporta o padrão legado "{usuario}_ficha_{fichaId}_estado"
     const usuario = sessionStorage.getItem('ficha_user') || '';
     const fichas  = [];
+    const vistosIds = new Set();
     for (let k of Object.keys(localStorage)) {
-        // As fichas são salvas como "{usuario}_ficha_{fichaId}_estado" no localStorage
-        // OU simplesmente como "ficha_estado_{fichaId}" dependendo da implementação
-        // Vamos procurar qualquer chave que tenha "estado" e pertença ao usuário
-        if (k.startsWith(usuario + '_ficha_') && k.endsWith('_estado')) {
-            const fichaId = k.replace(usuario + '_ficha_', '').replace('_estado', '');
+        let fichaId = null;
+
+        // Padrão atual (ficha.html): "{usuario}_estado_ficha_{id}"
+        if (k.startsWith(usuario + '_estado_ficha_')) {
+            fichaId = k.replace(usuario + '_estado_ficha_', '');
+        }
+        // Padrão legado: "{usuario}_ficha_{id}_estado"
+        else if (k.startsWith(usuario + '_ficha_') && k.endsWith('_estado')) {
+            fichaId = k.replace(usuario + '_ficha_', '').replace('_estado', '');
+        }
+
+        if (fichaId && !vistosIds.has(fichaId)) {
+            vistosIds.add(fichaId);
             try {
                 const est = JSON.parse(localStorage.getItem(k));
-                const nome = est?.nomePersonagem || est?.nome || fichaId;
+                // Tenta pegar o nome da lista de agentes (mais confiável)
+                const listaAgentes = JSON.parse(localStorage.getItem(usuario + '_lista_agentes') || '[]');
+                const agente = listaAgentes.find(a => String(a.id) === String(fichaId));
+                const nome = agente?.nome || est?.nomePersonagem || est?.nome || fichaId;
                 fichas.push({ fichaId, nome, key: k });
             } catch(e) {
                 fichas.push({ fichaId, nome: fichaId, key: k });
@@ -2217,8 +2231,8 @@ function confirmarAddFicha() {
     const selKey = document.getElementById('modal-add-ficha-select').value;
     if (!selKey) return;
 
-    let estado = {};
-    try { estado = JSON.parse(localStorage.getItem(selKey) || '{}'); } catch(e) {}
+    let estadoFicha = {};
+    try { estadoFicha = JSON.parse(localStorage.getItem(selKey) || '{}'); } catch(e) {}
 
     const catInv  = HB_SUBTIPO_CAT_MAP[item.subTipo] || 'GERAL';
     const isArma  = item.subTipo === 'Armas';
@@ -2236,18 +2250,40 @@ function confirmarAddFicha() {
     const descTexto = item.descricao ? item.descricao.replace(/<[^>]+>/g,'').trim() : '';
     if (descTexto) descParts.push(descTexto);
 
-    if (!estado.inventario) estado.inventario = [];
-    estado.inventario.push({ nome: item.nome, cat: catInv, qtd: 1, desc: descParts.join(' · '), homebrew: true });
-    localStorage.setItem(selKey, JSON.stringify(estado));
+    if (!estadoFicha.inventario) estadoFicha.inventario = [];
+
+    // Evita duplicata: verifica se item homebrew com mesmo nome já está no inventário
+    const jaExiste = estadoFicha.inventario.some(
+        i => i.homebrew && i.nome === item.nome
+    );
+    if (!jaExiste) {
+        estadoFicha.inventario.push({ nome: item.nome, cat: catInv, qtd: 1, desc: descParts.join(' · '), homebrew: true });
+        localStorage.setItem(selKey, JSON.stringify(estadoFicha));
+
+        // Também propaga para o Firebase se disponível
+        if (window._firebaseDB && window._firebaseRef && window._firebaseSet) {
+            const fichaId = selKey.replace(/.*_estado_ficha_/, '').replace(/.*_ficha_(.+)_estado/, '$1');
+            if (fichaId) {
+                window._firebaseSet(
+                    window._firebaseRef(window._firebaseDB, `fichas/${fichaId}/estado`),
+                    estadoFicha
+                ).catch(e => console.warn('homebrew → firebase estado:', e));
+            }
+        }
+    }
 
     fecharModalAddFicha();
 
-    // Toast simples
+    // Toast simples — feedback diferente se já existia
     const t = document.createElement('div');
-    t.textContent = `✦ ${item.nome} adicionado à ficha!`;
+    t.textContent = jaExiste
+        ? `⚠ ${item.nome} já está no inventário da ficha.`
+        : `✦ ${item.nome} adicionado à ficha!`;
     Object.assign(t.style, {
         position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)',
-        background:'#1a0033', border:'1px solid var(--purple)', color:'var(--purple-neon)',
+        background: jaExiste ? '#1a0a00' : '#1a0033',
+        border: `1px solid ${jaExiste ? 'var(--orange, #f5a623)' : 'var(--purple)'}`,
+        color: jaExiste ? 'var(--orange, #f5a623)' : 'var(--purple-neon)',
         fontFamily:"'Oswald',sans-serif", fontSize:'0.8rem', letterSpacing:'2px',
         padding:'10px 24px', borderRadius:'8px', zIndex:'99999',
         boxShadow:'0 0 20px rgba(138,43,226,0.4)', transition:'opacity 0.4s'
