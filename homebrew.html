@@ -2793,12 +2793,76 @@ function showToast(msg, cor) {
   setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 400); }, 2800);
 }
 
+/* ═══════════════════════════════════════════════
+   RECUPERAÇÃO DE ITENS SALVOS COM PREFIXO ERRADO
+═══════════════════════════════════════════════ */
+function recuperarItensPerdidos(usuario) {
+  const tipos = ['ameacas','habilidades','rituais','itens'];
+  const prefixoCorreto = usuario + '_';
+  let totalRecuperado = 0;
+
+  // Todos os prefixos que NÃO sejam o correto e que tenham dados homebrew
+  const prefixosAlternos = new Set();
+  for (const k of Object.keys(localStorage)) {
+    tipos.forEach(tipo => {
+      // Padrões: guest_homebrew_X  ou  qualquer_outro_homebrew_X
+      if (k.endsWith('_homebrew_' + tipo) && !k.startsWith(prefixoCorreto)) {
+        const prefixo = k.replace('homebrew_' + tipo, '');
+        prefixosAlternos.add(prefixo);
+      }
+    });
+  }
+
+  if (prefixosAlternos.size === 0) return 0;
+
+  prefixosAlternos.forEach(prefixoErrado => {
+    tipos.forEach(tipo => {
+      const chaveErrada  = prefixoErrado  + 'homebrew_' + tipo;
+      const chaveCorreta = prefixoCorreto + 'homebrew_' + tipo;
+      const raw = localStorage.getItem(chaveErrada);
+      if (!raw) return;
+      try {
+        const itensErrados = JSON.parse(raw);
+        if (!Array.isArray(itensErrados) || itensErrados.length === 0) return;
+
+        const itensCorretos = JSON.parse(localStorage.getItem(chaveCorreta) || '[]');
+        const idsExistentes = new Set(itensCorretos.map(i => i.id));
+
+        let adicionados = 0;
+        itensErrados.forEach(item => {
+          if (!idsExistentes.has(item.id)) {
+            itensCorretos.push(item);
+            adicionados++;
+          }
+        });
+
+        if (adicionados > 0) {
+          localStorage.setItem(chaveCorreta, JSON.stringify(itensCorretos));
+          totalRecuperado += adicionados;
+        }
+
+        // Remove a chave errada após migrar
+        localStorage.removeItem(chaveErrada);
+      } catch(e) { /* ignora chave corrompida */ }
+    });
+  });
+
+  return totalRecuperado;
+}
+
 window.addEventListener('load', () => {
   const usuario = sessionStorage.getItem('ficha_user');
   if (!usuario) { window.location.href = 'index.html'; return; }
   // Espelha o usuário no localStorage para que getPrefix() funcione
   // mesmo quando a sessionStorage estiver vazia (aba nova, sessão expirada)
   localStorage.setItem('ficha_user_backup', usuario);
+
+  // Recupera itens que foram salvos com prefixo errado (ex: guest_)
+  const recuperados = recuperarItensPerdidos(usuario);
+  if (recuperados > 0) {
+    showToast(`✦ ${recuperados} item(ns) recuperado(s) de sessões anteriores!`, 'var(--green)');
+  }
+
   atualizarAvatar();
   renderLista('ameacas', carregar('ameacas'));
   renderLista('habilidades', carregar('habilidades'));
