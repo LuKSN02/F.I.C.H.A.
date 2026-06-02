@@ -1011,6 +1011,86 @@
 }
 .inv-qtd-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
 
+/* ── HOMEBREW ITEM CARD — layout estruturado ── */
+.inv-hb-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    margin-top: 5px;
+}
+.inv-hb-stat {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.67rem;
+    white-space: nowrap;
+}
+.inv-hb-stat-label {
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.58rem;
+}
+.inv-hb-stat-val {
+    color: #ccc;
+    font-weight: 700;
+}
+.inv-hb-stat-val.dano  { color: #e84040; }
+.inv-hb-stat-val.crit  { color: #f5c842; }
+.inv-hb-stat-val.tipo  { color: #aaaaff; }
+.inv-hb-stat-val.alcance { color: #5bc8af; }
+.inv-hb-melhorias {
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.inv-hb-melhoria-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    background: #0a0020;
+    border: 1px solid #2a0055;
+    color: #9966cc;
+    padding: 1px 7px;
+    border-radius: 99px;
+    white-space: nowrap;
+}
+.inv-hb-desc {
+    margin-top: 5px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: #555;
+    line-height: 1.45;
+    border-left: 2px solid #1a0033;
+    padding-left: 7px;
+    /* colapsável */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, opacity 0.25s ease;
+    opacity: 0;
+}
+.inv-hb-desc.aberto {
+    max-height: 200px;
+    opacity: 1;
+}
+.inv-hb-toggle {
+    background: none;
+    border: none;
+    color: #333;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    cursor: pointer;
+    padding: 2px 0 0 0;
+    letter-spacing: 1px;
+    transition: color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 4px;
+}
+.inv-hb-toggle:hover { color: var(--purple-neon); }
+
 /* Modal de novo item */
 #modal-inv-item {
     display: none;
@@ -4705,14 +4785,52 @@ function renderInventario() {
     lista.innerHTML = filtrados.map(({ item, i }) => {
         const cat    = item.cat || 'GERAL';
         const catLbl = INV_CAT_LABELS[cat] || cat;
-        const desc   = item.desc ? `<div style="font-size:0.72rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-top:3px;">${item.desc}</div>` : '';
-        const hbBadge = item.homebrew ? `<span style="font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;padding:1px 6px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;background:#001a00;color:#39d353;border:1px solid #004400;margin-left:4px;">HOMEBREW</span>` : '';
+        const hbBadge = item.homebrew
+            ? `<span style="font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;padding:1px 6px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;background:#001a00;color:#39d353;border:1px solid #004400;margin-left:4px;">HOMEBREW</span>`
+            : '';
+
+        let infoHtml = '';
+        if (item.homebrew && item.hbStats) {
+            // ── Stats em pílulas ──
+            const s = item.hbStats;
+            const statItems = [];
+            if (s.dano)    statItems.push(`<span class="inv-hb-stat"><span class="inv-hb-stat-label">Dano</span><span class="inv-hb-stat-val dano">${s.dano}</span></span>`);
+            if (s.tipo)    statItems.push(`<span class="inv-hb-stat"><span class="inv-hb-stat-val tipo">${s.tipo}</span></span>`);
+            if (s.empun)   statItems.push(`<span class="inv-hb-stat"><span class="inv-hb-stat-val">${s.empun}</span></span>`);
+            if (s.empun2 && s.empun2 !== s.empun) statItems.push(`<span class="inv-hb-stat"><span class="inv-hb-stat-val">${s.empun2}</span></span>`);
+            if (s.crit)    statItems.push(`<span class="inv-hb-stat"><span class="inv-hb-stat-label">Crít</span><span class="inv-hb-stat-val crit">${s.crit}</span></span>`);
+            if (s.mult)    statItems.push(`<span class="inv-hb-stat"><span class="inv-hb-stat-val crit">${s.mult}</span></span>`);
+            if (s.alcance) statItems.push(`<span class="inv-hb-stat"><span class="inv-hb-stat-label">Alcance</span><span class="inv-hb-stat-val alcance">${s.alcance}</span></span>`);
+            if (s.bonus)   statItems.push(`<span class="inv-hb-stat"><span class="inv-hb-stat-label">Efeito</span><span class="inv-hb-stat-val">${s.bonus}</span></span>`);
+            if (s.cat)     statItems.push(`<span class="inv-hb-stat"><span class="inv-hb-stat-val">${s.cat}</span></span>`);
+
+            const statsRow = statItems.length
+                ? `<div class="inv-hb-stats">${statItems.join('<span style="color:#222;font-size:0.6rem;">·</span>')}</div>`
+                : '';
+
+            // ── Tags de melhorias ──
+            const melhorias = s.melhorias?.length
+                ? `<div class="inv-hb-melhorias">${s.melhorias.map(m => `<span class="inv-hb-melhoria-tag">⬡ ${m}</span>`).join('')}</div>`
+                : '';
+
+            // ── Descrição colapsável ──
+            const temDesc = item.desc && item.desc.trim();
+            const descBlock = temDesc
+                ? `<button class="inv-hb-toggle" onclick="toggleHbDesc(this)">▸ <span>ver descrição</span></button>
+                   <div class="inv-hb-desc">${item.desc}</div>`
+                : '';
+
+            infoHtml = statsRow + melhorias + descBlock;
+        } else if (item.desc) {
+            infoHtml = `<div style="font-size:0.72rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-top:3px;">${item.desc}</div>`;
+        }
+
         return `
         <div class="inv-item-card">
             <div>
                 <div class="inv-item-nome">${item.nome}${hbBadge}</div>
                 <span class="inv-item-cat inv-cat-${cat}">${catLbl}</span>
-                ${desc}
+                ${infoHtml}
             </div>
             <div class="inv-qtd-ctrl">
                 <button class="inv-qtd-btn" onclick="alterarQtdItem(${i},-1)">−</button>
@@ -4730,6 +4848,13 @@ function renderInventario() {
                     title="Remover">🗑</button>
         </div>`;
     }).join('');
+}
+
+function toggleHbDesc(btn) {
+    const desc = btn.nextElementSibling;
+    const aberto = desc.classList.toggle('aberto');
+    btn.querySelector('span').textContent = aberto ? 'ocultar descrição' : 'ver descrição';
+    btn.firstChild.textContent = aberto ? '▾ ' : '▸ ';
 }
 
 // ── Estatísticas do inventário ───────────────────────────────────
@@ -4879,28 +5004,25 @@ function adicionarItemHomebrew(indexFiltrado, buscaAtual, subFiltroAtual) {
     const catInv = HB_SUBTIPO_CAT[item.subTipo] || 'GERAL';
     const isArma = item.subTipo === 'Armas';
 
-    // Monta descrição compacta com os stats relevantes
-    let descParts = [];
+    // Armazena stats estruturados separadamente da descrição livre
+    const hbStats = {};
     if (isArma) {
-        if (item.dano)     descParts.push(`Dano: ${item.dano}`);
-        if (item.tipoDano) descParts.push(item.tipoDano);
-        if (item.tipo)     descParts.push(item.tipo);
-        if (item.empun)    descParts.push(item.empun);
-        if (item.crit && item.crit != 20) descParts.push(`Crít: ${item.crit}`);
-        if (item.alcance && item.alcance !== '-') descParts.push(`Alcance: ${item.alcance}`);
-        if (item.melhorias?.length) descParts.push(`Melhorias: ${item.melhorias.join(', ')}`);
+        if (item.dano)                           hbStats.dano     = item.dano + (item.dano2 ? `/${item.dano2}` : '');
+        if (item.tipoDano)                       hbStats.tipo     = item.tipoDano;
+        if (item.tipo)                           hbStats.empun    = item.tipo;
+        if (item.empun)                          hbStats.empun2   = item.empun;
+        if (item.crit)                           hbStats.crit     = item.crit;
+        if (item.mult)                           hbStats.mult     = `x${item.mult}`;
+        if (item.alcance && item.alcance !== '-') hbStats.alcance  = item.alcance;
+        if (item.melhorias?.length)              hbStats.melhorias = item.melhorias;
     } else {
-        if (item.bonus)  descParts.push(item.bonus);
-        if (item.cat)    descParts.push(`Cat. ${item.cat}`);
+        if (item.bonus) hbStats.bonus = item.bonus;
+        if (item.cat)   hbStats.cat   = `Cat. ${item.cat}`;
     }
-    // Appenda texto da descrição (sem HTML)
     const descTexto = item.descricao ? item.descricao.replace(/<[^>]+>/g, '').trim() : '';
-    if (descTexto) descParts.push(descTexto);
-
-    const desc = descParts.join(' · ');
 
     if (!estado.inventario) estado.inventario = [];
-    estado.inventario.push({ nome: item.nome, cat: catInv, qtd: 1, desc, homebrew: true });
+    estado.inventario.push({ nome: item.nome, cat: catInv, qtd: 1, desc: descTexto, hbStats, homebrew: true });
     salvarEstado();
     renderInventario();
     mostrarToast(`✦ ${item.nome} ADICIONADO AO INVENTÁRIO`);
