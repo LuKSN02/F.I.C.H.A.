@@ -1531,9 +1531,15 @@ body { transition: background 0.5s ease; }
       <div class="editor-area" id="a-desc" contenteditable="true"></div>
     </div>
 
-    <div class="modal-footer-btns">
-      <button class="btn-cancel" onclick="fecharModal('modal-ameaca')">Cancelar</button>
-      <button class="btn-salvar" onclick="salvarAmeaca()">Adicionar</button>
+    <div class="modal-footer-btns" style="flex-direction:column;align-items:flex-end;gap:10px;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:#666;letter-spacing:1px;">
+        <input type="checkbox" id="ameaca-pub-check" style="accent-color:var(--purple);width:14px;height:14px;">
+        PUBLICAR NA COMUNIDADE
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-cancel" onclick="fecharModal('modal-ameaca')">Cancelar</button>
+        <button class="btn-salvar" onclick="salvarAmeaca()">Adicionar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1570,9 +1576,15 @@ body { transition: background 0.5s ease; }
       <div class="editor-area" id="h-desc" contenteditable="true">Minha nova habilidade</div>
     </div>
 
-    <div class="modal-footer-btns">
-      <button class="btn-cancel" onclick="fecharModal('modal-habilidade')">Cancelar</button>
-      <button class="btn-salvar" onclick="salvarHabilidade()">Adicionar</button>
+    <div class="modal-footer-btns" style="flex-direction:column;align-items:flex-end;gap:10px;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:#666;letter-spacing:1px;">
+        <input type="checkbox" id="hab-pub-check" style="accent-color:var(--purple);width:14px;height:14px;">
+        PUBLICAR NA COMUNIDADE
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-cancel" onclick="fecharModal('modal-habilidade')">Cancelar</button>
+        <button class="btn-salvar" onclick="salvarHabilidade()">Adicionar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1657,9 +1669,15 @@ body { transition: background 0.5s ease; }
       <div class="editor-area" id="rit-desc" contenteditable="true">Meu novo ritual</div>
     </div>
 
-    <div class="modal-footer-btns">
-      <button class="btn-cancel" onclick="fecharModal('modal-ritual')">Cancelar</button>
-      <button class="btn-salvar" onclick="salvarRitual()">Adicionar</button>
+    <div class="modal-footer-btns" style="flex-direction:column;align-items:flex-end;gap:10px;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:#666;letter-spacing:1px;">
+        <input type="checkbox" id="rit-pub-check" style="accent-color:var(--purple);width:14px;height:14px;">
+        PUBLICAR NA COMUNIDADE
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-cancel" onclick="fecharModal('modal-ritual')">Cancelar</button>
+        <button class="btn-salvar" onclick="salvarRitual()">Adicionar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1757,9 +1775,15 @@ body { transition: background 0.5s ease; }
       <div class="editor-area" id="item-desc" contenteditable="true">Meu novo item</div>
     </div>
 
-    <div class="modal-footer-btns">
-      <button class="btn-cancel" onclick="fecharModal('modal-item')">Cancelar</button>
-      <button class="btn-salvar" onclick="salvarItem()">Adicionar</button>
+    <div class="modal-footer-btns" style="flex-direction:column;align-items:flex-end;gap:10px;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:#666;letter-spacing:1px;">
+        <input type="checkbox" id="item-pub-check" style="accent-color:var(--purple);width:14px;height:14px;">
+        PUBLICAR NA COMUNIDADE
+      </label>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-cancel" onclick="fecharModal('modal-item')">Cancelar</button>
+        <button class="btn-salvar" onclick="salvarItem()">Adicionar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1886,13 +1910,24 @@ function renderLista(tipo, itens) {
     </div>`).join('');
 }
 
-function deletarItem(tipo, i) {
+function deletarItem(tipo, indexFiltrado) {
   if (!confirm('Remover este item?')) return;
   const lista = carregar(tipo);
-  lista.splice(i, 1);
+
+  // Para itens o índice vem da lista filtrada — resolve pelo id para não deletar item errado
+  let idxReal = indexFiltrado;
+  if (tipo === 'itens') {
+    const filtrados = lista.filter(i => i.subTipo === subItenAtivo);
+    const alvo = filtrados[indexFiltrado];
+    if (!alvo) return;
+    idxReal = lista.findIndex(i => i.id === alvo.id);
+    if (idxReal === -1) return;
+  }
+
+  lista.splice(idxReal, 1);
   salvar(tipo, lista);
-  renderLista(tipo, lista);
   if (tipo === 'itens') renderItensAtivos();
+  else renderLista(tipo, lista);
 }
 
 function verItem(tipo, i) { /* futura expansão: modal de visualização */ }
@@ -1962,6 +1997,7 @@ function salvarAmeaca() {
   salvar('ameacas', lista);
   renderLista('ameacas', lista);
   fecharModal('modal-ameaca');
+  _autoPublicarSeChecked('ameaca-pub-check', 'ameacas', item);
 }
 
 /* ═══════════════════════════════════════════════
@@ -1983,6 +2019,7 @@ function salvarHabilidade() {
   salvar('habilidades', lista);
   renderLista('habilidades', lista);
   fecharModal('modal-habilidade');
+  _autoPublicarSeChecked('hab-pub-check', 'habilidades', item);
 }
 
 /* ═══════════════════════════════════════════════
@@ -2036,6 +2073,7 @@ function salvarRitual() {
   salvar('rituais', lista);
   renderLista('rituais', lista);
   fecharModal('modal-ritual');
+  _autoPublicarSeChecked('rit-pub-check', 'rituais', item);
 }
 
 /* ═══════════════════════════════════════════════
@@ -2096,6 +2134,49 @@ function abrirModalItem() {
   abrirModal('item');
 }
 
+/* ═══════════════════════════════════════════════
+   AUTO-PUBLICAR NA COMUNIDADE (ao criar com checkbox marcado)
+═══════════════════════════════════════════════ */
+async function _autoPublicarSeChecked(checkId, tipo, item) {
+  const chk = document.getElementById(checkId);
+  if (!chk || !chk.checked) return;
+  chk.checked = false; // reset para próxima vez
+
+  const codigo = gerarCodigoCompartilhamento();
+  const autor  = sessionStorage.getItem('ficha_user') || 'anon';
+  const db     = await _getFirebaseDB();
+  if (!db) { showToast('⚠ Não foi possível publicar na comunidade.', '#aa2200'); return; }
+
+  try {
+    const itemParaSalvar = { ...item };
+    if (itemParaSalvar.img && itemParaSalvar.img.startsWith('data:')) itemParaSalvar.img = '';
+
+    await window._firebaseSet(window._firebaseRef(db, `homebrew_compartilhado/${codigo}`), {
+      tipo, autor,
+      criadoEm: new Date().toISOString(),
+      item: { ...itemParaSalvar, _shareCode: codigo, compartilhado: true }
+    });
+
+    // Atualiza item local com o código de compartilhamento
+    const lista = carregar(tipo);
+    const idx   = lista.findIndex(i => i.id === item.id);
+    if (idx !== -1) {
+      lista[idx]._shareCode   = codigo;
+      lista[idx].compartilhado = true;
+      salvar(tipo, lista);
+    }
+
+    if (tipo === 'itens') renderItensAtivos();
+    else renderLista(tipo, carregar(tipo));
+
+    carregarComunidadeTipo(tipo);
+    showToast(`✦ ${item.nome} publicado na comunidade!`, 'var(--purple)');
+  } catch(e) {
+    console.error('Auto-publish error:', e);
+    showToast('⚠ Falha ao publicar: ' + (e?.message || ''), '#aa2200');
+  }
+}
+
 function salvarItem() {
   const isArma = subItenAtivo === 'Armas';
   const nome = document.getElementById(isArma ? 'arm-nome' : 'gen-nome').value.trim();
@@ -2136,6 +2217,7 @@ function salvarItem() {
   salvar('itens', lista);
   renderItensAtivos();
   fecharModal('modal-item');
+  _autoPublicarSeChecked('item-pub-check', 'itens', item);
 }
 
 /* ═══════════════════════════════════════════════
@@ -2408,8 +2490,8 @@ async function abrirModalCompartilhar(tipo, indexFiltrado) {
       const idx = lista.findIndex(i => i.id === item.id);
       if (idx !== -1) { lista[idx] = item; salvar(tipo, lista); }
     }
-    renderLista(tipo, carregar(tipo));
     if (tipo === 'itens') renderItensAtivos();
+    else renderLista(tipo, carregar(tipo));
 
     // Recarrega a aba comunidade para o item aparecer imediatamente
     carregarComunidadeTipo(tipo);
@@ -2423,6 +2505,11 @@ async function abrirModalCompartilhar(tipo, indexFiltrado) {
 
 function fecharModalCompartilhar() {
   document.getElementById('modal-compartilhar').classList.remove('show');
+  // Se a aba comunidade estiver visível, recarrega para garantir que o item aparece
+  const pane = document.getElementById('pane-comunidade');
+  if (pane && pane.classList.contains('active') && _shareItemAtual) {
+    carregarComunidadeTipo(_shareItemAtual.tipo);
+  }
   _shareItemAtual = null;
 }
 
