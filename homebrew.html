@@ -1770,8 +1770,13 @@ body { transition: background 0.5s ease; }
    UTILITÁRIOS
 ═══════════════════════════════════════════════ */
 function getPrefix() {
-  // Lê APENAS do sessionStorage — nunca do localStorage
-  return (sessionStorage.getItem('ficha_user') || 'guest') + '_';
+  // Tenta sessionStorage primeiro; cai para localStorage como fallback.
+  // Isso evita salvar como 'guest_' quando a sessão expira ou o usuário
+  // abre o homebrew em uma aba nova sem passar pelo login.
+  const usuario = sessionStorage.getItem('ficha_user')
+    || localStorage.getItem('ficha_user_backup')
+    || 'guest';
+  return usuario + '_';
 }
 
 function storageKey(tipo) { return getPrefix() + 'homebrew_' + tipo; }
@@ -1798,6 +1803,7 @@ function previewImg(inputId, previewId, placeholderId) {
   reader.onload = e => {
     const preview = document.getElementById(previewId);
     preview.src = e.target.result;
+    preview.dataset.imgData = e.target.result; // backup confiável para salvar
     preview.style.display = 'block';
     document.getElementById(placeholderId).style.display = 'none';
   };
@@ -1967,7 +1973,7 @@ function salvarHabilidade() {
 
   const item = {
     id: gerarId(), nome,
-    img: document.getElementById('h-img-preview').src || '',
+    img: document.getElementById('h-img-preview').dataset.imgData || document.getElementById('h-img-preview').src || '',
     descricao: document.getElementById('h-desc').innerHTML,
     sub: 'Habilidade',
   };
@@ -2020,7 +2026,7 @@ function salvarRitual() {
     dados: document.getElementById('rit-dados').value,
     dadosDisc: document.getElementById('rit-dados-disc').value,
     dadosVerd: document.getElementById('rit-dados-verd').value,
-    img: document.getElementById('rit-img-preview').src || '',
+    img: document.getElementById('rit-img-preview').dataset.imgData || document.getElementById('rit-img-preview').src || '',
     descricao: document.getElementById('rit-desc').innerHTML,
     sub: document.getElementById('rit-elemento').value + ' · ' + document.getElementById('rit-circulo').value + 'º Círculo',
   };
@@ -2080,7 +2086,10 @@ function abrirModalItem() {
     document.getElementById('gen-bonus').value  = '';
   }
   // reset img
-  document.getElementById('item-img-preview').style.display = 'none';
+  const imgPreview = document.getElementById('item-img-preview');
+  imgPreview.style.display = 'none';
+  imgPreview.src = '';
+  imgPreview.dataset.imgData = '';
   document.getElementById('item-img-placeholder').style.display = '';
   document.getElementById('item-img-input').value = '';
   document.getElementById('item-desc').innerHTML = 'Meu novo item';
@@ -2119,7 +2128,7 @@ function salvarItem() {
     };
   }
 
-  item.img = document.getElementById('item-img-preview').src || '';
+  item.img = document.getElementById('item-img-preview').dataset.imgData || document.getElementById('item-img-preview').src || '';
   item.descricao = document.getElementById('item-desc').innerHTML;
 
   const lista = carregar('itens');
@@ -2401,6 +2410,9 @@ async function abrirModalCompartilhar(tipo, indexFiltrado) {
     }
     renderLista(tipo, carregar(tipo));
     if (tipo === 'itens') renderItensAtivos();
+
+    // Recarrega a aba comunidade para o item aparecer imediatamente
+    carregarComunidadeTipo(tipo);
   }
 
   document.getElementById('share-code-display').textContent = codigo;
@@ -2784,6 +2796,9 @@ function showToast(msg, cor) {
 window.addEventListener('load', () => {
   const usuario = sessionStorage.getItem('ficha_user');
   if (!usuario) { window.location.href = 'index.html'; return; }
+  // Espelha o usuário no localStorage para que getPrefix() funcione
+  // mesmo quando a sessionStorage estiver vazia (aba nova, sessão expirada)
+  localStorage.setItem('ficha_user_backup', usuario);
   atualizarAvatar();
   renderLista('ameacas', carregar('ameacas'));
   renderLista('habilidades', carregar('habilidades'));
