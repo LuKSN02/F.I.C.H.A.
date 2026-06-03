@@ -353,6 +353,19 @@ body {
 }
 .btn-del-card:hover { color: var(--red); }
 
+.btn-edit-card {
+  position: absolute;
+  top: 8px; right: 34px;
+  background: none;
+  border: none;
+  color: #444;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: 0.2s;
+  padding: 2px 6px;
+}
+.btn-edit-card:hover { color: var(--purple-neon); }
+
 .btn-add-ficha {
   display: block;
   width: 100%;
@@ -1384,7 +1397,7 @@ body { transition: background 0.5s ease; }
 ══════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-ameaca">
   <div class="modal-box" style="max-width:780px;">
-    <div class="modal-title">▸ Nova Ameaça</div>
+    <div class="modal-title" id="modal-ameaca-title">▸ Nova Ameaça</div>
 
     <div class="field-group">
       <label class="field-label">Nome *</label>
@@ -1550,7 +1563,7 @@ body { transition: background 0.5s ease; }
 ══════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-habilidade">
   <div class="modal-box">
-    <div class="modal-title">▸ Nova Habilidade</div>
+    <div class="modal-title" id="modal-habilidade-title">▸ Nova Habilidade</div>
 
     <div class="field-group">
       <label class="field-label">Nome *</label>
@@ -1595,7 +1608,7 @@ body { transition: background 0.5s ease; }
 ══════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-ritual">
   <div class="modal-box" style="max-width:780px;">
-    <div class="modal-title">▸ Novo Ritual</div>
+    <div class="modal-title" id="modal-ritual-title">▸ Novo Ritual</div>
 
     <div class="field-group">
       <label class="field-label">Nome *</label>
@@ -1859,6 +1872,10 @@ function trocarMainTab(tab) {
    MODAL
 ═══════════════════════════════════════════════ */
 function abrirModal(tipo) {
+  // Se não vier de editarItem, limpa o modo de edição
+  if (!_editandoLocal || _editandoLocal.tipo !== tipo) {
+    _editandoLocal = null;
+  }
   document.getElementById('modal-' + tipo).classList.add('show');
   document.body.style.overflow = 'hidden';
 }
@@ -1866,6 +1883,19 @@ function abrirModal(tipo) {
 function fecharModal(id) {
   document.getElementById(id).classList.remove('show');
   document.body.style.overflow = '';
+  // Reset modo de edição ao fechar qualquer modal
+  _editandoLocal = null;
+  // Restaura títulos padrão dos modais
+  const titleMap = {
+    'modal-ameaca':     ['modal-ameaca-title',     '▸ Nova Ameaça'],
+    'modal-habilidade': ['modal-habilidade-title', '▸ Nova Habilidade'],
+    'modal-ritual':     ['modal-ritual-title',      '▸ Novo Ritual'],
+    'modal-item':       ['modal-item-title',        '▸ Novo Item — ' + (typeof subItenAtivo !== 'undefined' ? subItenAtivo : '')],
+  };
+  if (titleMap[id]) {
+    const el = document.getElementById(titleMap[id][0]);
+    if (el) el.textContent = titleMap[id][1];
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -1902,7 +1932,8 @@ function renderLista(tipo, itens) {
   lista.innerHTML = itens.map((item, i) => `
     <div class="item-card" onclick="verItem('${tipo}',${i})">
       ${item.img ? `<img class="item-card-img" src="${item.img}" alt="">` : ''}
-      <button class="btn-del-card" onclick="event.stopPropagation();deletarItem('${tipo}',${i})">✕</button>
+      <button class="btn-del-card" onclick="event.stopPropagation();deletarItem('${tipo}',${i})" title="Remover">✕</button>
+      <button class="btn-edit-card" onclick="event.stopPropagation();editarItem('${tipo}',${i})" title="Editar">✎</button>
       <div class="item-card-name">${item.nome || '—'}${item.compartilhado ? '<span class="badge-compartilhado">✦ público</span>' : ''}${item._importado ? '<span class="badge-importado">↓ importado</span>' : ''}</div>
       <div class="item-card-sub">${item.sub || ''}</div>
       ${tipo === 'itens' ? `<button class="btn-add-ficha" onclick="event.stopPropagation();abrirModalAdicionarFicha(${i})" title="Adicionar à ficha">+ Ficha</button>` : ''}
@@ -1931,6 +1962,183 @@ function deletarItem(tipo, indexFiltrado) {
 }
 
 function verItem(tipo, i) { /* futura expansão: modal de visualização */ }
+
+/* ═══════════════════════════════════════════════
+   EDITAR ITEM LOCAL
+═══════════════════════════════════════════════ */
+let _editandoLocal = null; // { tipo, id, indexReal }
+
+function editarItem(tipo, indexFiltrado) {
+  const lista = carregar(tipo);
+  let item, idxReal;
+
+  if (tipo === 'itens') {
+    const filtrados = lista.filter(i => i.subTipo === subItenAtivo);
+    item = filtrados[indexFiltrado];
+    if (!item) return;
+    idxReal = lista.findIndex(i => i.id === item.id);
+  } else {
+    item = lista[indexFiltrado];
+    idxReal = indexFiltrado;
+  }
+  if (!item) return;
+
+  _editandoLocal = { tipo, id: item.id, idxReal };
+
+  if (tipo === 'ameacas') _preencherModalAmeaca(item);
+  else if (tipo === 'habilidades') _preencherModalHabilidade(item);
+  else if (tipo === 'rituais') _preencherModalRitual(item);
+  else if (tipo === 'itens') _preencherModalItem(item);
+}
+
+function _preencherModalAmeaca(item) {
+  document.getElementById('a-nome').value         = item.nome || '';
+  document.getElementById('a-tipo').value         = item.tipo || '';
+  document.getElementById('a-tamanho').value      = item.tamanho || '';
+  document.getElementById('a-elemento').value     = item.elemento || '';
+  document.getElementById('a-elem-sec').value     = item.elemSec || '';
+  document.getElementById('a-vd').value           = item.vd || '';
+  document.getElementById('a-vida-atual').value   = item.vidaAtual || '';
+  document.getElementById('a-vida-max').value     = item.vidaMax || '';
+  document.getElementById('a-agi').value          = item.agi || '';
+  document.getElementById('a-for').value          = item.for || '';
+  document.getElementById('a-int').value          = item.int || '';
+  document.getElementById('a-pre').value          = item.pre || '';
+  document.getElementById('a-vig').value          = item.vig || '';
+  document.getElementById('a-defesa').value       = item.defesa || '';
+  document.getElementById('a-deslocamento').value = item.deslocamento || '';
+  document.getElementById('a-sentidos').value     = item.sentidos || '';
+  document.getElementById('a-imun').value         = item.imun || '';
+  document.getElementById('a-imun2').value        = item.imun2 || '';
+  document.getElementById('a-vuln').value         = item.vuln || '';
+  document.getElementById('a-pp-dt').value        = item.ppDt || '';
+  document.getElementById('a-pp-dano').value      = item.ppDano || '';
+  document.getElementById('a-pp-nex').value       = item.ppNex || '';
+  document.getElementById('a-desc').innerHTML     = item.descricao || '';
+
+  // Perícias
+  if (item.pericias) {
+    ['perc','ini','fort','ref','vont'].forEach(p => {
+      const pref = p === 'perc' ? 'per' : p;
+      const el = document.getElementById(`a-${pref}-d`);
+      const eb = document.getElementById(`a-${pref}-b`);
+      if (el) el.value = item.pericias[p]?.d || '';
+      if (eb) eb.value = item.pericias[p]?.b || '';
+    });
+  }
+  // Resistências
+  if (item.resistencias) {
+    Object.entries(item.resistencias).forEach(([k,v]) => {
+      const el = document.getElementById('r-' + k);
+      if (el) el.value = v || '';
+    });
+  }
+  // Listas dinâmicas
+  const dAlt = document.getElementById('a-deslocalt-list');
+  dAlt.innerHTML = '';
+  (item.deslocAlt || []).forEach(v => addDynItem('a-deslocalt-list', v));
+  const dPer = document.getElementById('a-pericias-list');
+  dPer.innerHTML = '';
+  (item.periciasAdic || []).forEach(v => addDynItem('a-pericias-list', v));
+
+  // Imagem
+  const prev = document.getElementById('a-img-preview');
+  const ph   = document.getElementById('a-img-placeholder');
+  if (prev && item.img) {
+    prev.src = item.img; prev.dataset.imgData = item.img;
+    prev.style.display = 'block'; if (ph) ph.style.display = 'none';
+  } else if (prev) { prev.style.display = 'none'; if (ph) ph.style.display = ''; }
+
+  document.getElementById('modal-ameaca-title').textContent = '▸ Editar Ameaça';
+  abrirModal('ameaca');
+}
+
+function _preencherModalHabilidade(item) {
+  document.getElementById('h-nome').value     = item.nome || '';
+  document.getElementById('h-desc').innerHTML = item.descricao || '';
+
+  const prev = document.getElementById('h-img-preview');
+  const ph   = document.getElementById('h-img-placeholder');
+  if (prev && item.img) {
+    prev.src = item.img; prev.dataset.imgData = item.img;
+    prev.style.display = 'block'; if (ph) ph.style.display = 'none';
+  } else if (prev) { prev.style.display = 'none'; if (ph) ph.style.display = ''; }
+
+  document.getElementById('modal-habilidade-title').textContent = '▸ Editar Habilidade';
+  abrirModal('habilidade');
+}
+
+function _preencherModalRitual(item) {
+  document.getElementById('rit-nome').value         = item.nome || '';
+  document.getElementById('rit-elemento').value     = item.elemento || '';
+  document.getElementById('rit-circulo').value      = item.circulo || '';
+  document.getElementById('rit-execucao').value     = item.execucao || '';
+  document.getElementById('rit-alcance').value      = item.alcance || '';
+  document.getElementById('rit-area').value         = item.area || '';
+  document.getElementById('rit-alvo').value         = item.alvo || '';
+  document.getElementById('rit-duracao').value      = item.duracao || '';
+  document.getElementById('rit-efeito').value       = item.efeito || '';
+  document.getElementById('rit-resist').value       = item.resist || '';
+  document.getElementById('rit-dados').value        = item.dados || '';
+  document.getElementById('rit-dados-disc').value   = item.dadosDisc || '';
+  document.getElementById('rit-dados-verd').value   = item.dadosVerd || '';
+  document.getElementById('rit-desc').innerHTML     = item.descricao || '';
+
+  const prev = document.getElementById('rit-img-preview');
+  const ph   = document.getElementById('rit-img-placeholder');
+  if (prev && item.img) {
+    prev.src = item.img; prev.dataset.imgData = item.img;
+    prev.style.display = 'block'; if (ph) ph.style.display = 'none';
+  } else if (prev) { prev.style.display = 'none'; if (ph) ph.style.display = ''; }
+
+  document.getElementById('modal-ritual-title').textContent = '▸ Editar Ritual';
+  abrirModal('ritual');
+}
+
+function _preencherModalItem(item) {
+  // Define a sub-aba correta
+  if (item.subTipo && item.subTipo !== subItenAtivo) {
+    trocarSubItens(item.subTipo);
+  }
+  const isArma = item.subTipo === 'Armas';
+  document.getElementById('modal-item-title').textContent = '▸ Editar Item — ' + item.subTipo;
+  document.getElementById('campos-arma').style.display    = isArma ? '' : 'none';
+  document.getElementById('campos-generico').style.display = isArma ? 'none' : '';
+
+  if (isArma) {
+    document.getElementById('arm-nome').value      = item.nome || '';
+    document.getElementById('arm-prof').value      = item.prof || '';
+    document.getElementById('arm-tipo').value      = item.tipo || '';
+    document.getElementById('arm-empun').value     = item.empun || '';
+    document.getElementById('arm-dano').value      = item.dano || '1d4';
+    document.getElementById('arm-dano2').value     = item.dano2 || '';
+    document.getElementById('arm-crit').value      = item.crit || '20';
+    document.getElementById('arm-mult').value      = item.mult || '2';
+    document.getElementById('arm-tipodano').value  = item.tipoDano || '';
+    document.getElementById('arm-alcance').value   = item.alcance || '-';
+    document.getElementById('arm-cat').value       = item.cat || '0';
+    document.getElementById('arm-espacos').value   = item.espacos || '1';
+    const mel = document.getElementById('arm-melhorias-list');
+    mel.innerHTML = '';
+    (item.melhorias || []).forEach(v => addDynItem('arm-melhorias-list', v));
+  } else {
+    document.getElementById('gen-nome').value    = item.nome || '';
+    document.getElementById('gen-cat').value     = item.cat || '';
+    document.getElementById('gen-espacos').value = item.espacos || '1';
+    document.getElementById('gen-bonus').value   = item.bonus || '';
+  }
+
+  document.getElementById('item-desc').innerHTML = item.descricao || '';
+
+  const prev = document.getElementById('item-img-preview');
+  const ph   = document.getElementById('item-img-placeholder');
+  if (prev && item.img) {
+    prev.src = item.img; prev.dataset.imgData = item.img;
+    prev.style.display = 'block'; if (ph) ph.style.display = 'none';
+  } else if (prev) { prev.style.display = 'none'; if (ph) ph.style.display = ''; }
+
+  abrirModal('item');
+}
 
 /* ═══════════════════════════════════════════════
    AMEAÇAS
@@ -1993,11 +2201,18 @@ function salvarAmeaca() {
   };
 
   const lista = carregar('ameacas');
-  lista.push(item);
+  if (_editandoLocal && _editandoLocal.tipo === 'ameacas') {
+    const idx = lista.findIndex(i => i.id === _editandoLocal.id);
+    if (idx !== -1) { item.id = _editandoLocal.id; lista[idx] = item; }
+    else lista.push(item);
+    _editandoLocal = null;
+  } else {
+    lista.push(item);
+  }
   salvar('ameacas', lista);
   renderLista('ameacas', lista);
   fecharModal('modal-ameaca');
-  _autoPublicarSeChecked('ameaca-pub-check', 'ameacas', item);
+  if (!_editandoLocal) _autoPublicarSeChecked('ameaca-pub-check', 'ameacas', item);
 }
 
 /* ═══════════════════════════════════════════════
@@ -2015,11 +2230,18 @@ function salvarHabilidade() {
   };
 
   const lista = carregar('habilidades');
-  lista.push(item);
+  if (_editandoLocal && _editandoLocal.tipo === 'habilidades') {
+    const idx = lista.findIndex(i => i.id === _editandoLocal.id);
+    if (idx !== -1) { item.id = _editandoLocal.id; lista[idx] = item; }
+    else lista.push(item);
+    _editandoLocal = null;
+  } else {
+    lista.push(item);
+  }
   salvar('habilidades', lista);
   renderLista('habilidades', lista);
   fecharModal('modal-habilidade');
-  _autoPublicarSeChecked('hab-pub-check', 'habilidades', item);
+  if (!_editandoLocal) _autoPublicarSeChecked('hab-pub-check', 'habilidades', item);
 }
 
 /* ═══════════════════════════════════════════════
@@ -2069,11 +2291,18 @@ function salvarRitual() {
   };
 
   const lista = carregar('rituais');
-  lista.push(item);
+  if (_editandoLocal && _editandoLocal.tipo === 'rituais') {
+    const idx = lista.findIndex(i => i.id === _editandoLocal.id);
+    if (idx !== -1) { item.id = _editandoLocal.id; lista[idx] = item; }
+    else lista.push(item);
+    _editandoLocal = null;
+  } else {
+    lista.push(item);
+  }
   salvar('rituais', lista);
   renderLista('rituais', lista);
   fecharModal('modal-ritual');
-  _autoPublicarSeChecked('rit-pub-check', 'rituais', item);
+  if (!_editandoLocal) _autoPublicarSeChecked('rit-pub-check', 'rituais', item);
 }
 
 /* ═══════════════════════════════════════════════
@@ -2102,6 +2331,7 @@ function renderItensAtivos() {
 }
 
 function abrirModalItem() {
+  _editandoLocal = null;
   document.getElementById('modal-item-title').textContent = '▸ Novo Item — ' + subItenAtivo;
   const isArma = subItenAtivo === 'Armas';
   document.getElementById('campos-arma').style.display    = isArma ? '' : 'none';
@@ -2213,11 +2443,18 @@ function salvarItem() {
   item.descricao = document.getElementById('item-desc').innerHTML;
 
   const lista = carregar('itens');
-  lista.push(item);
+  if (_editandoLocal && _editandoLocal.tipo === 'itens') {
+    const idx = lista.findIndex(i => i.id === _editandoLocal.id);
+    if (idx !== -1) { item.id = _editandoLocal.id; lista[idx] = item; }
+    else lista.push(item);
+    _editandoLocal = null;
+  } else {
+    lista.push(item);
+  }
   salvar('itens', lista);
   renderItensAtivos();
   fecharModal('modal-item');
-  _autoPublicarSeChecked('item-pub-check', 'itens', item);
+  if (!_editandoLocal) _autoPublicarSeChecked('item-pub-check', 'itens', item);
 }
 
 /* ═══════════════════════════════════════════════
