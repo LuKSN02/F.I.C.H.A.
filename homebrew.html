@@ -322,6 +322,7 @@ body {
   font-weight: 700;
   color: var(--white);
   margin-bottom: 4px;
+  padding-right: 110px;
 }
 
 .item-card-sub {
@@ -341,30 +342,57 @@ body {
 }
 
 .btn-del-card {
-  position: absolute;
-  top: 8px; right: 8px;
-  background: none;
-  border: none;
-  color: #444;
-  font-size: 0.9rem;
+  background: rgba(180,20,20,0.20);
+  border: 1px solid rgba(220,50,50,0.5);
+  color: #e05555;
+  font-size: 0.72rem;
+  font-weight: 700;
   cursor: pointer;
   transition: 0.2s;
-  padding: 2px 6px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  line-height: 1;
+  white-space: nowrap;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.5px;
 }
-.btn-del-card:hover { color: var(--red); }
+.btn-del-card:hover {
+  background: rgba(220,50,50,0.38);
+  border-color: #ff4444;
+  color: #ff7777;
+  box-shadow: 0 0 8px rgba(220,50,50,0.45);
+}
 
 .btn-edit-card {
-  position: absolute;
-  top: 8px; right: 34px;
-  background: none;
-  border: none;
-  color: #444;
-  font-size: 0.85rem;
+  background: rgba(var(--tema-glow-rgb), 0.15);
+  border: 1px solid rgba(var(--tema-glow-rgb), 0.45);
+  color: var(--tema-primary-light);
+  font-size: 0.72rem;
+  font-weight: 700;
   cursor: pointer;
   transition: 0.2s;
-  padding: 2px 6px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  line-height: 1;
+  white-space: nowrap;
+  font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.5px;
 }
-.btn-edit-card:hover { color: var(--purple-neon); }
+.btn-edit-card:hover {
+  background: rgba(var(--tema-glow-rgb), 0.32);
+  border-color: var(--tema-primary-light);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(var(--tema-glow-rgb), 0.5);
+}
+
+/* Wrapper flex para os botões de ação no topo do card */
+.card-actions {
+  position: absolute;
+  top: 8px; right: 8px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
 
 .btn-add-ficha {
   display: block;
@@ -1932,8 +1960,10 @@ function renderLista(tipo, itens) {
   lista.innerHTML = itens.map((item, i) => `
     <div class="item-card" onclick="verItem('${tipo}',${i})">
       ${item.img ? `<img class="item-card-img" src="${item.img}" alt="">` : ''}
-      <button class="btn-del-card" onclick="event.stopPropagation();deletarItem('${tipo}',${i})" title="Remover">✕</button>
-      <button class="btn-edit-card" onclick="event.stopPropagation();editarItem('${tipo}',${i})" title="Editar">✎</button>
+      <div class="card-actions">
+        <button class="btn-edit-card" onclick="event.stopPropagation();editarItem('${tipo}',${i})" title="Editar">✎ Editar</button>
+        <button class="btn-del-card" onclick="event.stopPropagation();deletarItem('${tipo}',${i})" title="Remover">✕</button>
+      </div>
       <div class="item-card-name">${item.nome || '—'}${item.compartilhado ? '<span class="badge-compartilhado">✦ público</span>' : ''}${item._importado ? '<span class="badge-importado">↓ importado</span>' : ''}</div>
       <div class="item-card-sub">${item.sub || ''}</div>
       ${tipo === 'itens' ? `<button class="btn-add-ficha" onclick="event.stopPropagation();abrirModalAdicionarFicha(${i})" title="Adicionar à ficha">+ Ficha</button>` : ''}
