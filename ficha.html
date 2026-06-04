@@ -723,6 +723,45 @@
         .rbadge-MEDO         { background: #0d0800; color: var(--orange); border: 1px solid #3a2000; }
         .rbadge-DESCONHECIDO { background: #0d0d0d; color: #555; border: 1px solid #222; }
         .rbadge-src          { background: #0d0010; color: #555; border: 1px solid #2a0040; }
+        /* ── Badges de Círculo ── */
+        .rbadge-circulo { font-size: 0.58rem; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 99px; font-family: 'Oswald', sans-serif; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
+        .rbadge-circulo-1 { background: #0a1800; color: #4caf50; border: 1px solid #1a4020; }
+        .rbadge-circulo-2 { background: #0a1020; color: #42a5f5; border: 1px solid #103070; }
+        .rbadge-circulo-3 { background: #1a0800; color: #ff9800; border: 1px solid #5a2800; }
+        .rbadge-circulo-4 { background: #2a0015; color: #e040fb; border: 1px solid #6a0040; }
+        /* ── Filtros de círculo no modal ── */
+        .mrit-circulos-wrap { padding: 0 16px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .mrit-circulos { display: flex; gap: 6px; flex-wrap: wrap; }
+        .mrit-circulo-btn {
+            display: flex; align-items: center; gap: 5px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.07);
+            color: #444; border-radius: 8px; padding: 5px 10px;
+            font-family: 'Oswald', sans-serif; font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 0.5px; cursor: pointer; transition: 0.15s;
+        }
+        .mrit-circulo-btn:hover { border-color: rgba(255,255,255,0.15); color: #888; }
+        .mrit-circulo-btn .ci-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .mrit-circulo-btn.sel.c0    { background: rgba(200,200,200,0.08); border-color: #555; color: #ccc; }
+        .mrit-circulo-btn.sel.c1    { background: rgba(76,175,80,0.15); border-color: #4caf50; color: #81c784; box-shadow: 0 0 8px rgba(76,175,80,0.15); }
+        .mrit-circulo-btn.sel.c2    { background: rgba(66,165,245,0.15); border-color: #42a5f5; color: #90caf9; box-shadow: 0 0 8px rgba(66,165,245,0.15); }
+        .mrit-circulo-btn.sel.c3    { background: rgba(255,152,0,0.15); border-color: #ff9800; color: #ffcc02; box-shadow: 0 0 8px rgba(255,152,0,0.15); }
+        .mrit-circulo-btn.sel.c4    { background: rgba(224,64,251,0.15); border-color: #e040fb; color: #f48fb1; box-shadow: 0 0 8px rgba(224,64,251,0.15); }
+        /* ── Filtros de círculo na aba rituais ── */
+        .rituais-circulo-filtros { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+        .rituais-circulo-btn {
+            display: flex; align-items: center; gap: 4px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.06);
+            color: #555; border-radius: 6px; padding: 4px 10px;
+            font-family: 'Oswald', sans-serif; font-size: 0.68rem; font-weight: 700;
+            letter-spacing: 0.5px; cursor: pointer; transition: 0.15s;
+        }
+        .rituais-circulo-btn:hover { border-color: rgba(255,255,255,0.12); color: #888; }
+        .rituais-circulo-btn .rc-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+        .rituais-circulo-btn.ativo.rc0 { background: rgba(200,200,200,0.08); border-color: #555; color: #ccc; }
+        .rituais-circulo-btn.ativo.rc1 { background: rgba(76,175,80,0.12); border-color: #4caf50; color: #81c784; }
+        .rituais-circulo-btn.ativo.rc2 { background: rgba(66,165,245,0.12); border-color: #42a5f5; color: #90caf9; }
+        .rituais-circulo-btn.ativo.rc3 { background: rgba(255,152,0,0.12); border-color: #ff9800; color: #ffcc02; }
+        .rituais-circulo-btn.ativo.rc4 { background: rgba(224,64,251,0.12); border-color: #e040fb; color: #f48fb1; }
         .ritual-toggle { font-size: 0.7rem; color: #444; flex-shrink: 0; padding-top: 2px; transition: color 0.15s; }
         .ritual-card-hdr:hover .ritual-toggle { color: var(--purple-neon); }
         .ritual-card-body { padding: 0 14px 14px; border-top: 1px solid #150025; animation: fadeIn 0.2s ease; }
@@ -1592,6 +1631,14 @@
           </div>
           <button class="btn-novo-ataque" onclick="abrirModalRitualCustom()" style="font-size:0.75rem;padding:6px 14px;">+ Novo Ritual</button>
         </div>
+        <!-- Filtro por Círculo -->
+        <div class="rituais-circulo-filtros" id="rituais-circulo-filtros">
+          <button class="rituais-circulo-btn rc0 ativo" onclick="rituaisFiltroCirculo(0)"><span class="rc-dot" style="background:#888;"></span> Todos</button>
+          <button class="rituais-circulo-btn rc1" onclick="rituaisFiltroCirculo(1)"><span class="rc-dot" style="background:#4caf50;"></span> 1º Círculo · NEX 5%</button>
+          <button class="rituais-circulo-btn rc2" onclick="rituaisFiltroCirculo(2)"><span class="rc-dot" style="background:#42a5f5;"></span> 2º Círculo · NEX 25%</button>
+          <button class="rituais-circulo-btn rc3" onclick="rituaisFiltroCirculo(3)"><span class="rc-dot" style="background:#ff9800;"></span> 3º Círculo · NEX 55%</button>
+          <button class="rituais-circulo-btn rc4" onclick="rituaisFiltroCirculo(4)"><span class="rc-dot" style="background:#e040fb;"></span> 4º Círculo · NEX 85%</button>
+        </div>
         <div class="rituais-count" id="rituais-count">— rituais</div>
       </div>
       <div class="rituais-lista" id="rituais-lista"></div>
@@ -2320,6 +2367,17 @@
       </div>
     </div>
 
+    <!-- Filtros de círculo -->
+    <div class="mrit-circulos-wrap">
+      <div class="mrit-circulos" id="mrit-circulos">
+        <button class="mrit-circulo-btn c0 sel" onclick="mritFiltroCirculo(0)"><span class="ci-dot" style="background:#888;"></span> Todos os círculos</button>
+        <button class="mrit-circulo-btn c1" onclick="mritFiltroCirculo(1)"><span class="ci-dot" style="background:#4caf50;box-shadow:0 0 4px #4caf50;"></span> 1º Círculo · NEX 5%</button>
+        <button class="mrit-circulo-btn c2" onclick="mritFiltroCirculo(2)"><span class="ci-dot" style="background:#42a5f5;box-shadow:0 0 4px #42a5f5;"></span> 2º Círculo · NEX 25%</button>
+        <button class="mrit-circulo-btn c3" onclick="mritFiltroCirculo(3)"><span class="ci-dot" style="background:#ff9800;box-shadow:0 0 4px #ff9800;"></span> 3º Círculo · NEX 55%</button>
+        <button class="mrit-circulo-btn c4" onclick="mritFiltroCirculo(4)"><span class="ci-dot" style="background:#e040fb;box-shadow:0 0 4px #e040fb;"></span> 4º Círculo · NEX 85%</button>
+      </div>
+    </div>
+
     <!-- Busca -->
     <div class="mrit-search-row">
       <div class="mrit-search-wrap">
@@ -3013,54 +3071,28 @@ const RITUAIS_DATA = [
   // ── ORIGINAIS ──────────────────────────────────────────────────────────────
   { nome:"Transcender", elem:"CONHECIMENTO", src:"A Ordem Paranormal", exec:"Concentrar-se no símbolo", alcance:"Pessoal", dur:"Instantânea", conjuracao:"Ficar sobre o símbolo e se concentrar nele.", desc:"Conecta o usuário ao Outro Lado, fortalecendo-o e permitindo aprender um ritual. Se carregar um objeto amaldiçoado, o Outro Lado faz uma pergunta em troca de um ritual relacionado ao objeto." },
   { nome:"Ritual de Passagem de Sangue", elem:"SANGUE", src:"A Ordem Paranormal", exec:"Desconhecida", alcance:"Toque", dur:"Permanente", conjuracao:"Desconhecida", desc:"Funde a mente de dois seres em uma, mesclando suas consciências. Utilizado por Álvaro Augusto." },
-  { nome:"Ritual de Passagem de Conhecimento", elem:"SANGUE", src:"A Ordem Paranormal / Desconjuração", exec:"Desconhecida", alcance:"Toque", dur:"Permanente", conjuracao:"Desconhecida", desc:"Permite troca, substituição ou compartilhamento de mentes entre dois ou mais corpos." },
-  { nome:"Ritual de Alterar Memória", elem:"CONHECIMENTO", src:"A Ordem Paranormal", exec:"Desconhecida", alcance:"Toque", dur:"Permanente", conjuracao:"Desconhecida", desc:"Apaga todas ou apenas algumas memórias específicas da vítima." },
-  { nome:"Ritual de Descarnar", elem:"SANGUE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"10m", dur:"Instantânea", conjuracao:"Derramar sangue humano sob o Símbolo, se concentrar e apontar o alvo.", desc:"A pele do alvo é dilacerada, deixando a carne à mostra. Não funciona em criaturas de Sangue. Indouto: 1d10 dano de Sangue. Discente: 2d10+2 dano de Sangue.", dadosSugeridos:["1d10","2d10+2"] },
   { nome:"Ritual de Gritos", elem:"DESCONHECIDO", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Visual", dur:"Duração do ritual", conjuracao:"Enrolar o braço em arame farpado até sangrar, focar no símbolo e no alvo.", desc:"O alvo começa a escutar gritos ensurdecedores, tendo desvantagem em qualquer ação efetuada durante o tempo do ritual." },
-  { nome:"Ritual de Terceiro Olho", elem:"CONHECIMENTO", src:"A Ordem Paranormal", exec:"Ação livre", alcance:"Campo de visão", dur:"Cena", conjuracao:"Segurar um celular e focar no símbolo.", desc:"Localiza concentrações paranormais no campo de visão do usuário." },
   { nome:"Ritual de Infligir Doença", elem:"MORTE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Curto", dur:"Concentração", conjuracao:"Ter em mãos cinzas animais e um órgão humano, focar no símbolo.", desc:"A vítima contrai ou acelera os efeitos de algum tipo de doença, dando 1d8 de dano de Morte por rodada no alvo.", dadosSugeridos:["1d8"] },
   { nome:"Ritual de Cicatrização Acelerada", elem:"MORTE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Toque", dur:"Instantânea", conjuracao:"Ter em mãos cinzas humanas e assoprá-las sobre uma ferida.", desc:"Acelera o tempo de cicatrização de feridas. Não cura doenças. Indouto: cura 1d6 de vida. Discente: cura 2d6+2, cura lesão grave.", dadosSugeridos:["1d6","2d6+2"] },
-  { nome:"Ritual de Teletransporte", elem:"ENERGIA", src:"A Ordem Paranormal", exec:"Desconhecida", alcance:"Desconhecido", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Desaparecer e reaparecer em outro local a uma distância incerta." },
   { nome:"Ritual de Destruição Temporal", elem:"MORTE", src:"A Ordem Paranormal", exec:"1 ação", alcance:"Curto", dur:"Instantânea", conjuracao:"Consumir meia porção de cinzas humanas e se concentrar no Símbolo.", desc:"Destrói temporalmente o alvo. Gasta 5 PO. Causa 2d8 de dano direto de Morte.", dadosSugeridos:["2d8"] },
-  { nome:"Ritual de Controle Mental", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Limitada", conjuracao:"Desconhecida", desc:"Faz com que a mente da vítima seja completamente controlada por outra pessoa." },
   { nome:"Ritual de Paralisia", elem:"ENERGIA", src:"Desconjuração", exec:"Desconhecida", alcance:"Área", dur:"Duração do ritual", conjuracao:"Desconhecida", desc:"A vítima fica em estado de paralisia, podendo apenas se comunicar." },
   { nome:"Ritual de Bênção Maldita", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Pessoal", dur:"Próximos 5 testes", conjuracao:"Ter em mãos um objeto tecnológico, estar próximo de uma fonte de energia e se concentrar no símbolo.", desc:"O usuário rola um d20 cinco vezes; esses serão os próximos 5 resultados de uma perícia escolhida.", dadosSugeridos:["1d20"] },
-  { nome:"Ritual de Eletrocussão", elem:"ENERGIA", src:"Desconjuração / O Segredo na Ilha", exec:"Desconhecida", alcance:"Curto", dur:"Instantânea", conjuracao:"Desconhecida", desc:"O alvo é eletrocutado de dentro para fora. Versão de Amelie Florence: 3d6 de dano de Energia usando 1 PE.", dadosSugeridos:["3d6"] },
   { nome:"Ritual de Dissipar Espíritos", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Curto", dur:"Instantânea", conjuracao:"Focar no símbolo segurando um dispositivo eletrônico funcional com correntes nos braços.", desc:"Gasta 3 PO. Causa 2d10 de dano em entidades de Energia, e metade deste dano em seres de outro elemento.", dadosSugeridos:["2d10"] },
-  { nome:"Ritual de Cinerária", elem:"MEDO", src:"Desconjuração / Sinais do Outro Lado", exec:"1 ação", alcance:"Raio de 5-6m", dur:"Cena", conjuracao:"Focar no símbolo.", desc:"Invoca a névoa do Outro Lado em raio de 5-6 metros. Gasta 6 PO. Concede vantagem em esquiva e furtividade." },
   { nome:"Ritual de Reação", elem:"ENERGIA", src:"Desconjuração", exec:"Reação", alcance:"Pessoal", dur:"Instantânea", conjuracao:"Segurar um aparelho eletrônico enquanto sofre um ataque e focar no símbolo.", desc:"Gasta 5 PO e uma reação. Metade do dano de um golpe físico é refletido em dano de Energia no agressor." },
-  { nome:"Ritual de Ouvir os Sussurros", elem:"CONHECIMENTO", src:"Desconjuração", exec:"Desconhecida", alcance:"Local ou objeto específico", dur:"Cena", conjuracao:"Segurar um objeto conectado ao espírito ou estar em local/horário específico.", desc:"Permite comunicar-se com os mortos. O usuário ouve sussurros do Outro Lado." },
   { nome:"Ritual de Leitura Psíquica", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Raio de 5m", dur:"Concentração", conjuracao:"Se concentrar no símbolo e ter um alvo num raio de 5 metros.", desc:"Gasta 6 PO. Permite ler a mente do alvo para prever seus próximos movimentos, pensamentos e intenções." },
   { nome:"Ritual de Ligação Telepática", elem:"CONHECIMENTO", src:"Desconjuração", exec:"1 ação", alcance:"Marcados", dur:"1 hora", conjuracao:"Marcar o símbolo em quem o usuário quer afetar.", desc:"Cria uma linha telepática entre todos os marcados com o símbolo, permitindo comunicação telepática livre por uma hora." },
-  { nome:"Ritual de Amaldiçoar Tecnologia", elem:"ENERGIA", src:"Desconjuração", exec:"1 ação", alcance:"Curto", dur:"1d6 rodadas", conjuracao:"Possuir uma fonte de energia próxima e se concentrar no símbolo.", desc:"Amaldiçoa temporariamente uma arma de fogo próxima, fazendo ela dar +1d6 de dano caótico.", dadosSugeridos:["1d6"] },
   { nome:"Ritual de Derreter Criaturas de Sangue", elem:"SANGUE", src:"Desconjuração", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Segurar uma corrente com sangue escorrendo e focar no símbolo.", desc:"Causa 4d10+5 em criaturas de Sangue ou 2d10 em outras criaturas. Funciona apenas em criaturas, não em humanos.", dadosSugeridos:["4d10+5","2d10"] },
-  { nome:"Ritual de Ódio Incontrolável", elem:"SANGUE", src:"Desconjuração / Calamidade", exec:"1 ação", alcance:"Pessoal / Curto", dur:"1d4+2 rodadas", conjuracao:"Cortar a mão, botá-la no olho enquanto se concentra no símbolo.", desc:"Gasta 8 PO. Por 1d4+2 rodadas, +2d6 de dano corpo-a-corpo e vantagem em força/ataques.", dadosSugeridos:["2d6","1d4+2"] },
-
   { nome:"Ritual de Paralisia de Sangue", elem:"SANGUE", src:"Desconjuração", exec:"1 ação", alcance:"Toque / Marcado", dur:"1d4 rodadas", conjuracao:"Marcar o símbolo no alvo, enrolar arame farpado no braço até sangrar e focar no símbolo.", desc:"Paralisa o alvo por 1d4 rodadas. O alvo faz um teste de Fortitude a cada rodada para tentar se libertar." },
   { nome:"Ritual de Toque da Morte", elem:"MORTE", src:"Desconjuração", exec:"Toque", alcance:"Toque", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Faz o corpo do alvo envelhecer até definhar completamente, causando 4d10 de dano.", dadosSugeridos:["4d10"] },
   { nome:"Ritual de Levitação", elem:"DESCONHECIDO", src:"Desconjuração", exec:"Desconhecida", alcance:"Visual", dur:"Concentração", conjuracao:"Desconhecida", desc:"Levita qualquer objeto à distância." },
-  { nome:"Ritual de Fortalecimento Sensorial", elem:"SANGUE", src:"Calamidade", exec:"1 ação", alcance:"Pessoal", dur:"Cena", conjuracao:"Cortar a palma da mão.", desc:"Gasta 1 PE. Ganha um dado extra em testes de Percepção, Investigação, Luta e Pontaria." },
-  { nome:"Ritual de Embaralhar", elem:"ENERGIA", src:"Calamidade / Sinais do Outro Lado / Enigma do Medo", exec:"1 ação", alcance:"Pessoal", dur:"Cena", conjuracao:"Apertar duas baterias.", desc:"Cria cópias ilusórias do usuário. A primeira cópia gasta 2 PE; cada adicional gasta 1 PE." },
-  { nome:"Ritual de Cicatrização", elem:"MORTE", src:"Calamidade / O Segredo na Ilha / Sinais do Outro Lado", exec:"1 ação", alcance:"Toque / Aliado", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Cura 2d8+2 PV. Pode ser aprimorado (+2 PE) para adicionar +2d8+2.", dadosSugeridos:["2d8+2","3d8+3"] },
-  { nome:"Ritual de Salto Fantasma", elem:"ENERGIA", src:"Calamidade", exec:"1 ação / Reação", alcance:"9m (base)", dur:"Instantânea", conjuracao:"Pensar ou ver o ponto onde quer se teletransportar.", desc:"Gasta 3 PE. Teleporta o usuário em área de 9 metros." },
-  { nome:"Ritual de Decadência", elem:"MORTE", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Acelera o envelhecimento dos órgãos internos, causando 2d8+2 de dano de Morte.", dadosSugeridos:["2d8+2"] },
   { nome:"Ritual de Amaldiçoar Arma com Conhecimento", elem:"CONHECIMENTO", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Arma próxima", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Adiciona +1d6 de dano de Conhecimento. Aprimoramento (+2 PE): +1d6 adicional, máximo 3d6.", dadosSugeridos:["1d6","2d6","3d6"] },
-  { nome:"Ritual de Paradoxo", elem:"MORTE", src:"Calamidade", exec:"1 ação", alcance:"Área", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gasta 3 PE. Causa 6d6 de dano de Morte em todos os alvos na área.", dadosSugeridos:["6d6"] },
   { nome:"Ritual de Amaldiçoar Arma com Energia", elem:"ENERGIA", src:"Calamidade / O Segredo na Ilha / Sinais do Outro Lado", exec:"1 ação", alcance:"Arma próxima", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Adiciona +1d6 de dano de Energia. Aprimoramento (+2 PE): +1d6 adicional, máximo 3d6.", dadosSugeridos:["1d6","2d6","3d6"] },
   { nome:"Ritual de Amaldiçoar Arma com Sangue", elem:"SANGUE", src:"Calamidade / Sinais do Outro Lado", exec:"1 ação", alcance:"Arma próxima", dur:"Cena", conjuracao:"Desconhecida", desc:"Gasta 1 PE. Adiciona +1d6 de dano de Sangue. Aprimoramento (+2 PE): +1d6 adicional, máximo 3d6.", dadosSugeridos:["1d6","2d6","3d6"] },
   { nome:"Ritual de Disparo de Energia Concentrado", elem:"ENERGIA", src:"Calamidade", exec:"1 ação", alcance:"Visual", dur:"Instantânea", conjuracao:"Se concentrar no símbolo (via celular).", desc:"Gasta 3 PE. Dispara um projétil causando 6d6 de Dano Caótico. Aprimoramento (+2 PE por nível): até 14d6.", dadosSugeridos:["6d6","8d6","10d6","14d6"] },
-  { nome:"Ritual de Tela de Ruído", elem:"ENERGIA", src:"Sinais do Outro Lado", exec:"1 ação / Reação", alcance:"Pessoal", dur:"Cena / Instantânea", conjuracao:"Desconhecida", desc:"Cria uma película de Energia que recobre o corpo. Concede 30 PV temporários contra dano físico/balístico." },
-  { nome:"Ritual de Rajada Caótica", elem:"ENERGIA", src:"Hexatombe", exec:"1 ação", alcance:"Médio", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Dispara um raio que causa 8d8 pontos de dano de Energia em um ser em alcance médio.", dadosSugeridos:["8d8"] },
   { nome:"Ritual de Tempestade Caótica", elem:"ENERGIA", src:"Hexatombe", exec:"1 ação", alcance:"Médio", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Versão aprimorada da Rajada Caótica. Dispara um raio que causa 8d10 pontos de dano de Energia.", dadosSugeridos:["8d10"] },
-  { nome:"Ritual de Mapa Sanguíneo", elem:"SANGUE", src:"Hexatombe", exec:"1 ação", alcance:"Raio de 1km", dur:"Cena", conjuracao:"Desconhecida", desc:"Desenha um mapa que sinaliza a localização em tempo real de todos os seres em um raio de um quilômetro." },
-  { nome:"Ritual de Labirinto Mental", elem:"CONHECIMENTO", src:"Hexatombe", exec:"1 ação", alcance:"Visual", dur:"1d4 rodadas", conjuracao:"Desconhecida", desc:"Obriga o alvo a gastar suas ações para se mover em uma direção aleatória por 1d4 rodadas." },
   { nome:"Ritual de Explosão", elem:"ENERGIA", src:"Enigma do Medo", exec:"Desconhecida", alcance:"Área", dur:"Instantânea", conjuracao:"Desconhecida", desc:"Gera uma explosão de impulso a partir de um ponto específico, empurrando todos ao redor para longe." },
   { nome:"Ritual de Imersão", elem:"CONHECIMENTO", src:"Enigma do Medo", exec:"Ritual", alcance:"Lápide marcada", dur:"Duração da memória", conjuracao:"Aplicar Lodo em uma lápide do Perímetro, desenhar o símbolo ao redor e se concentrar nele.", desc:"Permite ao conjurador acessar vividamente uma memória específica do dono da Marca da lápide." },
   { nome:"Ritual de Invocação da Dama de Sangue", elem:"SANGUE", src:"Livro de Regras", exec:"Ritual longo", alcance:"Local do ritual", dur:"Permanente", conjuracao:"Fazer o Símbolo da Orquídea entrar em contato com 7 sacrifícios em 7 condições diferentes.", desc:"Invoca a Dama de Sangue na Realidade." },
-  { nome:"Ritual de Forma Monstruosa", elem:"SANGUE", src:"Vendeta Oculta", exec:"Ritual", alcance:"Animais / Pessoal", dur:"Permanente", conjuracao:"Acender uma vela e matar um animal afogado em uma tina.", desc:"Infecta animais da mesma espécie usada no sacrifício. Após 7 transformações, transforma o próprio conjurador em uma criatura." },
-  // ── SOBREVIVENDO AO HORROR ─────────────────────────────────────────────────
-  { nome:"Esfolar", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", dur:"Instantânea", conjuracao:"Sangue 1º círculo.", desc:"Projeta agulhas e lâminas rubras no alvo. Causa 3d4+3 dano de corte e sangrando. Resistência: metade do dano, evita condição. Discente (+2 PE, 2º círculo): médio, 5d4+5, explosão 6m. Verdadeiro (+5 PE, 3º círculo): longo, 10d4+10, explosão 6m.", dadosSugeridos:["3d4+3","5d4+5","10d4+10"] },
-  { nome:"Overclock", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Reação", alcance:"Pessoal", dur:"Instantânea", conjuracao:"Energia 1º círculo.", desc:"Após falhar num teste de Tecnologia, conjura para forçar o aparelho via descarga de Energia. Mesa joga 'estátua': se não errar movimento, obtém a informação. O objeto fica com vírus paranormal e inutilizável. Discente (+2 PE, 2º): falha só com 2 erros. Verdadeiro (+5 PE, 3º): falha só com 3 erros." },
   { nome:"Tremeluzir", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", dur:"Sustentada", conjuracao:"Energia 2º círculo.", desc:"Reorganiza moléculas em fótons, permitindo atravessar objetos sólidos (1 ação de movimento por objeto, 25% de falha). Em perseguições, permite Cortar Caminho sem penalidade. Sofre 1d4 dano de Energia por rodada. Discente (+3 PE): toque, 1 ser. Verdadeiro (+7 PE, 4º): curto, até 5 seres.", dadosSugeridos:["1d4"] },
   { nome:"Mutar (Silêncio)", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Pessoal", dur:"Sustentada", conjuracao:"Energia 3º círculo.", desc:"Inibe emissão e recepção de sons pelo conjurador. +10 em Furtividade. Visibilidade reduzida em 1 nas cenas de furtividade. Jogador só pode falar com permissão do mestre; se falar sem permissão, o ritual se desfaz. Discente (+4 PE): toque, 1 ser. Verdadeiro (+9 PE+afinidade): curto, até 5 seres." },
   { nome:"Milagre Ionizante", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Completa", alcance:"Toque", dur:"Instantânea", conjuracao:"Energia 3º círculo.", desc:"Cura o alvo de uma condição, doença ou veneno (exceto os causados por Energia ou permanentes). Após a cura, alvo faz Fortitude DT 30 ou contrai o vírus do infectcídio." },
@@ -3072,7 +3104,7 @@ const RITUAIS_DATA = [
 
 
   // ── SOBREVIVENDO AO HORROR — rituais mecânicos completos ──────────────────
-  { nome:"Esfoliar", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", alvo:"1 ser", dur:"Instantânea", conjuracao:"Sangue 1º círculo. Resistência: Reflexos parcial.",
+  { nome:"Esfolar", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", alvo:"1 ser", dur:"Instantânea", conjuracao:"Sangue 1º círculo. Resistência: Reflexos parcial.",
     desc:"Projeta agulhas e lâminas rubras que causam 3d4+3 de dano de corte e deixam o alvo sangrando. Resistência evita condição e reduz dano à metade. Discente (+2 PE, 2º): médio, 5d4+5, explosão 6m. Verdadeiro (+5 PE, 3º): longo, 10d4+10, explosão 6m — resistência não evita condição.",
     dadosSugeridos:["3d4+3","5d4+5","10d4+10"] },
   { nome:"Sede de Adrenalina", elem:"SANGUE", src:"Sobrevivendo ao Horror", exec:"Reação", alcance:"Pessoal", alvo:"Você", dur:"Instantânea", conjuracao:"Sangue 2º círculo. Uso: 1 vez por rodada.",
@@ -3101,7 +3133,7 @@ const RITUAIS_DATA = [
   { nome:"Pronunciar Sigilo", elem:"CONHECIMENTO", src:"Sobrevivendo ao Horror", exec:"Padrão", alcance:"Curto", alvo:"1 ser", dur:"Instantânea/Veja texto", conjuracao:"Conhecimento 4º círculo. Resistência: Vontade parcial.",
     desc:"Pronuncia um Sigilo causando um dos efeitos: Esquecer (atordoado 1d4+1 rodadas; resistência: desprevenido 1d4 rodadas); Cegar (cego; resistência: ofuscado 1d4 rodadas); Inexistir (desaparece 1d4+1 rodadas; resistência: 1 rodada; retorna ao local ou raio 18m). Discente (+5 PE): extremo. Verdadeiro (+10 PE+afinidade): até 5 seres.",
     dadosSugeridos:["1d4+1","1d4"] },
-  { nome:"Overlock", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Reação", alcance:"Pessoal", alvo:"Você", dur:"Instantânea", conjuracao:"Energia 1º círculo.",
+  { nome:"Overclock", elem:"ENERGIA", src:"Sobrevivendo ao Horror", exec:"Reação", alcance:"Pessoal", alvo:"Você", dur:"Instantânea", conjuracao:"Energia 1º círculo.",
     desc:"Após falhar em Tecnologia com um eletrônico, pode conjurar para tentar novamente via descarga caótica. Desafio: jogo de estátua (mestre interrompe música; não pode se mover). Se passar: obtém a informação. O aparelho fica inutilizável (tomado por vírus paranormal). Discente (+2 PE, 2º): falha só com 2 erros. Verdadeiro (+5 PE, 3º): falha só com 3 erros." },
   { nome:"Backup", elem:"ENERGIA", src:"Arquivos Secretos #4", exec:"Padrão", alcance:"Curto", alvo:"Veja texto", dur:"24 horas", conjuracao:"Energia 2º círculo.",
     desc:"Cria um chamariz com sua aparência em espaço vazio (realiza movimentos simples, pode dizer 1 frase). Conexão em raio 50km. Pode gastar reação para trocar de lugar com o chamariz (–2d4 SAN). Dissipa se receber dano ou conjurador sair do raio. Discente (+2 PE, 2º): duração permanente; pode ver/ouvir pela cópia cobrindo olhos (fica cego, surdo e pasmo). Verdadeiro (+5 PE, 3º): como discente + pode falar e escolher aparência da cópia; ao trocar de lugar pode dissipá-la causando 6d6 de dano de Energia (Reflexos metade) em raio curto das duas posições.",
@@ -4136,6 +4168,7 @@ let estado = {
 };
 let rituaisAbertos    = {};
 let rituaisResultados = {};
+let _rituaisCirculoFiltro = 0; // 0 = todos os círculos
 let habCatAtiva    = 'ficha';
 let habSubabaAtiva = 'todos';
 let habAbertos     = {};
@@ -6045,7 +6078,11 @@ function rituaisRender() {
     if (dtEl) dtEl.textContent = calcDT();
     const busca = (document.getElementById('rituais-busca')?.value || '').toLowerCase();
     const meus  = estado.rituaisPersonagem || [];
-    const filtrados = meus.filter(r => r.nome.toLowerCase().includes(busca) || (r.elem || '').toLowerCase().includes(busca));
+    const filtrados = meus.filter(r => {
+        const buscaOk = r.nome.toLowerCase().includes(busca) || (r.elem || '').toLowerCase().includes(busca);
+        const circuloOk = _rituaisCirculoFiltro === 0 || (r.circulo || 0) === _rituaisCirculoFiltro;
+        return buscaOk && circuloOk;
+    });
     countEl.textContent = `▸ ${filtrados.length} ritual${filtrados.length !== 1 ? 'is' : ''}`;
     if (filtrados.length === 0) { lista.innerHTML = '<div class="rituais-vazio">▸ Nenhum ritual adicionado ainda. Clique em "+ Adicionar" para começar!</div>'; return; }
 
@@ -6100,7 +6137,7 @@ function rituaisRender() {
             <button class="ritual-btn-remover" data-remover="${safeNome}" style="background:none;border:none;color:var(--tema-primary-light,#7ab3f5);font-size:0.75rem;font-family:'Oswald',sans-serif;font-weight:600;padding:0;cursor:pointer;letter-spacing:0.5px;">Remover</button>
           </div>
         </div>` : '';
-        return `<div class="ritual-card-f"><div class="ritual-card-hdr" data-toggle="${safeNome}"><div class="ritual-hdr-esq"><div class="ritual-card-nome">${r.nome}</div><div class="ritual-badges">${r.elem ? `<span class="rbadge rbadge-${eu}">${r.elem}${r.circulo ? ' ' + r.circulo : ''}</span>` : ''}${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}</div></div><div class="ritual-toggle">${open ? '▲' : '▼'}</div></div>${bodyHtml}</div>`;
+        return `<div class="ritual-card-f"><div class="ritual-card-hdr" data-toggle="${safeNome}"><div class="ritual-hdr-esq"><div class="ritual-card-nome">${r.nome}</div><div class="ritual-badges">${r.elem ? `<span class="rbadge rbadge-${eu}">${r.elem}</span>` : ''}${r.circulo ? `<span class="rbadge-circulo rbadge-circulo-${r.circulo}">⬡ ${{1:'1º Círculo',2:'2º Círculo',3:'3º Círculo',4:'4º Círculo'}[r.circulo]||r.circulo+'º Círculo'} · NEX ${{1:'5%',2:'25%',3:'55%',4:'85%'}[r.circulo]||''}</span>` : ''}${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}</div></div><div class="ritual-toggle">${open ? '▲' : '▼'}</div></div>${bodyHtml}</div>`;
     };
 
     let html = '';
@@ -6148,6 +6185,19 @@ function rituaisRender() {
 
 function rituaisToggle(nome) { rituaisAbertos[nome] = !rituaisAbertos[nome]; rituaisRender(); }
 
+function rituaisFiltroCirculo(c) {
+    _rituaisCirculoFiltro = c;
+    // Atualiza visual dos botões
+    document.querySelectorAll('.rituais-circulo-btn').forEach(btn => {
+        const rcClass = [...btn.classList].find(cl => cl.startsWith('rc') && !isNaN(cl.slice(2)));
+        if (rcClass) {
+            const val = parseInt(rcClass.slice(2));
+            btn.classList.toggle('ativo', val === c);
+        }
+    });
+    rituaisRender();
+}
+
 function rituaisPreset(e, nome, dado) {
     e.stopPropagation();
     const inputId = `ritual-input-${nome.replace(/\W+/g,'_')}`;
@@ -6181,15 +6231,18 @@ function removerRitual(nome) {
 // ══ MODAL RITUAL — estado interno ══
 let _mritTab  = 'todos';   // 'todos' | 'homebrew'
 let _mritElem = 'Todos';   // elemento selecionado
+let _mritCirculo = 0;      // círculo selecionado (0 = todos)
 
 function abrirModalRitual() {
     _mritTab  = 'todos';
     _mritElem = 'Todos';
+    _mritCirculo = 0;
     document.getElementById('modal-ritual').style.display = 'flex';
     const inp = document.getElementById('mrit-busca');
     if (inp) inp.value = '';
     _mritAtualizarTabs();
     _mritAtualizarElems();
+    _mritAtualizarCirculos();
     renderModalRituais();
 }
 function fecharModalRitual() { document.getElementById('modal-ritual').style.display = 'none'; }
@@ -6197,8 +6250,10 @@ function fecharModalRitual() { document.getElementById('modal-ritual').style.dis
 function mritTrocarTab(tab) {
     _mritTab  = tab;
     _mritElem = 'Todos';
+    _mritCirculo = 0;
     _mritAtualizarTabs();
     _mritAtualizarElems();
+    _mritAtualizarCirculos();
     renderModalRituais();
 }
 
@@ -6213,6 +6268,12 @@ function mritFiltroElem(elem) {
     renderModalRituais();
 }
 
+function mritFiltroCirculo(c) {
+    _mritCirculo = c;
+    _mritAtualizarCirculos();
+    renderModalRituais();
+}
+
 function _mritAtualizarElems() {
     document.querySelectorAll('.mrit-elem-btn').forEach(btn => {
         // encontra a classe "e*" do botão
@@ -6220,6 +6281,14 @@ function _mritAtualizarElems() {
         const mapa = { eTodos:'Todos', eCONHECIMENTO:'CONHECIMENTO', eENERGIA:'ENERGIA', eMORTE:'MORTE', eSANGUE:'SANGUE', eMEDO:'MEDO', eVARIA:'VARIA' };
         const val = eClass ? mapa[eClass] : null;
         if (val !== undefined) btn.classList.toggle('sel', val === _mritElem);
+    });
+}
+
+function _mritAtualizarCirculos() {
+    document.querySelectorAll('.mrit-circulo-btn').forEach(btn => {
+        const cClass = [...btn.classList].find(cl => cl.startsWith('c') && !isNaN(cl.slice(1)));
+        const val = cClass ? parseInt(cClass.slice(1)) : null;
+        if (val !== null) btn.classList.toggle('sel', val === _mritCirculo);
     });
 }
 
@@ -6263,12 +6332,13 @@ function renderModalRituais() {
         }));
     }
 
-    // Filtro busca + elemento
+    // Filtro busca + elemento + círculo
     const filtrados = fonte.filter(r => {
         const ne = _normElem(r.elem);
         const elemOk = _mritElem === 'Todos' || ne === _mritElem;
+        const circuloOk = _mritCirculo === 0 || (r.circulo || 0) === _mritCirculo;
         const buscaOk = !busca || (r.nome || '').toLowerCase().includes(busca) || (r.elem || '').toLowerCase().includes(busca);
-        return elemOk && buscaOk;
+        return elemOk && circuloOk && buscaOk;
     });
 
     if (!filtrados.length) {
@@ -6325,6 +6395,10 @@ function renderModalRituais() {
             const nomeEsc = r.nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const delay   = Math.min(i * 20, 200);
             const itemId  = `mrit-desc-${total}`;
+            // Badge de círculo
+            const CIRC_LABEL = { 1:'1º Círculo · NEX 5%', 2:'2º Círculo · NEX 25%', 3:'3º Círculo · NEX 55%', 4:'4º Círculo · NEX 85%' };
+            const CIRC_COR   = { 1:'#4caf50', 2:'#42a5f5', 3:'#ff9800', 4:'#e040fb' };
+            const circuloBadge = r.circulo ? `<span class="rbadge-circulo rbadge-circulo-${r.circulo}" style="margin-left:2px;">⬡ ${CIRC_LABEL[r.circulo] || r.circulo + 'º Círculo'}</span>` : '';
             // Guarda dados separadamente para evitar problemas de escape
             window._mritDescData[itemId] = {
                 desc: r.desc || '',
@@ -6340,6 +6414,7 @@ function renderModalRituais() {
                     <div class="mrit-item-nome">${r.nome}</div>
                     <div class="mrit-item-tags">
                       ${elemBadge(r.elem)}
+                      ${circuloBadge}
                       ${hbBadge}
                       <span class="mrit-item-src">${r.src || ''}</span>
                     </div>
