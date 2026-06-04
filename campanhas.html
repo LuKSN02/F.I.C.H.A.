@@ -207,47 +207,95 @@
         .page-wrapper { max-width: 1200px; margin: 0 auto; padding: 32px 16px 80px; flex: 1; }
 
         /* ── CARDS DE CAMPANHA ── */
-        .camp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+        .camp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .camp-card {
-            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-            overflow: hidden; transition: 0.2s; cursor: pointer; position: relative;
+            background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+            overflow: hidden; transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1); cursor: pointer; position: relative;
         }
-        .camp-card:hover { border-color: var(--purple); box-shadow: 0 0 20px var(--purple-glow); transform: translateY(-3px); }
+        .camp-card:hover {
+            border-color: var(--purple);
+            box-shadow: 0 0 0 1px var(--purple), 0 8px 40px var(--purple-glow), 0 2px 8px rgba(0,0,0,0.6);
+            transform: translateY(-4px);
+        }
         .camp-card-banner {
-            height: 80px; background: linear-gradient(135deg, var(--purple-dark), #0d0010);
+            height: 110px;
+            background: linear-gradient(135deg, var(--purple-dark) 0%, #050008 60%, #000 100%);
             position: relative; overflow: hidden;
         }
+        .camp-card-banner-img {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; opacity: 0.55;
+        }
+        .camp-card-banner::before {
+            content: ''; position: absolute; inset: 0; z-index: 1;
+            background: linear-gradient(180deg, transparent 30%, var(--card) 100%);
+        }
         .camp-card-banner::after {
-            content: ''; position: absolute; inset: 0;
-            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(138,43,226,0.05) 10px, rgba(138,43,226,0.05) 20px);
+            content: ''; position: absolute; inset: 0; z-index: 0;
+            background:
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(var(--tema-glow-rgb),0.03) 2px, rgba(var(--tema-glow-rgb),0.03) 4px);
+        }
+        .camp-card-banner-glyph {
+            position: absolute; bottom: 8px; left: 16px; z-index: 2;
+            font-size: 2rem; opacity: 0.25; filter: blur(1px);
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--purple-neon);
         }
         .camp-role-badge {
-            position: absolute; top: 10px; right: 10px; z-index: 1;
-            font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase;
-            padding: 3px 8px; border-radius: 99px; font-family: 'Share Tech Mono', monospace;
+            position: absolute; top: 12px; right: 12px; z-index: 3;
+            font-size: 0.5rem; letter-spacing: 2px; text-transform: uppercase;
+            padding: 4px 10px; border-radius: 99px; font-family: 'Share Tech Mono', monospace;
+            backdrop-filter: blur(4px);
         }
-        .camp-role-badge.mestre { background: #2a0050; color: var(--purple-neon); border: 1px solid var(--purple); }
-        .camp-role-badge.jogador { background: #001a10; color: var(--green); border: 1px solid #004400; }
-        .camp-card-body { padding: 14px 16px; }
-        .camp-nome { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
-        .camp-meta { font-size: 0.65rem; letter-spacing: 1px; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; }
-        .camp-stats { display: flex; gap: 12px; margin-top: 10px; }
-        .camp-stat { font-size: 0.6rem; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; }
-        .camp-stat span { display: block; font-size: 1rem; font-weight: 700; color: white; font-family: 'Share Tech Mono', monospace; }
+        .camp-role-badge.mestre {
+            background: rgba(42,0,80,0.85); color: var(--purple-neon);
+            border: 1px solid var(--purple);
+            box-shadow: 0 0 8px rgba(var(--tema-glow-rgb),0.3);
+        }
+        .camp-role-badge.jogador {
+            background: rgba(0,26,16,0.85); color: var(--green);
+            border: 1px solid #004400;
+        }
+        .camp-card-body { padding: 16px 18px 18px; }
+        .camp-nome { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; line-height: 1.2; }
+        .camp-meta { font-size: 0.6rem; letter-spacing: 1.5px; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; }
+        .camp-divider {
+            height: 1px; background: linear-gradient(90deg, var(--border), transparent);
+            margin: 12px 0;
+        }
+        .camp-stats { display: flex; gap: 16px; }
+        .camp-stat { font-size: 0.55rem; letter-spacing: 1.5px; color: var(--text-dim); text-transform: uppercase; }
+        .camp-stat span { display: block; font-size: 1.1rem; font-weight: 700; color: white; font-family: 'Share Tech Mono', monospace; line-height: 1.2; }
+        .camp-card-arrow {
+            position: absolute; bottom: 16px; right: 16px;
+            font-size: 0.9rem; color: var(--border); transition: 0.3s;
+            opacity: 0;
+        }
+        .camp-card:hover .camp-card-arrow { opacity: 1; color: var(--purple-neon); transform: translateX(3px); }
 
         /* ── BOTÕES ── */
         .btn-primary-purple {
             background: var(--purple-dark); border: 1px solid var(--purple); color: white;
             font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 2px;
-            font-size: 0.85rem; padding: 10px 24px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+            font-size: 0.85rem; padding: 10px 26px; border-radius: 8px; cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative; overflow: hidden;
         }
-        .btn-primary-purple:hover { background: var(--purple); box-shadow: 0 0 16px var(--purple-glow); }
+        .btn-primary-purple::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 60%);
+        }
+        .btn-primary-purple:hover {
+            background: var(--purple);
+            box-shadow: 0 0 24px var(--purple-glow), 0 0 6px rgba(var(--tema-glow-rgb),0.3);
+            transform: translateY(-1px);
+        }
         .btn-ghost {
             background: transparent; border: 1px solid var(--border); color: var(--text-dim);
             font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 1px;
-            padding: 8px 18px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.2s;
         }
-        .btn-ghost:hover { border-color: var(--purple); color: var(--purple-neon); }
+        .btn-ghost:hover { border-color: var(--purple); color: var(--purple-neon); background: rgba(var(--tema-glow-rgb),0.05); }
         .btn-danger {
             background: transparent; border: 1px solid #3a0000; color: #666;
             font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
@@ -257,104 +305,187 @@
 
         /* ── MODAL ── */
         .modal-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
             z-index: 9000; align-items: center; justify-content: center; padding: 16px;
         }
         .modal-overlay.show { display: flex; }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
         .modal-box {
-            background: #0d0010; border: 1px solid var(--purple); border-radius: 12px;
-            padding: 28px 24px; max-width: 520px; width: 100%;
-            box-shadow: 0 0 50px var(--purple-glow); max-height: 90vh; overflow-y: auto;
+            background: linear-gradient(160deg, #0d0018 0%, #07000f 100%);
+            border: 1px solid var(--purple);
+            border-radius: 16px;
+            padding: 32px 28px; max-width: 540px; width: 100%;
+            box-shadow: 0 0 60px var(--purple-glow), 0 0 120px rgba(var(--tema-glow-rgb),0.08);
+            max-height: 90vh; overflow-y: auto;
+            animation: modalIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+            position: relative;
         }
-        .modal-title { font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 20px; }
-        .form-label { font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .modal-box::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--purple), var(--purple-neon), var(--purple), transparent);
+            border-radius: 16px 16px 0 0;
+        }
+        .modal-title {
+            font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase;
+            color: var(--purple-neon); margin-bottom: 24px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .modal-title::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, var(--border), transparent);
+        }
+        .form-label {
+            font-size: 0.58rem; letter-spacing: 2px; color: var(--text-dim);
+            text-transform: uppercase; display: block; margin-bottom: 6px;
+        }
         .form-input {
-            background: #080010; border: 1px solid var(--border); color: white;
-            font-family: 'Oswald', sans-serif; font-size: 0.9rem; padding: 8px 12px;
-            border-radius: 6px; width: 100%; margin-bottom: 14px; transition: border-color 0.2s;
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white;
+            font-family: 'Oswald', sans-serif; font-size: 0.95rem; padding: 10px 14px;
+            border-radius: 8px; width: 100%; margin-bottom: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .form-input:focus { border-color: var(--purple); outline: none; }
-        .form-textarea { resize: vertical; min-height: 80px; }
-        .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+        .form-input:focus {
+            border-color: var(--purple); outline: none;
+            box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb),0.12);
+        }
+        .form-input::placeholder { color: #333; }
+        .form-textarea { resize: vertical; min-height: 90px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-select {
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: white;
+            font-family: 'Oswald', sans-serif; font-size: 0.95rem; padding: 10px 14px;
+            border-radius: 8px; width: 100%; margin-bottom: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s; cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 14px center;
+        }
+        .form-select:focus { border-color: var(--purple); outline: none; box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb),0.12); }
+        .form-select option { background: #0d0018; }
+        .form-check-label {
+            display: flex; align-items: center; gap: 10px; cursor: pointer;
+            font-size: 0.82rem; color: var(--text-dim); margin-bottom: 16px;
+            padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
+            transition: 0.2s;
+        }
+        .form-check-label:hover { border-color: var(--purple); color: white; background: rgba(var(--tema-glow-rgb),0.04); }
+        .form-check-label input { accent-color: var(--purple); width: 15px; height: 15px; }
+        /* Banner upload na modal */
+        .banner-upload-area {
+            border: 1px dashed var(--border); border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            height: 90px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s; margin-bottom: 16px;
+            overflow: hidden; position: relative; flex-direction: column; gap: 6px;
+        }
+        .banner-upload-area:hover { border-color: var(--purple); background: rgba(var(--tema-glow-rgb),0.04); }
+        .banner-upload-area .hint { font-size: 0.6rem; letter-spacing: 1.5px; color: #444; font-family: 'Share Tech Mono', monospace; text-align: center; }
+        .banner-upload-area .icon-up { font-size: 1.2rem; opacity: 0.4; }
+        .banner-upload-preview { position: absolute; inset: 0; object-fit: cover; width: 100%; height: 100%; opacity: 0.6; }
+        .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
 
         /* ── PÁGINA DE CAMPANHA ── */
         .camp-detalhe { display: none; }
         .camp-detalhe.show { display: block; }
         .camp-header {
-            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-            padding: 24px; margin-bottom: 16px; position: relative; overflow: hidden;
+            background: linear-gradient(145deg, var(--card) 0%, rgba(var(--tema-glow-rgb),0.04) 100%);
+            border: 1px solid var(--border); border-radius: 16px;
+            padding: 28px 28px 24px; margin-bottom: 20px; position: relative; overflow: hidden;
         }
         .camp-header::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--purple), var(--purple-neon), var(--purple));
+            background: linear-gradient(90deg, transparent, var(--purple), var(--purple-neon), var(--purple), transparent);
         }
-        .camp-header-nome { font-size: 2rem; font-weight: 700; margin-bottom: 4px; }
-        .camp-header-desc { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; line-height: 1.6; }
+        .camp-header::after {
+            content: ''; position: absolute; top: -60px; right: -60px;
+            width: 200px; height: 200px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(var(--tema-glow-rgb),0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .camp-header-nome { font-size: 2.2rem; font-weight: 700; margin-bottom: 6px; line-height: 1.1; }
+        .camp-header-desc { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; line-height: 1.7; max-width: 680px; }
 
-        .btn-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+        .btn-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
         .btn-bar-item {
-            background: #0d0010; border: 1px solid var(--border); color: var(--text-dim);
-            font-family: 'Oswald', sans-serif; font-size: 0.75rem; font-weight: 700;
-            letter-spacing: 1px; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+            background: rgba(var(--tema-glow-rgb),0.04); border: 1px solid var(--border); color: var(--text-dim);
+            font-family: 'Oswald', sans-serif; font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 1px; padding: 9px 16px; border-radius: 8px; cursor: pointer; transition: 0.2s;
         }
-        .btn-bar-item:hover { border-color: var(--purple); color: var(--purple-neon); }
-        .btn-bar-item.danger:hover { border-color: var(--red); color: var(--red); }
+        .btn-bar-item:hover { border-color: var(--purple); color: var(--purple-neon); background: rgba(var(--tema-glow-rgb),0.08); }
+        .btn-bar-item.danger:hover { border-color: var(--red); color: var(--red); background: rgba(232,64,64,0.06); }
 
         /* ── LINK DE CONVITE ── */
         .invite-box {
-            background: #080010; border: 1px solid var(--border); border-radius: 8px;
-            padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+            background: rgba(var(--tema-glow-rgb),0.04); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px;
         }
         .invite-url {
-            flex: 1; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;
+            flex: 1; font-family: 'Share Tech Mono', monospace; font-size: 0.72rem;
             color: var(--purple-neon); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
         .btn-copy {
             background: var(--purple-dark); border: 1px solid var(--purple); color: white;
-            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; padding: 5px 12px;
-            border-radius: 4px; cursor: pointer; transition: 0.2s; white-space: nowrap;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; padding: 6px 14px;
+            border-radius: 6px; cursor: pointer; transition: 0.2s; white-space: nowrap;
         }
-        .btn-copy:hover { background: var(--purple); }
+        .btn-copy:hover { background: var(--purple); box-shadow: 0 0 12px var(--purple-glow); }
         .btn-copy.copied { background: #003300; border-color: var(--green); color: var(--green); }
 
         /* ── ABAS ── */
-        .abas { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 6px; margin-bottom: 16px; }
+        .abas {
+            display: flex; gap: 6px;
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+            border-radius: 12px; padding: 6px; margin-bottom: 20px;
+        }
         .aba-btn {
             flex: 1; background: transparent; border: 1px solid transparent; color: var(--text-dim);
-            font-family: 'Oswald', sans-serif; font-size: 0.75rem; font-weight: 700;
-            letter-spacing: 1px; text-transform: uppercase; padding: 8px 4px;
-            border-radius: 6px; cursor: pointer; transition: 0.2s;
+            font-family: 'Oswald', sans-serif; font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 1.5px; text-transform: uppercase; padding: 9px 6px;
+            border-radius: 8px; cursor: pointer; transition: 0.2s;
         }
-        .aba-btn:hover { color: white; background: #1a0033; }
-        .aba-btn.active { background: var(--purple-dark); border-color: var(--purple); color: var(--purple-neon); }
+        .aba-btn:hover { color: white; background: rgba(var(--tema-glow-rgb),0.08); }
+        .aba-btn.active {
+            background: var(--purple-dark); border-color: var(--purple);
+            color: var(--purple-neon);
+            box-shadow: 0 0 12px rgba(var(--tema-glow-rgb),0.2);
+        }
         .aba-panel { display: none; }
         .aba-panel.active { display: block; }
 
         /* ── AGENTES NA CAMPANHA ── */
         .agente-camp-card {
-            background: #0d0010; border: 1px solid var(--border); border-radius: 8px;
-            padding: 12px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; transition: 0.15s;
+            background: rgba(var(--tema-glow-rgb),0.03); border: 1px solid var(--border);
+            border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 14px; transition: 0.2s;
         }
-        .agente-camp-card:hover { border-color: #3a0060; }
-        .agente-camp-foto { width: 48px; height: 48px; border-radius: 6px; border: 1px solid var(--border); object-fit: cover; }
+        .agente-camp-card:hover { border-color: rgba(var(--tema-glow-rgb),0.4); background: rgba(var(--tema-glow-rgb),0.06); }
+        .agente-camp-foto { width: 52px; height: 52px; border-radius: 10px; border: 1px solid var(--border); object-fit: cover; }
         .agente-camp-info { flex: 1; }
-        .agente-camp-nome { font-size: 0.9rem; font-weight: 700; }
-        .agente-camp-meta { font-size: 0.65rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; }
-        .agente-camp-player { font-size: 0.6rem; letter-spacing: 1px; color: #555; font-family: 'Share Tech Mono', monospace; }
+        .agente-camp-nome { font-size: 0.95rem; font-weight: 700; }
+        .agente-camp-meta { font-size: 0.62rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; margin-top: 2px; }
+        .agente-camp-player { font-size: 0.57rem; letter-spacing: 1px; color: #444; font-family: 'Share Tech Mono', monospace; margin-top: 3px; }
 
         /* ── JOGADORES ── */
         .jogador-row {
-            background: #0d0010; border: 1px solid var(--border); border-radius: 6px;
-            padding: 10px 14px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;
+            background: rgba(var(--tema-glow-rgb),0.03); border: 1px solid var(--border);
+            border-radius: 10px; padding: 12px 16px; margin-bottom: 8px;
+            display: flex; align-items: center; justify-content: space-between; transition: 0.2s;
         }
-        .jogador-nome { font-size: 0.85rem; font-weight: 700; }
-        .jogador-meta { font-size: 0.6rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; }
+        .jogador-row:hover { border-color: rgba(var(--tema-glow-rgb),0.3); }
+        .jogador-nome { font-size: 0.88rem; font-weight: 700; }
+        .jogador-meta { font-size: 0.6rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; margin-top: 2px; }
         .jogador-badge {
-            font-size: 0.55rem; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px;
+            font-size: 0.5rem; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 9px;
             border-radius: 99px; font-family: 'Share Tech Mono', monospace;
         }
-        .jogador-badge.mestre { background: #2a0050; color: var(--purple-neon); border: 1px solid var(--purple); }
-        .jogador-badge.jogador { background: #001a10; color: var(--green); border: 1px solid #004400; }
+        .jogador-badge.mestre { background: rgba(42,0,80,0.8); color: var(--purple-neon); border: 1px solid var(--purple); }
+        .jogador-badge.jogador { background: rgba(0,26,16,0.8); color: var(--green); border: 1px solid #004400; }
 
         /* ── VAZIO ── */
         .empty-state {
@@ -1089,7 +1220,7 @@ window.abrirCampanha = async function(id) {
         renderAgentes(snap.docs.map(d => ({ id: d.id, ...d.data() })), isMestre);
     });
     const unsubJ = onSnapshot(collection(db, 'campanhas', id, 'jogadores'), snap => {
-        renderJogadores(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        renderJogadores(snap.docs.map(d => ({ id: d.id, ...d.data() })), isMestre);
     });
     unsubListeners.push(unsubA, unsubJ);
 };
@@ -1122,20 +1253,28 @@ function renderAgentes(agentes, isMestre) {
 }
 
 // ══ RENDER JOGADORES ══
-function renderJogadores(jogadores) {
+function renderJogadores(jogadores, isMestre) {
     const el = document.getElementById('lista-jogadores-camp');
     if (jogadores.length === 0) {
         el.innerHTML = `<div class="empty-state"><div class="icon">👥</div><div>Nenhum jogador ainda.</div></div>`;
         return;
     }
-    el.innerHTML = jogadores.map(j => `
-        <div class="jogador-row">
+    el.innerHTML = jogadores.map(j => {
+        const nomeEsc = (j.nome || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        const btnRemover = (isMestre && j.papel !== 'mestre')
+            ? `<button onclick="removerJogador('${j.uid}','${nomeEsc}')" style="background:none;border:none;color:#444;cursor:pointer;font-size:0.85rem;" title="Remover Player" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#444'">&#x1F5D1;</button>`
+            : '';
+        return `<div class="jogador-row">
             <div>
                 <div class="jogador-nome">${j.nome || 'Agente Anônimo'}</div>
                 <div class="jogador-meta">Entrou: ${j.entradoEm?.toDate ? j.entradoEm.toDate().toLocaleDateString('pt-BR') : '—'}</div>
             </div>
-            <span class="jogador-badge ${j.papel || 'jogador'}">${j.papel === 'mestre' ? '★ MESTRE' : '◆ JOGADOR'}</span>
-        </div>`).join('');
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span class="jogador-badge ${j.papel || 'jogador'}">${j.papel === 'mestre' ? '★ MESTRE' : '◆ JOGADOR'}</span>
+                ${btnRemover}
+            </div>
+        </div>`;
+    }).join('');
 }
 
 // ══ CRIAR CAMPANHA ══
@@ -1322,6 +1461,37 @@ window.removerAgente = async function(agenteDocId) {
         await deleteDoc(doc(db, 'campanhas', campanhaAtual, 'agentes', agenteDocId));
         mostrarToast('🗑 AGENTE REMOVIDO');
     } catch(e) { mostrarToast('⚠ Erro ao remover agente'); }
+};
+
+// ══ REMOVER JOGADOR (PLAYER) ══
+window.removerJogador = async function(playerUid, playerNome) {
+    const ok = await mostrarConfirm(
+        'Remover Player',
+        `Remover "${playerNome}" da campanha? Todos os agentes dele também serão removidos.`,
+        'Remover'
+    );
+    if (!ok) return;
+    try {
+        // 1. Remove do array jogadoresUids na campanha
+        await updateDoc(doc(db, 'campanhas', campanhaAtual), {
+            jogadoresUids: arrayRemove(playerUid)
+        });
+        // 2. Remove o documento do jogador na subcollection jogadores
+        await deleteDoc(doc(db, 'campanhas', campanhaAtual, 'jogadores', playerUid));
+        // 3. Remove todos os agentes do player
+        const snapAgentes = await getDocs(collection(db, 'campanhas', campanhaAtual, 'agentes'));
+        const deletes = [];
+        snapAgentes.forEach(d => {
+            if (d.data().playerUid === playerUid) {
+                deletes.push(deleteDoc(doc(db, 'campanhas', campanhaAtual, 'agentes', d.id)));
+            }
+        });
+        await Promise.all(deletes);
+        mostrarToast(`🗑 PLAYER "${playerNome}" REMOVIDO`);
+    } catch(e) {
+        console.error(e);
+        mostrarToast('⚠ Erro ao remover player');
+    }
 };
 
 // ══ EDITAR CAMPANHA ══

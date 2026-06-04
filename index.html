@@ -1912,40 +1912,53 @@ async function salvarPerfilFirebase(dados) {
     const ref = window._firebaseRef;
     const set = window._firebaseSet;
     try {
-        // Foto (base64 pode ser grande) → nó separado para não limitar o perfil
+        const dadosLimpos = { ...dados };
+
+        // Foto (base64 pode ser grande) → nó separado `fotos_perfil`
         if (dados.foto) {
             const fotoBase64 = dados.foto;
-            const fotoBytes  = Math.round(fotoBase64.length * 0.75); // bytes aproximados
+            const fotoBytes  = Math.round(fotoBase64.length * 0.75);
             if (fotoBytes > 9 * 1024 * 1024) {
-                // Acima de 9MB: Firebase rejeitaria — avisa o usuário
-                alert('A imagem é grande demais para sincronizar entre dispositivos (máx ~9MB). Tente uma imagem menor.');
+                alert('A foto é grande demais para sincronizar entre dispositivos (máx ~9MB). Tente uma imagem menor.');
                 return;
             }
             await set(ref(window._firebaseDB, `fotos_perfil/${u}`), fotoBase64);
-            // Salva no perfil apenas uma flag, não o base64 inteiro
-            const dadosSemFoto = { ...dados };
-            delete dadosSemFoto.foto;
-            dadosSemFoto.temFoto = true;
-            dadosSemFoto.fotoAnimada = !!dados.fotoAnimada;
-            await set(ref(window._firebaseDB, `perfis/${u}`), dadosSemFoto);
-        } else {
-            await set(ref(window._firebaseDB, `perfis/${u}`), dados);
+            delete dadosLimpos.foto;
+            dadosLimpos.temFoto = true;
+            dadosLimpos.fotoAnimada = !!dados.fotoAnimada;
         }
+
+        // Banner (base64 pode ser grande) → nó separado `banners_perfil`
+        if (dados.banner) {
+            const bannerBase64 = dados.banner;
+            const bannerBytes  = Math.round(bannerBase64.length * 0.75);
+            if (bannerBytes > 9 * 1024 * 1024) {
+                alert('O banner é grande demais para sincronizar entre dispositivos (máx ~9MB). Tente uma imagem menor.');
+                return;
+            }
+            await set(ref(window._firebaseDB, `banners_perfil/${u}`), bannerBase64);
+            delete dadosLimpos.banner;
+            dadosLimpos.temBanner = true;
+            dadosLimpos.bannerAnimado = !!dados.bannerAnimado;
+        }
+
+        await set(ref(window._firebaseDB, `perfis/${u}`), dadosLimpos);
     } catch(e) { console.warn('Perfil firebase erro:', e); }
 }
 
 async function carregarPerfilFirebase(usuario) {
     if (!window._firebaseDB || !window._firebaseGet || !window._firebaseRef) return null;
     try {
-        // Busca perfil e foto em paralelo (foto fica em nó separado por ser grande)
-        const [snapPerfil, snapFoto] = await Promise.all([
+        // Busca perfil, foto e banner em paralelo (cada um em nó separado por serem grandes)
+        const [snapPerfil, snapFoto, snapBanner] = await Promise.all([
             window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis/${usuario}`)),
-            window._firebaseGet(window._firebaseRef(window._firebaseDB, `fotos_perfil/${usuario}`))
+            window._firebaseGet(window._firebaseRef(window._firebaseDB, `fotos_perfil/${usuario}`)),
+            window._firebaseGet(window._firebaseRef(window._firebaseDB, `banners_perfil/${usuario}`))
         ]);
         if (!snapPerfil.exists()) return null;
         const perfil = snapPerfil.val();
-        // Reanexar a foto ao objeto de perfil para o restante do código funcionar normalmente
-        if (snapFoto.exists()) perfil.foto = snapFoto.val();
+        if (snapFoto.exists())   perfil.foto   = snapFoto.val();
+        if (snapBanner.exists()) perfil.banner  = snapBanner.val();
         return perfil;
     } catch(e) { return null; }
 }
@@ -2002,9 +2015,15 @@ async function renderPainelPerfil(usuario, perfil) {
         });
     }
 
-    // Banner
+    // Banner — prioriza Firebase, depois cache local (IndexedDB)
     const bannerKey = getPrefix() + 'banner_perfil';
-    const bannerData = (await _imgDB.get(bannerKey)) || perfil.banner || null;
+    const bannerFirebase = perfil.banner || null;
+    const bannerLocal    = await _imgDB.get(bannerKey) || null;
+    const bannerData     = bannerFirebase || bannerLocal;
+    // Sincroniza cache local se o Firebase tem banner mais recente
+    if (bannerFirebase && bannerFirebase !== bannerLocal) {
+        await _imgDB.set(bannerKey, bannerFirebase);
+    }
     if (bannerData) {
         _aplicarBannerNaUI(bannerData, !!perfil.bannerAnimado);
     } else {
@@ -2220,14 +2239,15 @@ function cancelarBannerCrop() {
 
 async function _salvarBannerBase64(base64, animado) {
     const perfil = getPerfilLocal();
-    // Salva a imagem grande no IndexedDB, não no localStorage
+    // Salva a imagem grande no IndexedDB (cache local rápido)
     const bannerKey = getPrefix() + 'banner_perfil';
     await _imgDB.set(bannerKey, base64);
-    // Salva apenas os metadados (sem o base64) no perfil local
-    perfil.banner = null; // não guarda no localStorage
+    // Atualiza metadados no perfil local (sem o base64 para não sobrecarregar localStorage)
     perfil.bannerAnimado = !!animado;
     perfil.temBanner = true;
+    delete perfil.banner; // não guarda base64 no localStorage
     setPerfilLocal(perfil);
+    // Salva no Firebase com o base64 real (salvarPerfilFirebase vai mover para nó separado)
     await salvarPerfilFirebase({ ...perfil, banner: base64, bannerAnimado: !!animado });
     _aplicarBannerNaUI(base64, !!animado);
 }
