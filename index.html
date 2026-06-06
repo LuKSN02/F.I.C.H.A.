@@ -114,6 +114,22 @@
     .navbar { overflow: visible !important; }
     .navbar-collapse { overflow: visible !important; }
     .nav-link:hover { color: var(--tema-primary-light) !important; }
+
+    /* ── CENTRALIZAÇÃO VERDADEIRA DOS LINKS ──
+       Em desktop (lg+): o collapse fica em posição absoluta,
+       centralizado na navbar, sem depender do espaço restante. */
+    @media (min-width: 992px) {
+        #navbarNav {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            flex-grow: 0 !important;
+        }
+        #navbarNav .navbar-nav {
+            flex-direction: row;
+        }
+    }
     .text-purple { color: var(--tema-primary); }
     .border-purple { border: 3px solid var(--tema-primary-dark); }
 
@@ -1143,8 +1159,8 @@ body { transition: background 0.6s ease; }
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-                <div class="navbar-nav">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav mx-auto">
                     <a class="nav-link px-3" href="#" onclick="mostrarAgentes()">Agentes</a>
                     <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
                     <a class="nav-link px-3" href="homebrew.html">Homebrew</a>

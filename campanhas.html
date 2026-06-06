@@ -188,6 +188,22 @@
             display: flex; flex-direction: column;
         }
         .custom-nav { background: black; border-bottom: 2px solid #222; position: relative; z-index: 1040; overflow: visible; }
+
+        /* ── CENTRALIZAÇÃO VERDADEIRA DOS LINKS ──
+           Em desktop (lg+): o collapse fica em posição absoluta,
+           centralizado na navbar, sem depender do espaço restante. */
+        @media (min-width: 992px) {
+            #navbarNav {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                width: auto;
+                flex-grow: 0 !important;
+            }
+            #navbarNav .navbar-nav {
+                flex-direction: row;
+            }
+        }
         .nav-link:hover { color: #ff0000 !important; }
 
         /* ── ESTADO DE CARREGAMENTO ── */
@@ -884,8 +900,8 @@ body { transition: background 0.5s ease; }
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-            <div class="navbar-nav">
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav mx-auto">
                 <a class="nav-link px-3" href="index.html?view=agentes">Agentes</a>
                 <a class="nav-link px-3 active" href="campanhas.html">Campanhas</a>
                 <a class="nav-link px-3" href="homebrew.html">Homebrew</a>
@@ -984,6 +1000,7 @@ body { transition: background 0.5s ease; }
 
         <!-- Barra de ações do mestre -->
         <div class="btn-bar" id="btn-bar-mestre" style="display:none;">
+            <button class="btn-bar-item" id="btn-tabletop-mestre" onclick="abrirTabletop()" style="border-color:var(--purple);color:var(--purple-neon);background:rgba(var(--tema-glow-rgb),0.12);font-weight:900;letter-spacing:2px;">🗺 Tabletop</button>
             <button class="btn-bar-item" onclick="copiarConvite()">🔗 Copiar Link de Convite</button>
             <button class="btn-bar-item" onclick="abrirModalVincularAgente()">+ Vincular meu Agente</button>
             <button class="btn-bar-item" onclick="abrirModalEditarCamp()">✎ Editar Campanha</button>
@@ -992,6 +1009,7 @@ body { transition: background 0.5s ease; }
 
         <!-- Barra de ações do jogador -->
         <div class="btn-bar" id="btn-bar-jogador" style="display:none;">
+            <button class="btn-bar-item" id="btn-tabletop-jogador" onclick="abrirTabletop()" style="border-color:var(--purple);color:var(--purple-neon);background:rgba(var(--tema-glow-rgb),0.12);font-weight:900;letter-spacing:2px;">🗺 Tabletop</button>
             <button class="btn-bar-item" onclick="abrirModalVincularAgente()">+ Vincular meu Agente</button>
             <button class="btn-bar-item danger" onclick="sairCampanha()">🚪 Sair da Campanha</button>
         </div>
@@ -1223,6 +1241,12 @@ window.abrirCampanha = async function(id) {
         renderJogadores(snap.docs.map(d => ({ id: d.id, ...d.data() })), isMestre);
     });
     unsubListeners.push(unsubA, unsubJ);
+};
+
+// ══ ABRIR TABLETOP ══
+window.abrirTabletop = function() {
+    if (!campanhaAtual) { mostrarToast('⚠ Selecione uma campanha primeiro'); return; }
+    window.location.href = `tabletop.html?campanha=${campanhaAtual}`;
 };
 
 // ══ RENDER AGENTES ══

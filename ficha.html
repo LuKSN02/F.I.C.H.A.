@@ -194,8 +194,25 @@
         }
 
         .custom-nav { background: black; border-bottom: 2px solid #222; }
+        .navbar { overflow: visible !important; }
+        .navbar-collapse { overflow: visible !important; }
         .nav-link { font-weight: 700; }
         .nav-link:hover { color: #ff0000 !important; }
+        /* ── CENTRALIZAÇÃO VERDADEIRA DOS LINKS ──
+           Em desktop (lg+): o collapse fica em posição absoluta,
+           centralizado na navbar, sem depender do espaço restante. */
+        @media (min-width: 992px) {
+            #navbarNav {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                width: auto;
+                flex-grow: 0 !important;
+            }
+            #navbarNav .navbar-nav {
+                flex-direction: row;
+            }
+        }
 
         .ficha-wrapper {
             display: grid;
@@ -1239,7 +1256,7 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+    <div class="collapse navbar-collapse" id="navbarNav">
       <div class="navbar-nav">
         <a class="nav-link px-3" href="index.html?view=agentes">Agentes</a>
         <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
@@ -6207,7 +6224,11 @@ function rituaisRender() {
             <button class="ritual-btn-remover" data-remover="${safeNome}" style="background:none;border:none;color:var(--tema-primary-light,#7ab3f5);font-size:0.75rem;font-family:'Oswald',sans-serif;font-weight:600;padding:0;cursor:pointer;letter-spacing:0.5px;">Remover</button>
           </div>
         </div>` : '';
-        return `<div class="ritual-card-f"><div class="ritual-card-hdr" data-toggle="${safeNome}"><div class="ritual-hdr-esq"><div class="ritual-card-nome">${r.nome}</div><div class="ritual-badges">${r.elem ? `<span class="rbadge rbadge-${eu}">${r.elem}</span>` : ''}${r.circulo ? `<span class="rbadge-circulo rbadge-circulo-${r.circulo}">⬡ ${{1:'1º Círculo',2:'2º Círculo',3:'3º Círculo',4:'4º Círculo'}[r.circulo]||r.circulo+'º Círculo'} · NEX ${{1:'5%',2:'25%',3:'55%',4:'85%'}[r.circulo]||''}</span>` : ''}${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}</div></div><div class="ritual-toggle">${open ? '▲' : '▼'}</div></div>${bodyHtml}</div>`;
+        const CIRC_LABEL_CARD = {1:'1º Círculo · NEX 5%',2:'2º Círculo · NEX 25%',3:'3º Círculo · NEX 55%',4:'4º Círculo · NEX 85%'};
+        const circuloBadgeCard = r.circulo
+            ? `<span class="rbadge-circulo rbadge-circulo-${r.circulo}">⬡ ${CIRC_LABEL_CARD[r.circulo]||r.circulo+'º Círculo'}</span>`
+            : `<span class="rbadge-circulo" style="background:#1a1a1a;color:#666;border:1px solid #333;">⬡ Círculo não definido</span>`;
+        return `<div class="ritual-card-f"><div class="ritual-card-hdr" data-toggle="${safeNome}"><div class="ritual-hdr-esq"><div class="ritual-card-nome">${r.nome}</div><div class="ritual-badges">${r.elem ? `<span class="rbadge rbadge-${eu}">${r.elem}</span>` : ''}${circuloBadgeCard}${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}</div></div><div class="ritual-toggle">${open ? '▲' : '▼'}</div></div>${bodyHtml}</div>`;
     };
 
     let html = '';
@@ -6469,7 +6490,9 @@ function renderModalRituais() {
             // Badge de círculo
             const CIRC_LABEL = { 1:'1º Círculo · NEX 5%', 2:'2º Círculo · NEX 25%', 3:'3º Círculo · NEX 55%', 4:'4º Círculo · NEX 85%' };
             const CIRC_COR   = { 1:'#4caf50', 2:'#42a5f5', 3:'#ff9800', 4:'#e040fb' };
-            const circuloBadge = r.circulo ? `<span class="rbadge-circulo rbadge-circulo-${r.circulo}" style="margin-left:2px;">⬡ ${CIRC_LABEL[r.circulo] || r.circulo + 'º Círculo'}</span>` : '';
+            const circuloBadge = r.circulo
+                ? `<span class="rbadge-circulo rbadge-circulo-${r.circulo}" style="margin-left:2px;">⬡ ${CIRC_LABEL[r.circulo] || r.circulo + 'º Círculo'}</span>`
+                : `<span class="rbadge-circulo" style="margin-left:2px;background:#1a1a1a;color:#666;border:1px solid #333;">⬡ Círculo não definido</span>`;
             // Guarda dados separadamente para evitar problemas de escape
             window._mritDescData[itemId] = {
                 desc: r.desc || '',
