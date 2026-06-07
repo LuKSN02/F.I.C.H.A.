@@ -548,8 +548,11 @@ html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); colo
 /* Cabeçalho com nome + PV — topo esquerdo */
 #ft-header {
   position: absolute;
-  top: 20px; left: 24px;
-  z-index: 10;
+  top: 0; left: 0;
+  right: 45%;   /* não sobrepõe o personagem */
+  z-index: 11;
+  padding: 20px 20px 24px 24px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 70%, transparent 100%);
   opacity: 0;
   transform: translateY(-10px);
   transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
@@ -588,21 +591,22 @@ html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); colo
 #ft-cards-panel {
   position: absolute;
   left: 24px;
-  top: 50%; transform: translateY(-50%);
+  top: 0; bottom: 0;
   width: 290px;
   z-index: 10;
   display: flex; flex-direction: column; gap: 5px;
-  max-height: 76vh;
   overflow-y: auto;
   overflow-x: hidden;
+  padding-top: 110px;  /* espaço para o header (nome + sub + hp) */
+  padding-bottom: 20px;
   opacity: 0;
   transition: opacity 0.38s ease 0.18s, transform 0.4s ease 0.18s;
-  transform: translateY(-50%) translateX(-18px);
+  transform: translateX(-18px);
   pointer-events: all;
 }
 #ft-overlay.ft-show #ft-cards-panel {
   opacity: 1;
-  transform: translateY(-50%) translateX(0);
+  transform: translateX(0);
 }
 #ft-cards-panel::-webkit-scrollbar { width: 3px; }
 #ft-cards-panel::-webkit-scrollbar-track { background: transparent; }
@@ -1527,10 +1531,28 @@ input[type="color"] {
         <option value="hex">Hexagonal</option>
         <option value="none">Sem Grade</option>
       </select>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:10px;color:var(--text3);white-space:nowrap;">Tamanho</span>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <span style="font-size:10px;color:var(--text3);white-space:nowrap;">Célula</span>
         <input type="range" id="grid-size" min="30" max="120" value="60" style="flex:1;" oninput="setCellSize(parseInt(this.value))">
         <span id="grid-size-label" style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;width:26px;text-align:right;">60</span>
+      </div>
+
+      <div class="ob-section" style="margin-top:4px;">Tamanho do Mapa</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <span style="font-size:10px;color:var(--text3);white-space:nowrap;">Largura</span>
+        <input type="range" id="board-cols" min="10" max="100" value="30" style="flex:1;" oninput="setBoardSize(parseInt(this.value), boardRows)">
+        <span id="board-cols-label" style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;width:30px;text-align:right;">30</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <span style="font-size:10px;color:var(--text3);white-space:nowrap;">Altura</span>
+        <input type="range" id="board-rows" min="10" max="100" value="30" style="flex:1;" oninput="setBoardSize(boardCols, parseInt(this.value))">
+        <span id="board-rows-label" style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;width:30px;text-align:right;">30</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:2px;">
+        <button class="ob-btn" style="flex:1;font-size:10px;" onclick="setBoardSize(20,20)">20×20</button>
+        <button class="ob-btn" style="flex:1;font-size:10px;" onclick="setBoardSize(30,30)">30×30</button>
+        <button class="ob-btn" style="flex:1;font-size:10px;" onclick="setBoardSize(50,50)">50×50</button>
+        <button class="ob-btn" style="flex:1;font-size:10px;" onclick="setBoardSize(100,100)">100×100</button>
       </div>
 
       <div class="ob-section" style="margin-top:4px;">Névoa de Guerra</div>
@@ -1865,6 +1887,8 @@ let canvas, ctx, drawCanvas, drawCtx;
 let camX = 0, camY = 0, camZoom = 1;
 let cellSize = 60;
 let gridType = 'square';
+let boardCols = 30;  // largura do mapa em células
+let boardRows = 30;  // altura do mapa em células
 let mapImg = null;
 let mapImgData = null;
 
@@ -1978,6 +2002,18 @@ function conectarFirebase() {
     }
     if (d.gridType !== undefined) { gridType = d.gridType; document.getElementById('grid-type').value = gridType; }
     if (d.cellSize !== undefined) { cellSize = d.cellSize; document.getElementById('grid-size').value = cellSize; document.getElementById('grid-size-label').textContent = cellSize; }
+    if (d.boardCols !== undefined) {
+      boardCols = d.boardCols;
+      const el = document.getElementById('board-cols');
+      if (el) el.value = boardCols;
+      document.getElementById('board-cols-label').textContent = boardCols;
+    }
+    if (d.boardRows !== undefined) {
+      boardRows = d.boardRows;
+      const el = document.getElementById('board-rows');
+      if (el) el.value = boardRows;
+      document.getElementById('board-rows-label').textContent = boardRows;
+    }
     renderAll();
   });
 
@@ -2038,15 +2074,21 @@ function renderAll() {
   ctx.save();
   ctx.translate(camX, camY);
   ctx.scale(camZoom, camZoom);
+  const mapW = boardCols * cellSize;
+  const mapH = boardRows * cellSize;
   if (animMapType) {
     // Just draw grid/fog/tokens on transparent canvas; video is behind
     ctx.fillStyle = 'transparent';
   } else if (mapImg) {
-    ctx.drawImage(mapImg, 0, 0, mapImg.width, mapImg.height);
+    ctx.drawImage(mapImg, 0, 0, mapW, mapH);
   } else {
     ctx.fillStyle = '#0d0d0e';
-    ctx.fillRect(0, 0, 4000, 4000);
+    ctx.fillRect(0, 0, mapW, mapH);
   }
+  // Borda do mapa
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(0, 0, mapW, mapH);
   renderGrid(); renderFog(); renderTokens();
   ctx.restore();
   renderDrawings();
@@ -2065,17 +2107,13 @@ function renderAll() {
 
 function renderGrid() {
   if (gridType === 'none') return;
-  const W = canvas.width/camZoom + cellSize*2;
-  const H = canvas.height/camZoom + cellSize*2;
-  const offX = (-camX/camZoom) - cellSize;
-  const offY = (-camY/camZoom) - cellSize;
+  const mapW = boardCols * cellSize;
+  const mapH = boardRows * cellSize;
   ctx.strokeStyle = 'rgba(255,255,255,0.055)';
   ctx.lineWidth = 0.5;
   if (gridType === 'square') {
-    const startX = Math.floor(offX/cellSize)*cellSize;
-    const startY = Math.floor(offY/cellSize)*cellSize;
-    for (let x = startX; x < offX+W; x += cellSize) { ctx.beginPath(); ctx.moveTo(x,offY); ctx.lineTo(x,offY+H); ctx.stroke(); }
-    for (let y = startY; y < offY+H; y += cellSize) { ctx.beginPath(); ctx.moveTo(offX,y); ctx.lineTo(offX+W,y); ctx.stroke(); }
+    for (let x = 0; x <= boardCols; x++) { ctx.beginPath(); ctx.moveTo(x*cellSize, 0); ctx.lineTo(x*cellSize, mapH); ctx.stroke(); }
+    for (let y = 0; y <= boardRows; y++) { ctx.beginPath(); ctx.moveTo(0, y*cellSize); ctx.lineTo(mapW, y*cellSize); ctx.stroke(); }
   } else if (gridType === 'hex') {
     const r = cellSize/2, h = Math.sqrt(3)*r;
     for (let row = -1; row < (H/h)+2; row++) {
@@ -2412,14 +2450,28 @@ window.setTool = function(tool) {
   document.querySelectorAll('.ob-tool[id^="tool-"]').forEach(el => el.classList.remove('active'));
   document.getElementById('tool-'+tool)?.classList.add('active');
   const wrap = document.getElementById('tt-canvas-wrap');
+  const keep3d   = wrap.classList.contains('modo3d-on');
+  const keepAnim = wrap.classList.contains('tt-anim-active');
   wrap.className = 'ob-canvas-wrap';
+  if (keep3d)   wrap.classList.add('modo3d-on');
+  if (keepAnim) wrap.classList.add('tt-anim-active');
   const cursors = {draw:'draw',eraser:'eraser',ping:'ping-mode',fog:'fog-mode',unfog:'fog-reveal'};
   if (cursors[tool]) wrap.classList.add(cursors[tool]);
 };
 
-window.zoomIn  = () => { camZoom=Math.min(4,camZoom*1.2); renderAll(); };
-window.zoomOut = () => { camZoom=Math.max(0.2,camZoom/1.2); renderAll(); };
-window.resetView = () => { camX=0; camY=0; camZoom=1; renderAll(); };
+window.zoomIn  = () => {
+  if (modo3dAtivo) { three.camDist = Math.max(3, three.camDist * 0.82); }
+  else { camZoom = Math.min(4, camZoom * 1.2); renderAll(); }
+};
+window.zoomOut = () => {
+  if (modo3dAtivo) { three.camDist = Math.min(50, three.camDist * 1.22); }
+  else { camZoom = Math.max(0.2, camZoom / 1.2); renderAll(); }
+};
+window.resetView = () => {
+  if (modo3dAtivo) {
+    three.camDist = 18; three.camElev = Math.PI / 5.5; three.orbitAngle = 0;
+  } else { camX = 0; camY = 0; camZoom = 1; renderAll(); }
+};
 
 // ===== TOKEN HELPERS =====
 function getTokenAtWorld(wx, wy) {
@@ -3101,31 +3153,67 @@ window.fecharFichaToken = function() {
 
 // ===== MAP =====
 window.uploadMapa = function(input) {
-  const file=input.files[0]; if (!file) return;
-  if (file.type.startsWith('video/')||file.type==='image/gif') {
-    // delegate to animated handler
-    const reader=new FileReader();
-    reader.onload = e => {
-      const isVideo = file.type.startsWith('video/');
-      ativarMapaAnimado(e.target.result, isVideo?'video':'gif');
-      mostrarToast('🎬 Mapa animado carregado!');
-    };
-    reader.readAsDataURL(file);
-  } else {
-    const reader=new FileReader();
-    reader.onload = e => { desativarMapaAnimado(); salvarEstado({mapUrl:e.target.result, animMapUrl:'', animMapType:''}); mostrarToast('🗺 Mapa carregado!'); };
-    reader.readAsDataURL(file);
+  const file = input.files[0]; if (!file) return;
+
+  if (file.type.startsWith('video/') || file.type === 'image/gif') {
+    // Mapa animado — usa blob URL local, sincroniza via Firebase
+    if (animMapBlobUrl) URL.revokeObjectURL(animMapBlobUrl);
+    animMapBlobUrl = URL.createObjectURL(file);
+    ativarMapaAnimado(animMapBlobUrl, file.type.startsWith('video/') ? 'video' : 'gif');
+    mostrarToast('🎬 Mapa animado carregado!');
+    return;
   }
+
+  // Imagem estática — comprime para JPEG antes de salvar
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      // Comprime para JPEG 80% para caber no Firebase (max ~2MB)
+      const MAX = 2048;
+      let w = img.width, h = img.height;
+      const ratio = Math.min(1, MAX / Math.max(w, h));
+      w = Math.round(w * ratio); h = Math.round(h * ratio);
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      const cx = cv.getContext('2d');
+      cx.drawImage(img, 0, 0, w, h);
+      const compressed = cv.toDataURL('image/jpeg', 0.82);
+
+      // Aplica localmente imediatamente (sem esperar Firebase)
+      desativarMapaAnimado();
+      mapImg = img;
+      renderAll();
+      if (modo3dAtivo && three.scene) _criarChao3D();
+      mostrarToast('🗺 Mapa carregado!');
+
+      // Tenta sincronizar via Firebase (pode falhar se > limite)
+      salvarEstado({ mapUrl: compressed, animMapUrl: '', animMapType: '' })
+        .catch(() => mostrarToast('⚠️ Mapa grande demais para sincronizar — só visível localmente.'));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 };
 window.setMapaURL = function() {
   const url=document.getElementById('map-url-input').value.trim(); if (!url) return;
   salvarEstado({mapUrl:url}); mostrarToast('🗺 Mapa atualizado!');
 };
 function carregarMapa(url) {
-  if (!url) { mapImg=null; renderAll(); return; }
-  const img=new Image(); img.crossOrigin='anonymous';
-  img.onload=()=>{mapImg=img;renderAll();}; img.onerror=()=>{mapImg=null;renderAll();};
-  img.src=url;
+  if (!url) {
+    mapImg = null;
+    renderAll();
+    if (modo3dAtivo && three.scene) _criarChao3D();
+    return;
+  }
+  const img = new Image(); img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    mapImg = img;
+    renderAll();
+    if (modo3dAtivo && three.scene) _criarChao3D();
+  };
+  img.onerror = () => { mapImg = null; renderAll(); mostrarToast('⚠️ Erro ao carregar mapa.'); };
+  img.src = url;
 }
 function renderMapPresets() {
   document.getElementById('map-presets').innerHTML = MAPAS_PRESET.map((m,i)=>`
@@ -3139,10 +3227,26 @@ function renderMapPresets() {
 window.usarMapaPreset = function(i) {
   salvarEstado({mapUrl:MAPAS_PRESET[i].url}); mostrarToast(`🗺 ${MAPAS_PRESET[i].nome}!`);
 };
-window.setGridType = function(val) { gridType=val; salvarEstado({gridType:val}); renderAll(); };
+window.setGridType = function(val) { gridType=val; salvarEstado({gridType:val}); renderAll(); if (modo3dAtivo && three.scene) _criarChao3D(); };
 window.setCellSize = function(val) {
   cellSize=val; document.getElementById('grid-size-label').textContent=val;
   salvarEstado({cellSize:val}); renderAll(); atualizarSceneLabel();
+  if (modo3dAtivo && three.scene) _criarChao3D();
+};
+window.setBoardSize = function(cols, rows) {
+  boardCols = Math.max(10, Math.min(100, cols));
+  boardRows = Math.max(10, Math.min(100, rows));
+  // Atualiza sliders e labels
+  const cEl = document.getElementById('board-cols');
+  const rEl = document.getElementById('board-rows');
+  if (cEl) cEl.value = boardCols;
+  if (rEl) rEl.value = boardRows;
+  document.getElementById('board-cols-label').textContent = boardCols;
+  document.getElementById('board-rows-label').textContent = boardRows;
+  salvarEstado({ boardCols, boardRows });
+  renderAll();
+  if (modo3dAtivo && three.scene) _criarChao3D();
+  mostrarToast(`🗺 Mapa: ${boardCols}×${boardRows} células`);
 };
 async function salvarEstado(data) {
   if (!isMestre) return;
@@ -3174,9 +3278,13 @@ async function sincronizarDrawings() {
 }
 window.clearDrawings = async function() {
   if (!isMestre) return;
-  drawings=[];
-  await set(ref(rtdb,`tabletop/${campanhaId}/drawings`),{});
-  renderDrawings(); mostrarToast('Desenhos limpos.');
+  drawings = [];
+  await set(ref(rtdb, `tabletop/${campanhaId}/drawings`), {});
+  renderDrawings();
+  // Limpa overlay 3D se existir
+  const ov = document.getElementById('canvas3d-overlay');
+  if (ov) ov.getContext('2d').clearRect(0, 0, ov.width, ov.height);
+  mostrarToast('Desenhos limpos.');
 };
 
 // ===== ANIMATED MAP =====
@@ -3207,9 +3315,17 @@ function ativarMapaAnimado(url, type) {
   // Remove static map
   mapImg = null;
   if (type === 'video') {
-    vidEl.src = url; vidEl.style.display = 'block'; vidEl.play().catch(()=>{});
+    vidEl.src = url; vidEl.style.display = 'block';
+    vidEl.play().catch(()=>{});
+    // Para o modo 3D, recria o chão com VideoTexture quando o vídeo estiver pronto
+    if (modo3dAtivo && three.scene) {
+      vidEl.onloadeddata = () => { _criarChao3D(); vidEl.onloadeddata = null; };
+    }
   } else {
     gifEl.src = url; gifEl.style.display = 'block';
+    if (modo3dAtivo && three.scene) {
+      gifEl.onload = () => { _criarChao3D(); gifEl.onload = null; };
+    }
   }
   sincronizarAnimMap(url, type);
   renderAll();
@@ -3337,8 +3453,12 @@ window.setTool = function(tool) {
   document.getElementById('tool-'+tool)?.classList.add('active');
   document.getElementById('rtool-'+tool)?.classList.add('active');
   const wrap = document.getElementById('tt-canvas-wrap');
+  // Preserva modo3d-on e tt-anim-active ao trocar ferramenta
+  const keep3d   = wrap.classList.contains('modo3d-on');
+  const keepAnim = wrap.classList.contains('tt-anim-active');
   wrap.className = 'ob-canvas-wrap';
-  if (animMapType) wrap.classList.add('tt-anim-active');
+  if (keep3d)   wrap.classList.add('modo3d-on');
+  if (keepAnim) wrap.classList.add('tt-anim-active');
   const cursors = {draw:'draw',eraser:'eraser',ping:'ping-mode',fog:'fog-mode',unfog:'fog-reveal',pan:'pan-mode'};
   if (cursors[tool]) wrap.classList.add(cursors[tool]);
 };
@@ -4022,13 +4142,15 @@ function _criarChao3D() {
   if (three.floorMesh) { three.scene.remove(three.floorMesh); three.floorMesh.geometry.dispose(); }
 
   const sc = cellSize / 60;
-  const boardW = 40 * sc, boardH = 40 * sc;
+  const boardW = boardCols * sc;
+  const boardH = boardRows * sc;
+  const segs = Math.min(Math.max(boardCols, boardRows), 80); // max 80 segmentos para GPU
 
   const tex = criarTexturaDoMapa();
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  if (mapImg) { tex.repeat.set(1, 1); } else { tex.repeat.set(8, 8); }
+  if (mapImg) { tex.repeat.set(1, 1); } else { tex.repeat.set(boardCols / 5, boardRows / 5); }
 
-  const geo = new THREE.PlaneGeometry(boardW, boardH, 40, 40);
+  const geo = new THREE.PlaneGeometry(boardW, boardH, segs, segs);
   const mat = new THREE.MeshStandardMaterial({
     map: tex, roughness: 0.85, metalness: 0.05,
     color: 0xdddddd
@@ -4278,6 +4400,26 @@ function _setupEventos3D(canvas3d) {
   let mouseDownOnToken = false;
   let mouseMoved = false;
   let mouseDownX = 0, mouseDownY = 0;
+  let draw3dPath = null;       // caminho de desenho ativo no 3D
+  let measure3dStart = null;   // ponto inicial de medição no 3D
+  let isDrawing3D = false;
+  // Canvas 2D overlay para desenhos/medição em cima do canvas3d
+  let overlayCanvas = document.getElementById('canvas3d-overlay');
+  if (!overlayCanvas) {
+    overlayCanvas = document.createElement('canvas');
+    overlayCanvas.id = 'canvas3d-overlay';
+    overlayCanvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:5;';
+    canvas3d.parentElement.appendChild(overlayCanvas);
+  }
+  const oc = overlayCanvas.getContext('2d');
+  function resizeOverlay() {
+    overlayCanvas.width  = canvas3d.clientWidth;
+    overlayCanvas.height = canvas3d.clientHeight;
+  }
+  resizeOverlay();
+  new ResizeObserver(resizeOverlay).observe(canvas3d);
+
+  function clearOverlay() { oc.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height); }
 
   // Inicializa elevação
   if (three.camElev === undefined) three.camElev = Math.PI / 5.5;
@@ -4291,28 +4433,64 @@ function _setupEventos3D(canvas3d) {
     mouseDownOnToken = false;
     e.preventDefault();
 
-    if (e.button === 0 && !e.altKey && !e.ctrlKey) {
-      // Tenta selecionar/arrastar token
-      const hit = _raycastTokens3D(e);
-      if (hit) {
-        selectedTokenId = hit;
-        mouseDownOnToken = true;
-        three.draggingTokenId = hit;
-        three.isDragging = false;
-        three.isPanning = false;
-        canvas3d.style.cursor = 'grabbing';
-        renderTokenList();
-      } else {
-        // Órbita horizontal com botão esquerdo
-        three.isDragging = true;
-        canvas3d.style.cursor = 'grabbing';
+    const tool = activeTool;
+
+    // ── Ferramentas que precisam de coordenada no chão 3D ──
+    if (['draw','eraser','fog','unfog','ping','measure','text'].includes(tool) && e.button === 0) {
+      const wp = _raycastFloor(e);
+      if (!wp) return;
+      const sc = cellSize / 60;
+      const wx = wp.x / sc * cellSize;
+      const wy = wp.z / sc * cellSize;
+
+      if (tool === 'draw') {
+        isDrawing3D = true;
+        draw3dPath = { type:'path', color:brushColor, size:brushSize, points:[{x:wx,y:wy}] };
+        return;
       }
-    } else if (e.button === 2 || e.button === 1) {
-      // Pan com botão direito ou meio
-      three.isPanning = true;
-      canvas3d.style.cursor = 'move';
-    } else if (e.altKey && e.button === 0) {
-      // Alt+LMB = pan
+      if (tool === 'eraser') {
+        const threshold = cellSize * 0.35;
+        drawings = drawings.filter(d => !(d.type==='path' && d.points.some(p=>Math.hypot(p.x-wx,p.y-wy)<threshold)));
+        sincronizarDrawings(); renderDrawings();
+        return;
+      }
+      if (tool === 'measure') {
+        measure3dStart = { x: e.clientX, y: e.clientY, wx, wy };
+        return;
+      }
+      if (tool === 'ping') {
+        enviarPing(wx, wy); return;
+      }
+      if (tool === 'fog') {
+        isDrawing3D = true;
+        cobrirCelula(Math.floor(wx/cellSize), Math.floor(wy/cellSize)); return;
+      }
+      if (tool === 'unfog') {
+        isDrawing3D = true;
+        revelarCelula(Math.floor(wx/cellSize), Math.floor(wy/cellSize)); return;
+      }
+      return; // text handled on dblclick
+    }
+
+    // ── Ferramentas de navegação / seleção ──
+    if (e.button === 0 && !e.altKey && !e.ctrlKey && (tool === 'select' || tool === 'pan')) {
+      if (tool === 'select') {
+        const hit = _raycastTokens3D(e);
+        if (hit) {
+          selectedTokenId = hit;
+          mouseDownOnToken = true;
+          three.draggingTokenId = hit;
+          three.isDragging = false;
+          three.isPanning = false;
+          canvas3d.style.cursor = 'grabbing';
+          renderTokenList();
+          return;
+        }
+      }
+      // pan ou select-sem-hit: orbitar
+      three.isDragging = true;
+      canvas3d.style.cursor = 'grabbing';
+    } else if (e.button === 2 || e.button === 1 || (e.altKey && e.button === 0)) {
       three.isPanning = true;
       canvas3d.style.cursor = 'move';
     }
@@ -4328,7 +4506,76 @@ function _setupEventos3D(canvas3d) {
     three.lastMX = e.clientX;
     three.lastMY = e.clientY;
 
-    // Arrastar token no espaço 3D
+    const tool = activeTool;
+
+    // ── Desenho no 3D ──
+    if (tool === 'draw' && isDrawing3D && draw3dPath) {
+      const wp = _raycastFloor(e);
+      if (wp) {
+        const sc = cellSize / 60;
+        const wx = wp.x / sc * cellSize, wy = wp.z / sc * cellSize;
+        draw3dPath.points.push({x:wx,y:wy});
+      }
+      // Renderiza no overlay 2D como preview
+      clearOverlay();
+      if (draw3dPath.points.length > 1) {
+        oc.strokeStyle = brushColor; oc.lineWidth = brushSize * 1.5;
+        oc.lineCap = 'round'; oc.lineJoin = 'round';
+        // Projeta pontos 3D → tela para preview
+        oc.beginPath();
+        draw3dPath.points.forEach((p, i) => {
+          const sc = cellSize / 60;
+          const v3 = new THREE.Vector3(p.x/cellSize*sc, 0, p.y/cellSize*sc);
+          v3.project(three.camera);
+          const sx = (v3.x * 0.5 + 0.5) * overlayCanvas.width;
+          const sy = (-v3.y * 0.5 + 0.5) * overlayCanvas.height;
+          i === 0 ? oc.moveTo(sx, sy) : oc.lineTo(sx, sy);
+        });
+        oc.stroke();
+      }
+      return;
+    }
+
+    // ── Medição no 3D ──
+    if (tool === 'measure' && measure3dStart) {
+      const wp = _raycastFloor(e);
+      clearOverlay();
+      if (wp) {
+        const sc = cellSize / 60;
+        const wx = wp.x / sc * cellSize, wy = wp.z / sc * cellSize;
+        const dist = Math.hypot(wx - measure3dStart.wx, wy - measure3dStart.wy);
+        const metros = (dist / cellSize * 1.5).toFixed(1);
+        // Linha no overlay de tela
+        oc.strokeStyle = '#fdcb6e'; oc.lineWidth = 2; oc.setLineDash([6,4]);
+        oc.beginPath();
+        oc.moveTo(measure3dStart.x - canvas3d.getBoundingClientRect().left,
+                  measure3dStart.y - canvas3d.getBoundingClientRect().top);
+        oc.lineTo(e.clientX - canvas3d.getBoundingClientRect().left,
+                  e.clientY - canvas3d.getBoundingClientRect().top);
+        oc.stroke(); oc.setLineDash([]);
+        const mx = (measure3dStart.x + e.clientX) / 2 - canvas3d.getBoundingClientRect().left;
+        const my = (measure3dStart.y + e.clientY) / 2 - canvas3d.getBoundingClientRect().top;
+        oc.font = 'bold 14px Inter'; oc.fillStyle = '#fdcb6e'; oc.textAlign = 'center';
+        oc.strokeStyle = '#000'; oc.lineWidth = 3; oc.strokeText(`${metros}m`, mx, my - 8);
+        oc.fillText(`${metros}m`, mx, my - 8);
+      }
+      return;
+    }
+
+    // ── Névoa de guerra contínua ──
+    if ((tool === 'fog' || tool === 'unfog') && isDrawing3D) {
+      const wp = _raycastFloor(e);
+      if (wp) {
+        const sc = cellSize / 60;
+        const wx = wp.x / sc * cellSize, wy = wp.z / sc * cellSize;
+        tool === 'fog'
+          ? cobrirCelula(Math.floor(wx/cellSize), Math.floor(wy/cellSize))
+          : revelarCelula(Math.floor(wx/cellSize), Math.floor(wy/cellSize));
+      }
+      return;
+    }
+
+    // ── Arraste de token ──
     if (three.draggingTokenId) {
       const worldPos = _raycastFloor(e);
       if (worldPos) {
@@ -4337,22 +4584,16 @@ function _setupEventos3D(canvas3d) {
           group.position.x = worldPos.x;
           group.position.z = worldPos.z;
           const sc = cellSize / 60;
-          const gx = Math.max(0, Math.floor(worldPos.x / sc));
-          const gz = Math.max(0, Math.floor(worldPos.z / sc));
-          if (group._lastGX !== gx || group._lastGZ !== gz) {
-            group._lastGX = gx; group._lastGZ = gz;
-          }
+          group._lastGX = Math.max(0, Math.floor(worldPos.x / sc));
+          group._lastGZ = Math.max(0, Math.floor(worldPos.z / sc));
         }
       }
       return;
     }
 
     if (three.isDragging) {
-      // Botão esquerdo: órbita horizontal (dx) + elevação (dy)
       three.orbitAngle -= dx * 0.007;
-      three.camElev = Math.max(0.05, Math.min(Math.PI / 2.1,
-        three.camElev - dy * 0.005
-      ));
+      three.camElev = Math.max(0.05, Math.min(Math.PI / 2.1, three.camElev - dy * 0.005));
     }
     if (three.isPanning) {
       const factor = three.camDist / 18;
@@ -4363,11 +4604,43 @@ function _setupEventos3D(canvas3d) {
       three.camPanX -= right.x * dx * 0.025 * factor + fwd.x * dy * 0.025 * factor;
       three.camPanY -= right.z * dx * 0.025 * factor + fwd.z * dy * 0.025 * factor;
     }
+
+    // Hover cursor
+    if (!three.draggingTokenId && !three.isDragging && !three.isPanning) {
+      const hit = _raycastTokens3D(e);
+      const toolCursors = {draw:'crosshair',eraser:'cell',ping:'copy',fog:'not-allowed',unfog:'zoom-in',measure:'crosshair',text:'text'};
+      canvas3d.style.cursor = hit ? 'grab' : (toolCursors[activeTool] || '');
+    }
   });
 
   canvas3d.addEventListener('mouseup', async e => {
     canvas3d.style.cursor = '';
+    const tool = activeTool;
 
+    // ── Finaliza desenho ──
+    if (tool === 'draw' && isDrawing3D && draw3dPath) {
+      clearOverlay();
+      if (draw3dPath.points.length > 1) {
+        const dr = push(ref(rtdb, `tabletop/${campanhaId}/drawings`));
+        set(dr, draw3dPath);
+        drawings.push(draw3dPath);
+        renderDrawings();
+      }
+      draw3dPath = null; isDrawing3D = false;
+      return;
+    }
+
+    // ── Finaliza medição ──
+    if (tool === 'measure') {
+      measure3dStart = null; clearOverlay(); return;
+    }
+
+    // ── Finaliza névoa ──
+    if ((tool === 'fog' || tool === 'unfog') && isDrawing3D) {
+      isDrawing3D = false; sincronizarFog(); return;
+    }
+
+    // ── Finaliza arraste de token ──
     if (three.draggingTokenId) {
       const id = three.draggingTokenId;
       const group = three.tokenMeshes[id];
@@ -4381,17 +4654,34 @@ function _setupEventos3D(canvas3d) {
         mostrarToast(`${tokens[id]?.nome||'?'} → (${gx},${gz})`);
       }
       three.draggingTokenId = null;
-
-    } else if (!mouseMoved && e.button === 0) {
+    } else if (!mouseMoved && e.button === 0 && tool === 'select') {
       const hit = _raycastTokens3D(e);
-      if (!hit && selectedTokenId) {
-        selectedTokenId = null;
-        renderTokenList();
-      }
+      if (!hit && selectedTokenId) { selectedTokenId = null; renderTokenList(); }
     }
 
     three.isDragging = false;
     three.isPanning = false;
+  });
+
+  canvas3d.addEventListener('dblclick', e => {
+    const tool = activeTool;
+    // Abrir ficha do token com duplo clique
+    const hit = _raycastTokens3D(e);
+    if (hit) { abrirFichaToken(hit); return; }
+    // Texto no mapa 3D
+    if (tool === 'text') {
+      const texto = prompt('Texto para o mapa:');
+      if (texto) {
+        const wp = _raycastFloor(e);
+        if (wp) {
+          const sc = cellSize / 60;
+          const wx = wp.x / sc * cellSize, wy = wp.z / sc * cellSize;
+          const d = { type:'text', color:brushColor, size:brushSize, text:texto, x:wx, y:wy };
+          const dr = push(ref(rtdb,`tabletop/${campanhaId}/drawings`));
+          set(dr, d); drawings.push(d); renderDrawings();
+        }
+      }
+    }
   });
 
   canvas3d.addEventListener('mouseleave', () => {
@@ -4405,16 +4695,11 @@ function _setupEventos3D(canvas3d) {
       }
       three.draggingTokenId = null;
     }
+    if (draw3dPath) { clearOverlay(); draw3dPath = null; isDrawing3D = false; }
+    if (measure3dStart) { clearOverlay(); measure3dStart = null; }
     three.isDragging = false;
     three.isPanning = false;
     canvas3d.style.cursor = '';
-  });
-
-  // Hover cursor
-  canvas3d.addEventListener('mousemove', e => {
-    if (three.draggingTokenId || three.isDragging || three.isPanning) return;
-    const hit = _raycastTokens3D(e);
-    canvas3d.style.cursor = hit ? 'grab' : '';
   });
 
   canvas3d.addEventListener('wheel', e => {
@@ -4430,11 +4715,10 @@ function _setupEventos3D(canvas3d) {
     if (e2.key === 'Delete' && selectedTokenId && isMestre) removerToken(selectedTokenId);
     _keysDown[e2.key] = true;
     if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e2.key)) e2.preventDefault();
-    if (modo3dAtivo && (e2.key === 'PageUp' || e2.key === 'PageDown')) e2.preventDefault();
+    if (e2.key === 'PageUp' || e2.key === 'PageDown') e2.preventDefault();
   });
   document.addEventListener('keyup', e2 => { _keysDown[e2.key] = false; });
 
-  // Processado a cada frame no loop 3D
   three._arrowKeyLoop = function(delta) {
     if (!modo3dAtivo) return;
     const speed = 0.12 * (three.camDist / 14);
@@ -4442,20 +4726,10 @@ function _setupEventos3D(canvas3d) {
     const right = new THREE.Vector3();
     three.camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
     right.crossVectors(fwd, new THREE.Vector3(0,1,0)).normalize();
-
-    if (_keysDown['ArrowUp']    || _keysDown['w'] || _keysDown['W']) {
-      three.camPanX += fwd.x * speed; three.camPanY += fwd.z * speed;
-    }
-    if (_keysDown['ArrowDown']  || _keysDown['s'] || _keysDown['S']) {
-      three.camPanX -= fwd.x * speed; three.camPanY -= fwd.z * speed;
-    }
-    if (_keysDown['ArrowLeft']  || _keysDown['a'] || _keysDown['A']) {
-      three.camPanX -= right.x * speed; three.camPanY -= right.z * speed;
-    }
-    if (_keysDown['ArrowRight'] || _keysDown['d'] || _keysDown['D']) {
-      three.camPanX += right.x * speed; three.camPanY += right.z * speed;
-    }
-    // PageUp = subir câmera (elevar ângulo), PageDown = descer câmera
+    if (_keysDown['ArrowUp']    || _keysDown['w'] || _keysDown['W']) { three.camPanX += fwd.x * speed; three.camPanY += fwd.z * speed; }
+    if (_keysDown['ArrowDown']  || _keysDown['s'] || _keysDown['S']) { three.camPanX -= fwd.x * speed; three.camPanY -= fwd.z * speed; }
+    if (_keysDown['ArrowLeft']  || _keysDown['a'] || _keysDown['A']) { three.camPanX -= right.x * speed; three.camPanY -= right.z * speed; }
+    if (_keysDown['ArrowRight'] || _keysDown['d'] || _keysDown['D']) { three.camPanX += right.x * speed; three.camPanY += right.z * speed; }
     const elevSpeed = delta * 0.9;
     const goUp   = _keysDown['PageUp']   || three._camElevHold === 'up';
     const goDown = _keysDown['PageDown'] || three._camElevHold === 'down';
@@ -4681,10 +4955,12 @@ function _desativarModo3D() {
   document.getElementById('btn-modo3d').classList.remove('modo3d-ativo');
   document.getElementById('modo3d-badge').classList.remove('show');
   document.getElementById('modo3d-particles').innerHTML = '';
-  // Esconder botões câmera cima/baixo
   document.getElementById('btn-cam3d-sep').style.display = 'none';
   document.getElementById('btn-cam-up').style.display = 'none';
   document.getElementById('btn-cam-down').style.display = 'none';
+  // Remove overlay de desenho 3D
+  const ov = document.getElementById('canvas3d-overlay');
+  if (ov) ov.remove();
   destroy3D();
   renderAll();
   mostrarToast('⬜ Modo 2D restaurado');
