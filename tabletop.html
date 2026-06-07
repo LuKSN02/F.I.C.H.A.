@@ -354,6 +354,79 @@ html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); colo
 .ob-monster-stat-key { color:var(--text3); font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:500; }
 .ob-monster-stat-val { color:var(--text); font-weight:600; }
 
+/* ===== CONDITIONS GRID ===== */
+.ob-cond-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:12px; }
+.ob-cond-btn {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; padding:7px 4px; border-radius:8px; border:1px solid var(--border);
+  background:var(--surface2); cursor:pointer; transition:0.15s; font-size:9px;
+  font-weight:600; color:var(--text3); letter-spacing:0.3px; text-transform:uppercase;
+}
+.ob-cond-btn .ob-cond-icon { font-size:18px; }
+.ob-cond-btn:hover { border-color:var(--border2); background:var(--surface3); color:var(--text); }
+.ob-cond-btn.on { border-color:var(--accent); background:rgba(var(--glow),0.15); color:var(--accent-l); }
+
+/* ===== SELETOR DE FICHA NO MODAL ADD TOKEN ===== */
+.nt-ficha-card {
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  background:var(--surface2); border:2px solid var(--border);
+  border-radius:10px; padding:7px 5px 6px; cursor:pointer;
+  transition:0.15s; position:relative; overflow:hidden;
+}
+.nt-ficha-card:hover {
+  border-color:rgba(var(--glow),0.6);
+  background:rgba(var(--glow),0.07);
+  transform:translateY(-1px);
+}
+.nt-ficha-card.selected {
+  border-color:var(--accent);
+  background:rgba(var(--glow),0.12);
+  box-shadow:0 0 0 1px rgba(var(--glow),0.3), 0 4px 12px rgba(var(--glow),0.2);
+}
+.nt-ficha-card.selected::after {
+  content:'✓'; position:absolute; top:3px; right:5px;
+  font-size:9px; font-weight:900; color:var(--accent-l);
+}
+.nt-ficha-avatar {
+  width:48px; height:48px; border-radius:8px; object-fit:cover;
+  border:1px solid var(--border2); flex-shrink:0;
+  background:var(--surface3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; overflow:hidden;
+}
+.nt-ficha-avatar img { width:100%; height:100%; object-fit:cover; border-radius:7px; }
+.nt-ficha-label {
+  font-size:9px; font-weight:700; color:var(--text);
+  text-align:center; white-space:nowrap; overflow:hidden;
+  text-overflow:ellipsis; width:100%; padding:0 2px;
+}
+.nt-ficha-sublabel {
+  font-size:8px; color:var(--text3); text-align:center;
+  font-family:'JetBrains Mono',monospace; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; width:100%; padding:0 2px;
+}
+/* Scrollbar da grid de fichas */
+#nt-ficha-grid::-webkit-scrollbar { width:4px; }
+#nt-ficha-grid::-webkit-scrollbar-track { background:transparent; }
+#nt-ficha-grid::-webkit-scrollbar-thumb { background:var(--border2); border-radius:99px; }
+
+/* ===== SETTINGS MODAL / INVITE ===== */
+.ob-invite-link {
+  background:var(--surface2); border:1px solid var(--border2); border-radius:8px;
+  padding:9px 12px; font-family:'JetBrains Mono',monospace; font-size:11px;
+  color:var(--text2); word-break:break-all; margin-bottom:10px;
+}
+.ob-theme-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:12px; }
+.ob-theme-btn {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:8px 4px; border-radius:8px; border:1px solid var(--border);
+  background:var(--surface2); cursor:pointer; transition:0.15s;
+  font-size:9px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.3px;
+}
+.ob-theme-btn:hover { border-color:var(--border2); background:var(--surface3); color:var(--text); }
+.ob-theme-btn.on { border-color:var(--accent); background:rgba(var(--glow),0.15); color:var(--accent-l); }
+.ob-theme-dot { width:20px; height:20px; border-radius:50%; border:2px solid rgba(255,255,255,0.15); }
+
 /* ===== TOAST ===== */
 .ob-toast {
   position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(10px);
@@ -364,6 +437,309 @@ html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); colo
   pointer-events:none;
 }
 .ob-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ═══════════════════════════════════════════════════════════════
+   FICHA TOKEN — OVERLAY CINEMATOGRÁFICO (Ordem Paranormal style)
+═══════════════════════════════════════════════════════════════ */
+
+#ft-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  overflow: hidden;
+}
+#ft-overlay.ft-show { opacity: 1; pointer-events: all; }
+#ft-overlay.ft-hide { opacity: 0; pointer-events: none; }
+
+/* Fundo escuro com tom avermelhado como o print */
+#ft-bg {
+  position: absolute;
+  inset: 0;
+  background: #0a0204;
+  z-index: 0;
+}
+#ft-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  filter: blur(2px) brightness(0.45) saturate(0.6);
+  transform: scale(1.05);
+}
+#ft-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 100% at 0% 50%, rgba(140,10,10,0.6) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 110%, rgba(80,0,0,0.55) 0%, transparent 65%),
+    radial-gradient(ellipse 100% 80% at 50% 0%, rgba(0,0,0,0.75) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 1;
+}
+/* Scanlines sutis */
+#ft-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px, transparent 3px,
+    rgba(0,0,0,0.07) 3px, rgba(0,0,0,0.07) 4px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Área clicável para fechar */
+#ft-backdrop {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+
+/* Personagem — canto direito, grande, como no print */
+#ft-char-display {
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 55%; height: 100%;
+  z-index: 4;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+#ft-char-img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(-12px 0 40px rgba(180,30,30,0.5)) brightness(0.9);
+}
+#ft-char-emoji {
+  font-size: 240px;
+  line-height: 1;
+  padding-bottom: 20px;
+  filter: drop-shadow(-8px 0 30px rgba(180,30,30,0.4));
+  opacity: 0.8;
+}
+
+/* Botão fechar — canto superior direito */
+#ft-close-btn {
+  position: absolute;
+  top: 18px; right: 22px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.65);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.75);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: 0.15s;
+  pointer-events: all;
+  z-index: 12;
+}
+#ft-close-btn:hover { background: rgba(180,20,20,0.85); color: #fff; border-color: #cc2222; }
+
+/* Cabeçalho com nome + PV — topo esquerdo */
+#ft-header {
+  position: absolute;
+  top: 20px; left: 24px;
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+  pointer-events: none;
+}
+#ft-overlay.ft-show #ft-header { opacity: 1; transform: translateY(0); }
+#ft-header-name {
+  font-size: 16px; font-weight: 900; color: #fff;
+  text-transform: uppercase; letter-spacing: 1.8px;
+  font-family: 'Inter', sans-serif;
+  text-shadow: 0 0 24px rgba(200,50,50,0.8), 0 2px 10px rgba(0,0,0,1);
+  line-height: 1;
+}
+#ft-header-sub {
+  font-size: 10px; color: rgba(255,255,255,0.45);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 4px; letter-spacing: 0.5px;
+}
+#ft-header-hp {
+  margin-top: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+#ft-hp-bar-wrap {
+  width: 130px; height: 5px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px; overflow: hidden;
+}
+#ft-hp-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+#ft-hp-text {
+  font-size: 11px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace; color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+}
+
+/* Lista de cards — lado esquerdo, empilhados verticalmente como no print */
+#ft-cards-panel {
+  position: absolute;
+  left: 24px;
+  top: 50%; transform: translateY(-50%);
+  width: 290px;
+  z-index: 10;
+  display: flex; flex-direction: column; gap: 5px;
+  max-height: 76vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  opacity: 0;
+  transition: opacity 0.38s ease 0.18s, transform 0.4s ease 0.18s;
+  transform: translateY(-50%) translateX(-18px);
+  pointer-events: all;
+}
+#ft-overlay.ft-show #ft-cards-panel {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+#ft-cards-panel::-webkit-scrollbar { width: 3px; }
+#ft-cards-panel::-webkit-scrollbar-track { background: transparent; }
+#ft-cards-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 99px; }
+
+/* Ponto de origem (pulso no token) */
+#ft-origin-dot {
+  position: fixed;
+  width: 14px; height: 14px;
+  margin-left: -7px; margin-top: -7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(var(--glow),0.8);
+  animation: ftOriginPulse 1.2s ease-out forwards;
+  z-index: 4010;
+  pointer-events: none;
+}
+@keyframes ftOriginPulse {
+  0%   { transform: scale(1);   box-shadow: 0 0 0 0 rgba(var(--glow),0.8); }
+  60%  { transform: scale(1.6); box-shadow: 0 0 0 18px rgba(var(--glow),0); }
+  100% { transform: scale(0);   opacity: 0; }
+}
+
+/* ═══ Cards — estilo fiel ao print Ordem Paranormal ═══ */
+.ft-card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  animation: ftCardIn 0.28s ease both;
+  cursor: pointer;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.7);
+}
+@keyframes ftCardIn {
+  from { opacity:0; transform: translateX(-14px); }
+  to   { opacity:1; transform: translateX(0); }
+}
+
+/* Barra do título — branca/acinzentada com clip diagonal direito */
+.ft-card-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 14px 5px 12px;
+  min-height: 32px;
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+}
+.ft-card-bar::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+}
+.ft-bar-hab  { background: linear-gradient(90deg, #c4c4c8 0%, #e6e6ea 55%, #b8b8bc 100%); }
+.ft-bar-rit  { background: linear-gradient(90deg, #baaad8 0%, #d8ccf4 55%, #a898c8 100%); }
+.ft-bar-atk  { background: linear-gradient(90deg, #d89898 0%, #eeb4b4 55%, #c07878 100%); }
+.ft-bar-item { background: linear-gradient(90deg, #d4c456 0%, #eada78 55%, #c0b040 100%); }
+.ft-bar-hab::before  { background: #bb1111; }
+.ft-bar-rit::before  { background: #7744cc; }
+.ft-bar-atk::before  { background: #990000; }
+.ft-bar-item::before { background: #b89000; }
+
+.ft-card-nome {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.1px;
+  color: #0d0d0f;
+  font-family: 'Inter', sans-serif;
+  text-shadow: none;
+  line-height: 1.2;
+  flex: 1;
+  padding-left: 2px;
+}
+.ft-card-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #0d0d0f;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+  margin-left: 8px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 2px;
+  padding: 1px 6px;
+  letter-spacing: 0.3px;
+}
+.ft-card-chevron {
+  font-size: 7px;
+  color: rgba(0,0,0,0.38);
+  margin-left: 5px;
+  transition: transform 0.22s ease;
+  flex-shrink: 0;
+}
+.ft-card.ft-expanded .ft-card-chevron { transform: rotate(180deg); color: rgba(0,0,0,0.6); }
+
+/* Área de descrição — fundo escuro, texto claro, como no print */
+.ft-card-desc {
+  padding: 0 12px;
+  font-size: 10.5px;
+  color: #ccccd0;
+  line-height: 1.65;
+  font-family: 'Inter', sans-serif;
+  background: rgba(6, 3, 3, 0.90);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.32s cubic-bezier(0.22,1,0.36,1), padding 0.22s ease;
+}
+.ft-card.ft-expanded .ft-card-desc {
+  max-height: 200px;
+  padding: 6px 12px 9px;
+  overflow-y: auto;
+}
+.ft-card.ft-expanded .ft-card-desc::-webkit-scrollbar { width: 3px; }
+.ft-card.ft-expanded .ft-card-desc::-webkit-scrollbar-track { background: transparent; }
+.ft-card.ft-expanded .ft-card-desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 99px; }
+
+.ft-loading-text {
+  color: rgba(255,255,255,0.35);
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center;
+  padding: 20px 12px;
+  line-height: 1.6;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  #ft-cards-panel { width: 230px; left: 12px; }
+  #ft-char-display { width: 60%; }
+}
+@media (max-width: 540px) {
+  #ft-cards-panel { width: calc(100vw - 24px); left: 12px; top: auto; bottom: 12px; transform: none; max-height: 55vh; }
+  #ft-overlay.ft-show #ft-cards-panel { transform: none; }
+  #ft-char-display { width: 100%; opacity: 0.25; }
+}
 
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width:4px; height:4px; }
@@ -525,7 +901,188 @@ input[type="color"] {
 
 /* Hide old zoom hud (replaced by scene label style) */
 .ob-zoom-hud { bottom:58px !important; right:14px !important; left:auto !important; transform:none !important; }
+
+/* =====================================================
+   MODO 3D — ORDEM PARANORMAL
+   ===================================================== */
+
+/* Botão 3D ativo */
+.ob-rtool.modo3d-ativo {
+  background: rgba(214,48,49,0.2) !important;
+  color: #ff6060 !important;
+  box-shadow: 0 0 10px rgba(214,48,49,0.5), inset 0 0 6px rgba(214,48,49,0.15);
+  border: 1px solid rgba(214,48,49,0.55) !important;
+}
+.ob-rtool.modo3d-ativo svg { filter: drop-shadow(0 0 4px rgba(255,60,60,0.9)); }
+
+/* Canvas 3D Three.js */
+#canvas3d {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  display:none; z-index:10;
+}
+.modo3d-on #canvas3d    { display:block; }
+.modo3d-on #tt-canvas   { display:none; }
+.modo3d-on #tt-draw-canvas { display:none; }
+.modo3d-on #tt-map-video-layer { display:none; }
+
+/* ---- OVERLAY DE TRANSIÇÃO ---- */
+#modo3d-transition {
+  position:fixed; inset:0; z-index:9999;
+  pointer-events:none; display:none;
+  flex-direction:column; align-items:center; justify-content:center;
+  background:#000;
+}
+#modo3d-transition.show { display:flex; }
+
+#modo3d-glitch {
+  position:absolute; inset:0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px, transparent 2px,
+    rgba(200,0,0,0.05) 2px, rgba(200,0,0,0.05) 4px
+  );
+  animation: scanlines 0.1s steps(1) infinite;
+  pointer-events:none;
+}
+@keyframes scanlines {
+  0%  { background-position: 0 0; }
+  100%{ background-position: 0 4px; }
+}
+
+#modo3d-flash {
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse at center, rgba(255,30,30,0.15) 0%, transparent 70%);
+  animation: flashPulse 0.4s ease-out forwards;
+}
+@keyframes flashPulse {
+  0%   { opacity:0; }
+  30%  { opacity:1; }
+  100% { opacity:0; }
+}
+
+#modo3d-logo-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(18px, 4vw, 36px);
+  font-weight: 700; letter-spacing: 6px;
+  color: #cc1010; text-transform: uppercase;
+  text-shadow: 0 0 30px rgba(220,30,30,0.9), 0 0 80px rgba(200,0,0,0.4);
+  opacity: 0; transform: scale(1.5);
+  animation: logoReveal 0.6s cubic-bezier(0.2,0,0.3,1) 0.15s forwards;
+  position:relative; z-index:2;
+}
+@keyframes logoReveal {
+  to { opacity:1; transform:scale(1); }
+}
+
+#modo3d-sub-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 8px;
+  color: rgba(200,60,60,0.7); text-transform: uppercase;
+  margin-top: 14px; opacity:0;
+  animation: subReveal 0.4s ease 0.5s forwards;
+  position:relative; z-index:2;
+}
+@keyframes subReveal { to { opacity:1; } }
+
+#modo3d-bar {
+  width:0; height:2px;
+  background: linear-gradient(90deg, transparent, #cc1010, #ff4444, #cc1010, transparent);
+  box-shadow: 0 0 12px #cc1010, 0 0 30px rgba(200,0,0,0.5);
+  margin-top: 24px; border-radius:2px;
+  animation: barGrow 0.7s cubic-bezier(0.4,0,0.2,1) 0.3s forwards;
+  position:relative; z-index:2;
+}
+@keyframes barGrow { to { width:300px; } }
+
+#modo3d-corner-tl,#modo3d-corner-tr,#modo3d-corner-bl,#modo3d-corner-br {
+  position:absolute; width:30px; height:30px; opacity:0;
+  animation: cornerReveal 0.3s ease 0.1s forwards;
+  border-color: rgba(200,30,30,0.7);
+}
+@keyframes cornerReveal { to { opacity:1; } }
+#modo3d-corner-tl { top:20px; left:20px; border-top:1px solid; border-left:1px solid; }
+#modo3d-corner-tr { top:20px; right:20px; border-top:1px solid; border-right:1px solid; }
+#modo3d-corner-bl { bottom:20px; left:20px; border-bottom:1px solid; border-left:1px solid; }
+#modo3d-corner-br { bottom:20px; right:20px; border-bottom:1px solid; border-right:1px solid; }
+
+/* ---- HUD BADGE 3D ---- */
+#modo3d-badge {
+  position:absolute; top:10px; right:52px; z-index:160;
+  background:rgba(180,20,20,0.15); border:1px solid rgba(200,40,40,0.45);
+  border-radius:6px; padding:3px 9px; font-family:'JetBrains Mono',monospace;
+  font-size:9px; font-weight:700; letter-spacing:2px; color:#ff5555;
+  display:none; align-items:center; gap:5px;
+  box-shadow:0 0 14px rgba(200,30,30,0.25);
+  animation: badgePulse 2.5s ease-in-out infinite;
+}
+#modo3d-badge::before {
+  content:''; width:5px; height:5px; border-radius:50%; background:#ff3333;
+  box-shadow:0 0 5px #ff3333; animation: dotBlink 1.2s ease-in-out infinite alternate;
+}
+@keyframes badgePulse {
+  0%,100%{ box-shadow:0 0 14px rgba(200,30,30,0.25); }
+  50%    { box-shadow:0 0 22px rgba(200,30,30,0.5); }
+}
+@keyframes dotBlink { from{opacity:.4;} to{opacity:1;} }
+#modo3d-badge.show { display:flex; }
+
+/* ---- CONTROLES 3D HUD ---- */
+#modo3d-controls-hint {
+  position:absolute; bottom:44px; left:50%; transform:translateX(-50%);
+  background:rgba(10,5,5,0.75); border:1px solid rgba(200,40,40,0.25);
+  border-radius:8px; padding:5px 14px; font-family:'JetBrains Mono',monospace;
+  font-size:9px; color:rgba(255,150,150,0.65); letter-spacing:0.5px;
+  pointer-events:none; z-index:160; white-space:nowrap;
+  display:none; gap:12px; align-items:center;
+  opacity:0; transition: opacity 0.5s;
+}
+#modo3d-controls-hint.show { display:flex; opacity:1; }
+.hint3d-sep { width:1px; height:10px; background:rgba(200,40,40,0.3); }
+
+/* ---- NÉVOA ATMOSFÉRICA 3D ---- */
+#modo3d-fog {
+  position:absolute; inset:0; z-index:11;
+  pointer-events:none; opacity:0; transition:opacity 1s ease;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(160,20,20,0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 30% at 15% 85%, rgba(100,0,0,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 30% at 85% 85%, rgba(100,0,0,0.15) 0%, transparent 60%),
+    linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 45%),
+    linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 30%);
+}
+.modo3d-on #modo3d-fog { opacity:1; }
+
+/* ---- VINHETA LATERAL ---- */
+#modo3d-vignette {
+  position:absolute; inset:0; z-index:12;
+  pointer-events:none; opacity:0; transition:opacity 0.9s ease;
+  box-shadow: inset 0 0 140px rgba(100,0,0,0.55),
+              inset 0 0 60px rgba(0,0,0,0.45);
+}
+.modo3d-on #modo3d-vignette { opacity:1; }
+
+/* ---- PARTÍCULAS DE NÉVOA ---- */
+#modo3d-particles {
+  position:absolute; inset:0; z-index:11;
+  pointer-events:none; overflow:hidden;
+  opacity:0; transition:opacity 1.2s ease 0.5s;
+}
+.modo3d-on #modo3d-particles { opacity:1; }
+.p3d {
+  position:absolute; border-radius:50%;
+  background:radial-gradient(circle,rgba(180,30,30,0.1) 0%,transparent 70%);
+  filter:blur(10px); animation:floatUp linear infinite;
+}
+@keyframes floatUp {
+  0%  { transform:translateY(0) translateX(0); opacity:0; }
+  8%  { opacity:1; }
+  92% { opacity:0.5; }
+  100%{ transform:translateY(-260px) translateX(var(--dx,20px)); opacity:0; }
+}
 </style>
+
+<!-- Three.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
@@ -668,6 +1225,33 @@ input[type="color"] {
     </div>
     <canvas id="tt-canvas"></canvas>
     <canvas id="tt-draw-canvas"></canvas>
+
+    <!-- THREE.JS CANVAS (modo 3D) -->
+    <canvas id="canvas3d"></canvas>
+
+    <!-- Efeitos atmosféricos 3D -->
+    <div id="modo3d-fog"></div>
+    <div id="modo3d-vignette"></div>
+    <div id="modo3d-particles"></div>
+
+    <!-- Badge HUD 3D -->
+    <div id="modo3d-badge">3D</div>
+
+    <!-- Hint de controles 3D (aparece ao ativar, some após 6s) -->
+    <div id="modo3d-controls-hint">
+      <span>🖱 LMB: Orbitar/Elevar</span>
+      <div class="hint3d-sep"></div>
+      <span>RMB: Pan</span>
+      <div class="hint3d-sep"></div>
+      <span>↑↓←→ / WASD: Mover câmera</span>
+      <div class="hint3d-sep"></div>
+      <span>PgUp/PgDn: Subir / Descer câmera</span>
+      <div class="hint3d-sep"></div>
+      <span>Scroll: Zoom</span>
+      <div class="hint3d-sep"></div>
+      <span>LMB+Token: Mover token</span>
+    </div>
+
     <div id="tt-pings-layer"></div>
     <div id="tt-token-tooltip" class="ob-tooltip">
       <div class="ob-tooltip-name" id="tooltip-name">—</div>
@@ -680,10 +1264,10 @@ input[type="color"] {
       <div class="ob-players-header">
         <span class="ob-players-title">Players</span>
         <div class="ob-players-actions">
-          <button class="ob-players-action-btn" title="Configurações da mesa">
+          <button class="ob-players-action-btn" title="Configurações da mesa" onclick="abrirConfiguracoes()">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4"/></svg>
           </button>
-          <button class="ob-players-action-btn" title="Convidar jogadores">
+          <button class="ob-players-action-btn" title="Convidar jogadores" onclick="abrirConvite()">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6" cy="5" r="2.5"/><path d="M1 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/><line x1="13" y1="5" x2="13" y2="9"/><line x1="11" y1="7" x2="15" y2="7"/></svg>
           </button>
         </div>
@@ -724,6 +1308,30 @@ input[type="color"] {
           <circle cx="12" cy="3" r="1.5" fill="currentColor" stroke="none"/>
         </svg>
       </button>
+      <div class="ob-rtool-sep"></div>
+      <!-- BOTÃO MODO 3D -->
+      <button class="ob-rtool" id="btn-modo3d" onclick="toggleModo3D()" title="Modo 3D Paranormal (tecla 3)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z"/>
+          <line x1="8" y1="2" x2="8" y2="14" stroke-dasharray="2 2"/>
+          <line x1="2" y1="5.5" x2="14" y2="10.5" stroke-dasharray="2 2"/>
+          <line x1="14" y1="5.5" x2="2" y2="10.5" stroke-dasharray="2 2"/>
+        </svg>
+      </button>
+      <!-- BOTÕES CÂMERA CIMA/BAIXO (só visíveis no modo 3D) -->
+      <div class="ob-rtool-sep" id="btn-cam3d-sep" style="display:none;"></div>
+      <button class="ob-rtool" id="btn-cam-up" style="display:none;" title="Câmera para cima (Page Up)"
+        onmousedown="three._camElevHold='up'" onmouseup="three._camElevHold=null" onmouseleave="three._camElevHold=null">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <polyline points="4,10 8,5 12,10"/>
+        </svg>
+      </button>
+      <button class="ob-rtool" id="btn-cam-down" style="display:none;" title="Câmera para baixo (Page Down)"
+        onmousedown="three._camElevHold='down'" onmouseup="three._camElevHold=null" onmouseleave="three._camElevHold=null">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <polyline points="4,6 8,11 12,6"/>
+        </svg>
+      </button>
     </div>
 
     <!-- Asset tray (bottom, like Owlbear) -->
@@ -743,22 +1351,22 @@ input[type="color"] {
           <path d="M2 10l3-3 3 3 2-2 4 4"/><circle cx="10.5" cy="5.5" r="1.5"/>
         </svg>
       </button>
-      <button class="ob-asset-btn" title="Terreno">
+      <button class="ob-asset-btn" title="Terreno / Objeto" onclick="openModal('modal-add-token');document.getElementById('nt-tipo').value='npc'">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
           <path d="M2 12l4-6 3 4 2-2 3 4H2z"/>
         </svg>
       </button>
-      <button class="ob-asset-btn" title="Personagem">
+      <button class="ob-asset-btn" title="Personagem / Jogador" onclick="openModal('modal-add-token');document.getElementById('nt-tipo').value='jogador'">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
           <circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/>
         </svg>
       </button>
-      <button class="ob-asset-btn" title="Marcador">
+      <button class="ob-asset-btn" title="Marcador (Ping)" onclick="setTool('ping')">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
           <path d="M8 2a4 4 0 010 8L8 14l-4-6a4 4 0 014-6z"/><circle cx="8" cy="6" r="1.5" fill="currentColor"/>
         </svg>
       </button>
-      <button class="ob-asset-btn" title="Texto / Anotação">
+      <button class="ob-asset-btn" title="Texto / Anotação" onclick="setTool('text')">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
           <line x1="3" y1="4" x2="13" y2="4"/><line x1="8" y1="4" x2="8" y2="13"/>
         </svg>
@@ -767,7 +1375,7 @@ input[type="color"] {
       <div class="ob-asset-sep"></div>
 
       <!-- Search -->
-      <button class="ob-asset-btn" title="Buscar assets">
+      <button class="ob-asset-btn" title="Buscar monstros" onclick="openModal('modal-monsters')">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
           <circle cx="7" cy="7" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
         </svg>
@@ -944,11 +1552,64 @@ input[type="color"] {
 
 <!-- Modal: Adicionar Token -->
 <div class="ob-modal-bg" id="modal-add-token">
-  <div class="ob-modal">
+  <div class="ob-modal" style="max-width:500px;">
     <div class="ob-modal-title">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:18px;height:18px;"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
       Adicionar Token
     </div>
+
+    <!-- ===== SELETOR DE FICHA ===== -->
+    <div id="nt-ficha-section">
+      <div class="ob-label" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <span>Vincular Ficha da Campanha</span>
+        <button onclick="_ntRecarregarFichas()" style="
+          background:transparent; border:none; color:var(--text3); cursor:pointer;
+          font-size:10px; font-family:'JetBrains Mono',monospace; padding:2px 6px;
+          border-radius:4px; transition:0.15s; letter-spacing:0.3px;
+        " onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text3)'" title="Recarregar fichas">↺ Atualizar</button>
+      </div>
+
+      <!-- Grid de fichas da campanha -->
+      <div id="nt-ficha-grid" style="
+        display:grid; grid-template-columns:repeat(auto-fill,minmax(72px,1fr));
+        gap:7px; margin-bottom:10px; max-height:160px; overflow-y:auto;
+        padding:2px;
+      ">
+        <div id="nt-ficha-loading" style="
+          grid-column:1/-1; text-align:center; padding:18px 0;
+          color:var(--text3); font-size:11px; font-family:'JetBrains Mono',monospace;
+        ">⏳ Carregando fichas...</div>
+      </div>
+
+      <!-- Ficha selecionada: preview compacto -->
+      <div id="nt-ficha-selected-preview" style="display:none; margin-bottom:12px;">
+        <div style="
+          display:flex; align-items:center; gap:10px;
+          background:rgba(var(--glow),0.08); border:1px solid rgba(var(--glow),0.35);
+          border-radius:10px; padding:9px 12px;
+        ">
+          <div id="nt-ficha-sel-avatar" style="
+            width:44px; height:44px; border-radius:9px; flex-shrink:0;
+            overflow:hidden; border:2px solid rgba(var(--glow),0.5);
+            display:flex; align-items:center; justify-content:center;
+            font-size:22px; background:var(--surface3); color:var(--accent-l);
+          "></div>
+          <div style="flex:1; min-width:0;">
+            <div id="nt-ficha-sel-nome" style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="nt-ficha-sel-meta" style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-top:2px;"></div>
+          </div>
+          <button onclick="limparFichaSelecionada()" style="
+            background:none; border:none; color:var(--text3); cursor:pointer;
+            font-size:12px; padding:4px 6px; border-radius:5px; transition:0.15s;
+            flex-shrink:0;
+          " onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text3)'">✕</button>
+        </div>
+      </div>
+
+      <div style="height:1px;background:var(--border);margin-bottom:12px;"></div>
+    </div>
+
+    <!-- Campos manuais (preenchidos automaticamente ao selecionar ficha) -->
     <div class="ob-label">Nome</div>
     <input class="ob-input" id="nt-nome" type="text" placeholder="Nome do personagem ou criatura...">
     <div class="ob-label">Tipo</div>
@@ -978,9 +1639,12 @@ input[type="color"] {
         <input class="ob-input" id="nt-icon" type="text" placeholder="🧙 👹 🧛" maxlength="4" style="margin-bottom:0;">
       </div>
     </div>
-    <div class="ob-label">Imagem (URL ou upload)</div>
+    <div class="ob-label" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Imagem do Token (URL ou upload)</span>
+      <span id="nt-img-ficha-badge" style="display:none;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--accent-l);background:rgba(var(--glow),0.15);border:1px solid rgba(var(--glow),0.35);padding:1px 6px;border-radius:4px;letter-spacing:0.5px;">Da Ficha</span>
+    </div>
     <div style="display:flex;gap:6px;">
-      <input class="ob-input" id="nt-img" type="text" placeholder="https://..." style="margin-bottom:0;flex:1;">
+      <input class="ob-input" id="nt-img" type="text" placeholder="https://... (usa foto da ficha se vazio)" style="margin-bottom:0;flex:1;">
       <button class="ob-btn" style="width:auto;padding:7px 10px;flex-shrink:0;" onclick="document.getElementById('nt-img-upload').click()">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:14px;height:14px;"><path d="M3 10V13h10V10M8 2v8M5 5l3-3 3 3"/></svg>
       </button>
@@ -1048,6 +1712,32 @@ input[type="color"] {
     </div>
     <div class="ob-label">Cor</div>
     <input type="color" id="et-cor" style="width:100%;height:36px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;padding:3px;margin-bottom:12px;">
+    <div class="ob-label">Tamanho do Token</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <input type="range" id="et-escala" min="0.3" max="10" step="0.1" value="1" style="flex:1;" oninput="document.getElementById('et-escala-label').textContent=parseFloat(this.value).toFixed(1)+'×'">
+      <span id="et-escala-label" style="font-size:12px;color:var(--accent-l);font-family:'JetBrains Mono',monospace;width:34px;text-align:right;">1.0×</span>
+    </div>
+    <div id="et-escalah3d-row" style="display:none;">
+      <div class="ob-label" style="display:flex;align-items:center;gap:6px;">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:11px;height:11px;opacity:0.6"><path d="M2 8h12M10 5l3 3-3 3M6 5L3 8l3 3"/></svg>
+        Largura 3D
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <input type="range" id="et-escalah3d" min="0.3" max="3" step="0.05" value="1" style="flex:1;" oninput="document.getElementById('et-escalah3d-label').textContent=parseFloat(this.value).toFixed(2)+'×'">
+        <span id="et-escalah3d-label" style="font-size:12px;color:var(--accent-l);font-family:'JetBrains Mono',monospace;width:40px;text-align:right;">1.00×</span>
+      </div>
+    </div>
+    <div class="ob-label">Condições</div>
+    <div class="ob-cond-grid" id="et-cond-grid">
+      <button class="ob-cond-btn" data-cond="amedrontado" onclick="toggleCondicao(this)"><span class="ob-cond-icon">😱</span>Medo</button>
+      <button class="ob-cond-btn" data-cond="atordoado" onclick="toggleCondicao(this)"><span class="ob-cond-icon">💫</span>Atord.</button>
+      <button class="ob-cond-btn" data-cond="envenenado" onclick="toggleCondicao(this)"><span class="ob-cond-icon">☠️</span>Veneno</button>
+      <button class="ob-cond-btn" data-cond="maldito" onclick="toggleCondicao(this)"><span class="ob-cond-icon">🔮</span>Maldito</button>
+      <button class="ob-cond-btn" data-cond="sangrando" onclick="toggleCondicao(this)"><span class="ob-cond-icon">🩸</span>Sangue</button>
+      <button class="ob-cond-btn" data-cond="paralizado" onclick="toggleCondicao(this)"><span class="ob-cond-icon">❄️</span>Paral.</button>
+      <button class="ob-cond-btn" data-cond="invisivel" onclick="toggleCondicao(this)"><span class="ob-cond-icon">👁️</span>Invis.</button>
+      <button class="ob-cond-btn" data-cond="morto" onclick="toggleCondicao(this)"><span class="ob-cond-icon">💀</span>Morto</button>
+    </div>
     <div class="ob-modal-actions">
       <button class="ob-btn" style="background:rgba(232,64,64,0.1);border-color:rgba(232,64,64,0.4);color:var(--red);" onclick="removerToken(document.getElementById('et-id').value)">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:14px;height:14px;"><polyline points="2,4 14,4"/><path d="M5 4V2h6v2M6 7v5M10 7v5"/><rect x="3" y="4" width="10" height="10" rx="1"/></svg>
@@ -1077,6 +1767,61 @@ input[type="color"] {
     <div class="ob-modal-actions">
       <button class="ob-btn" onclick="closeModal('modal-add-init')">Cancelar</button>
       <button class="ob-btn primary" onclick="adicionarIniciativa()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Configurações da Mesa -->
+<div class="ob-modal-bg" id="modal-settings">
+  <div class="ob-modal">
+    <div class="ob-modal-title">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px;"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4"/></svg>
+      Configurações da Mesa
+    </div>
+    <div class="ob-label">Tema Visual</div>
+    <div class="ob-theme-grid">
+      <button class="ob-theme-btn" data-tema="medo" onclick="aplicarTema('medo',this)">
+        <div class="ob-theme-dot" style="background:#4a8fe8;"></div>Medo
+      </button>
+      <button class="ob-theme-btn" data-tema="sangue" onclick="aplicarTema('sangue',this)">
+        <div class="ob-theme-dot" style="background:#d63031;"></div>Sangue
+      </button>
+      <button class="ob-theme-btn" data-tema="morte" onclick="aplicarTema('morte',this)">
+        <div class="ob-theme-dot" style="background:#888;"></div>Morte
+      </button>
+      <button class="ob-theme-btn" data-tema="conhecimento" onclick="aplicarTema('conhecimento',this)">
+        <div class="ob-theme-dot" style="background:#e17055;"></div>Conhec.
+      </button>
+      <button class="ob-theme-btn" data-tema="energia" onclick="aplicarTema('energia',this)">
+        <div class="ob-theme-dot" style="background:#a29bfe;"></div>Energia
+      </button>
+    </div>
+    <div class="ob-label">Nome na Mesa</div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;">
+      <input class="ob-input" id="settings-nome" type="text" placeholder="Seu nome..." style="margin-bottom:0;flex:1;">
+      <button class="ob-btn" style="width:auto;padding:7px 12px;flex-shrink:0;" onclick="salvarNomeMesa()">Salvar</button>
+    </div>
+    <div class="ob-modal-actions">
+      <button class="ob-btn primary" onclick="closeModal('modal-settings')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Convidar Jogadores -->
+<div class="ob-modal-bg" id="modal-invite">
+  <div class="ob-modal">
+    <div class="ob-modal-title">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:18px;height:18px;"><circle cx="6" cy="5" r="2.5"/><path d="M1 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/><line x1="13" y1="5" x2="13" y2="9"/><line x1="11" y1="7" x2="15" y2="7"/></svg>
+      Convidar Jogadores
+    </div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6;">Compartilhe o link abaixo com os jogadores. Qualquer pessoa com o link pode entrar na mesa (necessário ter conta).</p>
+    <div class="ob-invite-link" id="invite-link-text">—</div>
+    <div class="ob-modal-actions">
+      <button class="ob-btn primary" onclick="copiarLinkConvite()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:14px;height:14px;"><rect x="5" y="5" width="9" height="9" rx="1"/><path d="M3 11H2a1 1 0 01-1-1V2a1 1 0 011-1h8a1 1 0 011 1v1"/></svg>
+        Copiar Link
+      </button>
+      <button class="ob-btn" onclick="closeModal('modal-invite')">Fechar</button>
     </div>
   </div>
 </div>
@@ -1308,6 +2053,14 @@ function renderAll() {
   document.getElementById('zoom-label').textContent = Math.round(camZoom*100) + '%';
   atualizarAnimMapTransform();
   atualizarSceneLabel();
+  // Sincronizar modo 3D (inline para funcionar dentro do module script)
+  if (modo3dAtivo && three.scene) {
+    _sincronizarTokens3D();
+    if (!three._fogCellsStr || three._fogCellsStr !== JSON.stringify(fogCells)) {
+      three._fogCellsStr = JSON.stringify(fogCells);
+      _criarFog3D();
+    }
+  }
 }
 
 function renderGrid() {
@@ -1354,109 +2107,98 @@ function getCachedImage(src) {
   if (!src) return null;
   if (_imgCache[src]) return _imgCache[src].complete ? _imgCache[src] : null;
   const img = new Image(); img.crossOrigin = 'anonymous';
-  img.onload = () => renderAll(); img.src = src;
+  img.onload = () => {
+    renderAll();
+    // Reconstrói o token 3D que usa essa imagem (renderAll já cuida, mas garantimos a sig)
+    if (modo3dAtivo && three.scene) {
+      Object.entries(tokens).forEach(([id, t]) => {
+        if (t.img === src) {
+          if (three.tokenMeshes[id]) three.scene.remove(three.tokenMeshes[id]);
+          const mesh = criarMeshToken(t, id);
+          const sig = `${t.escala||1}|${t.escalaH3d||1}|${t.pv}|${t.pvmax}|${t.cor}|${t.img||''}|${t.nome}`;
+          mesh.userData._sig = sig;
+          three.tokenMeshes[id] = mesh;
+          three.scene.add(mesh);
+        }
+      });
+    }
+  };
+  img.src = src;
   _imgCache[src] = img; return null;
 }
 
 function renderTokens() {
   Object.entries(tokens).forEach(([id, t]) => {
     const tx = t.x||0, ty = t.y||0;
-    // Token ocupa a célula inteira como no Owlbear Rodeo
-    const pad = cellSize * 0.07;
-    const tx0 = tx*cellSize + pad;
-    const ty0 = ty*cellSize + pad;
-    const tW  = cellSize - pad*2;
-    const tH  = cellSize - pad*2;
     const cx  = tx*cellSize + cellSize/2;
     const cy  = ty*cellSize + cellSize/2;
-    const rad = Math.max(4, cellSize * 0.12); // corner radius
+    const half = cellSize * 0.46; // metade do tamanho do token
     const isSelected = id === selectedTokenId;
-    const isDragging = id === draggingToken;
+    const isDragging  = id === draggingToken;
     const cor = t.cor || '#4a8fe8';
 
     ctx.save();
 
-    // Selection glow — outer dashed border
-    if (isSelected || isDragging) {
-      ctx.shadowColor = isDragging ? '#ffffff' : cor;
-      ctx.shadowBlur  = isDragging ? 28 : 20;
-      ctx.strokeStyle = isDragging ? '#ffffff' : cor;
-      ctx.lineWidth   = isDragging ? 3 : 2.5;
-      const sel = 5;
-      ctx.beginPath(); ctx.roundRect(tx0-sel, ty0-sel, tW+sel*2, tH+sel*2, rad+sel); ctx.stroke();
-      ctx.shadowBlur = 0;
-    }
-
-    // Colored accent border (thin) — like Owlbear token ring
-    ctx.strokeStyle = cor;
-    ctx.lineWidth = 2;
-    ctx.shadowBlur = 6; ctx.shadowColor = cor + 'aa';
-    ctx.beginPath(); ctx.roundRect(tx0, ty0, tW, tH, rad); ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Clip to rounded-rect and draw image
-    ctx.save();
-    ctx.beginPath(); ctx.roundRect(tx0, ty0, tW, tH, rad); ctx.clip();
-    // background
-    ctx.fillStyle = '#0e0e10'; ctx.fillRect(tx0, ty0, tW, tH);
     const imgSrc = t.img && (t.img.startsWith('data:') || t.img.startsWith('http')) ? t.img : null;
     const cachedImg = imgSrc ? getCachedImage(imgSrc) : null;
+
     if (cachedImg) {
-      const iw = cachedImg.naturalWidth||cachedImg.width||1;
-      const ih = cachedImg.naturalHeight||cachedImg.height||1;
-      const scale = Math.max(tW/iw, tH/ih);
-      ctx.drawImage(cachedImg, cx-iw*scale/2, cy-ih*scale/2, iw*scale, ih*scale);
-    } else {
-      // Gradient bg fallback
-      const grad = ctx.createRadialGradient(cx,cy,0,cx,cy,tW*0.7);
-      grad.addColorStop(0, cor+'44'); grad.addColorStop(1, '#0e0e10');
-      ctx.fillStyle = grad; ctx.fillRect(tx0, ty0, tW, tH);
-      ctx.font = `${tW*0.52}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillStyle='#fff'; ctx.fillText(t.icon||'?', cx, cy+2);
-    }
-    ctx.restore();
+      const iw = cachedImg.naturalWidth  || cachedImg.width  || 1;
+      const ih = cachedImg.naturalHeight || cachedImg.height || 1;
+      const escala = t.escala || 1;
+      const halfScaled = half * escala;
+      // contain: imagem inteira visível, proporcional, solta no mapa
+      const scale = Math.min((halfScaled * 2) / iw, (halfScaled * 2) / ih);
+      const dw = iw * scale, dh = ih * scale;
+      const dx = cx - dw / 2, dy = cy - dh / 2;
 
-    // HP bar — thin strip at bottom of token (like Owlbear)
-    if (t.pvmax > 0) {
-      const pct = Math.max(0, Math.min(1, (t.pv||0)/t.pvmax));
-      const hpColor = pct > 0.5 ? '#00b894' : pct > 0.25 ? '#fdcb6e' : '#e84040';
-      const barH = Math.max(3, cellSize * 0.07);
-      const barY = ty0 + tH - barH;
-      // Track
-      ctx.fillStyle = 'rgba(0,0,0,0.55)';
-      ctx.beginPath(); ctx.roundRect(tx0, barY, tW, barH, [0,0,rad,rad]); ctx.fill();
-      // Fill
-      if (pct > 0) {
-        ctx.fillStyle = hpColor;
-        ctx.shadowBlur = 4; ctx.shadowColor = hpColor;
-        ctx.beginPath(); ctx.roundRect(tx0, barY, tW*pct, barH, pct >= 0.99 ? [0,0,rad,rad] : [0,0,0,rad]); ctx.fill();
-        ctx.shadowBlur = 0;
+      // Seleção / drag — glow sutil SEM borda visível
+      if (isSelected || isDragging) {
+        ctx.save();
+        ctx.shadowColor = isDragging ? 'rgba(255,255,255,0.8)' : cor;
+        ctx.shadowBlur  = isDragging ? 28 : 18;
+        ctx.drawImage(cachedImg, dx, dy, dw, dh);
+        ctx.restore();
       }
+
+      // Desenha a imagem solta, sem borda nenhuma
+      ctx.drawImage(cachedImg, dx, dy, dw, dh);
+
+    } else {
+      // Fallback sem imagem: círculo simples com emoji
+      const r = half;
+      if (isSelected || isDragging) {
+        ctx.beginPath(); ctx.arc(cx, cy, r + 5, 0, Math.PI * 2);
+        ctx.strokeStyle = isDragging ? '#fff' : cor;
+        ctx.lineWidth = 2.5; ctx.shadowColor = cor; ctx.shadowBlur = 20;
+        ctx.stroke(); ctx.shadowBlur = 0;
+      }
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = cor + 'aa'; ctx.lineWidth = 1.5;
+      ctx.shadowColor = cor; ctx.shadowBlur = 6; ctx.stroke(); ctx.shadowBlur = 0;
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      grad.addColorStop(0, cor + '44'); grad.addColorStop(1, '#0a0a0c');
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = grad; ctx.fill();
+      ctx.font = `${r * 0.9}px serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#fff'; ctx.fillText(t.icon || '?', cx, cy + 2);
     }
 
-    // Name pill below token
-    ctx.shadowBlur = 0;
-    const nome = t.nome||'?';
-    const fontSize = Math.max(9, Math.min(12, cellSize*0.165));
-    ctx.font = `600 ${fontSize}px Inter, sans-serif`;
-    const nameW = ctx.measureText(nome).width;
-    const pillW = nameW+10, pillH = fontSize+5;
-    const pillX = cx-pillW/2, pillY = ty0+tH+4;
-    ctx.fillStyle = 'rgba(0,0,0,0.82)';
-    ctx.beginPath(); ctx.roundRect(pillX, pillY, pillW, pillH, pillH/2); ctx.fill();
-    ctx.fillStyle = '#e8e8ea'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(nome, cx, pillY+pillH/2);
-
-    // Condition icons — top-right corner badges
-    const conds = t.conditions||{};
-    const condIcons = Object.entries(conds).filter(([,v])=>v).map(([k])=>({amedrontado:'😱',atordoado:'💫',envenenado:'☠️',maldito:'🔮',sangrando:'🩸',paralizado:'❄️',invisivel:'👁️'}[k]||'')).filter(Boolean);
+    // Condition badges — pequenos ícones ao redor, discretos
+    const conds = t.conditions || {};
+    const condMap = {amedrontado:'😱',atordoado:'💫',envenenado:'☠️',maldito:'🔮',sangrando:'🩸',paralizado:'❄️',invisivel:'👁️'};
+    const condIcons = Object.entries(conds).filter(([,v])=>v).map(([k])=>condMap[k]||'').filter(Boolean);
     if (condIcons.length > 0) {
-      const iconSize = Math.max(9, cellSize*0.2);
-      ctx.font = `${iconSize}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
-      condIcons.slice(0,4).forEach((icon, i) => {
-        const ix = tx0+tW - iconSize*0.6 - i*(iconSize*0.85), iy = ty0+iconSize*0.6;
-        ctx.fillStyle='rgba(0,0,0,0.7)'; ctx.beginPath(); ctx.arc(ix,iy,iconSize*0.55,0,Math.PI*2); ctx.fill();
-        ctx.fillText(icon, ix, iy+1);
+      const badgeR = Math.max(6, cellSize * 0.1);
+      condIcons.slice(0, 5).forEach((icon, i) => {
+        const bx = cx - (condIcons.length - 1) * badgeR * 1.1 / 2 + i * badgeR * 1.1 * 2;
+        const by = cy + half + badgeR + 2;
+        ctx.fillStyle = 'rgba(10,10,12,0.8)';
+        ctx.beginPath(); ctx.arc(bx, by, badgeR, 0, Math.PI * 2); ctx.fill();
+        ctx.font = `${badgeR * 1.3}px serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(icon, bx, by + 1);
       });
     }
 
@@ -1684,10 +2426,11 @@ function getTokenAtWorld(wx, wy) {
   const entries = Object.entries(tokens);
   for (let i=entries.length-1; i>=0; i--) {
     const [id,t] = entries[i];
-    const pad = cellSize*0.07;
-    const tx0=(t.x||0)*cellSize+pad, ty0=(t.y||0)*cellSize+pad;
-    const tw=cellSize-pad*2, th=cellSize-pad*2;
-    if (wx>=tx0 && wx<=tx0+tw && wy>=ty0 && wy<=ty0+th) return {...t,id};
+    const escala = t.escala || 1;
+    const half = cellSize * 0.46 * escala;
+    const cx = (t.x||0)*cellSize + cellSize/2;
+    const cy = (t.y||0)*cellSize + cellSize/2;
+    if (wx >= cx - half && wx <= cx + half && wy >= cy - half && wy <= cy + half) return {...t, id};
   }
   return null;
 }
@@ -1718,9 +2461,32 @@ window.adicionarToken = async function() {
   const pvmax = parseInt(document.getElementById('nt-pvmax').value)||pv;
   const cor   = document.getElementById('nt-cor').value;
   const icon  = document.getElementById('nt-icon').value||getDefaultIcon(tipo);
-  const img   = document.getElementById('nt-img').value.trim()||document.getElementById('nt-img-preview-img').src||'';
-  const token = { nome,tipo,pv,pvmax,cor,icon, img:img.startsWith('data:')||img.startsWith('http')?img:'',
-    x:Math.floor(Math.random()*8), y:Math.floor(Math.random()*6), owner:currentUser.uid, criadoEm:Date.now() };
+
+  // Imagem: prioridade → upload manual → URL manual → foto da ficha selecionada
+  let img = document.getElementById('nt-img').value.trim();
+  if (!img) {
+    const previewSrc = document.getElementById('nt-img-preview-img').src;
+    if (previewSrc && (previewSrc.startsWith('data:') || previewSrc.startsWith('http'))) img = previewSrc;
+  }
+  if (!img && _ntFichaSelecionada?.foto) img = _ntFichaSelecionada.foto;
+
+  // Referência da ficha para buscar habilidades depois
+  const fichaRef = _ntFichaSelecionada ? {
+    fichaLocalId: _ntFichaSelecionada.fichaLocalId || _ntFichaSelecionada.id || '',
+    playerUid:    _ntFichaSelecionada.playerUid || '',
+    playerNome:   _ntFichaSelecionada.playerNome || '',
+    nivel:        _ntFichaSelecionada.nivel || 1,
+    classe:       _ntFichaSelecionada.classe || '',
+    origem:       _ntFichaSelecionada.origem || '',
+  } : {};
+
+  const token = {
+    nome, tipo, pv, pvmax, cor, icon,
+    img: img && (img.startsWith('data:') || img.startsWith('http')) ? img : '',
+    ...fichaRef,
+    x: Math.floor(Math.random()*8), y: Math.floor(Math.random()*6),
+    owner: currentUser.uid, criadoEm: Date.now()
+  };
   await set(push(ref(rtdb,`tabletop/${campanhaId}/tokens`)), token);
   closeModal('modal-add-token'); limparFormToken();
   mostrarToast(`✦ ${nome} adicionado!`);
@@ -1730,7 +2496,241 @@ function getDefaultIcon(tipo) { return {jogador:'🧙',npc:'👤',monstro:'👾'
 function limparFormToken() {
   ['nt-nome','nt-pv','nt-pvmax','nt-icon','nt-img'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('nt-img-preview').style.display='none';
+  limparFichaSelecionada();
 }
+
+// =====================================================================
+// SELETOR DE FICHA NO MODAL ADD TOKEN
+// =====================================================================
+
+let _ntFichaSelecionada = null;   // Agente atualmente selecionado
+let _ntAgentesCarregados = false; // Evita re-fetch desnecessário
+
+// Carrega agentes da campanha quando o modal abre
+window.openModal = function(id) {
+  document.getElementById(id)?.classList.add('open');
+  if (id === 'modal-add-token') {
+    _ntCarregarFichas();
+  }
+};
+
+async function _ntCarregarFichas() {
+  if (_ntAgentesCarregados) return; // já carregou nesta sessão
+  const grid = document.getElementById('nt-ficha-grid');
+
+  try {
+    // Importa Firebase
+    const { getFirestore, collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const apps = getApps();
+    if (!apps.length || !campanhaId) throw new Error('sem app');
+
+    const db2 = getFirestore(apps[0]);
+    const snap = await getDocs(collection(db2, 'campanhas', campanhaId, 'agentes'));
+    const agentes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    if (agentes.length === 0) {
+      grid.innerHTML = `<div id="nt-ficha-loading" style="grid-column:1/-1;text-align:center;padding:14px 0;color:var(--text3);font-size:11px;font-family:'JetBrains Mono',monospace;">Nenhum agente vinculado ainda.</div>`;
+      return;
+    }
+
+    grid.innerHTML = agentes.map((a, i) => {
+      const foto = a.foto || '';
+      const avatarHtml = foto
+        ? `<div class="nt-ficha-avatar"><img src="${foto}" alt="${a.nome}" onerror="this.style.display='none';this.parentElement.textContent='🕵️'"></div>`
+        : `<div class="nt-ficha-avatar">🕵️</div>`;
+      return `
+        <div class="nt-ficha-card" id="nt-ficha-${i}" onclick="_ntSelecionarFicha(${i})" data-idx="${i}">
+          ${avatarHtml}
+          <div class="nt-ficha-label">${a.nome || 'Agente'}</div>
+          <div class="nt-ficha-sublabel">${a.classe || '—'} Nv${a.nivel || 1}</div>
+        </div>`;
+    }).join('');
+
+    // Guarda agentes no estado global para uso no seletor
+    window._ntAgentesLista = agentes;
+    _ntAgentesCarregados = true;
+
+  } catch(e) {
+    console.warn('Fichas Firebase falhou, tentando localStorage...', e);
+    // Fallback: localStorage
+    const usuario = sessionStorage.getItem('ficha_user') || '';
+    const prefix  = usuario ? usuario + '_' : '';
+    const agentes = JSON.parse(localStorage.getItem(prefix + 'lista_agentes')) || [];
+
+    if (agentes.length === 0) {
+      grid.innerHTML = `<div id="nt-ficha-loading" style="grid-column:1/-1;text-align:center;padding:14px 0;color:var(--text3);font-size:11px;font-family:'JetBrains Mono',monospace;">Nenhuma ficha local encontrada.</div>`;
+      return;
+    }
+
+    grid.innerHTML = agentes.map((a, i) => {
+      const foto = a.fotoCostum || '';
+      const avatarHtml = foto
+        ? `<div class="nt-ficha-avatar"><img src="${foto}" alt="${a.nome}" onerror="this.style.display='none';this.parentElement.textContent='🕵️'"></div>`
+        : `<div class="nt-ficha-avatar">🕵️</div>`;
+      return `
+        <div class="nt-ficha-card" id="nt-ficha-${i}" onclick="_ntSelecionarFicha(${i})" data-idx="${i}">
+          ${avatarHtml}
+          <div class="nt-ficha-label">${a.nome || 'Agente'}</div>
+          <div class="nt-ficha-sublabel">${a.classe || '—'} Nv${a.nivel || 1}</div>
+        </div>`;
+    }).join('');
+
+    // Normaliza campos do localStorage para o mesmo formato do Firebase
+    window._ntAgentesLista = agentes.map(a => ({
+      ...a,
+      foto: a.fotoCostum || '',
+      fichaLocalId: a.id,
+      playerUid: currentUser?.uid || '',
+      playerNome: sessionStorage.getItem('ficha_user') || '',
+    }));
+    _ntAgentesCarregados = true;
+  }
+}
+
+window._ntSelecionarFicha = async function(idx) {
+  const agentes = window._ntAgentesLista || [];
+  const agente  = agentes[idx];
+  if (!agente) return;
+
+  // Marca card como selecionado
+  document.querySelectorAll('.nt-ficha-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(`nt-ficha-${idx}`)?.classList.add('selected');
+
+  _ntFichaSelecionada = agente;
+
+  // Preenche campos automaticamente
+  const nomeEl  = document.getElementById('nt-nome');
+  const tipoEl  = document.getElementById('nt-tipo');
+  const pvEl    = document.getElementById('nt-pv');
+  const pvmaxEl = document.getElementById('nt-pvmax');
+  const corEl   = document.getElementById('nt-cor');
+  const iconEl  = document.getElementById('nt-icon');
+  const imgEl   = document.getElementById('nt-img');
+
+  if (!nomeEl.value || nomeEl.value === '') nomeEl.value = agente.nome || '';
+  tipoEl.value = 'jogador';
+
+  // --- Tenta buscar o estado real da ficha para pegar PV correto ---
+  let estadoFicha = null;
+  const fichaId = agente.fichaLocalId || agente.id || '';
+
+  // 1) Firebase RTDB → fichas/{fichaId}/estado
+  if (fichaId) {
+    try {
+      const snap2 = await get(ref(rtdb, `fichas/${fichaId}/estado`));
+      if (snap2.exists()) estadoFicha = snap2.val();
+    } catch(e) { /* ignora */ }
+  }
+
+  // 2) Firestore → campanhas/{campanhaId}/agentes/{fichaId} campo estado / pvAtual
+  if (!estadoFicha && fichaId && campanhaId) {
+    try {
+      const { getFirestore, doc: fsDoc, getDoc: fsGetDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+      const apps = getApps();
+      if (apps.length) {
+        const fs2 = getFirestore(apps[0]);
+        const docSnap = await fsGetDoc(fsDoc(fs2, 'campanhas', campanhaId, 'agentes', fichaId));
+        if (docSnap.exists()) {
+          const d = docSnap.data();
+          if (d.estado) estadoFicha = d.estado;
+          else if (d.pvAtual !== undefined || d.pvmax !== undefined) {
+            estadoFicha = { pvAtual: d.pvAtual, pvmax: d.pvmax, pvMax: d.pvMax };
+          }
+        }
+      }
+    } catch(e) { /* ignora */ }
+  }
+
+  // 3) localStorage — prefixos comuns
+  if (!estadoFicha && fichaId) {
+    const prefixos = [
+      (agente.playerNome || '') + '_',
+      (sessionStorage.getItem('ficha_user') || '') + '_',
+      (localStorage.getItem('ficha_user_ativo') || '') + '_',
+      ''
+    ];
+    for (const p of prefixos) {
+      try {
+        const raw = localStorage.getItem(p + 'estado_ficha_' + fichaId);
+        if (raw) { estadoFicha = JSON.parse(raw); break; }
+      } catch(e) {}
+    }
+  }
+
+  // Extrai PV do estado (ou fallback para campos simples do agente)
+  let pv, pvmax;
+  if (estadoFicha) {
+    // O estado pode guardar pvAtual, pvMax, pv, pvmax — testa todos
+    pvmax = estadoFicha.pvmax ?? estadoFicha.pvMax ?? estadoFicha.pvMaximo ?? estadoFicha.pontosDeVidaMax ?? agente.pvmax ?? agente.pvMaximo ?? agente.pvMax ?? 30;
+    pv    = estadoFicha.pvAtual ?? estadoFicha.pv ?? estadoFicha.pontosDeVida ?? pvmax;
+  } else {
+    // Fallback: campos simples do agente (pode ser desatualizado)
+    pvmax = agente.pvmax || agente.pvMaximo || agente.pvMax || agente.pv || 30;
+    pv    = agente.pv || agente.pvAtual || agente.pontosDeVida || pvmax;
+  }
+
+  pvEl.value    = pv;
+  pvmaxEl.value = pvmax;
+
+  // Ícone baseado na classe
+  const classIconMap = {
+    'combatente':'⚔️', 'especialista':'🔧', 'ocultista':'🔮', 'mundano':'👤',
+    'operativo':'🎯', 'parapsíquico':'🧠', 'paranatural':'✨'
+  };
+  const classeKey = (agente.classe || '').toLowerCase();
+  const matchedIcon = Object.entries(classIconMap).find(([k]) => classeKey.includes(k));
+  if (!iconEl.value) iconEl.value = matchedIcon?.[1] || '🕵️';
+
+  // Imagem: usa a foto da ficha no campo img (pode ser substituída pelo mestre depois)
+  const foto = agente.foto || agente.fotoCostum || '';
+  if (foto) {
+    imgEl.value = foto;
+    // Mostra badge "Da Ficha"
+    document.getElementById('nt-img-ficha-badge').style.display = 'inline-flex';
+    // Preview visual
+    const previewImg = document.getElementById('nt-img-preview-img');
+    const previewDiv = document.getElementById('nt-img-preview');
+    previewImg.src = foto;
+    previewDiv.style.display = 'block';
+  }
+
+  // Mostra preview compacto da ficha selecionada
+  const selPreview = document.getElementById('nt-ficha-selected-preview');
+  const selAvatar  = document.getElementById('nt-ficha-sel-avatar');
+  const selNome    = document.getElementById('nt-ficha-sel-nome');
+  const selMeta    = document.getElementById('nt-ficha-sel-meta');
+
+  if (foto) {
+    selAvatar.innerHTML = `<img src="${foto}" alt="${agente.nome}" style="width:100%;height:100%;object-fit:cover;border-radius:7px;" onerror="this.parentElement.textContent='🕵️'">`;
+  } else {
+    selAvatar.textContent = '🕵️';
+  }
+  selNome.textContent = agente.nome || 'Agente';
+  selMeta.textContent = `${agente.classe || '—'} · ${agente.origem || '—'} · Nível ${agente.nivel || 1} · ${agente.playerNome || ''}`;
+  selPreview.style.display = 'block';
+
+  // Rola o modal para mostrar o preview da ficha
+  selPreview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
+
+window.limparFichaSelecionada = function() {
+  _ntFichaSelecionada = null;
+  document.querySelectorAll('.nt-ficha-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('nt-ficha-selected-preview').style.display = 'none';
+  document.getElementById('nt-img-ficha-badge').style.display = 'none';
+  document.getElementById('nt-img-preview').style.display = 'none';
+  document.getElementById('nt-img').value = '';
+};
+
+window._ntRecarregarFichas = function() {
+  _ntAgentesCarregados = false;
+  window._ntAgentesLista = [];
+  const grid = document.getElementById('nt-ficha-grid');
+  if (grid) grid.innerHTML = `<div id="nt-ficha-loading" style="grid-column:1/-1;text-align:center;padding:18px 0;color:var(--text3);font-size:11px;font-family:'JetBrains Mono',monospace;">⏳ Recarregando fichas...</div>`;
+  _ntCarregarFichas();
+};
 
 window.previewTokenImg = function(input) {
   const file=input.files[0]; if (!file) return;
@@ -1739,6 +2739,9 @@ window.previewTokenImg = function(input) {
     document.getElementById('nt-img-preview-img').src=e.target.result;
     document.getElementById('nt-img').value=e.target.result;
     document.getElementById('nt-img-preview').style.display='block';
+    // Quando o mestre faz upload de token OP, remove o badge "Da Ficha"
+    // mas mantém a ficha selecionada para os outros dados
+    document.getElementById('nt-img-ficha-badge').style.display='none';
   };
   reader.readAsDataURL(file);
 };
@@ -1751,6 +2754,19 @@ function abrirEditarToken(id) {
   document.getElementById('et-pv').value=t.pv;
   document.getElementById('et-pvmax').value=t.pvmax;
   document.getElementById('et-cor').value=t.cor||'#4a8fe8';
+  const escala = t.escala || 1;
+  document.getElementById('et-escala').value=escala;
+  document.getElementById('et-escala-label').textContent=parseFloat(escala).toFixed(1)+'×';
+  // Slider de largura 3D — só visível no modo 3D
+  const escalah3d = t.escalaH3d || 1;
+  document.getElementById('et-escalah3d').value=escalah3d;
+  document.getElementById('et-escalah3d-label').textContent=parseFloat(escalah3d).toFixed(2)+'×';
+  document.getElementById('et-escalah3d-row').style.display = modo3dAtivo ? '' : 'none';
+  // Carregar condições
+  const conds = t.conditions || {};
+  document.querySelectorAll('#et-cond-grid .ob-cond-btn').forEach(btn => {
+    btn.classList.toggle('on', !!conds[btn.dataset.cond]);
+  });
   openModal('modal-edit-token');
 }
 
@@ -1760,7 +2776,14 @@ window.salvarToken = async function() {
   const pv=parseInt(document.getElementById('et-pv').value);
   const pvmax=parseInt(document.getElementById('et-pvmax').value);
   const cor=document.getElementById('et-cor').value;
-  await update(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`),{nome,pv,pvmax,cor});
+  const escala=parseFloat(document.getElementById('et-escala').value)||1;
+  const escalaH3d=parseFloat(document.getElementById('et-escalah3d').value)||1;
+  // Coletar condições ativas
+  const conditions = {};
+  document.querySelectorAll('#et-cond-grid .ob-cond-btn').forEach(btn => {
+    if (btn.classList.contains('on')) conditions[btn.dataset.cond] = true;
+  });
+  await update(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`),{nome,pv,pvmax,cor,escala,escalaH3d,conditions});
   closeModal('modal-edit-token'); mostrarToast('✦ Token atualizado!');
 };
 
@@ -1826,7 +2849,7 @@ function renderTokenList() {
   el.innerHTML = list.map(([id,t])=>{
     const pct=t.pvmax>0?Math.max(0,Math.min(100,(t.pv/t.pvmax)*100)):0;
     const hpColor=pct>50?'#00b894':pct>25?'#fdcb6e':'#e84040';
-    return `<div class="ob-token-item ${selectedTokenId===id?'selected':''}" onclick="selecionarTokenLista('${id}')">
+    return `<div class="ob-token-item ${selectedTokenId===id?'selected':''}" data-token-id="${id}">
       <div class="ob-token-avatar" style="background:${(t.cor||'#4a8fe8')}22;">
         ${t.img?`<img src="${t.img}" alt="">`:`<span>${t.icon||'?'}</span>`}
       </div>
@@ -1835,19 +2858,245 @@ function renderTokenList() {
         <div class="ob-hp-bar"><div class="ob-hp-fill" style="width:${pct}%;background:${hpColor};"></div></div>
         <div class="ob-token-sub">PV ${t.pv??'?'}/${t.pvmax??'?'}</div>
       </div>
-      ${isMestre?`<button class="ob-token-edit-btn" onclick="event.stopPropagation();abrirEditarToken('${id}')" title="Editar">
+      ${isMestre?`<button class="ob-token-edit-btn" data-edit-id="${id}" title="Editar">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:13px;height:13px;"><path d="M3 13l8-8a1.5 1.5 0 012 2L5 15H3v-2z"/></svg>
       </button>`:''}
     </div>`;
   }).join('');
+
+  // Listeners via addEventListener para garantir stopPropagation correto
+  el.querySelectorAll('.ob-token-item').forEach(item => {
+    item.addEventListener('click', () => selecionarTokenLista(item.dataset.tokenId));
+  });
+  el.querySelectorAll('.ob-token-edit-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      abrirEditarToken(btn.dataset.editId);
+    });
+  });
 }
 
 window.selecionarTokenLista = function(id) {
-  selectedTokenId=id;
-  const t=tokens[id]; if (!t) return;
+  selectedTokenId = id;
+  const t = tokens[id]; if (!t) return;
   camX = canvas.width/2 - (t.x*cellSize+cellSize/2)*camZoom;
   camY = canvas.height/2 - (t.y*cellSize+cellSize/2)*camZoom;
   renderAll(); renderTokenList();
+  // Se tem ficha vinculada, abre overlay cinematográfico
+  if (t.fichaLocalId || t.playerUid) {
+    abrirFichaToken(id);
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  FICHA DO TOKEN — overlay cinematográfico (estilo Ordem Paranormal)
+// ═══════════════════════════════════════════════════════════════
+
+window.abrirFichaToken = async function(id) {
+  let t = tokens[id]; if (!t) return;
+
+  // Monta o overlay com estado "carregando"
+  _renderFichaOverlay(t, null, true);
+
+  // --- BUSCA OS DADOS DO ESTADO DA FICHA ---
+  let estado = null;
+
+  // 1) Firebase Realtime DB → fichas/{fichaLocalId}/estado
+  if (t.fichaLocalId) {
+    try {
+      const { getDatabase, ref: rtRef, get } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+      const { getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+      const apps = getApps();
+      if (apps.length) {
+        const db2 = getDatabase(apps[0]);
+        const snap = await get(rtRef(db2, `fichas/${t.fichaLocalId}/estado`));
+        if (snap.exists()) estado = snap.val();
+      }
+    } catch(e) { /* ignora */ }
+  }
+
+  // 2) localStorage — chave: {prefix}estado_ficha_{fichaLocalId}
+  if (!estado && t.fichaLocalId) {
+    const prefixos = [
+      (t.playerNome || '') + '_',
+      (sessionStorage.getItem('ficha_user') || '') + '_',
+      (localStorage.getItem('ficha_user_ativo') || '') + '_',
+      ''
+    ];
+    for (const p of prefixos) {
+      try {
+        const raw = localStorage.getItem(p + 'estado_ficha_' + t.fichaLocalId);
+        if (raw) { estado = JSON.parse(raw); break; }
+      } catch(e) {}
+    }
+  }
+
+  // Renderiza com os dados encontrados (ou mensagem de erro)
+  // Se o estado tem PV diferente do token, sincroniza
+  if (estado) {
+    const pvReal    = estado.pvAtual ?? estado.pv ?? estado.pontosDeVida ?? t.pv;
+    const pvmaxReal = estado.pvmax   ?? estado.pvMax ?? estado.pvMaximo ?? estado.pontosDeVidaMax ?? t.pvmax;
+    if ((pvReal !== undefined && pvReal !== t.pv) || (pvmaxReal !== undefined && pvmaxReal !== t.pvmax)) {
+      // Cria cópia local do token com os valores atualizados para render
+      t = { ...t, pv: pvReal ?? t.pv, pvmax: pvmaxReal ?? t.pvmax };
+      // Persiste no RTDB se for mestre (sem await para não bloquear)
+      if (isMestre) {
+        update(ref(rtdb, `tabletop/${campanhaId}/tokens/${id}`), { pv: t.pv, pvmax: t.pvmax }).catch(()=>{});
+      }
+    }
+  }
+  _renderFichaOverlay(t, estado, false);
+};
+
+function _renderFichaOverlay(t, estado, carregando) {
+  // Remove overlay anterior se existir
+  const old = document.getElementById('ft-overlay');
+  if (old) old.remove();
+
+  // Determina posição do token no canvas para animar a partir dele
+  const wrap = document.getElementById('tt-canvas-wrap');
+  const wRect = wrap.getBoundingClientRect();
+  const tokenScreenX = (t.x||0)*cellSize*camZoom + cellSize/2*camZoom + camX + wRect.left;
+  const tokenScreenY = (t.y||0)*cellSize*camZoom + cellSize/2*camZoom + camY + wRect.top;
+
+  // ── Monta cards de habilidades/rituais/ataques/inventário ──
+  let cardsEsq = '';
+  let cardsDir = '';
+
+  if (carregando) {
+    cardsEsq = `<div class="ft-loading-text">⏳ Carregando ficha...</div>`;
+  } else if (!estado) {
+    cardsEsq = `<div class="ft-loading-text">⚠ Ficha não encontrada<br><span style="font-size:10px;opacity:0.5;">ID: ${t.fichaLocalId||'—'}</span></div>`;
+  } else {
+    // Habilidades → coluna esquerda
+    const habs = estado.habilidadesPersonagem || [];
+    habs.forEach((h, i) => {
+      const nome  = h.nome || '';
+      const desc  = h.desc || h.descricao || '';
+      const custo = h.custo ? h.custo + ' PD' : (h.pe ? h.pe + ' PE' : '');
+      const card  = _makeCard(nome, desc, custo, 'hab');
+      if (i % 2 === 0) cardsEsq += card; else cardsDir += card;
+    });
+    // Ataques → coluna esquerda
+    (estado.ataques || []).forEach((a, i) => {
+      const card = _makeCard(a.nome, `${a.dano} — ${a.tipo||''}`, '', 'atk');
+      if ((habs.length + i) % 2 === 0) cardsEsq += card; else cardsDir += card;
+    });
+    // Rituais → coluna direita
+    (estado.rituaisPersonagem || []).forEach((r, i) => {
+      const custo = r.circulo ? `${r.circulo}° Círculo` : '';
+      const desc  = [r.exec ? `⚡ ${r.exec}` : '', r.alcance ? `🎯 ${r.alcance}` : '', r.desc || ''].filter(Boolean).join(' · ');
+      const card  = _makeCard(r.nome, desc, custo, 'rit');
+      if (i % 2 === 0) cardsDir += card; else cardsEsq += card;
+    });
+    // Inventário → distribuído
+    (estado.inventario || []).slice(0, 6).forEach((item, i) => {
+      const card = _makeCard(item.nome, item.desc || '', item.cat || '', 'item');
+      if (i % 2 === 0) cardsDir += card; else cardsEsq += card;
+    });
+    if (!cardsEsq && !cardsDir) {
+      cardsEsq = `<div class="ft-loading-text">Nenhuma habilidade registrada.</div>`;
+    }
+  }
+
+  // ── PV bar ──
+  const pct = (t.pvmax||0) > 0 ? Math.max(0, Math.min(100, (t.pv/t.pvmax)*100)) : 0;
+  const pvColor = pct > 50 ? '#00b894' : pct > 25 ? '#fdcb6e' : '#e84040';
+
+  // ── Avatar ──
+  const avatarHTML = t.img
+    ? `<img src="${t.img}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='${t.icon||'?'}'"`
+    : `<span style="font-size:28px;line-height:1;">${t.icon||'?'}</span>`;
+
+  // ── Overlay HTML ──
+  const overlay = document.createElement('div');
+  overlay.id = 'ft-overlay';
+
+  // Imagem de fundo / char: usa a imagem do token se existir, senão o emoji
+  const hasImg = t.img && (t.img.startsWith('data:') || t.img.startsWith('http'));
+  const charContent = hasImg
+    ? `<img id="ft-char-img" src="${t.img}" alt="" onerror="this.style.display='none'">`
+    : `<span id="ft-char-emoji">${t.icon || '🕵️'}</span>`;
+
+  const bgImgContent = hasImg
+    ? `<img id="ft-bg-img" src="${t.img}" alt="">`
+    : '';
+
+  // Todos os cards numa única lista
+  const allCards = cardsEsq + cardsDir;
+
+  overlay.innerHTML = `
+    <div id="ft-bg">${bgImgContent}</div>
+    <div id="ft-scanlines"></div>
+    <div id="ft-backdrop" onclick="fecharFichaToken()"></div>
+    <div id="ft-origin-dot" style="left:${tokenScreenX}px;top:${tokenScreenY}px;"></div>
+
+    <div id="ft-char-display">${charContent}</div>
+
+    <button id="ft-close-btn" onclick="fecharFichaToken()">✕</button>
+
+    <div id="ft-header">
+      <div id="ft-header-name">${t.nome || '—'}</div>
+      <div id="ft-header-sub">${[t.classe, t.origem, t.nivel ? `Nv ${t.nivel}` : ''].filter(Boolean).join(' · ')}</div>
+      <div id="ft-header-hp">
+        <div id="ft-hp-bar-wrap"><div id="ft-hp-bar-fill" style="width:${pct}%;background:${pvColor};"></div></div>
+        <div id="ft-hp-text" style="color:${pvColor};">PV ${t.pv ?? '?'}/${t.pvmax ?? '?'}</div>
+      </div>
+    </div>
+
+    <div id="ft-cards-panel" onclick="event.stopPropagation()">
+      ${allCards || `<div class="ft-loading-text">Nenhuma habilidade registrada.</div>`}
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // Animação de entrada
+  requestAnimationFrame(() => {
+    overlay.classList.add('ft-show');
+  });
+}
+
+function _makeCard(nome, desc, badge, tipo) {
+  if (!nome) return '';
+  const isItem = tipo === 'item';
+  const isRit  = tipo === 'rit';
+  const isAtk  = tipo === 'atk';
+  const barClass = isItem ? 'ft-bar-item' : isRit ? 'ft-bar-rit' : isAtk ? 'ft-bar-atk' : 'ft-bar-hab';
+  const hasDesc = !!desc;
+  return `<div class="ft-card ft-card-${tipo}" onclick="event.stopPropagation();_ftToggleCard(this)" data-has-desc="${hasDesc}">
+    <div class="ft-card-bar ${barClass}">
+      <span class="ft-card-nome">${nome.toUpperCase()}</span>
+      ${badge ? `<span class="ft-card-badge">${badge}</span>` : ''}
+      ${hasDesc ? `<span class="ft-card-chevron">▼</span>` : ''}
+    </div>
+    ${hasDesc ? `<div class="ft-card-desc">${desc}</div>` : ''}
+  </div>`;
+}
+
+window._ftToggleCard = function(el) {
+  if (!el.dataset.hasDesc || el.dataset.hasDesc === 'false') return;
+  const isOpen = el.classList.contains('ft-expanded');
+  // Fecha todos os outros cards abertos
+  document.querySelectorAll('#ft-cards-panel .ft-card.ft-expanded').forEach(c => {
+    if (c !== el) c.classList.remove('ft-expanded');
+  });
+  el.classList.toggle('ft-expanded', !isOpen);
+  if (!isOpen) {
+    const desc = el.querySelector('.ft-card-desc');
+    if (desc) {
+      desc.addEventListener('wheel', e => e.stopPropagation(), { passive: true });
+      desc.addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
+      // Scroll suave para o card ficar visível
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+  }
+};
+
+window.fecharFichaToken = function() {
+  const ov = document.getElementById('ft-overlay');
+  if (!ov) return;
+  ov.classList.add('ft-hide');
+  setTimeout(() => ov.remove(), 400);
 };
 
 // ===== MAP =====
@@ -2120,10 +3369,6 @@ window.shareScene = function() {
   }
 };
 
-window.switchLayer = function(name) {
-  document.querySelectorAll('[id^="asset-layer-"]').forEach(b=>b.classList.remove('active'));
-  document.getElementById('asset-layer-'+name)?.classList.add('active');
-};
 
 async function enviarPing(wx, wy) {
   mostrarPing(wx, wy, '#fdcb6e');
@@ -2215,7 +3460,9 @@ function renderChat(msgs) {
   const el=document.getElementById('chat-messages');
   el.innerHTML=msgs.map(m=>{
     let cls=''; if (m.tipo==='sistema') cls='sistema'; else if (m.tipo==='dado') cls='dado'; else if (m.tipo==='ping') cls='ping';
-    return `<div class="ob-msg ${cls}">
+    const pingAttr = (m.tipo==='ping' && m.worldX!==undefined)
+      ? ` style="cursor:pointer;" onclick="irParaPing(${m.worldX},${m.worldY})" title="Clique para ir à posição"` : '';
+    return `<div class="ob-msg ${cls}"${pingAttr}>
       <div class="ob-msg-autor">${m.autor||'?'} · ${m.ts?new Date(m.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):''}</div>
       <div class="ob-msg-text">${m.tipo==='dado'?`<span class="ob-msg-roll">${m.resultado}</span>${m.texto}`:(m.texto||'')}</div>
     </div>`;
@@ -2233,10 +3480,22 @@ window.enviarChat = async function() {
     const {resultado,texto}=rolarDados(expr);
     await push(ref(rtdb,`tabletop/${campanhaId}/chat`),{...base,tipo:'dado',texto,resultado});
   } else if (raw.startsWith('/ping')) {
-    await push(ref(rtdb,`tabletop/${campanhaId}/chat`),{...base,tipo:'ping',texto:`📍 ${nomeLocal} marcou uma posição.`});
+    // Salva coordenadas do centro atual da câmera
+    const wx=Math.round((-camX/camZoom)+canvas.width/(2*camZoom));
+    const wy=Math.round((-camY/camZoom)+canvas.height/(2*camZoom));
+    await push(ref(rtdb,`tabletop/${campanhaId}/chat`),{...base,tipo:'ping',texto:`📍 ${nomeLocal} marcou uma posição.`,worldX:wx,worldY:wy});
+    enviarPing(wx, wy);
   } else {
     await push(ref(rtdb,`tabletop/${campanhaId}/chat`),{...base,tipo:'normal',texto:raw});
   }
+};
+
+window.irParaPing = function(wx, wy) {
+  if (wx === undefined || wy === undefined) return;
+  camX = canvas.width/2 - wx * camZoom;
+  camY = canvas.height/2 - wy * camZoom;
+  renderAll();
+  mostrarPing(wx, wy, '#fdcb6e');
 };
 
 function rolarDados(expr) {
@@ -2262,10 +3521,13 @@ function rolarDados(expr) {
 }
 
 // ===== MODAL =====
-window.openModal = function(id) { document.getElementById(id)?.classList.add('open'); };
-window.closeModal = function(id) { document.getElementById(id)?.classList.remove('open'); };
+// openModal já redefinido acima com lógica de carregamento de fichas
+window.closeModal = function(id) {
+  document.getElementById(id)?.classList.remove('open');
+  if (id === 'modal-add-token') limparFormToken();
+};
 document.querySelectorAll('.ob-modal-bg').forEach(el=>{
-  el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});
+  el.addEventListener('click',e=>{if(e.target===el){el.classList.remove('open'); if(el.id==='modal-add-token') limparFormToken();}});
 });
 
 // ===== PANEL =====
@@ -2297,6 +3559,72 @@ function aplicarTemaLocal() {
   document.documentElement.setAttribute('data-tema',tema);
 }
 
+// ===== CONDIÇÕES =====
+window.toggleCondicao = function(btn) {
+  btn.classList.toggle('on');
+};
+
+// ===== TEMA =====
+window.aplicarTema = function(tema, btn) {
+  localStorage.setItem('ficha_tema', tema);
+  document.documentElement.setAttribute('data-tema', tema);
+  document.querySelectorAll('.ob-theme-btn').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  mostrarToast(`🎨 Tema ${tema} aplicado!`);
+};
+
+// ===== CONFIGURAÇÕES =====
+window.abrirConfiguracoes = function() {
+  // Marcar tema atual
+  const temaAtual = localStorage.getItem('ficha_tema') || 'medo';
+  document.querySelectorAll('.ob-theme-btn').forEach(b => {
+    b.classList.toggle('on', b.dataset.tema === temaAtual);
+  });
+  document.getElementById('settings-nome').value = nomeLocal;
+  openModal('modal-settings');
+};
+
+window.salvarNomeMesa = function() {
+  const novo = document.getElementById('settings-nome').value.trim();
+  if (!novo) return;
+  nomeLocal = novo;
+  localStorage.setItem('ficha_user', novo);
+  sessionStorage.setItem('ficha_user', novo);
+  // Atualiza presença no Firebase
+  if (campanhaId && currentUser) {
+    const presenceRef = ref(rtdb, `tabletop/${campanhaId}/presence/${currentUser.uid}`);
+    update(presenceRef, {nome: novo});
+  }
+  mostrarToast(`✦ Nome atualizado: ${novo}`);
+};
+
+// ===== CONVITE =====
+window.abrirConvite = function() {
+  document.getElementById('invite-link-text').textContent = window.location.href;
+  openModal('modal-invite');
+};
+
+window.copiarLinkConvite = function() {
+  const url = window.location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => mostrarToast('🔗 Link copiado!'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    mostrarToast('🔗 Link copiado!');
+  }
+  closeModal('modal-invite');
+};
+
+// ===== SWITCH LAYER — funcional =====
+window.switchLayer = function(name) {
+  document.querySelectorAll('[id^="asset-layer-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('asset-layer-' + name)?.classList.add('active');
+  mostrarToast(`Camada: ${name}`);
+};
+
+// ===== ENTRADA NA MESA =====
 setTimeout(()=>{
   if (!campanhaId) return;
   push(ref(rtdb,`tabletop/${campanhaId}/chat`),{
@@ -2305,6 +3633,1096 @@ setTimeout(()=>{
   });
 }, 2000);
 
+// HP rápido: H/L para +5/-5 no token selecionado
+document.addEventListener('keydown', e => {
+  if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+  if (!selectedTokenId || !isMestre) return;
+  if (e.key === 'h' || e.key === 'H') {
+    alterarHP_token(selectedTokenId, +5);
+  } else if (e.key === 'l' || e.key === 'L') {
+    alterarHP_token(selectedTokenId, -5);
+  }
+});
+async function alterarHP_token(id, delta) {
+  const t = tokens[id]; if (!t) return;
+  const novoPV = Math.max(0, Math.min(t.pvmax||999, (t.pv||0)+delta));
+  await update(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`),{pv:novoPV});
+  mostrarToast(`${delta>0?'+':''}${delta} PV → ${novoPV}/${t.pvmax}`);
+}
+
+// =====================================================================
+//  MODO 3D — ENGINE THREE.JS
+// =====================================================================
+
+let modo3dAtivo = false;
+let three = {
+  renderer: null, scene: null, camera: null,
+  floorMesh: null, tokenMeshes: {}, fogMeshes: {},
+  ambientLight: null, dirLight: null, redLight: null,
+  animFrame: null, clock: null,
+  orbitAngle: 0, orbitTarget: { x: 0, y: 0 },
+  isDragging: false, lastMX: 0, lastMY: 0,
+  isPanning: false, panStartX: 0, panStartY: 0,
+  camPanX: 0, camPanY: 0,
+  touchDist: 0, camDist: 18,
+  selectedToken: null,
+  draggingTokenId: null,
+  _lastPinchMX: undefined, _lastPinchMY: undefined
+};
+
+// -- Textura procedural de chão --
+function criarTexturaChao(cor1 = '#1a0a0a', cor2 = '#110505') {
+  const sz = 512;
+  const offscreen = document.createElement('canvas');
+  offscreen.width = offscreen.height = sz;
+  const c = offscreen.getContext('2d');
+
+  // Fundo base
+  c.fillStyle = cor1;
+  c.fillRect(0, 0, sz, sz);
+
+  // Grid de quadrados (como o mapa 2D)
+  const cell = sz / 8;
+  c.strokeStyle = 'rgba(180,30,30,0.18)';
+  c.lineWidth = 0.8;
+  for (let x = 0; x <= sz; x += cell) { c.beginPath(); c.moveTo(x,0); c.lineTo(x,sz); c.stroke(); }
+  for (let y = 0; y <= sz; y += cell) { c.beginPath(); c.moveTo(0,y); c.lineTo(sz,y); c.stroke(); }
+
+  // Ruído sutil
+  for (let i = 0; i < 3000; i++) {
+    const x = Math.random()*sz, y = Math.random()*sz;
+    const a = Math.random() * 0.06;
+    c.fillStyle = `rgba(255,255,255,${a})`;
+    c.fillRect(x, y, 1, 1);
+  }
+
+  // Vinheta
+  const grad = c.createRadialGradient(sz/2,sz/2,sz*0.2,sz/2,sz/2,sz*0.8);
+  grad.addColorStop(0, 'transparent');
+  grad.addColorStop(1, 'rgba(0,0,0,0.5)');
+  c.fillStyle = grad;
+  c.fillRect(0,0,sz,sz);
+
+  return new THREE.CanvasTexture(offscreen);
+}
+
+// -- Textura do mapa atual --
+function criarTexturaDoMapa() {
+  if (mapImg) {
+    const tex = new THREE.CanvasTexture(mapImg);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    return tex;
+  }
+  // mapa animado (video)
+  const videoEl = document.getElementById('tt-map-video');
+  if (animMapType && videoEl && videoEl.src && animMapType !== 'gif') {
+    const tex = new THREE.VideoTexture(videoEl);
+    return tex;
+  }
+  // gif: usa elemento img
+  const gifEl = document.getElementById('tt-map-gif');
+  if (animMapType === 'gif' && gifEl && gifEl.src) {
+    const tex = new THREE.CanvasTexture(gifEl);
+    return tex;
+  }
+  return criarTexturaChao();
+}
+
+// -- Mesh de token 3D — estilo Hexatombe (sprite vertical + marcadores no chão) --
+function criarMeshToken(t, id) {
+  const corHex = t.cor || '#cc2222';
+  const sc  = cellSize / 60;
+  const sz = sc * 0.85;
+
+  // Escala do token (mesma propriedade do modo 2D)
+  const escala3d = t.escala || 1;
+  const szScaled = sz * escala3d;
+
+  const group = new THREE.Group();
+  group.userData = { tokenId: id, tipo: t.tipo || 'npc', _triDist: szScaled * 0.30 };
+
+  const corTHREE = new THREE.Color(corHex);
+
+  // ============================================================
+  // 1. SPRITE VERTICAL DA IMAGEM (billboard — igual ao Hexatombe)
+  // ============================================================
+  const imgSrc = t.img && (t.img.startsWith('data:') || t.img.startsWith('http')) ? t.img : null;
+  const cachedImg = imgSrc ? getCachedImage(imgSrc) : null;
+
+  const escalaH3d = t.escalaH3d || 1;
+  const spriteH = szScaled * 1.6;                  // altura do sprite
+  const spriteW = szScaled * 1.0 * escalaH3d;      // largura ajustável independentemente
+
+  // Resolução do canvas baseada na escala — garante nitidez em qualquer tamanho
+  // Base 512×820 (2× o antigo 256×410). Multiplica pela escala, limitado a 2048 para não
+  // explodir a memória de GPU. escalaH3d afeta só a largura do PlaneGeometry, não do canvas.
+  const texRes = Math.min(2048, Math.max(512, Math.round(512 * escala3d)));
+  const texW = texRes;
+  const texH = Math.round(texRes * (410 / 256)); // mantém proporção 1:1.6
+
+  const sprC = document.createElement('canvas');
+  sprC.width = texW; sprC.height = texH;
+  const sCtx = sprC.getContext('2d');
+  sCtx.imageSmoothingEnabled = true;
+  sCtx.imageSmoothingQuality = 'high';
+
+  // Fator de escala para todas as coordenadas (base foi desenhada para 256×410)
+  const tScaleX = texW / 256;
+  const tScaleY = texH / 410;
+
+  if (cachedImg) {
+    // --- Imagem real ---
+    sCtx.fillStyle = 'rgba(0,0,0,0.0)';
+    sCtx.fillRect(0, 0, texW, texH);
+
+    // Máscara arredondada — coordenadas escaladas
+    const mX = 18  * tScaleX, mY = 10  * tScaleY;
+    const mW = 220 * tScaleX, mH = 310 * tScaleY;
+    const mR = 18  * Math.min(tScaleX, tScaleY);
+    sCtx.save();
+    sCtx.beginPath();
+    sCtx.roundRect ? sCtx.roundRect(mX, mY, mW, mH, mR) : sCtx.rect(mX, mY, mW, mH);
+    sCtx.clip();
+    sCtx.drawImage(cachedImg, mX, mY, mW, mH);
+    sCtx.restore();
+
+    // Fade embaixo
+    const fadeGrad = sCtx.createLinearGradient(0, mY + mH * 0.55, 0, mY + mH);
+    fadeGrad.addColorStop(0, 'rgba(0,0,0,0)');
+    fadeGrad.addColorStop(1, 'rgba(0,0,0,0.85)');
+    sCtx.save();
+    sCtx.beginPath();
+    sCtx.roundRect ? sCtx.roundRect(mX, mY, mW, mH, mR) : sCtx.rect(mX, mY, mW, mH);
+    sCtx.clip();
+    sCtx.fillStyle = fadeGrad;
+    sCtx.fillRect(mX, mY, mW, mH);
+    sCtx.restore();
+
+    // Nome
+    const nomeFontSize = Math.round(20 * Math.min(tScaleX, tScaleY));
+    sCtx.font = `bold ${nomeFontSize}px sans-serif`;
+    sCtx.textAlign = 'center';
+    sCtx.fillStyle = '#ffffff';
+    sCtx.shadowColor = corHex; sCtx.shadowBlur = 12 * Math.min(tScaleX, tScaleY);
+    sCtx.fillText(t.nome || '?', texW / 2, mY + mH - 14 * tScaleY);
+    sCtx.shadowBlur = 0;
+
+    // Barra de PV
+    if (t.pv !== undefined && t.pvmax) {
+      const pct = Math.max(0, Math.min(1, t.pv / t.pvmax));
+      const bX = mX, bW = mW;
+      const bY = mY + mH + 10 * tScaleY;
+      const bH = 10 * tScaleY;
+      sCtx.fillStyle = 'rgba(0,0,0,0.5)';
+      sCtx.beginPath();
+      sCtx.roundRect ? sCtx.roundRect(bX, bY, bW, bH, 5 * tScaleY) : sCtx.rect(bX, bY, bW, bH);
+      sCtx.fill();
+      const pvColor = pct > 0.6 ? '#00e676' : pct > 0.3 ? '#ffab00' : '#ff1744';
+      sCtx.fillStyle = pvColor;
+      sCtx.shadowColor = pvColor; sCtx.shadowBlur = 8 * tScaleY;
+      sCtx.beginPath();
+      sCtx.roundRect ? sCtx.roundRect(bX, bY, bW * pct, bH, 5 * tScaleY) : sCtx.rect(bX, bY, bW * pct, bH);
+      sCtx.fill();
+      sCtx.shadowBlur = 0;
+
+      const pvFontSize = Math.round(14 * Math.min(tScaleX, tScaleY));
+      sCtx.font = `bold ${pvFontSize}px monospace`;
+      sCtx.fillStyle = '#fff';
+      sCtx.fillText(`${t.pv}/${t.pvmax}`, texW / 2, bY + bH + 16 * tScaleY);
+    }
+  } else {
+    // --- Fallback: círculo com inicial/emoji + nome ---
+    const cx = texW / 2, cy = 140 * tScaleY, r = 110 * Math.min(tScaleX, tScaleY);
+    const grad = sCtx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    grad.addColorStop(0, corHex + 'dd');
+    grad.addColorStop(1, '#0a0a0c');
+    sCtx.beginPath(); sCtx.arc(cx, cy, r, 0, Math.PI * 2);
+    sCtx.fillStyle = grad; sCtx.fill();
+    sCtx.strokeStyle = corHex; sCtx.lineWidth = 6 * Math.min(tScaleX, tScaleY); sCtx.stroke();
+    const iconSize = Math.round(90 * Math.min(tScaleX, tScaleY));
+    sCtx.font = `bold ${iconSize}px serif`;
+    sCtx.textAlign = 'center'; sCtx.textBaseline = 'middle';
+    sCtx.fillStyle = '#fff';
+    sCtx.shadowColor = corHex; sCtx.shadowBlur = 24 * Math.min(tScaleX, tScaleY);
+    sCtx.fillText(t.icon || (t.nome || '?')[0].toUpperCase(), cx, cy + 10 * tScaleY);
+    sCtx.shadowBlur = 0;
+    const nameFontSize = Math.round(22 * Math.min(tScaleX, tScaleY));
+    sCtx.font = `bold ${nameFontSize}px sans-serif`;
+    sCtx.fillStyle = '#fff';
+    sCtx.shadowColor = corHex; sCtx.shadowBlur = 10 * Math.min(tScaleX, tScaleY);
+    sCtx.fillText(t.nome || '?', cx, 280 * tScaleY);
+  }
+
+  const sprTex = new THREE.CanvasTexture(sprC);
+  sprTex.needsUpdate = true;
+  const sprGeo = new THREE.PlaneGeometry(spriteW, spriteH);
+  const sprMat = new THREE.MeshBasicMaterial({
+    map: sprTex, transparent: true, depthWrite: false,
+    alphaTest: 0.02, side: THREE.DoubleSide
+  });
+  const sprite = new THREE.Mesh(sprGeo, sprMat);
+  sprite.position.y = spriteH * 0.5 + sc * 0.05;
+  sprite.userData.isBillboard = true;
+  sprite.userData._tokenId = id;
+  sprite.name = 'sprite';
+  group.add(sprite);
+
+  // ============================================================
+  // 2. TRIÂNGULOS ORBITANDO NO CHÃO (marcadores Hexatombe)
+  // ============================================================
+  const triCount = 3;
+  const triDist  = szScaled * 0.30;
+  const triW2    = szScaled * 0.16;
+  const triThick = sc * 0.022;
+
+  for (let i = 0; i < triCount; i++) {
+    const angle = (i / triCount) * Math.PI * 2;
+    const geo = new THREE.CylinderGeometry(0, triW2 * 0.5, triThick * 2, 3, 1);
+    const mat = new THREE.MeshStandardMaterial({
+      color: corTHREE, emissive: corTHREE, emissiveIntensity: 1.8,
+      roughness: 0.2, metalness: 0.6,
+    });
+    const tri = new THREE.Mesh(geo, mat);
+    tri.position.set(Math.sin(angle) * triDist, triThick, Math.cos(angle) * triDist);
+    tri.rotation.y = -angle;
+    tri.userData._tokenId = id;
+    tri.name = 'triIndicator';
+    group.add(tri);
+  }
+
+  // ============================================================
+  // 3. HALO DE LUZ NO CHÃO
+  // ============================================================
+  const haloC = document.createElement('canvas');
+  haloC.width = haloC.height = 128;
+  const hCtx = haloC.getContext('2d');
+  const hGrad = hCtx.createRadialGradient(64,64,0,64,64,62);
+  hGrad.addColorStop(0,   corHex + 'bb');
+  hGrad.addColorStop(0.4, corHex + '44');
+  hGrad.addColorStop(1,   corHex + '00');
+  hCtx.fillStyle = hGrad; hCtx.fillRect(0,0,128,128);
+  const haloTex = new THREE.CanvasTexture(haloC);
+  const haloGeo = new THREE.PlaneGeometry(szScaled * 1.3, szScaled * 1.3);
+  const haloMat = new THREE.MeshBasicMaterial({
+    map: haloTex, transparent: true, depthWrite: false,
+    opacity: 0.35, side: THREE.DoubleSide
+  });
+  const halo = new THREE.Mesh(haloGeo, haloMat);
+  halo.rotation.x = -Math.PI / 2;
+  halo.position.y = 0.002;
+  halo.name = 'halo';
+  halo.userData._tokenId = id;
+  group.add(halo);
+
+  // ============================================================
+  // 4. ANEL DE SELEÇÃO TRIANGULAR
+  // ============================================================
+  const ringGeo = new THREE.RingGeometry(szScaled * 0.44, szScaled * 0.50, 3);
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: corTHREE, transparent: true, opacity: 0,
+    side: THREE.DoubleSide, depthWrite: false
+  });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 0.01;
+  ring.name = 'selectionRing';
+  group.add(ring);
+
+  // ---- Posicionamento ----
+  const gx = ((t.x || 0) + 0.5) * sc;
+  const gz = ((t.y || 0) + 0.5) * sc;
+  group.position.set(gx, 0.01, gz);
+
+  return group;
+}
+
+// -- Inicializa cena Three.js --
+function init3D() {
+  const canvas3d = document.getElementById('canvas3d');
+  const wrap = document.getElementById('tt-canvas-wrap');
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+
+  // Renderer
+  three.renderer = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true, alpha: false });
+  three.renderer.setSize(W, H);
+  three.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  three.renderer.shadowMap.enabled = true;
+  three.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  three.renderer.outputEncoding = THREE.sRGBEncoding;
+  three.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  three.renderer.toneMappingExposure = 0.85;
+  three.renderer.setClearColor(0x080304, 1);
+
+  // Cena
+  three.scene = new THREE.Scene();
+  three.scene.fog = new THREE.Fog(0x100002, 8, 40);
+
+  // Clock
+  three.clock = new THREE.Clock();
+
+  // Câmera perspectiva
+  three.camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 200);
+  const sc = (cellSize / 60);
+  const boardCX = ((Object.values(tokens).reduce((s,t)=>(s+(t.x||0)),0)/Math.max(1,Object.keys(tokens).length))+0.5)*sc;
+  const boardCZ = ((Object.values(tokens).reduce((s,t)=>(s+(t.y||0)),0)/Math.max(1,Object.keys(tokens).length))+0.5)*sc;
+  three.orbitTarget = { x: boardCX || 5*sc, y: boardCZ || 5*sc };
+  three.camDist = 18;
+  three.camPanX = three.orbitTarget.x;
+  three.camPanY = three.orbitTarget.y;
+  _updateCamera3D();
+
+  // ---- ILUMINAÇÃO ----
+  // Ambiente frio / escuro
+  three.ambientLight = new THREE.AmbientLight(0x150508, 0.8);
+  three.scene.add(three.ambientLight);
+
+  // Luz direcional dramática (de cima, levemente vermelha)
+  three.dirLight = new THREE.DirectionalLight(0xff4422, 1.2);
+  three.dirLight.position.set(5, 12, -3);
+  three.dirLight.castShadow = true;
+  three.dirLight.shadow.mapSize.set(2048, 2048);
+  three.dirLight.shadow.camera.near = 0.1;
+  three.dirLight.shadow.camera.far = 60;
+  three.dirLight.shadow.camera.left = -20;
+  three.dirLight.shadow.camera.right = 20;
+  three.dirLight.shadow.camera.top = 20;
+  three.dirLight.shadow.camera.bottom = -20;
+  three.dirLight.shadow.bias = -0.001;
+  three.scene.add(three.dirLight);
+
+  // Luz vermelha de baixo (efeito paranormal)
+  three.redLight = new THREE.PointLight(0xcc1010, 2.5, 25);
+  three.redLight.position.set(three.camPanX, 0.5, three.camPanY);
+  three.scene.add(three.redLight);
+
+  // Luz hemisférica (céu=escuro, solo=vermelho)
+  const hemiLight = new THREE.HemisphereLight(0x100005, 0x300000, 0.4);
+  three.scene.add(hemiLight);
+
+  // ---- CHÃO / MAPA ----
+  _criarChao3D();
+
+  // ---- TOKENS ----
+  _sincronizarTokens3D();
+
+  // ---- NÉVOA DE GUERRA 3D ----
+  _criarFog3D();
+
+  // ---- PARTÍCULAS DE NÉVOA ----
+  _criarParticulas3D();
+
+  // ---- EVENTOS ----
+  _setupEventos3D(canvas3d);
+
+  // ---- LOOP ----
+  _loop3D();
+}
+
+function _criarChao3D() {
+  if (three.floorMesh) { three.scene.remove(three.floorMesh); three.floorMesh.geometry.dispose(); }
+
+  const sc = cellSize / 60;
+  const boardW = 40 * sc, boardH = 40 * sc;
+
+  const tex = criarTexturaDoMapa();
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  if (mapImg) { tex.repeat.set(1, 1); } else { tex.repeat.set(8, 8); }
+
+  const geo = new THREE.PlaneGeometry(boardW, boardH, 40, 40);
+  const mat = new THREE.MeshStandardMaterial({
+    map: tex, roughness: 0.85, metalness: 0.05,
+    color: 0xdddddd
+  });
+
+  three.floorMesh = new THREE.Mesh(geo, mat);
+  three.floorMesh.rotation.x = -Math.PI / 2;
+  three.floorMesh.position.set(boardW / 2, 0, boardH / 2);
+  three.floorMesh.receiveShadow = true;
+  three.scene.add(three.floorMesh);
+
+  // Grid lines no chão
+  _addGridLines3D(boardW, boardH, sc);
+
+  // Névoa de guerra — plano elevado
+  _criarFog3D();
+}
+
+function _addGridLines3D(boardW, boardH, sc) {
+  // Remove linhas antigas
+  three.scene.children.filter(c => c.userData.isGrid).forEach(c => three.scene.remove(c));
+
+  if (gridType === 'none') return;
+  const mat = new THREE.LineBasicMaterial({ color: 0x441010, opacity: 0.25, transparent: true });
+  const step = sc; // 1 cell = sc unidades
+
+  for (let x = 0; x <= Math.ceil(boardW / step); x++) {
+    const geo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(x * step, 0.005, 0),
+      new THREE.Vector3(x * step, 0.005, boardH)
+    ]);
+    const line = new THREE.Line(geo, mat);
+    line.userData.isGrid = true;
+    three.scene.add(line);
+  }
+  for (let z = 0; z <= Math.ceil(boardH / step); z++) {
+    const geo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0, 0.005, z * step),
+      new THREE.Vector3(boardW, 0.005, z * step)
+    ]);
+    const line = new THREE.Line(geo, mat);
+    line.userData.isGrid = true;
+    three.scene.add(line);
+  }
+}
+
+function _sincronizarTokens3D(forceRebuild) {
+  const sc = cellSize / 60;
+
+  // Remove tokens que não existem mais
+  Object.keys(three.tokenMeshes).forEach(id => {
+    if (!tokens[id]) {
+      three.scene.remove(three.tokenMeshes[id]);
+      delete three.tokenMeshes[id];
+    }
+  });
+
+  // Adiciona/atualiza tokens
+  Object.entries(tokens).forEach(([id, t]) => {
+    const gx = ((t.x || 0) + 0.5) * sc;
+    const gz = ((t.y || 0) + 0.5) * sc;
+    const existing = three.tokenMeshes[id];
+    // Detecta mudanças visuais que exigem rebuild do mesh
+    const sig = `${t.escala||1}|${t.escalaH3d||1}|${t.pv}|${t.pvmax}|${t.cor}|${t.img||''}|${t.nome}`;
+    const needRebuild = forceRebuild || !existing || (existing.userData._sig !== sig);
+    if (existing && !needRebuild) {
+      // Só move se não estiver sendo arrastado agora
+      if (three.draggingTokenId !== id) {
+        existing.position.x = gx;
+        existing.position.z = gz;
+      }
+    } else {
+      if (existing) three.scene.remove(existing);
+      const mesh = criarMeshToken(t, id);
+      mesh.userData._sig = sig;
+      three.tokenMeshes[id] = mesh;
+      three.scene.add(mesh);
+    }
+  });
+}
+
+function _criarFog3D() {
+  // Remove névoa antiga
+  three.scene.children.filter(c => c.userData.isFog3D).forEach(c => {
+    c.geometry?.dispose(); three.scene.remove(c);
+  });
+  if (!fogCells || Object.keys(fogCells).length === 0) return;
+  const sc = cellSize / 60;
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0x050101, transparent: true, opacity: 0.92, side: THREE.DoubleSide, depthWrite: false
+  });
+  Object.keys(fogCells).forEach(key => {
+    if (!fogCells[key]) return;
+    const [cx, cy] = key.split(',').map(Number);
+    const geo = new THREE.PlaneGeometry(sc * 0.98, sc * 0.98);
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set((cx + 0.5) * sc, 0.02, (cy + 0.5) * sc);
+    mesh.userData.isFog3D = true;
+    three.scene.add(mesh);
+  });
+}
+
+function _criarParticulas3D() {
+  // Partículas de névoa 3D (pontos flutuantes)
+  const sc = cellSize / 60;
+  const count = 120;
+  const positions = new Float32Array(count * 3);
+  const spread = 20 * sc;
+  for (let i = 0; i < count; i++) {
+    positions[i * 3]     = (Math.random() - 0.5) * spread + 10 * sc;
+    positions[i * 3 + 1] = Math.random() * 3;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * spread + 10 * sc;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const mat = new THREE.PointsMaterial({
+    color: 0xaa2222, size: 0.12, transparent: true, opacity: 0.35,
+    sizeAttenuation: true, depthWrite: false
+  });
+  const points = new THREE.Points(geo, mat);
+  points.userData.isParticles3D = true;
+  three.scene.add(points);
+}
+
+function _updateCamera3D() {
+  const elev = three.camElev !== undefined ? three.camElev : Math.PI / 5.5; // ~33° de elevação padrão
+  const dist = three.camDist;
+  three.camera.position.set(
+    three.camPanX + dist * Math.sin(three.orbitAngle) * Math.cos(elev),
+    dist * Math.sin(elev),
+    three.camPanY + dist * Math.cos(three.orbitAngle) * Math.cos(elev)
+  );
+  three.camera.lookAt(three.camPanX, 0, three.camPanY);
+}
+
+function _loop3D() {
+  if (!modo3dAtivo) return;
+  three.animFrame = requestAnimationFrame(_loop3D);
+  const delta = three.clock.getDelta();
+  const elapsed = three.clock.getElapsedTime();
+
+  // Pulsação da luz vermelha
+  if (three.redLight) {
+    three.redLight.intensity = 2.0 + Math.sin(elapsed * 1.4) * 0.5;
+  }
+
+  // Animação partículas (sobe)
+  const pts = three.scene.children.find(c => c.userData.isParticles3D);
+  if (pts) {
+    const pos = pts.geometry.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      pos.setY(i, pos.getY(i) + delta * 0.15);
+      if (pos.getY(i) > 4) pos.setY(i, 0);
+    }
+    pos.needsUpdate = true;
+    pts.material.opacity = 0.28 + Math.sin(elapsed * 0.5) * 0.08;
+  }
+
+  // Tokens: animações Hexatombe
+  Object.entries(three.tokenMeshes).forEach(([id, group]) => {
+    const t = tokens[id];
+    if (!t) return;
+    const isSelected = (id === selectedTokenId);
+    const isDragging3d = (id === three.draggingTokenId);
+    const phaseOff = (id.charCodeAt(0) || 0) * 0.7; // offset de fase por token
+
+    // Billboard do sprite — sempre olha para câmera (só eixo Y)
+    const sprite = group.children.find(c => c.name === 'sprite');
+    if (sprite) {
+      const camWorldPos = new THREE.Vector3();
+      three.camera.getWorldPosition(camWorldPos);
+      const dx = camWorldPos.x - group.position.x;
+      const dz = camWorldPos.z - group.position.z;
+      sprite.rotation.y = Math.atan2(dx, dz);
+    }
+
+    // Triângulos: rotação lenta + pulsação emissiva
+    group.children.filter(c => c.name === 'triIndicator').forEach((tri, i) => {
+      // Rotação orbital lenta
+      const baseAngle = (i / 3) * Math.PI * 2;
+      const spin = elapsed * 0.45 + phaseOff;
+      const dist = group.userData._triDist || (cellSize / 60) * 0.30;
+      tri.position.x = Math.sin(baseAngle + spin) * dist;
+      tri.position.z = Math.cos(baseAngle + spin) * dist;
+      tri.rotation.y = -(baseAngle + spin);
+      // Emissão pulsante
+      if (tri.material) {
+        const pulse = isSelected
+          ? 2.5 + Math.sin(elapsed * 5 + i) * 0.8
+          : 1.4 + Math.sin(elapsed * 1.8 + phaseOff + i) * 0.4;
+        tri.material.emissiveIntensity = pulse;
+      }
+    });
+
+    // Halo pulsante
+    const halo = group.children.find(c => c.name === 'halo');
+    if (halo) {
+      halo.material.opacity = isSelected
+        ? 0.50 + Math.sin(elapsed * 4) * 0.18
+        : 0.28 + Math.sin(elapsed * 1.6 + phaseOff) * 0.08;
+    }
+
+    // Anel de seleção triangular
+    const ring = group.children.find(c => c.name === 'selectionRing');
+    if (ring) {
+      const targetOpacity = isSelected ? (0.8 + Math.sin(elapsed * 5) * 0.2) : 0;
+      ring.material.opacity += (targetOpacity - ring.material.opacity) * 0.15;
+      if (isSelected) ring.rotation.z += delta * 1.2;
+    }
+
+    // Scale suave
+    const targetScale = isDragging3d ? 1.22 : isSelected ? 1.10 : 1.0;
+    group.scale.x += (targetScale - group.scale.x) * 0.12;
+    group.scale.z += (targetScale - group.scale.z) * 0.12;
+    group.scale.y += (targetScale - group.scale.y) * 0.12;
+
+    // Flutua levemente quando arrastado
+    const targetY = isDragging3d ? 0.28 : 0.01;
+    group.position.y += (targetY - group.position.y) * 0.15;
+  });
+
+  // Movimento por teclado (setas / WASD)
+  if (three._arrowKeyLoop) three._arrowKeyLoop(delta);
+
+  _updateCamera3D();
+  three.renderer.render(three.scene, three.camera);
+}
+
+// Raycasting no chão (plano Y=0) para pegar posição 3D do cursor
+function _raycastFloor(mouseEvent) {
+  const canvas3d = document.getElementById('canvas3d');
+  const rect = canvas3d.getBoundingClientRect();
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2(
+    ((mouseEvent.clientX - rect.left) / rect.width) * 2 - 1,
+    -((mouseEvent.clientY - rect.top) / rect.height) * 2 + 1
+  );
+  raycaster.setFromCamera(mouse, three.camera);
+  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  const target = new THREE.Vector3();
+  raycaster.ray.intersectPlane(plane, target);
+  return target;
+}
+
+function _setupEventos3D(canvas3d) {
+  let mouseDownOnToken = false;
+  let mouseMoved = false;
+  let mouseDownX = 0, mouseDownY = 0;
+
+  // Inicializa elevação
+  if (three.camElev === undefined) three.camElev = Math.PI / 5.5;
+
+  canvas3d.addEventListener('mousedown', e => {
+    three.lastMX = e.clientX;
+    three.lastMY = e.clientY;
+    mouseDownX = e.clientX;
+    mouseDownY = e.clientY;
+    mouseMoved = false;
+    mouseDownOnToken = false;
+    e.preventDefault();
+
+    if (e.button === 0 && !e.altKey && !e.ctrlKey) {
+      // Tenta selecionar/arrastar token
+      const hit = _raycastTokens3D(e);
+      if (hit) {
+        selectedTokenId = hit;
+        mouseDownOnToken = true;
+        three.draggingTokenId = hit;
+        three.isDragging = false;
+        three.isPanning = false;
+        canvas3d.style.cursor = 'grabbing';
+        renderTokenList();
+      } else {
+        // Órbita horizontal com botão esquerdo
+        three.isDragging = true;
+        canvas3d.style.cursor = 'grabbing';
+      }
+    } else if (e.button === 2 || e.button === 1) {
+      // Pan com botão direito ou meio
+      three.isPanning = true;
+      canvas3d.style.cursor = 'move';
+    } else if (e.altKey && e.button === 0) {
+      // Alt+LMB = pan
+      three.isPanning = true;
+      canvas3d.style.cursor = 'move';
+    }
+  });
+
+  canvas3d.addEventListener('contextmenu', e => e.preventDefault());
+
+  canvas3d.addEventListener('mousemove', e => {
+    const dx = e.clientX - three.lastMX;
+    const dy = e.clientY - three.lastMY;
+    const totalMove = Math.abs(e.clientX - mouseDownX) + Math.abs(e.clientY - mouseDownY);
+    if (totalMove > 4) mouseMoved = true;
+    three.lastMX = e.clientX;
+    three.lastMY = e.clientY;
+
+    // Arrastar token no espaço 3D
+    if (three.draggingTokenId) {
+      const worldPos = _raycastFloor(e);
+      if (worldPos) {
+        const group = three.tokenMeshes[three.draggingTokenId];
+        if (group) {
+          group.position.x = worldPos.x;
+          group.position.z = worldPos.z;
+          const sc = cellSize / 60;
+          const gx = Math.max(0, Math.floor(worldPos.x / sc));
+          const gz = Math.max(0, Math.floor(worldPos.z / sc));
+          if (group._lastGX !== gx || group._lastGZ !== gz) {
+            group._lastGX = gx; group._lastGZ = gz;
+          }
+        }
+      }
+      return;
+    }
+
+    if (three.isDragging) {
+      // Botão esquerdo: órbita horizontal (dx) + elevação (dy)
+      three.orbitAngle -= dx * 0.007;
+      three.camElev = Math.max(0.05, Math.min(Math.PI / 2.1,
+        three.camElev - dy * 0.005
+      ));
+    }
+    if (three.isPanning) {
+      const factor = three.camDist / 18;
+      const right = new THREE.Vector3();
+      const fwd = new THREE.Vector3();
+      three.camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
+      right.crossVectors(fwd, new THREE.Vector3(0,1,0)).normalize();
+      three.camPanX -= right.x * dx * 0.025 * factor + fwd.x * dy * 0.025 * factor;
+      three.camPanY -= right.z * dx * 0.025 * factor + fwd.z * dy * 0.025 * factor;
+    }
+  });
+
+  canvas3d.addEventListener('mouseup', async e => {
+    canvas3d.style.cursor = '';
+
+    if (three.draggingTokenId) {
+      const id = three.draggingTokenId;
+      const group = three.tokenMeshes[id];
+      if (group) {
+        const sc = cellSize / 60;
+        const gx = Math.max(0, Math.floor(group.position.x / sc));
+        const gz = Math.max(0, Math.floor(group.position.z / sc));
+        await moverToken(id, gx, gz);
+        group.position.x = (gx + 0.5) * sc;
+        group.position.z = (gz + 0.5) * sc;
+        mostrarToast(`${tokens[id]?.nome||'?'} → (${gx},${gz})`);
+      }
+      three.draggingTokenId = null;
+
+    } else if (!mouseMoved && e.button === 0) {
+      const hit = _raycastTokens3D(e);
+      if (!hit && selectedTokenId) {
+        selectedTokenId = null;
+        renderTokenList();
+      }
+    }
+
+    three.isDragging = false;
+    three.isPanning = false;
+  });
+
+  canvas3d.addEventListener('mouseleave', () => {
+    if (three.draggingTokenId) {
+      const id = three.draggingTokenId;
+      const t = tokens[id];
+      const sc = cellSize / 60;
+      if (t && three.tokenMeshes[id]) {
+        three.tokenMeshes[id].position.x = ((t.x||0) + 0.5) * sc;
+        three.tokenMeshes[id].position.z = ((t.y||0) + 0.5) * sc;
+      }
+      three.draggingTokenId = null;
+    }
+    three.isDragging = false;
+    three.isPanning = false;
+    canvas3d.style.cursor = '';
+  });
+
+  // Hover cursor
+  canvas3d.addEventListener('mousemove', e => {
+    if (three.draggingTokenId || three.isDragging || three.isPanning) return;
+    const hit = _raycastTokens3D(e);
+    canvas3d.style.cursor = hit ? 'grab' : '';
+  });
+
+  canvas3d.addEventListener('wheel', e => {
+    e.preventDefault();
+    three.camDist = Math.max(3, Math.min(50, three.camDist + e.deltaY * 0.035));
+  }, { passive: false });
+
+  // Teclas de movimento da câmera + Delete
+  const _keysDown = {};
+  document.addEventListener('keydown', e2 => {
+    if (!modo3dAtivo) return;
+    if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+    if (e2.key === 'Delete' && selectedTokenId && isMestre) removerToken(selectedTokenId);
+    _keysDown[e2.key] = true;
+    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e2.key)) e2.preventDefault();
+    if (modo3dAtivo && (e2.key === 'PageUp' || e2.key === 'PageDown')) e2.preventDefault();
+  });
+  document.addEventListener('keyup', e2 => { _keysDown[e2.key] = false; });
+
+  // Processado a cada frame no loop 3D
+  three._arrowKeyLoop = function(delta) {
+    if (!modo3dAtivo) return;
+    const speed = 0.12 * (three.camDist / 14);
+    const fwd = new THREE.Vector3();
+    const right = new THREE.Vector3();
+    three.camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
+    right.crossVectors(fwd, new THREE.Vector3(0,1,0)).normalize();
+
+    if (_keysDown['ArrowUp']    || _keysDown['w'] || _keysDown['W']) {
+      three.camPanX += fwd.x * speed; three.camPanY += fwd.z * speed;
+    }
+    if (_keysDown['ArrowDown']  || _keysDown['s'] || _keysDown['S']) {
+      three.camPanX -= fwd.x * speed; three.camPanY -= fwd.z * speed;
+    }
+    if (_keysDown['ArrowLeft']  || _keysDown['a'] || _keysDown['A']) {
+      three.camPanX -= right.x * speed; three.camPanY -= right.z * speed;
+    }
+    if (_keysDown['ArrowRight'] || _keysDown['d'] || _keysDown['D']) {
+      three.camPanX += right.x * speed; three.camPanY += right.z * speed;
+    }
+    // PageUp = subir câmera (elevar ângulo), PageDown = descer câmera
+    const elevSpeed = delta * 0.9;
+    const goUp   = _keysDown['PageUp']   || three._camElevHold === 'up';
+    const goDown = _keysDown['PageDown'] || three._camElevHold === 'down';
+    if (goUp)   three.camElev = Math.min(Math.PI / 2.1, three.camElev + elevSpeed);
+    if (goDown) three.camElev = Math.max(0.05, three.camElev - elevSpeed);
+  };
+
+  // Touch: 1 dedo = orbita (ou arrasta token), 2 dedos = pan+zoom
+  let t0x = 0, t0y = 0, tDist0 = 0, touchToken = null;
+  canvas3d.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (e.touches.length === 1) {
+      t0x = e.touches[0].clientX; t0y = e.touches[0].clientY;
+      const fakeEv = { clientX: t0x, clientY: t0y };
+      const hit = _raycastTokens3D(fakeEv);
+      if (hit) {
+        touchToken = hit;
+        selectedTokenId = hit;
+        three.draggingTokenId = hit;
+        renderTokenList();
+      }
+    }
+    if (e.touches.length === 2) {
+      tDist0 = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      three.draggingTokenId = null;
+    }
+  }, { passive: false });
+
+  canvas3d.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length === 1) {
+      const dx = e.touches[0].clientX - t0x;
+      const dy = e.touches[0].clientY - t0y;
+      if (three.draggingTokenId) {
+        const fakeEv = { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+        const worldPos = _raycastFloor(fakeEv);
+        if (worldPos) {
+          const group = three.tokenMeshes[three.draggingTokenId];
+          if (group) { group.position.x = worldPos.x; group.position.z = worldPos.z; }
+        }
+      } else {
+        three.orbitAngle -= dx * 0.007;
+        three.camElev = Math.max(0.05, Math.min(Math.PI / 2.1,
+          three.camElev - dy * 0.004
+        ));
+      }
+      t0x = e.touches[0].clientX; t0y = e.touches[0].clientY;
+    }
+    if (e.touches.length === 2) {
+      const d = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (tDist0) three.camDist = Math.max(3, Math.min(50, three.camDist * (tDist0 / d)));
+      tDist0 = d;
+      const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      if (three._lastPinchMX !== undefined) {
+        three.camPanX -= (mx - three._lastPinchMX) * 0.025 * (three.camDist/18);
+        three.camPanY -= (my - three._lastPinchMY) * 0.025 * (three.camDist/18);
+      }
+      three._lastPinchMX = mx; three._lastPinchMY = my;
+    }
+  }, { passive: false });
+
+  canvas3d.addEventListener('touchend', async e => {
+    e.preventDefault();
+    three._lastPinchMX = undefined;
+    if (three.draggingTokenId) {
+      const id = three.draggingTokenId;
+      const group = three.tokenMeshes[id];
+      if (group) {
+        const sc = cellSize / 60;
+        const gx = Math.max(0, Math.floor(group.position.x / sc));
+        const gz = Math.max(0, Math.floor(group.position.z / sc));
+        await moverToken(id, gx, gz);
+        group.position.x = (gx + 0.5) * sc;
+        group.position.z = (gz + 0.5) * sc;
+      }
+      three.draggingTokenId = null;
+    }
+    touchToken = null;
+  }, { passive: false });
+
+  // Resize
+  window.addEventListener('resize', () => {
+    if (!three.renderer) return;
+    const w = document.getElementById('tt-canvas-wrap').clientWidth;
+    const h = document.getElementById('tt-canvas-wrap').clientHeight;
+    three.renderer.setSize(w, h);
+    three.camera.aspect = w / h;
+    three.camera.updateProjectionMatrix();
+  });
+}
+
+// Raycasting para selecionar tokens 3D
+function _raycastTokens3D(mouseEvent) {
+  const canvas3d = document.getElementById('canvas3d');
+  const rect = canvas3d.getBoundingClientRect();
+  const raycaster = new THREE.Raycaster();
+  raycaster.params.Points = { threshold: 0.5 };
+  const mouse = new THREE.Vector2(
+    ((mouseEvent.clientX - rect.left) / rect.width) * 2 - 1,
+    -((mouseEvent.clientY - rect.top) / rect.height) * 2 + 1
+  );
+  raycaster.setFromCamera(mouse, three.camera);
+  // Coleta todos os meshes dos grupos de tokens (inclui cilindros/discos)
+  const meshes = [];
+  Object.entries(three.tokenMeshes).forEach(([id, g]) => {
+    g.children.forEach(c => {
+      // Pega qualquer mesh com geometria sólida (CylinderGeometry ou PlaneGeometry)
+      if (c.geometry && c.userData._tokenId !== undefined) {
+        c.userData._tokenId = id;
+        meshes.push(c);
+      } else if (c.geometry) {
+        c.userData._tokenId = id;
+        meshes.push(c);
+      }
+    });
+    g.userData._tokenId = id;
+  });
+  const hits = raycaster.intersectObjects(meshes, false);
+  if (hits.length > 0) {
+    return hits[0].object.userData._tokenId || hits[0].object.parent?.userData?.tokenId || null;
+  }
+  return null;
+}
+
+// -- Dispose cena --
+function destroy3D() {
+  if (three.animFrame) cancelAnimationFrame(three.animFrame);
+  if (three.renderer) { three.renderer.dispose(); three.renderer = null; }
+  if (three.scene) {
+    three.scene.traverse(obj => {
+      obj.geometry?.dispose();
+      if (obj.material) { [].concat(obj.material).forEach(m => m.dispose()); }
+    });
+    three.scene = null;
+  }
+  three.tokenMeshes = {};
+  three.floorMesh = null;
+}
+
+// -- Partículas CSS (overlay) --
+function _criarParticulasCSS() {
+  const cont = document.getElementById('modo3d-particles');
+  cont.innerHTML = '';
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'p3d';
+    const sz = 60 + Math.random() * 120;
+    el.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      left:${Math.random()*100}%;
+      bottom:${Math.random()*40}%;
+      --dx:${(Math.random()-0.5)*60}px;
+      animation-duration:${4+Math.random()*8}s;
+      animation-delay:${-Math.random()*8}s;
+    `;
+    cont.appendChild(el);
+  }
+}
+
+// -- Toggle principal --
+window.toggleModo3D = function() {
+  if (modo3dAtivo) {
+    _desativarModo3D();
+  } else {
+    _ativarModo3D();
+  }
+};
+
+function _ativarModo3D() {
+  // Animação de transição
+  const overlay = document.getElementById('modo3d-transition');
+  overlay.classList.add('show');
+
+  // Reseta animações re-clonando nós
+  ['modo3d-logo-text','modo3d-sub-text','modo3d-bar','modo3d-corner-tl','modo3d-corner-tr','modo3d-corner-bl','modo3d-corner-br','modo3d-flash'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.animation = 'none';
+    el.offsetHeight; // reflow
+    el.style.animation = '';
+  });
+
+  // Após animação, ativa o modo
+  setTimeout(() => {
+    modo3dAtivo = true;
+    document.getElementById('tt-canvas-wrap').classList.add('modo3d-on');
+    document.getElementById('btn-modo3d').classList.add('modo3d-ativo');
+    document.getElementById('modo3d-badge').classList.add('show');
+    // Mostrar botões câmera cima/baixo
+    document.getElementById('btn-cam3d-sep').style.display = '';
+    document.getElementById('btn-cam-up').style.display = '';
+    document.getElementById('btn-cam-down').style.display = '';
+    // Mostra dica de controles por 6s
+    const hint = document.getElementById('modo3d-controls-hint');
+    if (hint) {
+      hint.classList.add('show');
+      setTimeout(() => hint.classList.remove('show'), 6000);
+    }
+    _criarParticulasCSS();
+
+    // Inicia engine 3D
+    init3D();
+
+    // Fecha overlay
+    setTimeout(() => {
+      overlay.classList.remove('show');
+    }, 400);
+
+    mostrarToast('🔴 Modo 3D Paranormal ativado!');
+  }, 1200);
+}
+
+function _desativarModo3D() {
+  modo3dAtivo = false;
+  document.getElementById('tt-canvas-wrap').classList.remove('modo3d-on');
+  document.getElementById('btn-modo3d').classList.remove('modo3d-ativo');
+  document.getElementById('modo3d-badge').classList.remove('show');
+  document.getElementById('modo3d-particles').innerHTML = '';
+  // Esconder botões câmera cima/baixo
+  document.getElementById('btn-cam3d-sep').style.display = 'none';
+  document.getElementById('btn-cam-up').style.display = 'none';
+  document.getElementById('btn-cam-down').style.display = 'none';
+  destroy3D();
+  renderAll();
+  mostrarToast('⬜ Modo 2D restaurado');
+}
+
+// Tecla atalho 3D
+document.addEventListener('keydown', e => {
+  if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+  if (e.key === '3') toggleModo3D();
+});
+
+// Sync 3D tokens exposto para uso externo se necessário
+window._modo3dSyncTokens = function() {
+  if (modo3dAtivo && three.scene) {
+    _sincronizarTokens3D();
+    if (!three._fogCellsStr || three._fogCellsStr !== JSON.stringify(fogCells)) {
+      three._fogCellsStr = JSON.stringify(fogCells);
+      _criarFog3D();
+    }
+  }
+};
+
+
+
 </script>
+
+<!-- OVERLAY TRANSIÇÃO 3D -->
+<div id="modo3d-transition">
+  <div id="modo3d-glitch"></div>
+  <div id="modo3d-flash"></div>
+  <div id="modo3d-corner-tl"></div>
+  <div id="modo3d-corner-tr"></div>
+  <div id="modo3d-corner-bl"></div>
+  <div id="modo3d-corner-br"></div>
+  <div id="modo3d-logo-text">MODO 3D ATIVADO</div>
+  <div id="modo3d-sub-text">ORDEM PARANORMAL · TABLETOP</div>
+  <div id="modo3d-bar"></div>
+</div>
+
 </body>
 </html>
