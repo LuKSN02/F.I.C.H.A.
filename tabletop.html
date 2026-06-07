@@ -376,6 +376,8 @@ html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); colo
 .ob-canvas-wrap.ping-mode { cursor:copy; }
 .ob-canvas-wrap.fog-mode  { cursor:not-allowed; }
 .ob-canvas-wrap.fog-reveal { cursor:zoom-in; }
+.ob-canvas-wrap.pan-mode  { cursor:grab; }
+.ob-canvas-wrap.pan-mode:active { cursor:grabbing; }
 
 /* ===== BRUSH SIZE SELECT ===== */
 select.ob-tool-select {
@@ -397,6 +399,132 @@ input[type="color"] {
   width:28px; height:28px; border-radius:50%;
   border:2px solid var(--border2); background:none; cursor:pointer; padding:1px;
 }
+
+/* ===== ANIMATED MAP VIDEO LAYER ===== */
+#tt-map-video-layer {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  pointer-events:none; overflow:hidden; z-index:0;
+}
+#tt-map-video {
+  position:absolute; top:0; left:0;
+  transform-origin:0 0;
+  min-width:100%; min-height:100%;
+  object-fit:cover;
+  display:none;
+}
+#tt-map-gif {
+  position:absolute; top:0; left:0;
+  transform-origin:0 0;
+  object-fit:cover;
+  display:none;
+  pointer-events:none;
+}
+/* When animated map active, make canvas bg transparent */
+.tt-anim-active { background:transparent !important; }
+
+/* ===== FLOATING PLAYERS PANEL (top-left, like Owlbear) ===== */
+.ob-players-panel {
+  position:absolute; top:12px; left:12px; z-index:150;
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:12px; min-width:200px; max-width:260px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.45);
+  overflow:hidden;
+}
+.ob-players-header {
+  display:flex; align-items:center; gap:8px; padding:10px 12px 8px;
+  border-bottom:1px solid var(--border);
+}
+.ob-players-title {
+  font-size:12px; font-weight:700; color:var(--text); flex:1;
+  letter-spacing:0.2px;
+}
+.ob-players-actions { display:flex; gap:4px; }
+.ob-players-action-btn {
+  width:22px; height:22px; background:transparent; border:none;
+  color:var(--text3); cursor:pointer; border-radius:5px;
+  display:flex; align-items:center; justify-content:center; transition:0.12s;
+}
+.ob-players-action-btn:hover { background:var(--surface3); color:var(--text); }
+.ob-players-action-btn svg { width:13px; height:13px; }
+.ob-players-list { padding:6px 8px 8px; display:flex; flex-direction:column; gap:3px; }
+.ob-player-row {
+  display:flex; align-items:center; gap:8px;
+  padding:5px 6px; border-radius:8px; transition:0.12s;
+}
+.ob-player-row:hover { background:var(--surface2); }
+.ob-player-dot {
+  width:9px; height:9px; border-radius:50%; flex-shrink:0;
+}
+.ob-player-name { font-size:12px; font-weight:500; color:var(--text); flex:1; }
+.ob-player-badge {
+  font-size:9px; font-weight:700; padding:2px 6px; border-radius:10px;
+  font-family:'JetBrains Mono',monospace; letter-spacing:0.3px;
+}
+.ob-player-badge.mestre { background:rgba(var(--glow),0.15); color:var(--accent-l); }
+.ob-player-badge.jogador { background:rgba(0,184,148,0.12); color:#00cba6; }
+
+/* ===== RIGHT FLOATING TOOLBAR (like Owlbear) ===== */
+.ob-toolbar-right {
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  z-index:150; display:flex; flex-direction:column; align-items:center;
+  gap:2px; background:var(--surface); border:1px solid var(--border2);
+  border-radius:10px; padding:6px 5px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+}
+.ob-rtool {
+  width:32px; height:32px; border-radius:7px; border:none;
+  background:transparent; color:var(--text3);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:0.12s; flex-shrink:0;
+}
+.ob-rtool:hover { background:var(--surface3); color:var(--text); }
+.ob-rtool.active { background:rgba(var(--glow),0.15); color:var(--accent-l); }
+.ob-rtool svg { width:15px; height:15px; }
+.ob-rtool-sep { width:20px; height:1px; background:var(--border); margin:3px 0; flex-shrink:0; }
+
+/* ===== ASSET TRAY (bottom, like Owlbear) ===== */
+.ob-asset-tray {
+  position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
+  z-index:150; display:flex; align-items:center; gap:0;
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:14px; padding:6px 10px; gap:6px;
+  box-shadow:0 -4px 24px rgba(0,0,0,0.35);
+  max-width:calc(100vw - 160px); overflow-x:auto;
+}
+.ob-asset-tray::-webkit-scrollbar { height:3px; }
+.ob-asset-sep { width:1px; height:30px; background:var(--border); flex-shrink:0; }
+.ob-asset-btn {
+  width:34px; height:34px; border-radius:8px; border:1px solid transparent;
+  background:var(--surface2); color:var(--text3); font-size:11px; font-weight:600;
+  cursor:pointer; transition:0.12s; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; gap:3px;
+  font-family:'JetBrains Mono',monospace;
+}
+.ob-asset-btn:hover { background:var(--surface3); color:var(--text); border-color:var(--border2); }
+.ob-asset-btn.active { background:rgba(var(--glow),0.15); border-color:rgba(var(--glow),0.5); color:var(--accent-l); }
+.ob-asset-btn svg { width:14px; height:14px; }
+.ob-asset-label { font-size:9px; color:var(--text3); font-family:'JetBrains Mono',monospace; letter-spacing:0.5px; white-space:nowrap; }
+.ob-asset-token-thumb {
+  width:36px; height:36px; border-radius:8px; border:1px solid var(--border);
+  overflow:hidden; cursor:pointer; flex-shrink:0; background:var(--surface2);
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+  transition:0.12s; position:relative;
+}
+.ob-asset-token-thumb:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 12px rgba(var(--glow),0.3); }
+.ob-asset-token-thumb img { width:100%; height:100%; object-fit:cover; }
+
+/* ===== SCENE LABEL (bottom center, like Owlbear "5ft") ===== */
+.ob-scene-label {
+  position:absolute; bottom:14px; right:14px; z-index:151;
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:8px; padding:5px 12px; font-size:11px;
+  color:var(--text2); font-family:'JetBrains Mono',monospace;
+  pointer-events:none;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Hide old zoom hud (replaced by scene label style) */
+.ob-zoom-hud { bottom:58px !important; right:14px !important; left:auto !important; transform:none !important; }
 </style>
 </head>
 <body>
@@ -533,6 +661,11 @@ input[type="color"] {
 
   <!-- CANVAS -->
   <div class="ob-canvas-wrap" id="tt-canvas-wrap">
+    <!-- Animated map layer (video/gif — behind canvas) -->
+    <div id="tt-map-video-layer">
+      <video id="tt-map-video" autoplay loop muted playsinline></video>
+      <img id="tt-map-gif" alt="">
+    </div>
     <canvas id="tt-canvas"></canvas>
     <canvas id="tt-draw-canvas"></canvas>
     <div id="tt-pings-layer"></div>
@@ -541,6 +674,134 @@ input[type="color"] {
       <div class="ob-tooltip-hp"   id="tooltip-hp">—</div>
       <div class="ob-tooltip-type" id="tooltip-type">—</div>
     </div>
+
+    <!-- Floating Players Panel (top-left, like Owlbear) -->
+    <div class="ob-players-panel" id="tt-players-panel">
+      <div class="ob-players-header">
+        <span class="ob-players-title">Players</span>
+        <div class="ob-players-actions">
+          <button class="ob-players-action-btn" title="Configurações da mesa">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4"/></svg>
+          </button>
+          <button class="ob-players-action-btn" title="Convidar jogadores">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6" cy="5" r="2.5"/><path d="M1 13c0-2.8 2.2-5 5-5s5 2.2 5 5"/><line x1="13" y1="5" x2="13" y2="9"/><line x1="11" y1="7" x2="15" y2="7"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="ob-players-list" id="players-list">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <!-- Right floating toolbar (like Owlbear) -->
+    <div class="ob-toolbar-right" id="tt-toolbar-right">
+      <button class="ob-rtool" id="rtool-hand" onclick="setTool('pan')" title="Mão / Pan (Espaço)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M8 2v7M6 4V3a1 1 0 00-2 0v5M10 4V3a1 1 0 012 0v5M4 9V7a1 1 0 00-2 0v3a5 5 0 005 5h1a5 5 0 005-5V8a1 1 0 00-2 0v1"/>
+        </svg>
+      </button>
+      <div class="ob-rtool-sep"></div>
+      <button class="ob-rtool" onclick="undoDrawing()" title="Desfazer">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M3 8a5 5 0 105 5"/><polyline points="3,4 3,8 7,8"/>
+        </svg>
+      </button>
+      <button class="ob-rtool" onclick="redoDrawing()" title="Refazer">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M13 8a5 5 0 11-5 5"/><polyline points="13,4 13,8 9,8"/>
+        </svg>
+      </button>
+      <div class="ob-rtool-sep"></div>
+      <button class="ob-rtool" onclick="toggleSidebar()" title="Painel lateral">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="2" width="12" height="12" rx="2"/><line x1="10" y1="2" x2="10" y2="14"/>
+        </svg>
+      </button>
+      <div class="ob-rtool-sep"></div>
+      <button class="ob-rtool" onclick="shareScene()" title="Compartilhar cena">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M2 7a5 5 0 004.9 5A5 5 0 0014 7H2z"/><path d="M8 2v5"/>
+          <circle cx="12" cy="3" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Asset tray (bottom, like Owlbear) -->
+    <div class="ob-asset-tray" id="tt-asset-tray">
+      <!-- Default layer selector -->
+      <button class="ob-asset-btn active" id="asset-layer-default" onclick="switchLayer('default')" title="Camada padrão">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/></svg>
+      </button>
+      <span class="ob-asset-label">Default</span>
+
+      <div class="ob-asset-sep"></div>
+
+      <!-- Asset type buttons -->
+      <button class="ob-asset-btn" onclick="openModal('modal-add-token')" title="Imagem / Token">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <rect x="2" y="2" width="12" height="12" rx="2"/>
+          <path d="M2 10l3-3 3 3 2-2 4 4"/><circle cx="10.5" cy="5.5" r="1.5"/>
+        </svg>
+      </button>
+      <button class="ob-asset-btn" title="Terreno">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M2 12l4-6 3 4 2-2 3 4H2z"/>
+        </svg>
+      </button>
+      <button class="ob-asset-btn" title="Personagem">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/>
+        </svg>
+      </button>
+      <button class="ob-asset-btn" title="Marcador">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M8 2a4 4 0 010 8L8 14l-4-6a4 4 0 014-6z"/><circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+        </svg>
+      </button>
+      <button class="ob-asset-btn" title="Texto / Anotação">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="3" y1="4" x2="13" y2="4"/><line x1="8" y1="4" x2="8" y2="13"/>
+        </svg>
+      </button>
+
+      <div class="ob-asset-sep"></div>
+
+      <!-- Search -->
+      <button class="ob-asset-btn" title="Buscar assets">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <circle cx="7" cy="7" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
+        </svg>
+      </button>
+
+      <div class="ob-asset-sep"></div>
+
+      <!-- Token thumbnails from active tokens -->
+      <div id="asset-token-thumbs" style="display:flex;gap:4px;align-items:center;"></div>
+
+      <div class="ob-asset-sep"></div>
+
+      <!-- Grid selector -->
+      <button class="ob-asset-btn" title="Grade de quadrado" onclick="setGridType('square')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/>
+          <rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/>
+        </svg>
+      </button>
+      <button class="ob-asset-btn" title="Grade hexagonal" onclick="setGridType('hex')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polygon points="8,2 13,5 13,11 8,14 3,11 3,5"/>
+        </svg>
+      </button>
+      <button class="ob-asset-btn" title="Sem grade" onclick="setGridType('none')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Scene cell size label (bottom right, like "5ft" in Owlbear) -->
+    <div class="ob-scene-label" id="scene-cell-label">5ft</div>
+
     <div class="ob-zoom-hud" id="zoom-label">100%</div>
   </div>
 
@@ -632,11 +893,22 @@ input[type="color"] {
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 10V13h10V10M8 2v8M5 5l3-3 3 3"/></svg>
         Carregar Imagem
       </button>
-      <input type="file" id="map-upload" accept="image/*" style="display:none" onchange="uploadMapa(this)">
+      <input type="file" id="map-upload" accept="image/*,video/*" style="display:none" onchange="uploadMapa(this)">
+
+      <button class="ob-btn" onclick="document.getElementById('map-anim-upload').click()" style="border-color:rgba(var(--glow),0.4);color:var(--accent-l);">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polygon points="4,3 14,8 4,13"/><line x1="2" y1="3" x2="2" y2="13"/></svg>
+        Mapa Animado (GIF/MP4/WebM)
+      </button>
+      <input type="file" id="map-anim-upload" accept="image/gif,video/mp4,video/webm,video/*" style="display:none" onchange="uploadMapaAnimado(this)">
+
       <div style="display:flex;gap:6px;">
-        <input class="ob-input" id="map-url-input" type="text" placeholder="URL da imagem..." style="margin-bottom:0;flex:1;">
+        <input class="ob-input" id="map-url-input" type="text" placeholder="URL (img, gif, mp4...)" style="margin-bottom:0;flex:1;">
         <button class="ob-btn" style="width:auto;padding:7px 10px;flex-shrink:0;" onclick="setMapaURL()">OK</button>
       </div>
+      <button class="ob-btn" onclick="limparMapa()" style="color:var(--text3);">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:13px;height:13px;"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
+        Remover Mapa
+      </button>
 
       <div class="ob-section" style="margin-top:4px;">Mapas Prontos</div>
       <div class="ob-map-presets" id="map-presets"></div>
@@ -934,6 +1206,7 @@ async function verificarPapel() {
     document.getElementById('tt-camp-nome').textContent = camp.nome || 'Mesa';
     document.getElementById('tt-role-badge').textContent = isMestre ? '★ MESTRE' : '◆ JOGADOR';
     document.getElementById('tt-role-badge').className = 'ob-role-badge ' + (isMestre ? 'mestre' : 'jogador');
+    renderPlayersPanel();
   } catch(e) { console.error(e); }
 }
 
@@ -953,7 +1226,11 @@ function conectarFirebase() {
   const stateRef = ref(rtdb, `tabletop/${campanhaId}/state`);
   onValue(stateRef, snap => {
     const d = snap.val(); if (!d) return;
-    if (d.mapUrl !== undefined && d.mapUrl !== mapImgData) { mapImgData = d.mapUrl; carregarMapa(mapImgData); }
+    if (d.animMapUrl) {
+      ativarMapaAnimado(d.animMapUrl, d.animMapType||'gif');
+    } else if (d.mapUrl !== undefined && d.mapUrl !== mapImgData) {
+      desativarMapaAnimado(); mapImgData = d.mapUrl; carregarMapa(mapImgData);
+    }
     if (d.gridType !== undefined) { gridType = d.gridType; document.getElementById('grid-type').value = gridType; }
     if (d.cellSize !== undefined) { cellSize = d.cellSize; document.getElementById('grid-size').value = cellSize; document.getElementById('grid-size-label').textContent = cellSize; }
     renderAll();
@@ -961,7 +1238,7 @@ function conectarFirebase() {
 
   onValue(ref(rtdb, `tabletop/${campanhaId}/tokens`), snap => {
     tokens = snap.val() || {};
-    renderAll(); renderTokenList(); atualizarInitTokenSelect();
+    renderAll(); renderTokenList(); atualizarInitTokenSelect(); renderAssetTray();
   });
 
   onValue(ref(rtdb, `tabletop/${campanhaId}/initiative`), snap => {
@@ -1016,7 +1293,10 @@ function renderAll() {
   ctx.save();
   ctx.translate(camX, camY);
   ctx.scale(camZoom, camZoom);
-  if (mapImg) {
+  if (animMapType) {
+    // Just draw grid/fog/tokens on transparent canvas; video is behind
+    ctx.fillStyle = 'transparent';
+  } else if (mapImg) {
     ctx.drawImage(mapImg, 0, 0, mapImg.width, mapImg.height);
   } else {
     ctx.fillStyle = '#0d0d0e';
@@ -1026,6 +1306,8 @@ function renderAll() {
   ctx.restore();
   renderDrawings();
   document.getElementById('zoom-label').textContent = Math.round(camZoom*100) + '%';
+  atualizarAnimMapTransform();
+  atualizarSceneLabel();
 }
 
 function renderGrid() {
@@ -1079,97 +1361,105 @@ function getCachedImage(src) {
 function renderTokens() {
   Object.entries(tokens).forEach(([id, t]) => {
     const tx = t.x||0, ty = t.y||0;
-    const cx = tx*cellSize + cellSize/2;
-    const cy = ty*cellSize + cellSize/2;
-    const r  = cellSize * 0.44;
+    // Token ocupa a célula inteira como no Owlbear Rodeo
+    const pad = cellSize * 0.07;
+    const tx0 = tx*cellSize + pad;
+    const ty0 = ty*cellSize + pad;
+    const tW  = cellSize - pad*2;
+    const tH  = cellSize - pad*2;
+    const cx  = tx*cellSize + cellSize/2;
+    const cy  = ty*cellSize + cellSize/2;
+    const rad = Math.max(4, cellSize * 0.12); // corner radius
     const isSelected = id === selectedTokenId;
     const isDragging = id === draggingToken;
     const cor = t.cor || '#4a8fe8';
 
     ctx.save();
-    ctx.shadowColor = isDragging ? '#fff' : cor;
-    ctx.shadowBlur  = isDragging ? 24 : isSelected ? 18 : 8;
 
-    // Outer ring
-    ctx.beginPath();
-    ctx.arc(cx, cy, r+4, 0, Math.PI*2);
-    ctx.strokeStyle = isSelected || isDragging ? '#fff' : cor;
-    ctx.lineWidth   = isSelected || isDragging ? 3 : 2;
-    ctx.stroke();
+    // Selection glow — outer dashed border
+    if (isSelected || isDragging) {
+      ctx.shadowColor = isDragging ? '#ffffff' : cor;
+      ctx.shadowBlur  = isDragging ? 28 : 20;
+      ctx.strokeStyle = isDragging ? '#ffffff' : cor;
+      ctx.lineWidth   = isDragging ? 3 : 2.5;
+      const sel = 5;
+      ctx.beginPath(); ctx.roundRect(tx0-sel, ty0-sel, tW+sel*2, tH+sel*2, rad+sel); ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
 
-    // Inner dim ring
+    // Colored accent border (thin) — like Owlbear token ring
+    ctx.strokeStyle = cor;
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 6; ctx.shadowColor = cor + 'aa';
+    ctx.beginPath(); ctx.roundRect(tx0, ty0, tW, tH, rad); ctx.stroke();
     ctx.shadowBlur = 0;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r+1.5, 0, Math.PI*2);
-    ctx.strokeStyle = cor + '55';
-    ctx.lineWidth = 1;
-    ctx.stroke();
 
-    // Image/emoji clip
+    // Clip to rounded-rect and draw image
     ctx.save();
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.clip();
-    ctx.fillStyle = '#111'; ctx.fillRect(cx-r, cy-r, r*2, r*2);
+    ctx.beginPath(); ctx.roundRect(tx0, ty0, tW, tH, rad); ctx.clip();
+    // background
+    ctx.fillStyle = '#0e0e10'; ctx.fillRect(tx0, ty0, tW, tH);
     const imgSrc = t.img && (t.img.startsWith('data:') || t.img.startsWith('http')) ? t.img : null;
     const cachedImg = imgSrc ? getCachedImage(imgSrc) : null;
     if (cachedImg) {
-      const iw = cachedImg.naturalWidth||cachedImg.width, ih = cachedImg.naturalHeight||cachedImg.height;
-      const scale = Math.max((r*2)/iw, (r*2)/ih);
+      const iw = cachedImg.naturalWidth||cachedImg.width||1;
+      const ih = cachedImg.naturalHeight||cachedImg.height||1;
+      const scale = Math.max(tW/iw, tH/ih);
       ctx.drawImage(cachedImg, cx-iw*scale/2, cy-ih*scale/2, iw*scale, ih*scale);
     } else {
-      ctx.fillStyle = cor + '28'; ctx.fillRect(cx-r, cy-r, r*2, r*2);
-      ctx.font = `${r*1.1}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#fff'; ctx.fillText(t.icon||'?', cx, cy+1);
+      // Gradient bg fallback
+      const grad = ctx.createRadialGradient(cx,cy,0,cx,cy,tW*0.7);
+      grad.addColorStop(0, cor+'44'); grad.addColorStop(1, '#0e0e10');
+      ctx.fillStyle = grad; ctx.fillRect(tx0, ty0, tW, tH);
+      ctx.font = `${tW*0.52}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillStyle='#fff'; ctx.fillText(t.icon||'?', cx, cy+2);
     }
     ctx.restore();
 
-    // HP arc
+    // HP bar — thin strip at bottom of token (like Owlbear)
     if (t.pvmax > 0) {
       const pct = Math.max(0, Math.min(1, (t.pv||0)/t.pvmax));
       const hpColor = pct > 0.5 ? '#00b894' : pct > 0.25 ? '#fdcb6e' : '#e84040';
-      const arcR = r+7;
-      ctx.beginPath(); ctx.arc(cx, cy, arcR, 0, Math.PI*2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 3; ctx.stroke();
+      const barH = Math.max(3, cellSize * 0.07);
+      const barY = ty0 + tH - barH;
+      // Track
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.beginPath(); ctx.roundRect(tx0, barY, tW, barH, [0,0,rad,rad]); ctx.fill();
+      // Fill
       if (pct > 0) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, arcR, -Math.PI/2, -Math.PI/2 + Math.PI*2*pct);
-        ctx.strokeStyle = hpColor; ctx.lineWidth = 3; ctx.lineCap = 'round';
-        ctx.shadowBlur = 5; ctx.shadowColor = hpColor; ctx.stroke();
-        ctx.shadowBlur = 0; ctx.lineCap = 'butt';
+        ctx.fillStyle = hpColor;
+        ctx.shadowBlur = 4; ctx.shadowColor = hpColor;
+        ctx.beginPath(); ctx.roundRect(tx0, barY, tW*pct, barH, pct >= 0.99 ? [0,0,rad,rad] : [0,0,0,rad]); ctx.fill();
+        ctx.shadowBlur = 0;
       }
     }
 
-    // Name pill
+    // Name pill below token
     ctx.shadowBlur = 0;
     const nome = t.nome||'?';
     const fontSize = Math.max(9, Math.min(12, cellSize*0.165));
     ctx.font = `600 ${fontSize}px Inter, sans-serif`;
     const nameW = ctx.measureText(nome).width;
     const pillW = nameW+10, pillH = fontSize+5;
-    const pillX = cx-pillW/2, pillY = cy+r+10;
-    ctx.fillStyle = 'rgba(0,0,0,0.8)';
+    const pillX = cx-pillW/2, pillY = ty0+tH+4;
+    ctx.fillStyle = 'rgba(0,0,0,0.82)';
     ctx.beginPath(); ctx.roundRect(pillX, pillY, pillW, pillH, pillH/2); ctx.fill();
-    ctx.fillStyle = '#e8e8ea'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#e8e8ea'; ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText(nome, cx, pillY+pillH/2);
 
-    // Selection dashes
-    if (isSelected) {
-      ctx.beginPath(); ctx.arc(cx, cy, r+9, 0, Math.PI*2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 1.5;
-      ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
-    }
-
-    // Condition icons
+    // Condition icons — top-right corner badges
     const conds = t.conditions||{};
     const condIcons = Object.entries(conds).filter(([,v])=>v).map(([k])=>({amedrontado:'😱',atordoado:'💫',envenenado:'☠️',maldito:'🔮',sangrando:'🩸',paralizado:'❄️',invisivel:'👁️'}[k]||'')).filter(Boolean);
     if (condIcons.length > 0) {
-      const iconSize = Math.max(8, cellSize*0.2);
-      ctx.font = `${iconSize}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const iconSize = Math.max(9, cellSize*0.2);
+      ctx.font = `${iconSize}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
       condIcons.slice(0,4).forEach((icon, i) => {
-        const ix = cx+r-iconSize*0.3-i*(iconSize*0.9), iy = cy-r+iconSize*0.5;
-        ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.arc(ix, iy, iconSize*0.55, 0, Math.PI*2); ctx.fill();
+        const ix = tx0+tW - iconSize*0.6 - i*(iconSize*0.85), iy = ty0+iconSize*0.6;
+        ctx.fillStyle='rgba(0,0,0,0.7)'; ctx.beginPath(); ctx.arc(ix,iy,iconSize*0.55,0,Math.PI*2); ctx.fill();
         ctx.fillText(icon, ix, iy+1);
       });
     }
+
     ctx.restore();
   });
 }
@@ -1219,6 +1509,8 @@ function setupCanvasEvents() {
         isPanning = true; panStartX = e.clientX; panStartY = e.clientY; panCamX = camX; panCamY = camY;
         selectedTokenId = null; esconderTooltip(); renderAll();
       }
+    } else if (activeTool === 'pan') {
+      isPanning = true; panStartX = e.clientX; panStartY = e.clientY; panCamX = camX; panCamY = camY;
     } else if (activeTool === 'draw') {
       isDrawing = true; currentDrawPath = {type:'path',color:brushColor,size:brushSize,points:[{x:wx,y:wy}]};
     } else if (activeTool === 'eraser') {
@@ -1360,12 +1652,15 @@ function setupCanvasEvents() {
 
   document.addEventListener('keydown', e => {
     if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
-    const map={v:'select',d:'draw',e:'eraser',t:'text',m:'measure',f:'fog',r:'unfog',p:'ping'};
+    const map={v:'select',d:'draw',e:'eraser',t:'text',m:'measure',f:'fog',r:'unfog',p:'ping',h:'pan'};
     if (map[e.key.toLowerCase()]) setTool(map[e.key.toLowerCase()]);
+    if (e.key===' ' && !['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) { e.preventDefault(); setTool('pan'); }
     if (e.key==='+'||e.key==='=') zoomIn();
     if (e.key==='-') zoomOut();
     if (e.key==='0') resetView();
     if (e.key==='Delete'&&selectedTokenId&&isMestre) removerToken(selectedTokenId);
+    if ((e.ctrlKey||e.metaKey)&&e.key==='z') { e.preventDefault(); undoDrawing(); }
+    if ((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.key==='z'&&e.shiftKey))) { e.preventDefault(); redoDrawing(); }
   });
 }
 
@@ -1389,8 +1684,10 @@ function getTokenAtWorld(wx, wy) {
   const entries = Object.entries(tokens);
   for (let i=entries.length-1; i>=0; i--) {
     const [id,t] = entries[i];
-    const cx=(t.x||0)*cellSize+cellSize/2, cy=(t.y||0)*cellSize+cellSize/2;
-    if (Math.hypot(wx-cx,wy-cy) <= cellSize*0.48) return {...t,id};
+    const pad = cellSize*0.07;
+    const tx0=(t.x||0)*cellSize+pad, ty0=(t.y||0)*cellSize+pad;
+    const tw=cellSize-pad*2, th=cellSize-pad*2;
+    if (wx>=tx0 && wx<=tx0+tw && wy>=ty0 && wy<=ty0+th) return {...t,id};
   }
   return null;
 }
@@ -1556,9 +1853,20 @@ window.selecionarTokenLista = function(id) {
 // ===== MAP =====
 window.uploadMapa = function(input) {
   const file=input.files[0]; if (!file) return;
-  const reader=new FileReader();
-  reader.onload = e => { salvarEstado({mapUrl:e.target.result}); mostrarToast('🗺 Mapa carregado!'); };
-  reader.readAsDataURL(file);
+  if (file.type.startsWith('video/')||file.type==='image/gif') {
+    // delegate to animated handler
+    const reader=new FileReader();
+    reader.onload = e => {
+      const isVideo = file.type.startsWith('video/');
+      ativarMapaAnimado(e.target.result, isVideo?'video':'gif');
+      mostrarToast('🎬 Mapa animado carregado!');
+    };
+    reader.readAsDataURL(file);
+  } else {
+    const reader=new FileReader();
+    reader.onload = e => { desativarMapaAnimado(); salvarEstado({mapUrl:e.target.result, animMapUrl:'', animMapType:''}); mostrarToast('🗺 Mapa carregado!'); };
+    reader.readAsDataURL(file);
+  }
 };
 window.setMapaURL = function() {
   const url=document.getElementById('map-url-input').value.trim(); if (!url) return;
@@ -1585,7 +1893,7 @@ window.usarMapaPreset = function(i) {
 window.setGridType = function(val) { gridType=val; salvarEstado({gridType:val}); renderAll(); };
 window.setCellSize = function(val) {
   cellSize=val; document.getElementById('grid-size-label').textContent=val;
-  salvarEstado({cellSize:val}); renderAll();
+  salvarEstado({cellSize:val}); renderAll(); atualizarSceneLabel();
 };
 async function salvarEstado(data) {
   if (!isMestre) return;
@@ -1622,8 +1930,169 @@ window.clearDrawings = async function() {
   renderDrawings(); mostrarToast('Desenhos limpos.');
 };
 
-// ===== PINGS =====
-window.enviarPing = async function(wx, wy) {
+// ===== ANIMATED MAP =====
+let animMapType = null; // 'video' | 'gif' | null
+let animMapBlobUrl = null;
+
+window.uploadMapaAnimado = function(input) {
+  const file = input.files[0]; if (!file) return;
+  const isVideo = file.type.startsWith('video/');
+  const isGif   = file.type === 'image/gif';
+  if (!isVideo && !isGif) { mostrarToast('⚠ Envie um GIF, MP4 ou WebM'); return; }
+  if (animMapBlobUrl) URL.revokeObjectURL(animMapBlobUrl);
+  animMapBlobUrl = URL.createObjectURL(file);
+  ativarMapaAnimado(animMapBlobUrl, isVideo ? 'video' : 'gif');
+  mostrarToast('🎬 Mapa animado carregado!');
+};
+
+function ativarMapaAnimado(url, type) {
+  const vidEl = document.getElementById('tt-map-video');
+  const gifEl = document.getElementById('tt-map-gif');
+  const wrap  = document.getElementById('tt-canvas-wrap');
+  // Hide both first
+  vidEl.style.display = 'none'; gifEl.style.display = 'none';
+  // Make canvas bg transparent so video shows through
+  canvas.style.background = 'transparent';
+  wrap.classList.add('tt-anim-active');
+  animMapType = type;
+  // Remove static map
+  mapImg = null;
+  if (type === 'video') {
+    vidEl.src = url; vidEl.style.display = 'block'; vidEl.play().catch(()=>{});
+  } else {
+    gifEl.src = url; gifEl.style.display = 'block';
+  }
+  sincronizarAnimMap(url, type);
+  renderAll();
+}
+
+function desativarMapaAnimado() {
+  const vidEl = document.getElementById('tt-map-video');
+  const gifEl = document.getElementById('tt-map-gif');
+  const wrap  = document.getElementById('tt-canvas-wrap');
+  vidEl.style.display = 'none'; vidEl.src = '';
+  gifEl.style.display = 'none'; gifEl.src = '';
+  canvas.style.background = '';
+  wrap.classList.remove('tt-anim-active');
+  animMapType = null;
+}
+
+function atualizarAnimMapTransform() {
+  const vidEl = document.getElementById('tt-map-video');
+  const gifEl = document.getElementById('tt-map-gif');
+  const el = animMapType === 'video' ? vidEl : gifEl;
+  if (!el || el.style.display === 'none') return;
+  el.style.transform = `translate(${camX}px,${camY}px) scale(${camZoom})`;
+  el.style.transformOrigin = '0 0';
+}
+
+async function sincronizarAnimMap(url, type) {
+  if (!isMestre || !campanhaId) return;
+  await update(ref(rtdb,`tabletop/${campanhaId}/state`), {animMapUrl: url, animMapType: type||'gif'});
+}
+
+window.limparMapa = function() {
+  desativarMapaAnimado(); mapImg = null; mapImgData = null;
+  salvarEstado({mapUrl:'', animMapUrl:'', animMapType:''});
+  renderAll(); mostrarToast('Mapa removido.');
+};
+
+// Override setMapaURL to detect animated URLs
+const _origSetMapaURL = window.setMapaURL;
+window.setMapaURL = function() {
+  const url = document.getElementById('map-url-input').value.trim(); if (!url) return;
+  const lower = url.toLowerCase();
+  if (lower.endsWith('.mp4')||lower.endsWith('.webm')||lower.endsWith('.ogg')) {
+    ativarMapaAnimado(url,'video'); mostrarToast('🎬 Vídeo de mapa carregado!');
+  } else if (lower.endsWith('.gif')) {
+    ativarMapaAnimado(url,'gif'); mostrarToast('🎬 GIF animado carregado!');
+  } else {
+    desativarMapaAnimado(); salvarEstado({mapUrl:url, animMapUrl:'', animMapType:''});
+    mostrarToast('🗺 Mapa atualizado!');
+  }
+};
+
+// ===== PLAYERS PANEL =====
+function renderPlayersPanel() {
+  const list = document.getElementById('players-list');
+  if (!list) return;
+  // Show current user always; in real multi-user scenario this would come from presence
+  const players = [{name: nomeLocal, color:'#4a8fe8', role: isMestre?'mestre':'jogador'}];
+  list.innerHTML = players.map(p=>`
+    <div class="ob-player-row">
+      <div class="ob-player-dot" style="background:${p.color};"></div>
+      <span class="ob-player-name">${p.name}</span>
+      <span class="ob-player-badge ${p.role}">${p.role==='mestre'?'★ GM':'◆ JOG'}</span>
+    </div>`).join('');
+}
+
+// ===== UNDO / REDO =====
+let drawHistory = [];
+let drawFuture  = [];
+
+window.undoDrawing = async function() {
+  if (drawings.length === 0) return;
+  const last = drawings.pop();
+  drawFuture.push(last);
+  await sincronizarDrawings();
+  renderDrawings();
+  mostrarToast('↩ Desfeito');
+};
+window.redoDrawing = async function() {
+  if (drawFuture.length === 0) return;
+  const next = drawFuture.pop();
+  drawings.push(next);
+  await sincronizarDrawings();
+  renderDrawings();
+  mostrarToast('↪ Refeito');
+};
+
+// ===== PAN TOOL =====
+// (select already pans on empty click; add explicit pan tool that always pans)
+const _origSetTool = window.setTool;
+window.setTool = function(tool) {
+  activeTool = tool;
+  document.querySelectorAll('.ob-tool[id^="tool-"]').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.ob-rtool[id^="rtool-"]').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tool-'+tool)?.classList.add('active');
+  document.getElementById('rtool-'+tool)?.classList.add('active');
+  const wrap = document.getElementById('tt-canvas-wrap');
+  wrap.className = 'ob-canvas-wrap';
+  if (animMapType) wrap.classList.add('tt-anim-active');
+  const cursors = {draw:'draw',eraser:'eraser',ping:'ping-mode',fog:'fog-mode',unfog:'fog-reveal',pan:'pan-mode'};
+  if (cursors[tool]) wrap.classList.add(cursors[tool]);
+};
+
+// ===== ASSET TRAY TOKEN THUMBS =====
+function renderAssetTray() {
+  const container = document.getElementById('asset-token-thumbs');
+  if (!container) return;
+  const list = Object.entries(tokens).slice(0,8);
+  container.innerHTML = list.map(([id,t])=>`
+    <div class="ob-asset-token-thumb" title="${t.nome}" onclick="selecionarTokenLista('${id}')">
+      ${t.img ? `<img src="${t.img}" alt="">` : `<span>${t.icon||'?'}</span>`}
+    </div>`).join('');
+}
+
+// ===== SCENE CELL SIZE LABEL =====
+function atualizarSceneLabel() {
+  const el = document.getElementById('scene-cell-label');
+  if (el) el.textContent = `${cellSize/10}ft`;
+}
+
+window.shareScene = function() {
+  const url = window.location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(()=>mostrarToast('🔗 Link copiado!'));
+  } else {
+    mostrarToast('🔗 ' + url.slice(0,40)+'…');
+  }
+};
+
+window.switchLayer = function(name) {
+  document.querySelectorAll('[id^="asset-layer-"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('asset-layer-'+name)?.classList.add('active');
+};
   mostrarPing(wx, wy, '#fdcb6e');
   const pingRef=push(ref(rtdb,`tabletop/${campanhaId}/pings`));
   await set(pingRef,{worldX:wx,worldY:wy,cor:'#fdcb6e',uid:currentUser.uid,ts:Date.now()});
