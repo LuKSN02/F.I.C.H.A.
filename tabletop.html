@@ -4,548 +4,813 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>F.I.C.H.A. – Tabletop</title>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
 <style>
 /* ===== TEMAS ===== */
-:root[data-tema="medo"]        { --p:#3a7bd5;--pl:#7ab3f5;--pd:#0d2a5e;--bg:#050d1a;--card:#091628;--border:#1a3a6e;--dim:#6a8aaa;--glow:58,123,213; }
-:root[data-tema="sangue"]      { --p:#cc1111;--pl:#ff4444;--pd:#5a0000;--bg:#0f0000;--card:#1a0000;--border:#5a0000;--dim:#884444;--glow:204,17,17; }
-:root[data-tema="morte"]       { --p:#888;--pl:#ccc;--pd:#333;--bg:#0a0a0a;--card:#111;--border:#2a2a2a;--dim:#666;--glow:136,136,136; }
-:root[data-tema="conhecimento"]{ --p:#c8960c;--pl:#f5c842;--pd:#5a4000;--bg:#110e00;--card:#1a1500;--border:#5a4000;--dim:#886a20;--glow:200,150,12; }
-:root[data-tema="energia"]     { --p:#9b30d9;--pl:#d070ff;--pd:#3a0063;--bg:#0a0014;--card:#110020;--border:#3a0063;--dim:#7744aa;--glow:155,48,217; }
-:root { --p:#3a7bd5;--pl:#7ab3f5;--pd:#0d2a5e;--bg:#050d1a;--card:#091628;--border:#1a3a6e;--dim:#6a8aaa;--glow:58,123,213;
-        --red:#e84040;--green:#39d353;--yellow:#f5c842;--orange:#f5a623; }
+:root[data-tema="medo"]        { --accent:#4a8fe8;--accent-l:#82b8ff;--accent-d:#1a3a70;--glow:74,143,232; }
+:root[data-tema="sangue"]      { --accent:#d63031;--accent-l:#ff6b6b;--accent-d:#6a0000;--glow:214,48,49; }
+:root[data-tema="morte"]       { --accent:#888;--accent-l:#bbb;--accent-d:#333;--glow:136,136,136; }
+:root[data-tema="conhecimento"]{ --accent:#e17055;--accent-l:#fab47d;--accent-d:#6a3000;--glow:225,112,85; }
+:root[data-tema="energia"]     { --accent:#a29bfe;--accent-l:#c7b8ff;--accent-d:#3d2060;--glow:162,155,254; }
+
+:root {
+  --accent:#4a8fe8; --accent-l:#82b8ff; --accent-d:#1a3a70; --glow:74,143,232;
+  --red:#e84040; --green:#00b894; --yellow:#fdcb6e; --orange:#e17055;
+
+  /* OWL-style neutral dark palette */
+  --bg:#111113;
+  --surface:#1c1c1f;
+  --surface2:#242428;
+  --surface3:#2e2e33;
+  --border:#2e2e33;
+  --border2:#3a3a40;
+  --text:#e8e8ea;
+  --text2:#9494a0;
+  --text3:#5a5a66;
+
+  --toolbar-w:48px;
+  --panel-w:280px;
+  --header-h:40px;
+}
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:#fff; font-family:'Oswald',sans-serif; }
+html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; font-size:13px; }
 
-/* ===== NAVBAR ===== */
-.tt-nav {
-  height:52px; background:#000; border-bottom:2px solid var(--border);
-  display:flex; align-items:center; padding:0 14px; gap:10px;
-  position:fixed; top:0; left:0; right:0; z-index:1000;
+/* ===== HEADER (top strip — minimal like OWL) ===== */
+.ob-header {
+  position:fixed; top:0; left:0; right:0; height:var(--header-h); z-index:200;
+  background:var(--surface); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; padding:0 8px; gap:6px;
+  -webkit-app-region:drag;
 }
-.tt-nav-brand { font-size:1.1rem; font-weight:700; color:#fff; text-decoration:none; display:flex; align-items:center; gap:8px; flex-shrink:0; }
-.tt-nav-brand img { width:36px; height:36px; }
-.tt-nav-title { font-size:0.85rem; color:var(--pl); font-family:'Share Tech Mono',monospace; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:200px; }
-.tt-nav-spacer { flex:1; }
-.tt-nav-btn {
-  background:transparent; border:1px solid var(--border); color:var(--dim);
-  font-family:'Oswald',sans-serif; font-size:0.72rem; font-weight:700;
-  letter-spacing:1px; padding:5px 10px; border-radius:4px; cursor:pointer; transition:0.2s;
-  white-space:nowrap;
+.ob-header * { -webkit-app-region:no-drag; }
+
+.ob-logo { display:flex; align-items:center; gap:6px; text-decoration:none; color:var(--text); flex-shrink:0; }
+.ob-logo img { width:24px; height:24px; border-radius:4px; }
+.ob-logo-text { font-size:13px; font-weight:600; letter-spacing:-0.3px; }
+
+.ob-divider { width:1px; height:20px; background:var(--border2); flex-shrink:0; }
+
+.ob-camp-name {
+  font-size:12px; color:var(--text2); font-family:'JetBrains Mono',monospace;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:180px;
 }
-.tt-nav-btn:hover { border-color:var(--p); color:var(--pl); }
-.tt-nav-btn.active { border-color:var(--p); color:var(--pl); background:rgba(var(--glow),0.12); }
-.tt-nav-role { font-size:0.65rem; letter-spacing:2px; padding:4px 8px; border-radius:3px; font-family:'Share Tech Mono',monospace; }
-.tt-nav-role.mestre  { background:rgba(var(--glow),0.2); color:var(--pl); border:1px solid var(--p); }
-.tt-nav-role.jogador { background:rgba(57,211,83,0.15); color:#39d353; border:1px solid #39d353; }
+
+.ob-spacer { flex:1; }
+
+.ob-role-badge {
+  font-size:10px; font-weight:600; letter-spacing:0.5px;
+  padding:3px 8px; border-radius:20px; font-family:'JetBrains Mono',monospace;
+}
+.ob-role-badge.mestre  { background:rgba(var(--glow),0.15); color:var(--accent-l); border:1px solid rgba(var(--glow),0.4); }
+.ob-role-badge.jogador { background:rgba(0,184,148,0.12); color:#00cba6; border:1px solid rgba(0,184,148,0.35); }
+
+.ob-online { display:flex; align-items:center; gap:4px; font-size:11px; font-family:'JetBrains Mono',monospace; color:var(--green); }
+.ob-online::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); display:block; }
+
+.ob-header-btn {
+  height:28px; padding:0 10px; background:transparent; border:1px solid var(--border2);
+  color:var(--text2); border-radius:6px; cursor:pointer; font-family:'Inter',sans-serif;
+  font-size:12px; font-weight:500; transition:0.15s; white-space:nowrap; display:flex; align-items:center; gap:5px;
+}
+.ob-header-btn:hover { background:var(--surface3); color:var(--text); border-color:var(--border2); }
+.ob-header-btn svg { width:14px; height:14px; }
 
 /* ===== LAYOUT ===== */
-.tt-layout { display:flex; height:calc(100vh - 52px); margin-top:52px; }
+.ob-layout { display:flex; height:100vh; padding-top:var(--header-h); }
 
-/* ===== SIDEBAR ESQUERDA (toolbar do mestre) ===== */
-.tt-sidebar-l {
-  width:56px; background:#050508; border-right:1px solid var(--border);
-  display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 0;
-  flex-shrink:0; overflow-y:auto;
+/* ===== TOOLBAR (left floating) ===== */
+.ob-toolbar {
+  width:var(--toolbar-w); height:100%; background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column; align-items:center;
+  padding:8px 0; gap:2px; flex-shrink:0; overflow-y:auto; z-index:100;
 }
-.tt-tool {
-  width:40px; height:40px; border-radius:8px; border:1px solid var(--border);
-  background:transparent; color:var(--dim); font-size:1.1rem;
+
+.ob-tool {
+  width:36px; height:36px; border-radius:8px; border:none;
+  background:transparent; color:var(--text3);
   display:flex; align-items:center; justify-content:center;
-  cursor:pointer; transition:0.2s; flex-shrink:0;
+  cursor:pointer; transition:0.12s; flex-shrink:0; position:relative;
+  font-size:15px;
 }
-.tt-tool:hover { border-color:var(--p); color:var(--pl); background:rgba(var(--glow),0.1); }
-.tt-tool.active { border-color:var(--p); color:var(--pl); background:rgba(var(--glow),0.2); }
-.tt-tool-sep { width:32px; height:1px; background:var(--border); flex-shrink:0; }
+.ob-tool:hover { background:var(--surface3); color:var(--text); }
+.ob-tool.active {
+  background:rgba(var(--glow),0.15); color:var(--accent-l);
+}
+.ob-tool.active::after {
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:3px; height:20px; background:var(--accent); border-radius:0 3px 3px 0;
+}
+.ob-tool-sep { width:24px; height:1px; background:var(--border); flex-shrink:0; margin:4px 0; }
+
+.ob-tool svg { width:16px; height:16px; }
+
+/* color/size controls in toolbar */
+.ob-brush-color {
+  width:28px; height:28px; border-radius:50%; border:2px solid var(--border2);
+  cursor:pointer; padding:0; overflow:hidden; flex-shrink:0;
+}
+.ob-brush-color input[type="color"] {
+  width:200%; height:200%; border:none; background:none; cursor:pointer;
+  transform:translate(-25%,-25%);
+}
 
 /* ===== CANVAS AREA ===== */
-.tt-canvas-wrap {
-  flex:1; position:relative; overflow:hidden; background:#080808;
+.ob-canvas-wrap {
+  flex:1; position:relative; overflow:hidden; background:#0d0d0e;
   cursor:default;
 }
 #tt-canvas { position:absolute; top:0; left:0; }
-#tt-overlay { position:absolute; top:0; left:0; pointer-events:none; }
+#tt-draw-canvas { position:absolute; top:0; left:0; pointer-events:none; }
+#tt-pings-layer { position:absolute; top:0; left:0; pointer-events:none; width:100%; height:100%; }
 
-/* ===== SIDEBAR DIREITA (painéis) ===== */
-.tt-sidebar-r {
-  width:300px; background:#050508; border-left:1px solid var(--border);
-  display:flex; flex-direction:column; flex-shrink:0;
-  transition:width 0.25s;
+/* Token tooltip */
+.ob-tooltip {
+  position:absolute; background:var(--surface); border:1px solid var(--border2);
+  border-radius:10px; padding:10px 12px; pointer-events:none; z-index:500;
+  min-width:150px; opacity:0; transition:opacity 0.1s;
+  box-shadow:0 8px 24px rgba(0,0,0,0.5);
 }
-.tt-sidebar-r.collapsed { width:0; overflow:hidden; }
+.ob-tooltip.show { opacity:1; }
+.ob-tooltip-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.ob-tooltip-hp { color:var(--green); font-family:'JetBrains Mono',monospace; font-size:11px; }
+.ob-tooltip-type { color:var(--text3); font-size:11px; margin-top:2px; }
 
-.tt-panel-tabs {
-  display:flex; border-bottom:1px solid var(--border); flex-shrink:0;
+/* Zoom indicator */
+.ob-zoom-hud {
+  position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:20px; padding:5px 14px; font-size:11px;
+  color:var(--text2); font-family:'JetBrains Mono',monospace;
+  pointer-events:none; z-index:100;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
 }
-.tt-ptab {
-  flex:1; padding:10px 4px; text-align:center; font-size:0.6rem;
-  letter-spacing:1.5px; font-weight:700; cursor:pointer;
-  color:var(--dim); border-bottom:2px solid transparent; transition:0.2s;
-}
-.tt-ptab:hover { color:var(--pl); }
-.tt-ptab.active { color:var(--pl); border-bottom-color:var(--p); }
 
-.tt-panel { display:none; flex:1; overflow-y:auto; padding:12px; flex-direction:column; gap:10px; }
-.tt-panel.active { display:flex; }
-
-/* ===== TOKENS PANEL ===== */
-.tt-section-title { font-size:0.6rem; letter-spacing:2px; color:var(--dim); text-transform:uppercase; margin-bottom:6px; }
-.tt-btn {
-  width:100%; padding:8px 12px; background:var(--pd); border:1px solid var(--p);
-  color:#fff; font-family:'Oswald',sans-serif; font-size:0.75rem; font-weight:700;
-  letter-spacing:1px; border-radius:6px; cursor:pointer; transition:0.2s; text-align:left;
-}
-.tt-btn:hover { background:var(--p); }
-.tt-btn.secondary { background:transparent; border-color:var(--border); color:var(--dim); }
-.tt-btn.secondary:hover { border-color:var(--p); color:var(--pl); }
-
-.monster-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-.monster-card {
-  background:var(--card); border:1px solid var(--border); border-radius:8px;
-  padding:8px; cursor:pointer; transition:0.2s; text-align:center;
-}
-.monster-card:hover { border-color:var(--p); background:rgba(var(--glow),0.08); }
-.monster-card-icon { font-size:1.6rem; line-height:1; }
-.monster-card-name { font-size:0.6rem; letter-spacing:0.5px; color:var(--pl); margin-top:4px; font-weight:700; }
-.monster-card-nd { font-size:0.55rem; color:var(--dim); font-family:'Share Tech Mono',monospace; }
-
-.token-list-item {
-  display:flex; align-items:center; gap:8px;
-  background:var(--card); border:1px solid var(--border); border-radius:8px; padding:8px;
-  cursor:pointer; transition:0.2s;
-}
-.token-list-item:hover { border-color:var(--p); }
-.token-list-item.selected { border-color:var(--p); background:rgba(var(--glow),0.1); }
-.token-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; border:2px solid var(--border); overflow:hidden; }
-.token-avatar img { width:100%; height:100%; object-fit:cover; }
-.token-info { flex:1; min-width:0; }
-.token-name { font-size:0.75rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.token-hp-bar { height:4px; border-radius:2px; background:#222; margin-top:4px; overflow:hidden; }
-.token-hp-fill { height:100%; background:var(--green); transition:width 0.3s; }
-.token-hp-text { font-size:0.55rem; color:var(--dim); font-family:'Share Tech Mono',monospace; }
-
-/* ===== CHAT PANEL ===== */
-.chat-messages {
-  flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px;
-  min-height:0; max-height:calc(100vh - 280px);
-}
-.chat-msg { background:var(--card); border-radius:6px; padding:8px 10px; font-size:0.72rem; border-left:2px solid var(--border); }
-.chat-msg.sistema { border-left-color:var(--p); color:var(--pl); }
-.chat-msg.dado    { border-left-color:var(--yellow); }
-.chat-msg.ping    { border-left-color:var(--orange); }
-.chat-msg-autor { font-size:0.6rem; color:var(--dim); margin-bottom:2px; font-family:'Share Tech Mono',monospace; }
-.chat-msg-texto { color:#ddd; line-height:1.5; word-break:break-word; }
-.chat-msg-dado-res { font-size:1.1rem; font-weight:700; color:var(--yellow); }
-.chat-input-wrap { display:flex; gap:6px; flex-shrink:0; margin-top:8px; }
-.chat-input {
-  flex:1; background:#0a0a14; border:1px solid var(--border); color:#fff;
-  font-family:'Share Tech Mono',monospace; font-size:0.72rem; padding:8px 10px;
-  border-radius:6px; outline:none; transition:0.2s;
-}
-.chat-input:focus { border-color:var(--p); }
-.chat-send { background:var(--pd); border:1px solid var(--p); color:#fff; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem; transition:0.2s; }
-.chat-send:hover { background:var(--p); }
-
-/* ===== INICIATIVA PANEL ===== */
-.init-item {
-  display:flex; align-items:center; gap:8px;
-  background:var(--card); border:1px solid var(--border); border-radius:8px; padding:8px;
-  transition:0.2s; position:relative;
-}
-.init-item.ativo { border-color:var(--yellow); box-shadow:0 0 10px rgba(var(--glow),0.3); }
-.init-num { font-size:1.1rem; font-weight:700; color:var(--pl); width:28px; text-align:center; flex-shrink:0; font-family:'Share Tech Mono',monospace; }
-.init-avatar { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
-.init-name { flex:1; font-size:0.75rem; font-weight:700; }
-.init-hp-small { font-size:0.6rem; color:var(--dim); font-family:'Share Tech Mono',monospace; }
-.init-btns { display:flex; gap:4px; }
-.init-btn-sm { background:none; border:1px solid var(--border); color:var(--dim); font-size:0.65rem; padding:2px 6px; border-radius:3px; cursor:pointer; transition:0.2s; }
-.init-btn-sm:hover { border-color:var(--p); color:var(--pl); }
-
-/* ===== MODAL ===== */
-.tt-modal-bg {
-  position:fixed; inset:0; background:rgba(0,0,0,0.85);
-  display:flex; align-items:center; justify-content:center;
-  z-index:2000; opacity:0; pointer-events:none; transition:opacity 0.2s;
-}
-.tt-modal-bg.open { opacity:1; pointer-events:all; }
-.tt-modal {
-  background:var(--card); border:1px solid var(--border); border-radius:12px;
-  padding:20px; width:min(480px,92vw); max-height:85vh; overflow-y:auto;
-  font-family:'Oswald',sans-serif;
-}
-.tt-modal-title { font-size:1rem; font-weight:700; letter-spacing:2px; color:var(--pl); margin-bottom:16px; }
-.tt-label { font-size:0.65rem; letter-spacing:1.5px; color:var(--dim); margin-bottom:4px; text-transform:uppercase; }
-.tt-input {
-  width:100%; background:#0a0a14; border:1px solid var(--border); color:#fff;
-  font-family:'Share Tech Mono',monospace; font-size:0.85rem; padding:9px 12px;
-  border-radius:6px; outline:none; transition:0.2s; margin-bottom:12px;
-}
-.tt-input:focus { border-color:var(--p); }
-.tt-row { display:flex; gap:10px; }
-.tt-row .tt-input { margin-bottom:0; }
-.tt-modal-actions { display:flex; gap:8px; margin-top:16px; }
-.tt-modal-actions .tt-btn { flex:1; text-align:center; }
-
-/* ===== TOKEN NO CANVAS (renderizado via canvas) ===== */
-
-/* ===== TOKEN TOOLTIP ===== */
-.token-tooltip {
-  position:absolute; background:rgba(0,0,0,0.92); border:1px solid var(--border);
-  border-radius:8px; padding:10px 14px; pointer-events:none; z-index:500;
-  min-width:160px; font-size:0.75rem; opacity:0; transition:opacity 0.15s;
-}
-.token-tooltip.show { opacity:1; }
-.tt-tooltip-name { font-size:0.85rem; font-weight:700; color:#fff; margin-bottom:4px; }
-.tt-tooltip-hp { color:var(--green); font-family:'Share Tech Mono',monospace; font-size:0.7rem; }
-.tt-tooltip-type { color:var(--dim); font-size:0.6rem; letter-spacing:1px; margin-top:2px; }
-
-/* ===== PING ===== */
-.tt-ping {
-  position:absolute; width:40px; height:40px; border-radius:50%;
-  border:3px solid var(--yellow); pointer-events:none;
-  animation:pingAnim 1.5s ease-out forwards;
+/* Ping */
+.ob-ping {
+  position:absolute; border-radius:50%;
+  border:2.5px solid var(--yellow); pointer-events:none;
+  animation:obPing 1.5s ease-out forwards;
   transform:translate(-50%,-50%);
 }
-@keyframes pingAnim {
-  0%   { opacity:1; transform:translate(-50%,-50%) scale(0.3); }
-  60%  { opacity:0.8; transform:translate(-50%,-50%) scale(1); }
-  100% { opacity:0; transform:translate(-50%,-50%) scale(2); }
+@keyframes obPing {
+  0%   { opacity:1; transform:translate(-50%,-50%) scale(0.2); width:36px; height:36px; }
+  60%  { opacity:0.7; transform:translate(-50%,-50%) scale(1); }
+  100% { opacity:0; transform:translate(-50%,-50%) scale(2.5); }
 }
 
-/* ===== FOG OF WAR ===== */
-/* Renderizado no canvas */
-
-/* ===== ANOTAÇÕES ===== */
-/* Renderizado no canvas overlay */
-
-/* ===== ZOOM INDICATOR ===== */
-.tt-zoom-indicator {
-  position:absolute; bottom:12px; right:12px;
-  background:rgba(0,0,0,0.7); border:1px solid var(--border);
-  border-radius:6px; padding:4px 10px; font-size:0.65rem;
-  color:var(--dim); font-family:'Share Tech Mono',monospace;
-  pointer-events:none; z-index:100;
+/* ===== RIGHT PANEL (OWL-style collapsible) ===== */
+.ob-panel-wrap {
+  width:var(--panel-w); background:var(--surface);
+  border-left:1px solid var(--border);
+  display:flex; flex-direction:column; flex-shrink:0;
+  transition:width 0.2s ease; overflow:hidden;
 }
+.ob-panel-wrap.collapsed { width:0; }
+
+/* Tab bar */
+.ob-tabs {
+  display:flex; border-bottom:1px solid var(--border); flex-shrink:0;
+  background:var(--surface);
+}
+.ob-tab {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:8px 4px; gap:2px; cursor:pointer; color:var(--text3);
+  border-bottom:2px solid transparent; transition:0.15s; font-size:9px;
+  font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
+}
+.ob-tab svg { width:16px; height:16px; }
+.ob-tab:hover { color:var(--text2); background:var(--surface2); }
+.ob-tab.active { color:var(--accent-l); border-bottom-color:var(--accent); background:rgba(var(--glow),0.06); }
+
+/* Panel content */
+.ob-panel { display:none; flex:1; overflow-y:auto; flex-direction:column; gap:8px; padding:12px; }
+.ob-panel.active { display:flex; }
+
+/* Section labels */
+.ob-section {
+  font-size:10px; font-weight:600; letter-spacing:0.8px; color:var(--text3);
+  text-transform:uppercase; padding:4px 0;
+}
+
+/* Buttons */
+.ob-btn {
+  width:100%; padding:7px 12px; background:var(--surface2); border:1px solid var(--border2);
+  color:var(--text); font-family:'Inter',sans-serif; font-size:12px; font-weight:500;
+  border-radius:8px; cursor:pointer; transition:0.15s; text-align:left;
+  display:flex; align-items:center; gap:7px;
+}
+.ob-btn:hover { background:var(--surface3); border-color:var(--accent); }
+.ob-btn.primary { background:rgba(var(--glow),0.15); border-color:rgba(var(--glow),0.5); color:var(--accent-l); }
+.ob-btn.primary:hover { background:rgba(var(--glow),0.25); }
+.ob-btn svg { width:14px; height:14px; flex-shrink:0; }
+
+/* Token list */
+.ob-token-item {
+  display:flex; align-items:center; gap:8px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:8px 10px; cursor:pointer; transition:0.15s;
+}
+.ob-token-item:hover { border-color:var(--border2); background:var(--surface3); }
+.ob-token-item.selected { border-color:var(--accent); background:rgba(var(--glow),0.08); }
+
+.ob-token-avatar {
+  width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0; overflow:hidden;
+}
+.ob-token-avatar img { width:100%; height:100%; object-fit:cover; border-radius:8px; }
+
+.ob-token-info { flex:1; min-width:0; }
+.ob-token-name { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ob-token-sub { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; margin-top:2px; }
+.ob-hp-bar { height:3px; border-radius:2px; background:var(--border2); margin-top:4px; overflow:hidden; }
+.ob-hp-fill { height:100%; border-radius:2px; transition:width 0.3s; }
+
+.ob-token-edit-btn {
+  background:none; border:none; color:var(--text3); cursor:pointer;
+  font-size:12px; padding:4px; border-radius:4px; transition:0.15s; flex-shrink:0;
+}
+.ob-token-edit-btn:hover { color:var(--text); background:var(--surface3); }
+
+/* Monster grid */
+.ob-monster-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.ob-monster-card {
+  background:var(--surface2); border:1px solid var(--border); border-radius:10px;
+  padding:10px 8px; cursor:pointer; transition:0.15s; text-align:center;
+}
+.ob-monster-card:hover { border-color:var(--border2); background:var(--surface3); }
+.ob-monster-card-icon { font-size:22px; line-height:1; }
+.ob-monster-card-name { font-size:10px; font-weight:600; color:var(--text); margin-top:5px; }
+.ob-monster-card-nd { font-size:9px; color:var(--text3); font-family:'JetBrains Mono',monospace; margin-top:2px; }
+
+/* Chat */
+.ob-chat-messages {
+  flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:4px;
+  min-height:0; max-height:calc(100vh - 300px);
+}
+.ob-msg {
+  padding:8px 10px; border-radius:8px; font-size:11.5px;
+  background:var(--surface2); border:1px solid transparent;
+}
+.ob-msg.sistema { border-color:rgba(var(--glow),0.3); background:rgba(var(--glow),0.07); }
+.ob-msg.dado    { border-color:rgba(253,203,110,0.3); background:rgba(253,203,110,0.06); }
+.ob-msg.ping    { border-color:rgba(225,112,85,0.3); }
+.ob-msg-autor { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; margin-bottom:2px; }
+.ob-msg-text  { color:var(--text2); line-height:1.5; word-break:break-word; }
+.ob-msg-roll  { font-size:16px; font-weight:700; color:var(--yellow); display:block; }
+
+.ob-chat-hint { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; padding:4px 0; }
+.ob-chat-input-row { display:flex; gap:6px; flex-shrink:0; }
+.ob-chat-input {
+  flex:1; background:var(--surface2); border:1px solid var(--border2);
+  color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12px;
+  padding:8px 10px; border-radius:8px; outline:none; transition:0.15s;
+}
+.ob-chat-input:focus { border-color:var(--accent); }
+.ob-chat-send {
+  background:rgba(var(--glow),0.15); border:1px solid rgba(var(--glow),0.4);
+  color:var(--accent-l); padding:8px 12px; border-radius:8px; cursor:pointer;
+  font-size:13px; transition:0.15s; display:flex; align-items:center;
+}
+.ob-chat-send:hover { background:rgba(var(--glow),0.3); }
+
+/* Initiative */
+.ob-init-item {
+  display:flex; align-items:center; gap:8px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:10px; padding:8px 10px; transition:0.15s;
+}
+.ob-init-item.active-turn {
+  border-color:var(--yellow); background:rgba(253,203,110,0.06);
+  box-shadow:0 0 0 1px rgba(253,203,110,0.2);
+}
+.ob-init-num {
+  font-size:14px; font-weight:700; color:var(--accent-l);
+  width:26px; text-align:center; flex-shrink:0;
+  font-family:'JetBrains Mono',monospace;
+}
+.ob-init-avatar { width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+.ob-init-info { flex:1; min-width:0; }
+.ob-init-name { font-size:12px; font-weight:600; }
+.ob-init-hp   { font-size:10px; color:var(--text3); font-family:'JetBrains Mono',monospace; }
+.ob-init-turn-badge { font-size:9px; font-weight:700; letter-spacing:0.5px; color:var(--yellow); }
+.ob-init-ctrl { display:flex; gap:3px; }
+.ob-init-btn {
+  background:var(--surface3); border:1px solid var(--border); color:var(--text3);
+  font-size:10px; padding:3px 6px; border-radius:5px; cursor:pointer; transition:0.15s;
+}
+.ob-init-btn:hover { border-color:var(--accent); color:var(--accent-l); }
+
+/* Map panel */
+.ob-map-presets { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+.ob-map-thumb {
+  aspect-ratio:16/9; border-radius:8px; cursor:pointer;
+  border:2px solid var(--border); overflow:hidden; transition:0.15s; position:relative;
+}
+.ob-map-thumb:hover { border-color:var(--accent); }
+.ob-map-thumb-label {
+  position:absolute; bottom:0; left:0; right:0;
+  background:rgba(0,0,0,0.7); font-size:9px; padding:3px 5px;
+  color:var(--text2); text-align:center; letter-spacing:0.3px;
+}
+
+/* ===== MODALS ===== */
+.ob-modal-bg {
+  position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center;
+  z-index:2000; opacity:0; pointer-events:none; transition:opacity 0.15s;
+}
+.ob-modal-bg.open { opacity:1; pointer-events:all; }
+
+.ob-modal {
+  background:var(--surface); border:1px solid var(--border2); border-radius:16px;
+  padding:20px; width:min(460px,92vw); max-height:85vh; overflow-y:auto;
+  box-shadow:0 24px 64px rgba(0,0,0,0.6);
+}
+.ob-modal-title {
+  font-size:14px; font-weight:700; color:var(--text); margin-bottom:16px;
+  display:flex; align-items:center; gap:8px;
+}
+
+.ob-label { font-size:10px; font-weight:600; letter-spacing:0.5px; color:var(--text3); margin-bottom:5px; text-transform:uppercase; }
+.ob-input {
+  width:100%; background:var(--surface2); border:1px solid var(--border2);
+  color:var(--text); font-family:'Inter',sans-serif; font-size:13px;
+  padding:9px 12px; border-radius:8px; outline:none; transition:0.15s; margin-bottom:12px;
+}
+.ob-input:focus { border-color:var(--accent); }
+.ob-input select, select.ob-input { color:var(--text); }
+.ob-row { display:flex; gap:10px; }
+.ob-row .ob-input { margin-bottom:0; }
+.ob-modal-actions { display:flex; gap:8px; margin-top:16px; }
+.ob-modal-actions .ob-btn { flex:1; justify-content:center; }
+
+/* Monster info */
+.ob-monster-stat { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border); font-size:12px; }
+.ob-monster-stat:last-of-type { border-bottom:none; }
+.ob-monster-stat-key { color:var(--text3); font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:500; }
+.ob-monster-stat-val { color:var(--text); font-weight:600; }
 
 /* ===== TOAST ===== */
-.tt-toast {
-  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
-  background:var(--card); border:1px solid var(--p); color:var(--pl);
-  font-family:'Oswald',sans-serif; font-size:0.8rem; font-weight:700;
-  letter-spacing:1px; padding:10px 20px; border-radius:8px;
-  z-index:3000; opacity:0; transition:opacity 0.3s; white-space:nowrap;
+.ob-toast {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(10px);
+  background:var(--surface); border:1px solid var(--border2); color:var(--text);
+  font-size:12px; font-weight:500; padding:10px 18px; border-radius:10px;
+  z-index:3000; opacity:0; transition:opacity 0.2s, transform 0.2s;
+  white-space:nowrap; box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  pointer-events:none;
 }
-.tt-toast.show { opacity:1; }
+.ob-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* ===== MAP SELECTOR ===== */
-.map-thumb-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-.map-thumb {
-  aspect-ratio:16/9; border-radius:6px; cursor:pointer;
-  border:2px solid var(--border); overflow:hidden; transition:0.2s; position:relative;
-}
-.map-thumb:hover { border-color:var(--p); }
-.map-thumb img { width:100%; height:100%; object-fit:cover; }
-.map-thumb-label { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.75); font-size:0.55rem; letter-spacing:1px; padding:3px 6px; color:#ccc; text-align:center; }
-
-/* ===== MONSTER INFO ===== */
-.monster-info-stat { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border); font-size:0.72rem; }
-.monster-info-stat:last-child { border-bottom:none; }
-.monster-info-key { color:var(--dim); font-family:'Share Tech Mono',monospace; font-size:0.65rem; }
-.monster-info-val { color:#fff; font-weight:700; }
-
-/* ===== SCROLL ===== */
+/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width:4px; height:4px; }
 ::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-::-webkit-scrollbar-thumb:hover { background:var(--p); }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+/* ===== CANVAS CURSORS ===== */
+.ob-canvas-wrap.draw    { cursor:crosshair; }
+.ob-canvas-wrap.eraser  { cursor:cell; }
+.ob-canvas-wrap.ping-mode { cursor:copy; }
+.ob-canvas-wrap.fog-mode  { cursor:not-allowed; }
+.ob-canvas-wrap.fog-reveal { cursor:zoom-in; }
+
+/* ===== BRUSH SIZE SELECT ===== */
+select.ob-tool-select {
+  width:36px; height:36px; background:transparent; border:none; color:transparent;
+  font-size:0; cursor:pointer; border-radius:8px; appearance:none; outline:none;
+}
 
 /* ===== MOBILE ===== */
 @media(max-width:768px) {
-  .tt-sidebar-l { display:none; }
-  .tt-sidebar-r { width:260px; }
-  .tt-nav-title { max-width:120px; }
+  .ob-toolbar { width:44px; }
+  :root { --panel-w:260px; }
 }
-
-/* ===== INPUT COLOR ===== */
-input[type="color"] { width:40px; height:32px; border:1px solid var(--border); border-radius:4px; background:var(--card); cursor:pointer; padding:2px; }
-
-/* Inicia minimizado no mobile */
 @media(max-width:600px) {
-  .tt-sidebar-r { width:0; }
+  .ob-panel-wrap { width:0; }
 }
 
-/* ===== DRAWING CURSOR ===== */
-.tt-canvas-wrap.draw { cursor:crosshair; }
-.tt-canvas-wrap.eraser { cursor:cell; }
-.tt-canvas-wrap.ping-mode { cursor:copy; }
-.tt-canvas-wrap.fog-mode { cursor:not-allowed; }
-.tt-canvas-wrap.fog-reveal { cursor:zoom-in; }
+/* Input color for toolbar */
+input[type="color"] {
+  width:28px; height:28px; border-radius:50%;
+  border:2px solid var(--border2); background:none; cursor:pointer; padding:1px;
+}
 </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="tt-nav">
-  <a class="tt-nav-brand" href="campanhas.html">
+<!-- HEADER -->
+<header class="ob-header">
+  <a class="ob-logo" href="campanhas.html">
     <img src="ordem-paranormal-enigma-do-medo.gif" alt="logo">
-    F.I.C.H.A.
+    <span class="ob-logo-text">F.I.C.H.A.</span>
   </a>
-  <span class="tt-nav-title" id="tt-camp-nome">Carregando...</span>
-  <div class="tt-nav-spacer"></div>
-  <span class="tt-nav-role" id="tt-role-badge">—</span>
-  <span id="tt-online-players" style="font-size:0.6rem;font-family:'Share Tech Mono',monospace;color:#39d353;letter-spacing:1px;white-space:nowrap;" title="Jogadores online">● 1</span>
-  <button class="tt-nav-btn" onclick="toggleSidebar()" title="Painel">☰ Painel</button>
-  <button class="tt-nav-btn" onclick="window.location.href='campanhas.html'">← Voltar</button>
-</nav>
+  <div class="ob-divider"></div>
+  <span class="ob-camp-name" id="tt-camp-nome">Carregando...</span>
+  <div class="ob-spacer"></div>
+  <span class="ob-role-badge" id="tt-role-badge">—</span>
+  <span class="ob-online" id="tt-online-players" title="Online">1</span>
+  <button class="ob-header-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="2" y="2" width="12" height="12" rx="2"/>
+      <line x1="10" y1="2" x2="10" y2="14"/>
+    </svg>
+    Painel
+  </button>
+  <button class="ob-header-btn" onclick="window.location.href='campanhas.html'">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <polyline points="10,3 5,8 10,13"/>
+    </svg>
+    Sair
+  </button>
+</header>
 
 <!-- LAYOUT -->
-<div class="tt-layout">
+<div class="ob-layout">
 
-  <!-- SIDEBAR ESQUERDA (Ferramentas) -->
-  <div class="tt-sidebar-l" id="tt-toolbar">
-    <button class="tt-tool active" id="tool-select"  onclick="setTool('select')"  title="Selecionar (V)">↖</button>
-    <div class="tt-tool-sep"></div>
-    <button class="tt-tool" id="tool-draw"    onclick="setTool('draw')"    title="Desenhar (D)">✏️</button>
-    <button class="tt-tool" id="tool-eraser"  onclick="setTool('eraser')"  title="Borracha (E)">🧹</button>
-    <button class="tt-tool" id="tool-text"    onclick="setTool('text')"    title="Texto (T)">Aa</button>
-    <button class="tt-tool" id="tool-measure" onclick="setTool('measure')" title="Medir Distância (M)">📏</button>
-    <div class="tt-tool-sep"></div>
-    <button class="tt-tool" id="tool-fog"     onclick="setTool('fog')"     title="Fog of War (F)">🌫</button>
-    <button class="tt-tool" id="tool-unfog"   onclick="setTool('unfog')"   title="Revelar Área (R)">🔦</button>
-    <div class="tt-tool-sep"></div>
-    <button class="tt-tool" id="tool-ping"    onclick="setTool('ping')"    title="Ping (P)">📍</button>
-    <div class="tt-tool-sep"></div>
-    <button class="tt-tool" onclick="zoomIn()"  title="Zoom + (+)">+</button>
-    <button class="tt-tool" onclick="zoomOut()" title="Zoom - (-)">−</button>
-    <button class="tt-tool" onclick="resetView()" title="Centralizar (0)">⊙</button>
-    <div class="tt-tool-sep"></div>
-    <button class="tt-tool" onclick="clearDrawings()" title="Limpar desenhos" style="font-size:0.75rem;">CLR</button>
-    <div class="tt-tool-sep"></div>
-    <!-- Cor do brush -->
-    <input type="color" id="brush-color" value="#e84040" title="Cor do pincel"
-      style="width:40px;height:40px;border-radius:8px;border:1px solid var(--border);background:var(--card);cursor:pointer;padding:4px;"
-      oninput="brushColor=this.value">
-    <!-- Tamanho do brush -->
-    <select id="brush-size" onchange="brushSize=parseInt(this.value)"
-      style="width:40px;background:var(--card);border:1px solid var(--border);color:#fff;border-radius:6px;font-size:0.65rem;text-align:center;padding:4px 0;">
-      <option value="2">XS</option>
-      <option value="4" selected>S</option>
-      <option value="8">M</option>
-      <option value="16">L</option>
-      <option value="32">XL</option>
-    </select>
+  <!-- TOOLBAR -->
+  <div class="ob-toolbar" id="tt-toolbar">
+    <!-- Select -->
+    <button class="ob-tool active" id="tool-select" onclick="setTool('select')" title="Selecionar (V)">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 2l10 6-5 1-2 5-3-12z"/></svg>
+    </button>
+
+    <div class="ob-tool-sep"></div>
+
+    <!-- Draw -->
+    <button class="ob-tool" id="tool-draw" onclick="setTool('draw')" title="Desenhar (D)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M3 13l8-8a1.5 1.5 0 012 2L5 15H3v-2z"/><path d="M11 5l1-1"/>
+      </svg>
+    </button>
+    <button class="ob-tool" id="tool-eraser" onclick="setTool('eraser')" title="Borracha (E)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M2 14l4-4L10 5l4 4-5 5H2z"/><line x1="6" y1="10" x2="10" y2="6"/>
+      </svg>
+    </button>
+    <button class="ob-tool" id="tool-text" onclick="setTool('text')" title="Texto (T)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <line x1="3" y1="4" x2="13" y2="4"/><line x1="8" y1="4" x2="8" y2="13"/><line x1="5" y1="13" x2="11" y2="13"/>
+      </svg>
+    </button>
+    <button class="ob-tool" id="tool-measure" onclick="setTool('measure')" title="Medir (M)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <line x1="3" y1="13" x2="13" y2="3"/><line x1="3" y1="10" x2="3" y2="13"/><line x1="6" y1="10" x2="6" y2="12"/>
+        <line x1="9" y1="7" x2="9" y2="9"/><line x1="12" y1="4" x2="12" y2="6"/>
+      </svg>
+    </button>
+
+    <div class="ob-tool-sep"></div>
+
+    <!-- Fog -->
+    <button class="ob-tool" id="tool-fog" onclick="setTool('fog')" title="Névoa de Guerra (F)">
+      <svg viewBox="0 0 16 16" fill="currentColor" opacity="0.9">
+        <path d="M2 7a5 5 0 019.9-.7A3 3 0 0114 10H2a2 2 0 010-3z" opacity="0.7"/>
+        <rect x="2" y="12" width="12" height="1.5" rx="0.75" opacity="0.5"/>
+        <rect x="4" y="14" width="8" height="1.5" rx="0.75" opacity="0.3"/>
+      </svg>
+    </button>
+    <button class="ob-tool" id="tool-unfog" onclick="setTool('unfog')" title="Revelar (R)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="8" cy="7" r="2"/><path d="M8 2v1m0 8v1M3 7H2m12 0h-1M5 4L4 3m7 1l1-1M5 10l-1 1m7-1l1 1"/>
+      </svg>
+    </button>
+
+    <div class="ob-tool-sep"></div>
+
+    <!-- Ping -->
+    <button class="ob-tool" id="tool-ping" onclick="setTool('ping')" title="Ping (P)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M8 2a5 5 0 010 10L8 14l-5-6a5 5 0 015-6z"/><circle cx="8" cy="7" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </button>
+
+    <div class="ob-tool-sep"></div>
+
+    <!-- Zoom -->
+    <button class="ob-tool" onclick="zoomIn()" title="Zoom + (+)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="7" cy="7" r="4.5"/><line x1="7" y1="5" x2="7" y2="9"/><line x1="5" y1="7" x2="9" y2="7"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
+      </svg>
+    </button>
+    <button class="ob-tool" onclick="zoomOut()" title="Zoom - (-)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="7" cy="7" r="4.5"/><line x1="5" y1="7" x2="9" y2="7"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
+      </svg>
+    </button>
+    <button class="ob-tool" onclick="resetView()" title="Centralizar (0)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <circle cx="8" cy="8" r="2"/><circle cx="8" cy="8" r="6"/>
+      </svg>
+    </button>
+
+    <div class="ob-tool-sep"></div>
+
+    <!-- Clear drawings -->
+    <button class="ob-tool" onclick="clearDrawings()" title="Limpar desenhos" style="font-size:9px;font-weight:700;color:var(--text3);">CLR</button>
+
+    <div class="ob-tool-sep"></div>
+
+    <!-- Brush color -->
+    <div style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;">
+      <input type="color" id="brush-color" value="#e84040" title="Cor do pincel" oninput="brushColor=this.value">
+    </div>
+
+    <!-- Brush size -->
+    <div style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;">
+      <select id="brush-size" onchange="brushSize=parseInt(this.value)"
+        style="width:36px;height:28px;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);border-radius:6px;font-size:10px;text-align:center;cursor:pointer;outline:none;">
+        <option value="2">XS</option>
+        <option value="4" selected>S</option>
+        <option value="8">M</option>
+        <option value="16">L</option>
+        <option value="32">XL</option>
+      </select>
+    </div>
   </div>
 
-  <!-- CANVAS PRINCIPAL -->
-  <div class="tt-canvas-wrap" id="tt-canvas-wrap">
+  <!-- CANVAS -->
+  <div class="ob-canvas-wrap" id="tt-canvas-wrap">
     <canvas id="tt-canvas"></canvas>
-    <canvas id="tt-draw-canvas" style="position:absolute;top:0;left:0;pointer-events:none;"></canvas>
-    <div id="tt-pings-layer" style="position:absolute;top:0;left:0;pointer-events:none;width:100%;height:100%;"></div>
-    <div id="tt-token-tooltip" class="token-tooltip">
-      <div class="tt-tooltip-name" id="tooltip-name">—</div>
-      <div class="tt-tooltip-hp"   id="tooltip-hp">PV — / —</div>
-      <div class="tt-tooltip-type" id="tooltip-type">—</div>
+    <canvas id="tt-draw-canvas"></canvas>
+    <div id="tt-pings-layer"></div>
+    <div id="tt-token-tooltip" class="ob-tooltip">
+      <div class="ob-tooltip-name" id="tooltip-name">—</div>
+      <div class="ob-tooltip-hp"   id="tooltip-hp">—</div>
+      <div class="ob-tooltip-type" id="tooltip-type">—</div>
     </div>
-    <div class="tt-zoom-indicator" id="zoom-label">100%</div>
+    <div class="ob-zoom-hud" id="zoom-label">100%</div>
   </div>
 
-  <!-- SIDEBAR DIREITA (Painéis) -->
-  <div class="tt-sidebar-r" id="tt-sidebar-r">
-    <div class="tt-panel-tabs">
-      <div class="tt-ptab active" onclick="showPanel('tokens')">🎭 Tokens</div>
-      <div class="tt-ptab" onclick="showPanel('initiative')">⚔ Init</div>
-      <div class="tt-ptab" onclick="showPanel('chat')">💬 Chat</div>
-      <div class="tt-ptab" onclick="showPanel('map')">🗺 Mapa</div>
+  <!-- RIGHT PANEL -->
+  <div class="ob-panel-wrap" id="tt-sidebar-r">
+    <!-- Tabs -->
+    <div class="ob-tabs">
+      <!-- Tokens tab -->
+      <div class="ob-tab active" onclick="showPanel('tokens')" title="Tokens">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="2.5" fill="currentColor" stroke="none"/>
+        </svg>
+        Tokens
+      </div>
+      <!-- Initiative tab -->
+      <div class="ob-tab" onclick="showPanel('initiative')" title="Iniciativa">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M8 2l1.8 3.6L14 6.5l-3 2.9.7 4.1L8 11.5l-3.7 1.9.7-4.1-3-2.9 4.2-.9z"/>
+        </svg>
+        Init
+      </div>
+      <!-- Chat tab -->
+      <div class="ob-tab" onclick="showPanel('chat')" title="Chat">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2 3h12a1 1 0 011 1v7a1 1 0 01-1 1H5l-3 2V4a1 1 0 011-1z"/>
+        </svg>
+        Chat
+      </div>
+      <!-- Map tab -->
+      <div class="ob-tab" onclick="showPanel('map')" title="Mapa">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polygon points="2,3 6,5 10,3 14,5 14,13 10,11 6,13 2,11"/>
+          <line x1="6" y1="5" x2="6" y2="13"/><line x1="10" y1="3" x2="10" y2="11"/>
+        </svg>
+        Mapa
+      </div>
     </div>
 
-    <!-- PAINEL TOKENS -->
-    <div class="tt-panel active" id="panel-tokens">
-      <div class="tt-section-title">Adicionar Token</div>
-      <button class="tt-btn" onclick="openModal('modal-add-token')">+ Token de Jogador / NPC</button>
-      <button class="tt-btn secondary" onclick="openModal('modal-monsters')">👾 Monstros do OP</button>
-      <div class="tt-section-title" style="margin-top:10px;">Tokens na Mesa</div>
+    <!-- TOKENS PANEL -->
+    <div class="ob-panel active" id="panel-tokens">
+      <div class="ob-section">Adicionar</div>
+      <button class="ob-btn primary" onclick="openModal('modal-add-token')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+        Token de Jogador / NPC
+      </button>
+      <button class="ob-btn" onclick="openModal('modal-monsters')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="4"/><path d="M4 11l-2 3h12l-2-3"/><circle cx="6" cy="7" r="0.8" fill="currentColor"/><circle cx="10" cy="7" r="0.8" fill="currentColor"/></svg>
+        Monstros do OP
+      </button>
+      <div class="ob-section" style="margin-top:4px;">Na Mesa</div>
       <div id="token-list-panel"></div>
     </div>
 
-    <!-- PAINEL INICIATIVA -->
-    <div class="tt-panel" id="panel-initiative" style="gap:8px;">
-      <div class="tt-section-title">Ordem de Iniciativa</div>
-      <button class="tt-btn" onclick="openModal('modal-add-init')">+ Adicionar à Iniciativa</button>
-      <button class="tt-btn secondary" onclick="nextTurn()">▶ Próximo Turno</button>
-      <button class="tt-btn secondary" onclick="clearInitiative()">✕ Limpar</button>
-      <div id="initiative-list" style="display:flex;flex-direction:column;gap:6px;margin-top:4px;"></div>
+    <!-- INITIATIVE PANEL -->
+    <div class="ob-panel" id="panel-initiative">
+      <div class="ob-section">Iniciativa</div>
+      <button class="ob-btn primary" onclick="openModal('modal-add-init')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+        Adicionar
+      </button>
+      <div style="display:flex;gap:6px;">
+        <button class="ob-btn" style="flex:1;" onclick="nextTurn()">
+          <svg viewBox="0 0 16 16" fill="currentColor"><polygon points="4,3 13,8 4,13"/></svg>
+          Próximo Turno
+        </button>
+        <button class="ob-btn" style="width:auto;padding:7px 10px;" onclick="clearInitiative()" title="Limpar">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
+        </button>
+      </div>
+      <div id="initiative-list" style="display:flex;flex-direction:column;gap:5px;"></div>
     </div>
 
-    <!-- PAINEL CHAT -->
-    <div class="tt-panel" id="panel-chat" style="gap:0;">
-      <div class="chat-messages" id="chat-messages"></div>
-      <div style="font-size:0.6rem;color:var(--dim);font-family:'Share Tech Mono',monospace;margin:6px 0 4px;">
-        /r 2d6+3 para rolar dados &nbsp;|&nbsp; /ping para marcar posição
-      </div>
-      <div class="chat-input-wrap">
-        <input class="chat-input" id="chat-input" type="text" placeholder="Mensagem ou /r 2d6+3..." onkeydown="if(event.key==='Enter')enviarChat()">
-        <button class="chat-send" onclick="enviarChat()">➤</button>
+    <!-- CHAT PANEL -->
+    <div class="ob-panel" id="panel-chat" style="gap:0;">
+      <div class="ob-chat-messages" id="chat-messages"></div>
+      <div class="ob-chat-hint">/r 2d6+3 para dados &nbsp;·&nbsp; /ping para marcar</div>
+      <div class="ob-chat-input-row">
+        <input class="ob-chat-input" id="chat-input" type="text" placeholder="Mensagem..." onkeydown="if(event.key==='Enter')enviarChat()">
+        <button class="ob-chat-send" onclick="enviarChat()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="14" y1="2" x2="2" y2="7"/><line x1="14" y1="2" x2="8" y2="14"/><line x1="14" y1="2" x2="2" y2="7"/></svg>
+        </button>
       </div>
     </div>
 
-    <!-- PAINEL MAPA -->
-    <div class="tt-panel" id="panel-map">
-      <div class="tt-section-title">Mapa de Fundo</div>
-      <button class="tt-btn" onclick="document.getElementById('map-upload').click()">📁 Upload de Imagem</button>
+    <!-- MAP PANEL -->
+    <div class="ob-panel" id="panel-map">
+      <div class="ob-section">Mapa de Fundo</div>
+      <button class="ob-btn" onclick="document.getElementById('map-upload').click()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 10V13h10V10M8 2v8M5 5l3-3 3 3"/></svg>
+        Carregar Imagem
+      </button>
       <input type="file" id="map-upload" accept="image/*" style="display:none" onchange="uploadMapa(this)">
-      <input class="tt-input" id="map-url-input" type="text" placeholder="URL da imagem...">
-      <button class="tt-btn secondary" onclick="setMapaURL()">Usar URL</button>
-      <div class="tt-section-title" style="margin-top:8px;">Mapas Predefinidos</div>
-      <div class="map-thumb-grid" id="map-presets"></div>
-      <div class="tt-section-title" style="margin-top:8px;">Grade</div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <label style="font-size:0.7rem;color:var(--dim);">Tipo:</label>
-        <select id="grid-type" onchange="setGridType(this.value)"
-          style="flex:1;background:var(--card);border:1px solid var(--border);color:#fff;border-radius:6px;font-size:0.7rem;padding:6px;">
-          <option value="square">Quadrado</option>
-          <option value="hex">Hexagonal</option>
-          <option value="none">Sem Grade</option>
-        </select>
+      <div style="display:flex;gap:6px;">
+        <input class="ob-input" id="map-url-input" type="text" placeholder="URL da imagem..." style="margin-bottom:0;flex:1;">
+        <button class="ob-btn" style="width:auto;padding:7px 10px;flex-shrink:0;" onclick="setMapaURL()">OK</button>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
-        <label style="font-size:0.7rem;color:var(--dim);">Tamanho célula:</label>
-        <input type="range" id="grid-size" min="30" max="120" value="60"
-          style="flex:1;" oninput="setCellSize(parseInt(this.value))">
-        <span id="grid-size-label" style="font-size:0.65rem;color:var(--dim);font-family:'Share Tech Mono',monospace;width:30px;">60</span>
+
+      <div class="ob-section" style="margin-top:4px;">Mapas Prontos</div>
+      <div class="ob-map-presets" id="map-presets"></div>
+
+      <div class="ob-section" style="margin-top:4px;">Grade</div>
+      <select id="grid-type" onchange="setGridType(this.value)" class="ob-input" style="margin-bottom:8px;">
+        <option value="square">Quadrado</option>
+        <option value="hex">Hexagonal</option>
+        <option value="none">Sem Grade</option>
+      </select>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:10px;color:var(--text3);white-space:nowrap;">Tamanho</span>
+        <input type="range" id="grid-size" min="30" max="120" value="60" style="flex:1;" oninput="setCellSize(parseInt(this.value))">
+        <span id="grid-size-label" style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;width:26px;text-align:right;">60</span>
       </div>
-      <div class="tt-section-title" style="margin-top:8px;">Névoa de Guerra</div>
-      <button class="tt-btn secondary" onclick="cobrir_tudo()">🌫 Cobrir Tudo</button>
-      <button class="tt-btn secondary" onclick="revelar_tudo()" style="margin-top:6px;">🔦 Revelar Tudo</button>
+
+      <div class="ob-section" style="margin-top:4px;">Névoa de Guerra</div>
+      <div style="display:flex;gap:6px;">
+        <button class="ob-btn" style="flex:1;" onclick="cobrir_tudo()">
+          <svg viewBox="0 0 16 16" fill="currentColor" style="width:13px;height:13px;"><path d="M2 7a5 5 0 019.9-.7A3 3 0 0114 10H2a2 2 0 010-3z"/></svg>
+          Cobrir Tudo
+        </button>
+        <button class="ob-btn" style="flex:1;" onclick="revelar_tudo()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:13px;height:13px;"><circle cx="8" cy="7" r="2"/><path d="M1 7s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z"/></svg>
+          Revelar
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ZOOM INDICATOR -->
-
 <!-- ===== MODAIS ===== -->
 
 <!-- Modal: Adicionar Token -->
-<div class="tt-modal-bg" id="modal-add-token">
-  <div class="tt-modal">
-    <div class="tt-modal-title">+ ADICIONAR TOKEN</div>
-    <div class="tt-label">Nome</div>
-    <input class="tt-input" id="nt-nome" type="text" placeholder="Nome do personagem ou criatura...">
-    <div class="tt-label">Tipo</div>
-    <select class="tt-input" id="nt-tipo">
+<div class="ob-modal-bg" id="modal-add-token">
+  <div class="ob-modal">
+    <div class="ob-modal-title">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:18px;height:18px;"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+      Adicionar Token
+    </div>
+    <div class="ob-label">Nome</div>
+    <input class="ob-input" id="nt-nome" type="text" placeholder="Nome do personagem ou criatura...">
+    <div class="ob-label">Tipo</div>
+    <select class="ob-input" id="nt-tipo">
       <option value="jogador">Jogador</option>
       <option value="npc">NPC</option>
       <option value="monstro">Monstro</option>
       <option value="aliado">Aliado</option>
     </select>
-    <div class="tt-row">
+    <div class="ob-row" style="margin-bottom:12px;">
       <div style="flex:1;">
-        <div class="tt-label">PV Atual</div>
-        <input class="tt-input" id="nt-pv" type="number" placeholder="30" min="0">
+        <div class="ob-label">PV Atual</div>
+        <input class="ob-input" id="nt-pv" type="number" placeholder="30" min="0" style="margin-bottom:0;">
       </div>
       <div style="flex:1;">
-        <div class="tt-label">PV Máx</div>
-        <input class="tt-input" id="nt-pvmax" type="number" placeholder="30" min="1">
+        <div class="ob-label">PV Máximo</div>
+        <input class="ob-input" id="nt-pvmax" type="number" placeholder="30" min="1" style="margin-bottom:0;">
       </div>
     </div>
-    <div class="tt-label">Cor do Token</div>
-    <input type="color" id="nt-cor" value="#3a7bd5" style="width:100%;height:40px;margin-bottom:12px;">
-    <div class="tt-label">Ícone (emoji ou deixe em branco para usar cor)</div>
-    <input class="tt-input" id="nt-icon" type="text" placeholder="🧙 👹 🧛 👻 ..." maxlength="4">
-    <div class="tt-label">Imagem (URL ou upload)</div>
-    <div style="display:flex;gap:8px;">
-      <input class="tt-input" id="nt-img" type="text" placeholder="https://..." style="margin-bottom:0;flex:1;">
-      <button class="tt-btn secondary" style="width:auto;padding:8px;" onclick="document.getElementById('nt-img-upload').click()">📁</button>
+    <div class="ob-row" style="margin-bottom:12px;">
+      <div style="flex:1;">
+        <div class="ob-label">Cor do Token</div>
+        <input type="color" id="nt-cor" value="#4a8fe8" style="width:100%;height:36px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;padding:3px;">
+      </div>
+      <div style="flex:1;">
+        <div class="ob-label">Ícone (emoji)</div>
+        <input class="ob-input" id="nt-icon" type="text" placeholder="🧙 👹 🧛" maxlength="4" style="margin-bottom:0;">
+      </div>
+    </div>
+    <div class="ob-label">Imagem (URL ou upload)</div>
+    <div style="display:flex;gap:6px;">
+      <input class="ob-input" id="nt-img" type="text" placeholder="https://..." style="margin-bottom:0;flex:1;">
+      <button class="ob-btn" style="width:auto;padding:7px 10px;flex-shrink:0;" onclick="document.getElementById('nt-img-upload').click()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:14px;height:14px;"><path d="M3 10V13h10V10M8 2v8M5 5l3-3 3 3"/></svg>
+      </button>
       <input type="file" id="nt-img-upload" accept="image/*" style="display:none" onchange="previewTokenImg(this)">
     </div>
-    <div id="nt-img-preview" style="margin:10px 0;display:none;">
-      <img id="nt-img-preview-img" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--p);">
-    </div>
-    <div class="tt-modal-actions">
-      <button class="tt-btn secondary" onclick="closeModal('modal-add-token')">Cancelar</button>
-      <button class="tt-btn" onclick="adicionarToken()">Adicionar na Mesa</button>
+    <div id="nt-img-preview" style="margin:10px 0;display:none;"><img id="nt-img-preview-img" style="width:56px;height:56px;border-radius:10px;object-fit:cover;border:2px solid var(--accent);"></div>
+    <div class="ob-modal-actions">
+      <button class="ob-btn" onclick="closeModal('modal-add-token')">Cancelar</button>
+      <button class="ob-btn primary" onclick="adicionarToken()">Adicionar na Mesa</button>
     </div>
   </div>
 </div>
 
 <!-- Modal: Lista de Monstros OP -->
-<div class="tt-modal-bg" id="modal-monsters">
-  <div class="tt-modal" style="max-width:600px;">
-    <div class="tt-modal-title">👾 MONSTROS DO ORDEM PARANORMAL</div>
-    <input class="tt-input" id="monster-search" type="text" placeholder="Buscar monstro..." oninput="filtrarMonstros(this.value)">
-    <div class="monster-grid" id="monster-grid"></div>
-    <div class="tt-modal-actions">
-      <button class="tt-btn secondary" onclick="closeModal('modal-monsters')">Fechar</button>
+<div class="ob-modal-bg" id="modal-monsters">
+  <div class="ob-modal" style="max-width:560px;">
+    <div class="ob-modal-title">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px;"><circle cx="8" cy="7" r="4"/><path d="M4 11l-2 3h12l-2-3"/></svg>
+      Monstros do Ordem Paranormal
+    </div>
+    <input class="ob-input" id="monster-search" type="text" placeholder="Buscar monstro..." oninput="filtrarMonstros(this.value)">
+    <div class="ob-monster-grid" id="monster-grid"></div>
+    <div class="ob-modal-actions">
+      <button class="ob-btn" onclick="closeModal('modal-monsters')">Fechar</button>
     </div>
   </div>
 </div>
 
 <!-- Modal: Detalhe do Monstro -->
-<div class="tt-modal-bg" id="modal-monster-detail">
-  <div class="tt-modal">
+<div class="ob-modal-bg" id="modal-monster-detail">
+  <div class="ob-modal">
     <div style="font-size:2.5rem;text-align:center;margin-bottom:8px;" id="md-icon">👾</div>
-    <div class="tt-modal-title" id="md-nome" style="text-align:center;">—</div>
+    <div class="ob-modal-title" id="md-nome" style="justify-content:center;text-align:center;">—</div>
     <div id="md-stats"></div>
-    <div class="tt-row" style="margin-top:12px;">
+    <div class="ob-row" style="margin-top:12px;gap:10px;">
       <div style="flex:1;">
-        <div class="tt-label">PV para esta instância</div>
-        <input class="tt-input" id="md-pv-custom" type="number" style="margin-bottom:0;">
+        <div class="ob-label">PV para esta instância</div>
+        <input class="ob-input" id="md-pv-custom" type="number" style="margin-bottom:0;">
       </div>
       <div style="flex:1;">
-        <div class="tt-label">Quantidade</div>
-        <input class="tt-input" id="md-qty" type="number" value="1" min="1" max="10" style="margin-bottom:0;">
+        <div class="ob-label">Quantidade</div>
+        <input class="ob-input" id="md-qty" type="number" value="1" min="1" max="10" style="margin-bottom:0;">
       </div>
     </div>
-    <div class="tt-modal-actions">
-      <button class="tt-btn secondary" onclick="closeModal('modal-monster-detail');openModal('modal-monsters')">← Voltar</button>
-      <button class="tt-btn" onclick="adicionarMonstro()">Colocar na Mesa</button>
+    <div class="ob-modal-actions">
+      <button class="ob-btn" onclick="closeModal('modal-monster-detail');openModal('modal-monsters')">← Voltar</button>
+      <button class="ob-btn primary" onclick="adicionarMonstro()">Colocar na Mesa</button>
     </div>
   </div>
 </div>
 
 <!-- Modal: Editar Token -->
-<div class="tt-modal-bg" id="modal-edit-token">
-  <div class="tt-modal">
-    <div class="tt-modal-title">✎ EDITAR TOKEN</div>
-    <input type="hidden" id="et-id">
-    <div class="tt-label">Nome</div>
-    <input class="tt-input" id="et-nome" type="text">
-    <div class="tt-row">
-      <div style="flex:1;"><div class="tt-label">PV Atual</div><input class="tt-input" id="et-pv" type="number" style="margin-bottom:0;"></div>
-      <div style="flex:1;"><div class="tt-label">PV Máx</div><input class="tt-input" id="et-pvmax" type="number" style="margin-bottom:0;"></div>
+<div class="ob-modal-bg" id="modal-edit-token">
+  <div class="ob-modal">
+    <div class="ob-modal-title">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:18px;height:18px;"><path d="M3 13l8-8a1.5 1.5 0 012 2L5 15H3v-2z"/></svg>
+      Editar Token
     </div>
-    <div style="margin-top:12px;" class="tt-label">Cor</div>
-    <input type="color" id="et-cor" style="width:100%;height:40px;margin-bottom:12px;">
-    <div class="tt-modal-actions">
-      <button class="tt-btn secondary" style="background:rgba(232,64,64,0.1);border-color:var(--red);color:var(--red);" onclick="removerToken(document.getElementById('et-id').value)">🗑 Remover</button>
-      <button class="tt-btn secondary" onclick="closeModal('modal-edit-token')">Cancelar</button>
-      <button class="tt-btn" onclick="salvarToken()">Salvar</button>
+    <input type="hidden" id="et-id">
+    <div class="ob-label">Nome</div>
+    <input class="ob-input" id="et-nome" type="text">
+    <div class="ob-row" style="margin-bottom:12px;">
+      <div style="flex:1;"><div class="ob-label">PV Atual</div><input class="ob-input" id="et-pv" type="number" style="margin-bottom:0;"></div>
+      <div style="flex:1;"><div class="ob-label">PV Máximo</div><input class="ob-input" id="et-pvmax" type="number" style="margin-bottom:0;"></div>
+    </div>
+    <div class="ob-label">Cor</div>
+    <input type="color" id="et-cor" style="width:100%;height:36px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;padding:3px;margin-bottom:12px;">
+    <div class="ob-modal-actions">
+      <button class="ob-btn" style="background:rgba(232,64,64,0.1);border-color:rgba(232,64,64,0.4);color:var(--red);" onclick="removerToken(document.getElementById('et-id').value)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:14px;height:14px;"><polyline points="2,4 14,4"/><path d="M5 4V2h6v2M6 7v5M10 7v5"/><rect x="3" y="4" width="10" height="10" rx="1"/></svg>
+        Remover
+      </button>
+      <button class="ob-btn" onclick="closeModal('modal-edit-token')">Cancelar</button>
+      <button class="ob-btn primary" onclick="salvarToken()">Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Adicionar Iniciativa -->
-<div class="tt-modal-bg" id="modal-add-init">
-  <div class="tt-modal">
-    <div class="tt-modal-title">⚔ ADICIONAR À INICIATIVA</div>
-    <div class="tt-label">Selecionar token da mesa</div>
-    <select class="tt-input" id="init-token-select"><option value="">— Selecionar token —</option></select>
-    <div class="tt-label">— OU adicionar manualmente —</div>
-    <input class="tt-input" id="init-nome-manual" type="text" placeholder="Nome...">
-    <div class="tt-row">
-      <div style="flex:1;"><div class="tt-label">Iniciativa</div><input class="tt-input" id="init-valor" type="number" placeholder="12" style="margin-bottom:0;"></div>
-      <div style="flex:1;"><div class="tt-label">PV / PV Máx</div><input class="tt-input" id="init-pv" type="text" placeholder="30/30" style="margin-bottom:0;"></div>
+<!-- Modal: Iniciativa -->
+<div class="ob-modal-bg" id="modal-add-init">
+  <div class="ob-modal">
+    <div class="ob-modal-title">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px;"><path d="M8 2l1.8 3.6L14 6.5l-3 2.9.7 4.1L8 11.5l-3.7 1.9.7-4.1-3-2.9 4.2-.9z"/></svg>
+      Adicionar à Iniciativa
     </div>
-    <div class="tt-modal-actions">
-      <button class="tt-btn secondary" onclick="closeModal('modal-add-init')">Cancelar</button>
-      <button class="tt-btn" onclick="adicionarIniciativa()">Adicionar</button>
+    <div class="ob-label">Token da mesa</div>
+    <select class="ob-input" id="init-token-select"><option value="">— Selecionar token —</option></select>
+    <div class="ob-label" style="text-align:center;padding:4px 0;">— ou adicionar manualmente —</div>
+    <input class="ob-input" id="init-nome-manual" type="text" placeholder="Nome...">
+    <div class="ob-row" style="margin-bottom:0;">
+      <div style="flex:1;"><div class="ob-label">Iniciativa</div><input class="ob-input" id="init-valor" type="number" placeholder="12" style="margin-bottom:0;"></div>
+      <div style="flex:1;"><div class="ob-label">PV / PV Máx</div><input class="ob-input" id="init-pv" type="text" placeholder="30/30" style="margin-bottom:0;"></div>
+    </div>
+    <div class="ob-modal-actions">
+      <button class="ob-btn" onclick="closeModal('modal-add-init')">Cancelar</button>
+      <button class="ob-btn primary" onclick="adicionarIniciativa()">Adicionar</button>
     </div>
   </div>
 </div>
 
 <!-- TOAST -->
-<div class="tt-toast" id="tt-toast"></div>
+<div class="ob-toast" id="tt-toast"></div>
 
 <script type="module">
 // ===== FIREBASE =====
@@ -575,41 +840,31 @@ let campanhaId   = null;
 let currentUser  = null;
 let isMestre     = false;
 let nomeLocal    = 'Agente';
-let tokens       = {};      // id -> token data
-let initList     = [];      // [{id,nome,init,pv,pvmax,tokenId,cor}]
+let tokens       = {};
+let initList     = [];
 let currentTurn  = 0;
-let chatUnsub    = null;
 
-// Canvas/viewport
 let canvas, ctx, drawCanvas, drawCtx;
 let camX = 0, camY = 0, camZoom = 1;
 let cellSize = 60;
 let gridType = 'square';
 let mapImg = null;
-let mapImgData = null; // base64 or url
+let mapImgData = null;
 
-// Ferramenta ativa
 let activeTool = 'select';
 let brushColor = '#e84040';
 let brushSize  = 4;
 let isDrawing  = false;
-let drawStartX, drawStartY;
 let measureStart = null;
 
-// Interação com tokens
 let draggingToken = null;
 let dragOffX = 0, dragOffY = 0;
 let selectedTokenId = null;
 let hoveredTokenId  = null;
 
-// Fog of war
-let fogCells = {}; // "x,y" -> true (coberto)
-
-// Drawings (local + Firebase)
-let drawings = []; // [{type,points,color,size,text,x,y}]
-
-// Firebase refs (RTDB para baixa latência)
-let rtdbBase = null;
+let fogCells = {};
+let drawings = [];
+let rtdbListeners = [];
 
 // ===== MONSTROS OP =====
 const MONSTROS_OP = [
@@ -630,7 +885,6 @@ const MONSTROS_OP = [
   { id:"criatura_lago", nome:"Criatura do Lago",   tipo:"Aberração Aquát.", nd:"4",pv:85,  def:14, ataque:"Tentáculos +8 (2d6+5)",     mov:12, res:"Energia, Morte",   img:"🦑", cor:"#1a5a5a", desc:"Entidade aquática de origem desconhecida. Arrasta vítimas para profundezas." },
 ];
 
-// MAPAS PREDEFINIDOS
 const MAPAS_PRESET = [
   { nome:"Floresta Noturna",    emoji:"🌲", cor:"#0a1a0a", url:"https://i.imgur.com/JkqYWjP.jpg" },
   { nome:"Cidade Abandonada",   emoji:"🏚️", cor:"#1a1410", url:"https://i.imgur.com/6YfzC2A.jpg" },
@@ -656,7 +910,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
-
   setupCanvasEvents();
   aplicarTemaLocal();
   renderMapPresets();
@@ -666,16 +919,12 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!user) { window.location.href = 'index.html'; return; }
     currentUser = user;
     nomeLocal = localStorage.getItem('ficha_user') || user.email?.split('@')[0] || 'Agente';
-
     await verificarPapel();
     conectarFirebase();
     atualizarToolbarPorPapel();
   });
-
-  aplicarTemaLocal();
 });
 
-// ===== PAPEL DO USUÁRIO =====
 async function verificarPapel() {
   try {
     const snap = await getDoc(doc(db, 'campanhas', campanhaId));
@@ -684,7 +933,7 @@ async function verificarPapel() {
     isMestre = camp.mestreUid === currentUser.uid;
     document.getElementById('tt-camp-nome').textContent = camp.nome || 'Mesa';
     document.getElementById('tt-role-badge').textContent = isMestre ? '★ MESTRE' : '◆ JOGADOR';
-    document.getElementById('tt-role-badge').className = 'tt-nav-role ' + (isMestre ? 'mestre' : 'jogador');
+    document.getElementById('tt-role-badge').className = 'ob-role-badge ' + (isMestre ? 'mestre' : 'jogador');
   } catch(e) { console.error(e); }
 }
 
@@ -694,175 +943,113 @@ function atualizarToolbarPorPapel() {
       const el = document.getElementById(id);
       if (el) { el.style.opacity = '0.3'; el.style.pointerEvents = 'none'; }
     });
-    // Jogadores não veem painel de mapa completo
-    document.querySelector('[onclick="showPanel(\'map\')"]').style.opacity = '0.5';
+    const mapTab = document.querySelector('[onclick="showPanel(\'map\')"]');
+    if (mapTab) mapTab.style.opacity = '0.5';
   }
 }
 
-// ===== FIREBASE — RTDB REAL-TIME =====
-let rtdbListeners = [];
-
+// ===== FIREBASE =====
 function conectarFirebase() {
-  rtdbBase = ref(rtdb, `tabletop/${campanhaId}`);
-
-  // Estado geral (mapa, grid)
   const stateRef = ref(rtdb, `tabletop/${campanhaId}/state`);
-  const unsubState = onValue(stateRef, snap => {
-    const d = snap.val();
-    if (!d) return;
-    if (d.mapUrl !== undefined && d.mapUrl !== mapImgData) {
-      mapImgData = d.mapUrl;
-      carregarMapa(mapImgData);
-    }
+  onValue(stateRef, snap => {
+    const d = snap.val(); if (!d) return;
+    if (d.mapUrl !== undefined && d.mapUrl !== mapImgData) { mapImgData = d.mapUrl; carregarMapa(mapImgData); }
     if (d.gridType !== undefined) { gridType = d.gridType; document.getElementById('grid-type').value = gridType; }
     if (d.cellSize !== undefined) { cellSize = d.cellSize; document.getElementById('grid-size').value = cellSize; document.getElementById('grid-size-label').textContent = cellSize; }
     renderAll();
   });
 
-  // Tokens
-  const tokensRef = ref(rtdb, `tabletop/${campanhaId}/tokens`);
-  const unsubTokens = onValue(tokensRef, snap => {
+  onValue(ref(rtdb, `tabletop/${campanhaId}/tokens`), snap => {
     tokens = snap.val() || {};
-    renderAll();
-    renderTokenList();
-    atualizarInitTokenSelect();
+    renderAll(); renderTokenList(); atualizarInitTokenSelect();
   });
 
-  // Iniciativa
-  const initRef = ref(rtdb, `tabletop/${campanhaId}/initiative`);
-  const unsubInit = onValue(initRef, snap => {
+  onValue(ref(rtdb, `tabletop/${campanhaId}/initiative`), snap => {
     const d = snap.val() || {};
-    initList = d.list || [];
-    currentTurn = d.currentTurn || 0;
+    initList = d.list || []; currentTurn = d.currentTurn || 0;
     renderInitiative();
   });
 
-  // Chat
-  const chatRef = ref(rtdb, `tabletop/${campanhaId}/chat`);
-  const unsubChat = onValue(chatRef, snap => {
+  onValue(ref(rtdb, `tabletop/${campanhaId}/chat`), snap => {
     const msgs = snap.val() || {};
     renderChat(Object.values(msgs).sort((a,b) => (a.ts||0)-(b.ts||0)));
   });
 
-  // Drawings
-  const drawRef = ref(rtdb, `tabletop/${campanhaId}/drawings`);
-  const unsubDraw = onValue(drawRef, snap => {
+  onValue(ref(rtdb, `tabletop/${campanhaId}/drawings`), snap => {
     const d = snap.val() || {};
-    drawings = Object.values(d);
-    renderDrawings();
+    drawings = Object.values(d); renderDrawings();
   });
 
-  // Pings
-  const pingRef = ref(rtdb, `tabletop/${campanhaId}/pings`);
-  const unsubPing = onValue(pingRef, snap => {
+  onValue(ref(rtdb, `tabletop/${campanhaId}/pings`), snap => {
     const d = snap.val() || {};
     Object.values(d).forEach(p => mostrarPing(p.worldX, p.worldY, p.cor));
   });
 
-  // Fog
-  const fogRef = ref(rtdb, `tabletop/${campanhaId}/fog`);
-  const unsubFog = onValue(fogRef, snap => {
-    fogCells = snap.val() || {};
-    renderAll();
+  onValue(ref(rtdb, `tabletop/${campanhaId}/fog`), snap => {
+    fogCells = snap.val() || {}; renderAll();
   });
-
-  rtdbListeners = [unsubState, unsubTokens, unsubInit, unsubChat, unsubDraw, unsubPing, unsubFog];
 }
 
-// ===== CANVAS SETUP =====
-// Polyfill roundRect para navegadores que não suportam
+// ===== CANVAS =====
 if (!CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-    if (w < 2 * r) r = w / 2;
-    if (h < 2 * r) r = h / 2;
+    if (w < 2*r) r = w/2; if (h < 2*r) r = h/2;
     this.beginPath();
-    this.moveTo(x + r, y);
-    this.arcTo(x + w, y, x + w, y + h, r);
-    this.arcTo(x + w, y + h, x, y + h, r);
-    this.arcTo(x, y + h, x, y, r);
-    this.arcTo(x, y, x + w, y, r);
+    this.moveTo(x+r, y);
+    this.arcTo(x+w, y, x+w, y+h, r); this.arcTo(x+w, y+h, x, y+h, r);
+    this.arcTo(x, y+h, x, y, r); this.arcTo(x, y, x+w, y, r);
     this.closePath();
   };
 }
 
 function resizeCanvas() {
   const wrap = document.getElementById('tt-canvas-wrap');
-  const W = wrap.clientWidth;
-  const H = wrap.clientHeight;
-  canvas.width     = W; canvas.height     = H;
-  drawCanvas.width = W; drawCanvas.height = H;
+  canvas.width = drawCanvas.width = wrap.clientWidth;
+  canvas.height = drawCanvas.height = wrap.clientHeight;
   renderAll();
 }
 
-// ===== RENDER PRINCIPAL =====
 function renderAll() {
   if (!ctx) return;
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
-
   ctx.save();
   ctx.translate(camX, camY);
   ctx.scale(camZoom, camZoom);
-
-  // 1. Mapa de fundo
   if (mapImg) {
     ctx.drawImage(mapImg, 0, 0, mapImg.width, mapImg.height);
   } else {
-    ctx.fillStyle = '#080808';
+    ctx.fillStyle = '#0d0d0e';
     ctx.fillRect(0, 0, 4000, 4000);
   }
-
-  // 2. Grade
-  renderGrid();
-
-  // 3. Fog of war
-  renderFog();
-
-  // 4. Tokens
-  renderTokens();
-
+  renderGrid(); renderFog(); renderTokens();
   ctx.restore();
-
-  // 5. Drawings (no espaço de tela — mas em coords do mundo)
   renderDrawings();
-
-  // Zoom label
   document.getElementById('zoom-label').textContent = Math.round(camZoom*100) + '%';
 }
 
-// ===== GRADE =====
 function renderGrid() {
   if (gridType === 'none') return;
-  const W = canvas.width / camZoom + cellSize * 2;
-  const H = canvas.height / camZoom + cellSize * 2;
-  const offX = (-camX / camZoom) - cellSize;
-  const offY = (-camY / camZoom) - cellSize;
-
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  const W = canvas.width/camZoom + cellSize*2;
+  const H = canvas.height/camZoom + cellSize*2;
+  const offX = (-camX/camZoom) - cellSize;
+  const offY = (-camY/camZoom) - cellSize;
+  ctx.strokeStyle = 'rgba(255,255,255,0.055)';
   ctx.lineWidth = 0.5;
-
   if (gridType === 'square') {
-    const startX = Math.floor(offX / cellSize) * cellSize;
-    const startY = Math.floor(offY / cellSize) * cellSize;
-    for (let x = startX; x < offX + W; x += cellSize) {
-      ctx.beginPath(); ctx.moveTo(x, offY); ctx.lineTo(x, offY + H); ctx.stroke();
-    }
-    for (let y = startY; y < offY + H; y += cellSize) {
-      ctx.beginPath(); ctx.moveTo(offX, y); ctx.lineTo(offX + W, y); ctx.stroke();
-    }
+    const startX = Math.floor(offX/cellSize)*cellSize;
+    const startY = Math.floor(offY/cellSize)*cellSize;
+    for (let x = startX; x < offX+W; x += cellSize) { ctx.beginPath(); ctx.moveTo(x,offY); ctx.lineTo(x,offY+H); ctx.stroke(); }
+    for (let y = startY; y < offY+H; y += cellSize) { ctx.beginPath(); ctx.moveTo(offX,y); ctx.lineTo(offX+W,y); ctx.stroke(); }
   } else if (gridType === 'hex') {
-    const r = cellSize / 2;
-    const h = Math.sqrt(3) * r;
-    for (let row = -1; row < (H / h) + 2; row++) {
-      for (let col = -1; col < (W / (r * 1.5)) + 2; col++) {
-        const x = offX + col * r * 1.5;
-        const y = offY + row * h + (col % 2 ? h / 2 : 0);
+    const r = cellSize/2, h = Math.sqrt(3)*r;
+    for (let row = -1; row < (H/h)+2; row++) {
+      for (let col = -1; col < (W/(r*1.5))+2; col++) {
+        const x = offX + col*r*1.5, y = offY + row*h + (col%2 ? h/2 : 0);
         ctx.beginPath();
         for (let i = 0; i < 6; i++) {
-          const ang = (Math.PI / 180) * (60 * i - 30);
-          const px = x + r * Math.cos(ang);
-          const py = y + r * Math.sin(ang);
-          i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+          const ang = (Math.PI/180)*(60*i-30);
+          i === 0 ? ctx.moveTo(x+r*Math.cos(ang), y+r*Math.sin(ang)) : ctx.lineTo(x+r*Math.cos(ang), y+r*Math.sin(ang));
         }
         ctx.closePath(); ctx.stroke();
       }
@@ -870,225 +1057,141 @@ function renderGrid() {
   }
 }
 
-// ===== FOG =====
 function renderFog() {
   if (!fogCells || Object.keys(fogCells).length === 0) return;
-  ctx.fillStyle = 'rgba(0,0,0,0.85)';
+  ctx.fillStyle = 'rgba(0,0,0,0.87)';
   Object.keys(fogCells).forEach(key => {
     if (!fogCells[key]) return;
     const [cx, cy] = key.split(',').map(Number);
-    ctx.fillRect(cx * cellSize, cy * cellSize, cellSize, cellSize);
+    ctx.fillRect(cx*cellSize, cy*cellSize, cellSize, cellSize);
   });
 }
 
-// ===== IMAGE CACHE =====
 const _imgCache = {};
 function getCachedImage(src) {
   if (!src) return null;
   if (_imgCache[src]) return _imgCache[src].complete ? _imgCache[src] : null;
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = () => { renderAll(); }; // re-render quando carregar
-  img.src = src;
-  _imgCache[src] = img;
-  return null;
+  const img = new Image(); img.crossOrigin = 'anonymous';
+  img.onload = () => renderAll(); img.src = src;
+  _imgCache[src] = img; return null;
 }
 
-// ===== TOKENS — visual estilo Nexus Tabletop =====
 function renderTokens() {
   Object.entries(tokens).forEach(([id, t]) => {
-    const tx  = (t.x || 0);
-    const ty  = (t.y || 0);
-    const cx  = tx * cellSize + cellSize / 2;
-    const cy  = ty * cellSize + cellSize / 2;
-    const r   = cellSize * 0.44;               // raio do círculo de imagem
+    const tx = t.x||0, ty = t.y||0;
+    const cx = tx*cellSize + cellSize/2;
+    const cy = ty*cellSize + cellSize/2;
+    const r  = cellSize * 0.44;
     const isSelected = id === selectedTokenId;
     const isDragging = id === draggingToken;
-    const cor = t.cor || '#3a7bd5';
+    const cor = t.cor || '#4a8fe8';
 
     ctx.save();
+    ctx.shadowColor = isDragging ? '#fff' : cor;
+    ctx.shadowBlur  = isDragging ? 24 : isSelected ? 18 : 8;
 
-    // === SOMBRA EXTERNA ===
-    ctx.shadowColor = isDragging ? '#ffffff' : cor;
-    ctx.shadowBlur  = isDragging ? 28 : isSelected ? 20 : 10;
-
-    // === ANEL EXTERNO (borda colorida grossa) ===
+    // Outer ring
     ctx.beginPath();
-    ctx.arc(cx, cy, r + 4, 0, Math.PI * 2);
-    ctx.strokeStyle = isSelected || isDragging ? '#ffffff' : cor;
-    ctx.lineWidth   = isSelected || isDragging ? 3.5 : 2.5;
+    ctx.arc(cx, cy, r+4, 0, Math.PI*2);
+    ctx.strokeStyle = isSelected || isDragging ? '#fff' : cor;
+    ctx.lineWidth   = isSelected || isDragging ? 3 : 2;
     ctx.stroke();
 
-    // === ANEL INTERNO (mais escuro) ===
+    // Inner dim ring
     ctx.shadowBlur = 0;
     ctx.beginPath();
-    ctx.arc(cx, cy, r + 1.5, 0, Math.PI * 2);
-    ctx.strokeStyle = cor + '88';
+    ctx.arc(cx, cy, r+1.5, 0, Math.PI*2);
+    ctx.strokeStyle = cor + '55';
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    // === CLIP + IMAGEM ou EMOJI ===
+    // Image/emoji clip
     ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.clip();
-
-    // Fundo escuro
-    ctx.fillStyle = '#0a0a14';
-    ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
-
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.clip();
+    ctx.fillStyle = '#111'; ctx.fillRect(cx-r, cy-r, r*2, r*2);
     const imgSrc = t.img && (t.img.startsWith('data:') || t.img.startsWith('http')) ? t.img : null;
     const cachedImg = imgSrc ? getCachedImage(imgSrc) : null;
-
     if (cachedImg) {
-      // Imagem com object-fit: cover
-      const iw = cachedImg.naturalWidth  || cachedImg.width;
-      const ih = cachedImg.naturalHeight || cachedImg.height;
-      const scale = Math.max((r * 2) / iw, (r * 2) / ih);
-      const dw = iw * scale;
-      const dh = ih * scale;
-      ctx.drawImage(cachedImg, cx - dw / 2, cy - dh / 2, dw, dh);
-    } else if (imgSrc) {
-      // Placeholder enquanto carrega
-      ctx.fillStyle = cor + '33';
-      ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
-      ctx.font = `${r * 0.6}px serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#555';
-      ctx.fillText('⏳', cx, cy);
+      const iw = cachedImg.naturalWidth||cachedImg.width, ih = cachedImg.naturalHeight||cachedImg.height;
+      const scale = Math.max((r*2)/iw, (r*2)/ih);
+      ctx.drawImage(cachedImg, cx-iw*scale/2, cy-ih*scale/2, iw*scale, ih*scale);
     } else {
-      // Emoji / ícone centralizado
-      ctx.font = `${r * 1.15}px serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      // Fundo colorido suave
-      ctx.fillStyle = cor + '33';
-      ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(t.icon || '?', cx, cy + 1);
+      ctx.fillStyle = cor + '28'; ctx.fillRect(cx-r, cy-r, r*2, r*2);
+      ctx.font = `${r*1.1}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#fff'; ctx.fillText(t.icon||'?', cx, cy+1);
     }
-    ctx.restore(); // remove clip
+    ctx.restore();
 
-    // === ARCO DE HP ao redor do token (estilo Nexus) ===
+    // HP arc
     if (t.pvmax > 0) {
-      const pct = Math.max(0, Math.min(1, (t.pv || 0) / t.pvmax));
-      const startAng = -Math.PI / 2;
-      const endAng   = startAng + Math.PI * 2 * pct;
-      const hpColor  = pct > 0.5 ? '#39d353' : pct > 0.25 ? '#f5c842' : '#e84040';
-      const arcR     = r + 7;
-
-      // Trilho cinza
-      ctx.beginPath();
-      ctx.arc(cx, cy, arcR, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-      ctx.lineWidth   = 3;
-      ctx.stroke();
-
-      // HP preenchido
+      const pct = Math.max(0, Math.min(1, (t.pv||0)/t.pvmax));
+      const hpColor = pct > 0.5 ? '#00b894' : pct > 0.25 ? '#fdcb6e' : '#e84040';
+      const arcR = r+7;
+      ctx.beginPath(); ctx.arc(cx, cy, arcR, 0, Math.PI*2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 3; ctx.stroke();
       if (pct > 0) {
         ctx.beginPath();
-        ctx.arc(cx, cy, arcR, startAng, endAng);
-        ctx.strokeStyle = hpColor;
-        ctx.lineWidth   = 3;
-        ctx.lineCap     = 'round';
-        ctx.shadowBlur  = 6;
-        ctx.shadowColor = hpColor;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-        ctx.lineCap = 'butt';
+        ctx.arc(cx, cy, arcR, -Math.PI/2, -Math.PI/2 + Math.PI*2*pct);
+        ctx.strokeStyle = hpColor; ctx.lineWidth = 3; ctx.lineCap = 'round';
+        ctx.shadowBlur = 5; ctx.shadowColor = hpColor; ctx.stroke();
+        ctx.shadowBlur = 0; ctx.lineCap = 'butt';
       }
     }
 
-    // === NOME com fundo pill (estilo Nexus) ===
+    // Name pill
     ctx.shadowBlur = 0;
-    const nome = t.nome || '?';
-    const fontSize = Math.max(9, Math.min(13, cellSize * 0.175));
-    ctx.font = `700 ${fontSize}px 'Oswald', sans-serif`;
+    const nome = t.nome||'?';
+    const fontSize = Math.max(9, Math.min(12, cellSize*0.165));
+    ctx.font = `600 ${fontSize}px Inter, sans-serif`;
     const nameW = ctx.measureText(nome).width;
-    const pillW = nameW + 10;
-    const pillH = fontSize + 5;
-    const pillX = cx - pillW / 2;
-    const pillY = cy + r + 10;
+    const pillW = nameW+10, pillH = fontSize+5;
+    const pillX = cx-pillW/2, pillY = cy+r+10;
+    ctx.fillStyle = 'rgba(0,0,0,0.8)';
+    ctx.beginPath(); ctx.roundRect(pillX, pillY, pillW, pillH, pillH/2); ctx.fill();
+    ctx.fillStyle = '#e8e8ea'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(nome, cx, pillY+pillH/2);
 
-    // Fundo da pílula
-    ctx.fillStyle = 'rgba(0,0,0,0.75)';
-    ctx.beginPath();
-    ctx.roundRect(pillX, pillY, pillW, pillH, pillH / 2);
-    ctx.fill();
-
-    // Texto do nome
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(nome, cx, pillY + pillH / 2);
-
-    // === INDICADOR de seleção (pulso externo) ===
+    // Selection dashes
     if (isSelected) {
-      ctx.beginPath();
-      ctx.arc(cx, cy, r + 9, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([4, 4]);
-      ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(cx, cy, r+9, 0, Math.PI*2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 1.5;
+      ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
     }
 
-    // === ÍCONES DE CONDIÇÃO (canto superior-direito do token) ===
-    const conds = t.conditions || {};
-    const condIcons = Object.entries(conds).filter(([,v])=>v).map(([k]) => {
-      const m = { amedrontado:'😱', atordoado:'💫', envenenado:'☠️', maldito:'🔮', sangrando:'🩸', paralizado:'❄️', invisivel:'👁️' };
-      return m[k] || '';
-    }).filter(Boolean);
+    // Condition icons
+    const conds = t.conditions||{};
+    const condIcons = Object.entries(conds).filter(([,v])=>v).map(([k])=>({amedrontado:'😱',atordoado:'💫',envenenado:'☠️',maldito:'🔮',sangrando:'🩸',paralizado:'❄️',invisivel:'👁️'}[k]||'')).filter(Boolean);
     if (condIcons.length > 0) {
-      const iconSize = Math.max(8, cellSize * 0.2);
-      ctx.font = `${iconSize}px serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      condIcons.slice(0, 4).forEach((icon, i) => {
-        const ix = cx + r - iconSize * 0.3 - i * (iconSize * 0.9);
-        const iy = cy - r + iconSize * 0.5;
-        // mini fundo
-        ctx.fillStyle = 'rgba(0,0,0,0.6)';
-        ctx.beginPath();
-        ctx.arc(ix, iy, iconSize * 0.55, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillText(icon, ix, iy + 1);
+      const iconSize = Math.max(8, cellSize*0.2);
+      ctx.font = `${iconSize}px serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      condIcons.slice(0,4).forEach((icon, i) => {
+        const ix = cx+r-iconSize*0.3-i*(iconSize*0.9), iy = cy-r+iconSize*0.5;
+        ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.beginPath(); ctx.arc(ix, iy, iconSize*0.55, 0, Math.PI*2); ctx.fill();
+        ctx.fillText(icon, ix, iy+1);
       });
     }
-
     ctx.restore();
   });
 }
 
-// ===== DRAWINGS =====
 function renderDrawings() {
   if (!drawCtx) return;
   drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
   drawings.forEach(d => {
     if (d.type === 'path' && d.points?.length > 1) {
       drawCtx.save();
-      drawCtx.translate(camX, camY);
-      drawCtx.scale(camZoom, camZoom);
-      drawCtx.strokeStyle = d.color || '#e84040';
-      drawCtx.lineWidth   = (d.size || 4);
-      drawCtx.lineCap     = 'round';
-      drawCtx.lineJoin    = 'round';
-      drawCtx.beginPath();
-      drawCtx.moveTo(d.points[0].x, d.points[0].y);
-      d.points.slice(1).forEach(p => drawCtx.lineTo(p.x, p.y));
-      drawCtx.stroke();
+      drawCtx.translate(camX, camY); drawCtx.scale(camZoom, camZoom);
+      drawCtx.strokeStyle = d.color||'#e84040'; drawCtx.lineWidth = d.size||4;
+      drawCtx.lineCap = 'round'; drawCtx.lineJoin = 'round';
+      drawCtx.beginPath(); drawCtx.moveTo(d.points[0].x, d.points[0].y);
+      d.points.slice(1).forEach(p => drawCtx.lineTo(p.x, p.y)); drawCtx.stroke();
       drawCtx.restore();
     } else if (d.type === 'text' && d.text) {
       drawCtx.save();
-      drawCtx.translate(camX, camY);
-      drawCtx.scale(camZoom, camZoom);
-      drawCtx.font = `bold ${d.size * 3 || 16}px Oswald, sans-serif`;
-      drawCtx.fillStyle = d.color || '#fff';
-      drawCtx.strokeStyle = '#000';
-      drawCtx.lineWidth = 2;
-      drawCtx.strokeText(d.text, d.x, d.y);
-      drawCtx.fillText(d.text, d.x, d.y);
+      drawCtx.translate(camX, camY); drawCtx.scale(camZoom, camZoom);
+      drawCtx.font = `bold ${d.size*3||16}px Inter, sans-serif`;
+      drawCtx.fillStyle = d.color||'#fff'; drawCtx.strokeStyle = '#000'; drawCtx.lineWidth = 2;
+      drawCtx.strokeText(d.text, d.x, d.y); drawCtx.fillText(d.text, d.x, d.y);
       drawCtx.restore();
     }
   });
@@ -1097,850 +1200,606 @@ function renderDrawings() {
 // ===== CANVAS EVENTS =====
 function setupCanvasEvents() {
   const wrap = document.getElementById('tt-canvas-wrap');
-
-  // Mouse
-  let isPanning = false;
-  let panStartX, panStartY, panCamX, panCamY;
+  let isPanning = false, panStartX, panStartY, panCamX, panCamY;
   let currentDrawPath = null;
-  let measureEnd = null;
 
   wrap.addEventListener('mousedown', e => {
-    const wx = (e.offsetX - camX) / camZoom;
-    const wy = (e.offsetY - camY) / camZoom;
-
+    const wx = (e.offsetX-camX)/camZoom, wy = (e.offsetY-camY)/camZoom;
     if (activeTool === 'select') {
       const hit = getTokenAtWorld(wx, wy);
       if (hit) {
         if (isMestre || hit.owner === currentUser?.uid) {
           draggingToken = hit.id;
-          // Offset em células fracionárias para o drag ficar preciso
-          dragOffX = wx - ((hit.x || 0) * cellSize + cellSize / 2);
-          dragOffY = wy - ((hit.y || 0) * cellSize + cellSize / 2);
-          selectedTokenId = hit.id;
-          e.preventDefault();
-          renderAll();
+          dragOffX = wx-((hit.x||0)*cellSize+cellSize/2);
+          dragOffY = wy-((hit.y||0)*cellSize+cellSize/2);
+          selectedTokenId = hit.id; e.preventDefault(); renderAll();
         }
         mostrarTooltip(hit, e.clientX, e.clientY);
       } else {
-        isPanning = true;
-        panStartX = e.clientX; panStartY = e.clientY;
-        panCamX = camX; panCamY = camY;
-        selectedTokenId = null;
-        esconderTooltip();
-        renderAll();
+        isPanning = true; panStartX = e.clientX; panStartY = e.clientY; panCamX = camX; panCamY = camY;
+        selectedTokenId = null; esconderTooltip(); renderAll();
       }
     } else if (activeTool === 'draw') {
-      isDrawing = true;
-      currentDrawPath = { type:'path', color:brushColor, size:brushSize, points:[{x:wx,y:wy}] };
+      isDrawing = true; currentDrawPath = {type:'path',color:brushColor,size:brushSize,points:[{x:wx,y:wy}]};
     } else if (activeTool === 'eraser') {
       isDrawing = true;
-      // Remove drawings próximos
-      const threshold = 20 / camZoom;
-      drawings = drawings.filter(d => {
-        if (d.type !== 'path') return true;
-        return !d.points.some(p => Math.hypot(p.x - wx, p.y - wy) < threshold);
-      });
-      sincronizarDrawings();
-      renderDrawings();
+      const threshold = 20/camZoom;
+      drawings = drawings.filter(d => !(d.type==='path' && d.points.some(p=>Math.hypot(p.x-wx,p.y-wy)<threshold)));
+      sincronizarDrawings(); renderDrawings();
     } else if (activeTool === 'measure') {
-      measureStart = { x:wx, y:wy };
+      measureStart = {x:wx,y:wy};
     } else if (activeTool === 'ping') {
       enviarPing(wx, wy);
     } else if (activeTool === 'fog') {
-      const cx = Math.floor(wx / cellSize), cy = Math.floor(wy / cellSize);
-      isDrawing = true;
-      cobrirCelula(cx, cy);
+      isDrawing = true; cobrirCelula(Math.floor(wx/cellSize), Math.floor(wy/cellSize));
     } else if (activeTool === 'unfog') {
-      const cx = Math.floor(wx / cellSize), cy = Math.floor(wy / cellSize);
-      isDrawing = true;
-      revelarCelula(cx, cy);
+      isDrawing = true; revelarCelula(Math.floor(wx/cellSize), Math.floor(wy/cellSize));
     }
   });
 
   wrap.addEventListener('mousemove', e => {
-    const wx = (e.offsetX - camX) / camZoom;
-    const wy = (e.offsetY - camY) / camZoom;
-
+    const wx = (e.offsetX-camX)/camZoom, wy = (e.offsetY-camY)/camZoom;
     if (draggingToken) {
-      // Calcula a célula alvo com base na posição do centro do token
-      const centerX = wx - dragOffX;
-      const centerY = wy - dragOffY;
-      const newX = Math.max(0, Math.floor(centerX / cellSize));
-      const newY = Math.max(0, Math.floor(centerY / cellSize));
-      if (tokens[draggingToken]) {
-        tokens[draggingToken].x = newX;
-        tokens[draggingToken].y = newY;
-        renderAll();
-      }
+      const newX = Math.max(0,Math.floor((wx-dragOffX)/cellSize));
+      const newY = Math.max(0,Math.floor((wy-dragOffY)/cellSize));
+      if (tokens[draggingToken]) { tokens[draggingToken].x = newX; tokens[draggingToken].y = newY; renderAll(); }
       return;
     }
-
-    if (isPanning) {
-      camX = panCamX + (e.clientX - panStartX);
-      camY = panCamY + (e.clientY - panStartY);
-      renderAll();
-      return;
-    }
-
+    if (isPanning) { camX = panCamX+(e.clientX-panStartX); camY = panCamY+(e.clientY-panStartY); renderAll(); return; }
     if (activeTool === 'draw' && isDrawing && currentDrawPath) {
-      currentDrawPath.points.push({x:wx, y:wy});
-      renderDrawings();
-      // Preview rápido local
-      drawCtx.save();
-      drawCtx.translate(camX, camY);
-      drawCtx.scale(camZoom, camZoom);
-      drawCtx.strokeStyle = brushColor;
-      drawCtx.lineWidth = brushSize;
-      drawCtx.lineCap = 'round';
+      currentDrawPath.points.push({x:wx,y:wy});
+      drawCtx.save(); drawCtx.translate(camX,camY); drawCtx.scale(camZoom,camZoom);
+      drawCtx.strokeStyle = brushColor; drawCtx.lineWidth = brushSize; drawCtx.lineCap = 'round';
       const pts = currentDrawPath.points;
-      drawCtx.beginPath();
-      drawCtx.moveTo(pts[0].x, pts[0].y);
-      pts.slice(1).forEach(p => drawCtx.lineTo(p.x, p.y));
-      drawCtx.stroke();
-      drawCtx.restore();
+      drawCtx.beginPath(); drawCtx.moveTo(pts[0].x,pts[0].y);
+      pts.slice(1).forEach(p=>drawCtx.lineTo(p.x,p.y)); drawCtx.stroke(); drawCtx.restore();
     }
-
     if (activeTool === 'measure' && measureStart) {
-      measureEnd = { x:wx, y:wy };
+      const dist = Math.hypot(wx-measureStart.x, wy-measureStart.y);
+      const metros = (dist/cellSize*1.5).toFixed(1);
       renderAll();
-      // Desenhar linha de medição
-      const dist = Math.hypot(wx - measureStart.x, wy - measureStart.y);
-      const metros = (dist / cellSize * 1.5).toFixed(1);
-      drawCtx.save();
-      drawCtx.translate(camX, camY);
-      drawCtx.scale(camZoom, camZoom);
-      drawCtx.strokeStyle = '#f5c842';
-      drawCtx.lineWidth = 2;
-      drawCtx.setLineDash([6,4]);
-      drawCtx.beginPath();
-      drawCtx.moveTo(measureStart.x, measureStart.y);
-      drawCtx.lineTo(wx, wy);
-      drawCtx.stroke();
-      drawCtx.setLineDash([]);
-      drawCtx.font = 'bold 14px Oswald';
-      drawCtx.fillStyle = '#f5c842';
-      drawCtx.fillText(`${metros}m`, (measureStart.x + wx)/2, (measureStart.y + wy)/2 - 8);
-      drawCtx.restore();
+      drawCtx.save(); drawCtx.translate(camX,camY); drawCtx.scale(camZoom,camZoom);
+      drawCtx.strokeStyle = '#fdcb6e'; drawCtx.lineWidth = 2; drawCtx.setLineDash([6,4]);
+      drawCtx.beginPath(); drawCtx.moveTo(measureStart.x,measureStart.y); drawCtx.lineTo(wx,wy); drawCtx.stroke();
+      drawCtx.setLineDash([]); drawCtx.font = 'bold 13px Inter';
+      drawCtx.fillStyle = '#fdcb6e'; drawCtx.textAlign = 'center';
+      drawCtx.fillText(`${metros}m`, (measureStart.x+wx)/2, (measureStart.y+wy)/2-8); drawCtx.restore();
     }
-
-    if ((activeTool === 'fog' || activeTool === 'unfog') && isDrawing) {
-      const cx = Math.floor(wx / cellSize), cy = Math.floor(wy / cellSize);
-      activeTool === 'fog' ? cobrirCelula(cx, cy) : revelarCelula(cx, cy);
+    if ((activeTool==='fog'||activeTool==='unfog') && isDrawing) {
+      activeTool==='fog' ? cobrirCelula(Math.floor(wx/cellSize),Math.floor(wy/cellSize)) : revelarCelula(Math.floor(wx/cellSize),Math.floor(wy/cellSize));
     }
-
-    // Hover token
-    const hit = getTokenAtWorld(wx, wy);
-    if (hit && hit.id !== hoveredTokenId) {
-      hoveredTokenId = hit.id;
-      mostrarTooltip(hit, e.clientX, e.clientY);
-    } else if (!hit) {
-      hoveredTokenId = null;
-      esconderTooltip();
-    }
+    const hit = getTokenAtWorld(wx,wy);
+    if (hit && hit.id !== hoveredTokenId) { hoveredTokenId = hit.id; mostrarTooltip(hit,e.clientX,e.clientY); }
+    else if (!hit) { hoveredTokenId = null; esconderTooltip(); }
   });
 
   wrap.addEventListener('mouseup', e => {
     if (draggingToken) {
-      const wx = (e.offsetX - camX) / camZoom;
-      const wy = (e.offsetY - camY) / camZoom;
-      const centerX = wx - dragOffX;
-      const centerY = wy - dragOffY;
-      const newX = Math.max(0, Math.floor(centerX / cellSize));
-      const newY = Math.max(0, Math.floor(centerY / cellSize));
-      moverToken(draggingToken, newX, newY);
+      const wx=(e.offsetX-camX)/camZoom, wy=(e.offsetY-camY)/camZoom;
+      moverToken(draggingToken, Math.max(0,Math.floor((wx-dragOffX)/cellSize)), Math.max(0,Math.floor((wy-dragOffY)/cellSize)));
       draggingToken = null;
     }
     if (isPanning) isPanning = false;
-    if (activeTool === 'draw' && isDrawing && currentDrawPath) {
-      if (currentDrawPath.points.length > 1) {
-        const drawRef = push(ref(rtdb, `tabletop/${campanhaId}/drawings`));
-        set(drawRef, currentDrawPath);
-        drawings.push(currentDrawPath);
-      }
-      currentDrawPath = null;
-      isDrawing = false;
+    if (activeTool==='draw' && isDrawing && currentDrawPath) {
+      if (currentDrawPath.points.length > 1) { const dr = push(ref(rtdb,`tabletop/${campanhaId}/drawings`)); set(dr, currentDrawPath); drawings.push(currentDrawPath); }
+      currentDrawPath = null; isDrawing = false;
     }
-    if (activeTool === 'measure') {
-      measureStart = null;
-      measureEnd = null;
-      renderAll();
-    }
-    if (activeTool === 'fog' || activeTool === 'unfog') {
-      isDrawing = false;
-      sincronizarFog();
-    }
+    if (activeTool==='measure') { measureStart = null; renderAll(); }
+    if (activeTool==='fog'||activeTool==='unfog') { isDrawing = false; sincronizarFog(); }
   });
 
-  // Double-click para editar token
   wrap.addEventListener('dblclick', e => {
-    const wx = (e.offsetX - camX) / camZoom;
-    const wy = (e.offsetY - camY) / camZoom;
-    const hit = getTokenAtWorld(wx, wy);
+    const wx=(e.offsetX-camX)/camZoom, wy=(e.offsetY-camY)/camZoom;
+    const hit = getTokenAtWorld(wx,wy);
     if (hit && isMestre) abrirEditarToken(hit.id);
-    if (activeTool === 'text') {
-      const texto = prompt('Digite o texto para o mapa:');
+    if (activeTool==='text') {
+      const texto = prompt('Texto para o mapa:');
       if (texto) {
-        const d = { type:'text', color:brushColor, size:brushSize, text:texto, x:wx, y:wy };
-        const drawRef = push(ref(rtdb, `tabletop/${campanhaId}/drawings`));
-        set(drawRef, d);
-        drawings.push(d);
-        renderDrawings();
+        const d={type:'text',color:brushColor,size:brushSize,text:texto,x:wx,y:wy};
+        const dr=push(ref(rtdb,`tabletop/${campanhaId}/drawings`)); set(dr,d); drawings.push(d); renderDrawings();
       }
     }
   });
 
-  // Scroll para zoom
   wrap.addEventListener('wheel', e => {
     e.preventDefault();
-    const factor = e.deltaY > 0 ? 0.9 : 1.1;
-    const mx = e.offsetX, my = e.offsetY;
-    camZoom = Math.max(0.2, Math.min(4, camZoom * factor));
-    camX = mx - (mx - camX) * factor;
-    camY = my - (my - camY) * factor;
+    const factor = e.deltaY>0 ? 0.9 : 1.1;
+    camZoom = Math.max(0.2, Math.min(4, camZoom*factor));
+    camX = e.offsetX-(e.offsetX-camX)*factor;
+    camY = e.offsetY-(e.offsetY-camY)*factor;
     renderAll();
-  }, { passive:false });
+  }, {passive:false});
 
-  // Touch (mobile)
-  let lastTouchDist = 0;
-  let touchStartCamX, touchStartCamY, touchStartX, touchStartY;
-
+  // Touch
+  let lastTouchDist=0, touchStartCamX, touchStartCamY, touchStartX, touchStartY;
   wrap.addEventListener('touchstart', e => {
     e.preventDefault();
-    if (e.touches.length === 1) {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      touchStartCamX = camX;
-      touchStartCamY = camY;
-      const rect = wrap.getBoundingClientRect();
-      const wx = (e.touches[0].clientX - rect.left - camX) / camZoom;
-      const wy = (e.touches[0].clientY - rect.top  - camY) / camZoom;
-      const hit = getTokenAtWorld(wx, wy);
-      if (hit && (isMestre || hit.owner === currentUser?.uid)) {
-        draggingToken = hit.id;
-        dragOffX = wx - ((hit.x || 0) * cellSize + cellSize / 2);
-        dragOffY = wy - ((hit.y || 0) * cellSize + cellSize / 2);
-        selectedTokenId = hit.id;
+    if (e.touches.length===1) {
+      touchStartX=e.touches[0].clientX; touchStartY=e.touches[0].clientY; touchStartCamX=camX; touchStartCamY=camY;
+      const rect=wrap.getBoundingClientRect();
+      const wx=(e.touches[0].clientX-rect.left-camX)/camZoom, wy=(e.touches[0].clientY-rect.top-camY)/camZoom;
+      const hit=getTokenAtWorld(wx,wy);
+      if (hit&&(isMestre||hit.owner===currentUser?.uid)) {
+        draggingToken=hit.id; dragOffX=wx-((hit.x||0)*cellSize+cellSize/2); dragOffY=wy-((hit.y||0)*cellSize+cellSize/2); selectedTokenId=hit.id;
       }
-    } else if (e.touches.length === 2) {
-      draggingToken = null;
-      lastTouchDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
+    } else if (e.touches.length===2) {
+      draggingToken=null;
+      lastTouchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
     }
-  }, { passive:false });
+  },{passive:false});
 
   wrap.addEventListener('touchmove', e => {
     e.preventDefault();
-    const rect = wrap.getBoundingClientRect();
-    if (e.touches.length === 1) {
+    const rect=wrap.getBoundingClientRect();
+    if (e.touches.length===1) {
       if (draggingToken) {
-        const wx = (e.touches[0].clientX - rect.left - camX) / camZoom;
-        const wy = (e.touches[0].clientY - rect.top  - camY) / camZoom;
-        const newX = Math.max(0, Math.floor((wx - dragOffX) / cellSize));
-        const newY = Math.max(0, Math.floor((wy - dragOffY) / cellSize));
-        if (tokens[draggingToken]) { tokens[draggingToken].x = newX; tokens[draggingToken].y = newY; renderAll(); }
-      } else {
-        camX = touchStartCamX + (e.touches[0].clientX - touchStartX);
-        camY = touchStartCamY + (e.touches[0].clientY - touchStartY);
-        renderAll();
-      }
-    } else if (e.touches.length === 2) {
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
+        const wx=(e.touches[0].clientX-rect.left-camX)/camZoom, wy=(e.touches[0].clientY-rect.top-camY)/camZoom;
+        const newX=Math.max(0,Math.floor((wx-dragOffX)/cellSize)), newY=Math.max(0,Math.floor((wy-dragOffY)/cellSize));
+        if (tokens[draggingToken]) { tokens[draggingToken].x=newX; tokens[draggingToken].y=newY; renderAll(); }
+      } else { camX=touchStartCamX+(e.touches[0].clientX-touchStartX); camY=touchStartCamY+(e.touches[0].clientY-touchStartY); renderAll(); }
+    } else if (e.touches.length===2) {
+      const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
       if (lastTouchDist) {
-        const factor = dist / lastTouchDist;
-        const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
-        const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
-        camZoom = Math.max(0.2, Math.min(4, camZoom * factor));
-        camX = mx - (mx - camX) * factor;
-        camY = my - (my - camY) * factor;
-        renderAll();
+        const factor=dist/lastTouchDist;
+        const mx=(e.touches[0].clientX+e.touches[1].clientX)/2-rect.left, my=(e.touches[0].clientY+e.touches[1].clientY)/2-rect.top;
+        camZoom=Math.max(0.2,Math.min(4,camZoom*factor)); camX=mx-(mx-camX)*factor; camY=my-(my-camY)*factor; renderAll();
       }
-      lastTouchDist = dist;
+      lastTouchDist=dist;
     }
-  }, { passive:false });
+  },{passive:false});
 
   wrap.addEventListener('touchend', e => {
     if (draggingToken) {
-      const rect = wrap.getBoundingClientRect();
-      const t = e.changedTouches[0];
-      const wx = (t.clientX - rect.left - camX) / camZoom;
-      const wy = (t.clientY - rect.top  - camY) / camZoom;
-      const newX = Math.max(0, Math.floor((wx - dragOffX) / cellSize));
-      const newY = Math.max(0, Math.floor((wy - dragOffY) / cellSize));
-      moverToken(draggingToken, newX, newY);
-      draggingToken = null;
+      const rect=wrap.getBoundingClientRect(), t=e.changedTouches[0];
+      const wx=(t.clientX-rect.left-camX)/camZoom, wy=(t.clientY-rect.top-camY)/camZoom;
+      moverToken(draggingToken, Math.max(0,Math.floor((wx-dragOffX)/cellSize)), Math.max(0,Math.floor((wy-dragOffY)/cellSize)));
+      draggingToken=null;
     }
-    lastTouchDist = 0;
+    lastTouchDist=0;
   });
 
-  // Keyboard shortcuts
   document.addEventListener('keydown', e => {
     if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
-    const map = { v:'select', d:'draw', e:'eraser', t:'text', m:'measure', f:'fog', r:'unfog', p:'ping' };
+    const map={v:'select',d:'draw',e:'eraser',t:'text',m:'measure',f:'fog',r:'unfog',p:'ping'};
     if (map[e.key.toLowerCase()]) setTool(map[e.key.toLowerCase()]);
-    if (e.key === '+' || e.key === '=') zoomIn();
-    if (e.key === '-') zoomOut();
-    if (e.key === '0') resetView();
-    if (e.key === 'Delete' && selectedTokenId && isMestre) removerToken(selectedTokenId);
+    if (e.key==='+'||e.key==='=') zoomIn();
+    if (e.key==='-') zoomOut();
+    if (e.key==='0') resetView();
+    if (e.key==='Delete'&&selectedTokenId&&isMestre) removerToken(selectedTokenId);
   });
 }
 
-// ===== TOOL SYSTEM =====
+// ===== TOOLS =====
 window.setTool = function(tool) {
   activeTool = tool;
-  document.querySelectorAll('.tt-tool[id^="tool-"]').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById('tool-' + tool);
-  if (el) el.classList.add('active');
-
+  document.querySelectorAll('.ob-tool[id^="tool-"]').forEach(el => el.classList.remove('active'));
+  document.getElementById('tool-'+tool)?.classList.add('active');
   const wrap = document.getElementById('tt-canvas-wrap');
-  wrap.className = 'tt-canvas-wrap';
-  const cursorMap = { draw:'draw', eraser:'eraser', ping:'ping-mode', fog:'fog-mode', unfog:'fog-reveal', measure:'crosshair' };
-  if (cursorMap[tool]) wrap.classList.add(cursorMap[tool]);
+  wrap.className = 'ob-canvas-wrap';
+  const cursors = {draw:'draw',eraser:'eraser',ping:'ping-mode',fog:'fog-mode',unfog:'fog-reveal'};
+  if (cursors[tool]) wrap.classList.add(cursors[tool]);
 };
 
-// ===== ZOOM =====
-window.zoomIn  = () => { camZoom = Math.min(4, camZoom * 1.2); renderAll(); };
-window.zoomOut = () => { camZoom = Math.max(0.2, camZoom / 1.2); renderAll(); };
-window.resetView = () => {
-  camX = 0; camY = 0; camZoom = 1; renderAll();
-};
+window.zoomIn  = () => { camZoom=Math.min(4,camZoom*1.2); renderAll(); };
+window.zoomOut = () => { camZoom=Math.max(0.2,camZoom/1.2); renderAll(); };
+window.resetView = () => { camX=0; camY=0; camZoom=1; renderAll(); };
 
 // ===== TOKEN HELPERS =====
 function getTokenAtWorld(wx, wy) {
-  // Percorre em ordem reversa para pegar o token do topo (último renderizado)
   const entries = Object.entries(tokens);
-  for (let i = entries.length - 1; i >= 0; i--) {
-    const [id, t] = entries[i];
-    const cx = (t.x || 0) * cellSize + cellSize / 2;
-    const cy = (t.y || 0) * cellSize + cellSize / 2;
-    const r  = cellSize * 0.48; // raio de hit um pouco maior que o visual
-    if (Math.hypot(wx - cx, wy - cy) <= r) {
-      return { ...t, id };
-    }
+  for (let i=entries.length-1; i>=0; i--) {
+    const [id,t] = entries[i];
+    const cx=(t.x||0)*cellSize+cellSize/2, cy=(t.y||0)*cellSize+cellSize/2;
+    if (Math.hypot(wx-cx,wy-cy) <= cellSize*0.48) return {...t,id};
   }
   return null;
 }
 
 function mostrarTooltip(token, clientX, clientY) {
   const el = document.getElementById('tt-token-tooltip');
-  document.getElementById('tooltip-name').textContent = token.nome || '?';
-  document.getElementById('tooltip-hp').textContent = `PV ${token.pv ?? '?'} / ${token.pvmax ?? '?'}`;
-  document.getElementById('tooltip-type').textContent = (token.tipo || '') + (token.res ? ` · Res: ${token.res}` : '');
+  document.getElementById('tooltip-name').textContent = token.nome||'?';
+  document.getElementById('tooltip-hp').textContent = `HP  ${token.pv??'?'} / ${token.pvmax??'?'}`;
+  document.getElementById('tooltip-type').textContent = (token.tipo||'')+(token.res ? ` · ${token.res}` : '');
   const wrap = document.getElementById('tt-canvas-wrap').getBoundingClientRect();
-  el.style.left = (clientX - wrap.left + 12) + 'px';
-  el.style.top  = (clientY - wrap.top  - 40) + 'px';
+  el.style.left = (clientX-wrap.left+14)+'px';
+  el.style.top  = (clientY-wrap.top-50)+'px';
   el.classList.add('show');
 }
-function esconderTooltip() {
-  document.getElementById('tt-token-tooltip').classList.remove('show');
-}
+function esconderTooltip() { document.getElementById('tt-token-tooltip').classList.remove('show'); }
 
 // ===== FIREBASE TOKENS =====
 async function moverToken(id, x, y) {
   if (!isMestre && tokens[id]?.owner !== currentUser?.uid) return;
-  await update(ref(rtdb, `tabletop/${campanhaId}/tokens/${id}`), { x, y });
+  await update(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`), {x,y});
 }
 
 window.adicionarToken = async function() {
-  const nome  = document.getElementById('nt-nome').value.trim();
+  const nome = document.getElementById('nt-nome').value.trim();
   if (!nome) { mostrarToast('⚠ Informe o nome do token'); return; }
   const tipo  = document.getElementById('nt-tipo').value;
-  const pv    = parseInt(document.getElementById('nt-pv').value)    || 30;
-  const pvmax = parseInt(document.getElementById('nt-pvmax').value) || pv;
+  const pv    = parseInt(document.getElementById('nt-pv').value)||30;
+  const pvmax = parseInt(document.getElementById('nt-pvmax').value)||pv;
   const cor   = document.getElementById('nt-cor').value;
-  const icon  = document.getElementById('nt-icon').value || getDefaultIcon(tipo);
-  const img   = document.getElementById('nt-img').value.trim() ||
-                document.getElementById('nt-img-preview-img').src || '';
-
-  const token = {
-    nome, tipo, pv, pvmax, cor, icon,
-    img: img.startsWith('data:') || img.startsWith('http') ? img : '',
-    x: Math.floor(Math.random() * 8),
-    y: Math.floor(Math.random() * 6),
-    owner: currentUser.uid,
-    criadoEm: Date.now()
-  };
-
-  const newRef = push(ref(rtdb, `tabletop/${campanhaId}/tokens`));
-  await set(newRef, token);
-  closeModal('modal-add-token');
-  limparFormToken();
+  const icon  = document.getElementById('nt-icon').value||getDefaultIcon(tipo);
+  const img   = document.getElementById('nt-img').value.trim()||document.getElementById('nt-img-preview-img').src||'';
+  const token = { nome,tipo,pv,pvmax,cor,icon, img:img.startsWith('data:')||img.startsWith('http')?img:'',
+    x:Math.floor(Math.random()*8), y:Math.floor(Math.random()*6), owner:currentUser.uid, criadoEm:Date.now() };
+  await set(push(ref(rtdb,`tabletop/${campanhaId}/tokens`)), token);
+  closeModal('modal-add-token'); limparFormToken();
   mostrarToast(`✦ ${nome} adicionado!`);
 };
 
-function getDefaultIcon(tipo) {
-  const m = { jogador:'🧙', npc:'👤', monstro:'👾', aliado:'🛡️' };
-  return m[tipo] || '?';
-}
-
+function getDefaultIcon(tipo) { return {jogador:'🧙',npc:'👤',monstro:'👾',aliado:'🛡️'}[tipo]||'?'; }
 function limparFormToken() {
-  ['nt-nome','nt-pv','nt-pvmax','nt-icon','nt-img'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('nt-img-preview').style.display = 'none';
+  ['nt-nome','nt-pv','nt-pvmax','nt-icon','nt-img'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nt-img-preview').style.display='none';
 }
 
 window.previewTokenImg = function(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
+  const file=input.files[0]; if (!file) return;
+  const reader=new FileReader();
   reader.onload = e => {
-    const preview = document.getElementById('nt-img-preview');
-    document.getElementById('nt-img-preview-img').src = e.target.result;
-    document.getElementById('nt-img').value = e.target.result;
-    preview.style.display = 'block';
+    document.getElementById('nt-img-preview-img').src=e.target.result;
+    document.getElementById('nt-img').value=e.target.result;
+    document.getElementById('nt-img-preview').style.display='block';
   };
   reader.readAsDataURL(file);
 };
 
 function abrirEditarToken(id) {
   if (!isMestre) return;
-  const t = tokens[id]; if (!t) return;
-  document.getElementById('et-id').value    = id;
-  document.getElementById('et-nome').value  = t.nome;
-  document.getElementById('et-pv').value    = t.pv;
-  document.getElementById('et-pvmax').value = t.pvmax;
-  document.getElementById('et-cor').value   = t.cor || '#3a7bd5';
+  const t=tokens[id]; if (!t) return;
+  document.getElementById('et-id').value=id;
+  document.getElementById('et-nome').value=t.nome;
+  document.getElementById('et-pv').value=t.pv;
+  document.getElementById('et-pvmax').value=t.pvmax;
+  document.getElementById('et-cor').value=t.cor||'#4a8fe8';
   openModal('modal-edit-token');
 }
 
 window.salvarToken = async function() {
-  const id    = document.getElementById('et-id').value;
-  const nome  = document.getElementById('et-nome').value.trim();
-  const pv    = parseInt(document.getElementById('et-pv').value);
-  const pvmax = parseInt(document.getElementById('et-pvmax').value);
-  const cor   = document.getElementById('et-cor').value;
-  await update(ref(rtdb, `tabletop/${campanhaId}/tokens/${id}`), { nome, pv, pvmax, cor });
-  closeModal('modal-edit-token');
-  mostrarToast('✦ Token atualizado!');
+  const id=document.getElementById('et-id').value;
+  const nome=document.getElementById('et-nome').value.trim();
+  const pv=parseInt(document.getElementById('et-pv').value);
+  const pvmax=parseInt(document.getElementById('et-pvmax').value);
+  const cor=document.getElementById('et-cor').value;
+  await update(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`),{nome,pv,pvmax,cor});
+  closeModal('modal-edit-token'); mostrarToast('✦ Token atualizado!');
 };
 
 window.removerToken = async function(id) {
   if (!isMestre) return;
-  await remove(ref(rtdb, `tabletop/${campanhaId}/tokens/${id}`));
-  if (selectedTokenId === id) selectedTokenId = null;
-  closeModal('modal-edit-token');
-  mostrarToast('Token removido.');
+  await remove(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`));
+  if (selectedTokenId===id) selectedTokenId=null;
+  closeModal('modal-edit-token'); mostrarToast('Token removido.');
 };
 
-// ===== MONSTROS =====
-window.filtrarMonstros = function(q) { renderMonsters(MONSTROS_OP.filter(m => m.nome.toLowerCase().includes(q.toLowerCase()) || m.tipo.toLowerCase().includes(q.toLowerCase()))); };
+// ===== MONSTERS =====
+window.filtrarMonstros = function(q) {
+  renderMonsters(MONSTROS_OP.filter(m=>m.nome.toLowerCase().includes(q.toLowerCase())||m.tipo.toLowerCase().includes(q.toLowerCase())));
+};
 
 function renderMonsters(list) {
-  const grid = document.getElementById('monster-grid');
-  grid.innerHTML = list.map(m => `
-    <div class="monster-card" onclick="abrirDetalhesMonstro('${m.id}')">
-      <div class="monster-card-icon">${m.img}</div>
-      <div class="monster-card-name">${m.nome}</div>
-      <div class="monster-card-nd">ND ${m.nd} · PV ${m.pv}</div>
+  document.getElementById('monster-grid').innerHTML = list.map(m=>`
+    <div class="ob-monster-card" onclick="abrirDetalhesMonstro('${m.id}')">
+      <div class="ob-monster-card-icon">${m.img}</div>
+      <div class="ob-monster-card-name">${m.nome}</div>
+      <div class="ob-monster-card-nd">ND ${m.nd} · PV ${m.pv}</div>
     </div>`).join('');
 }
 
 let monstroSelecionado = null;
 window.abrirDetalhesMonstro = function(id) {
-  monstroSelecionado = MONSTROS_OP.find(m => m.id === id);
-  if (!monstroSelecionado) return;
+  monstroSelecionado = MONSTROS_OP.find(m=>m.id===id); if (!monstroSelecionado) return;
   const m = monstroSelecionado;
-  document.getElementById('md-icon').textContent  = m.img;
-  document.getElementById('md-nome').textContent  = m.nome;
-  document.getElementById('md-pv-custom').value   = m.pv;
-  document.getElementById('md-qty').value         = 1;
+  document.getElementById('md-icon').textContent = m.img;
+  document.getElementById('md-nome').textContent = m.nome;
+  document.getElementById('md-pv-custom').value = m.pv;
+  document.getElementById('md-qty').value = 1;
   document.getElementById('md-stats').innerHTML = `
-    <div class="monster-info-stat"><span class="monster-info-key">TIPO</span><span class="monster-info-val">${m.tipo}</span></div>
-    <div class="monster-info-stat"><span class="monster-info-key">ND</span><span class="monster-info-val">${m.nd}</span></div>
-    <div class="monster-info-stat"><span class="monster-info-key">PV</span><span class="monster-info-val">${m.pv}</span></div>
-    <div class="monster-info-stat"><span class="monster-info-key">DEF</span><span class="monster-info-val">${m.def}</span></div>
-    <div class="monster-info-stat"><span class="monster-info-key">ATAQUE</span><span class="monster-info-val">${m.ataque}</span></div>
-    <div class="monster-info-stat"><span class="monster-info-key">MOV</span><span class="monster-info-val">${m.mov}m</span></div>
-    <div class="monster-info-stat"><span class="monster-info-key">RESIST.</span><span class="monster-info-val">${m.res}</span></div>
-    <div style="margin-top:10px;font-size:0.72rem;color:var(--dim);line-height:1.5;font-family:'Share Tech Mono',monospace;">${m.desc}</div>
-  `;
-  closeModal('modal-monsters');
-  openModal('modal-monster-detail');
+    <div class="ob-monster-stat"><span class="ob-monster-stat-key">TIPO</span><span class="ob-monster-stat-val">${m.tipo}</span></div>
+    <div class="ob-monster-stat"><span class="ob-monster-stat-key">ND</span><span class="ob-monster-stat-val">${m.nd}</span></div>
+    <div class="ob-monster-stat"><span class="ob-monster-stat-key">PV</span><span class="ob-monster-stat-val">${m.pv}</span></div>
+    <div class="ob-monster-stat"><span class="ob-monster-stat-key">DEF</span><span class="ob-monster-stat-val">${m.def}</span></div>
+    <div class="ob-monster-stat"><span class="ob-monster-stat-key">ATAQUE</span><span class="ob-monster-stat-val">${m.ataque}</span></div>
+    <div class="ob-monster-stat"><span class="ob-monster-stat-key">MOV</span><span class="ob-monster-stat-val">${m.mov}m</span></div>
+    <div class="ob-monster-stat"><span class="ob-monster-stat-key">RESIST.</span><span class="ob-monster-stat-val">${m.res}</span></div>
+    <p style="margin-top:10px;font-size:11px;color:var(--text3);line-height:1.6;font-family:'JetBrains Mono',monospace;">${m.desc}</p>`;
+  closeModal('modal-monsters'); openModal('modal-monster-detail');
 };
 
 window.adicionarMonstro = async function() {
   if (!monstroSelecionado) return;
-  const m   = monstroSelecionado;
-  const pv  = parseInt(document.getElementById('md-pv-custom').value) || m.pv;
-  const qty = Math.max(1, Math.min(10, parseInt(document.getElementById('md-qty').value) || 1));
-
-  for (let i = 0; i < qty; i++) {
-    const token = {
-      nome: qty > 1 ? `${m.nome} ${i+1}` : m.nome,
-      tipo: m.tipo, pv, pvmax: pv, cor: m.cor, icon: m.img,
-      img: '', res: m.res, ataque: m.ataque,
-      x: Math.floor(Math.random() * 10) + i,
-      y: Math.floor(Math.random() * 6),
-      owner: currentUser.uid, criadoEm: Date.now()
-    };
-    const newRef = push(ref(rtdb, `tabletop/${campanhaId}/tokens`));
-    await set(newRef, token);
+  const m=monstroSelecionado;
+  const pv=parseInt(document.getElementById('md-pv-custom').value)||m.pv;
+  const qty=Math.max(1,Math.min(10,parseInt(document.getElementById('md-qty').value)||1));
+  for (let i=0; i<qty; i++) {
+    const token={nome:qty>1?`${m.nome} ${i+1}`:m.nome, tipo:m.tipo,pv,pvmax:pv,cor:m.cor,icon:m.img,img:'',res:m.res,ataque:m.ataque,
+      x:Math.floor(Math.random()*10)+i,y:Math.floor(Math.random()*6),owner:currentUser.uid,criadoEm:Date.now()};
+    await set(push(ref(rtdb,`tabletop/${campanhaId}/tokens`)), token);
   }
-  closeModal('modal-monster-detail');
-  mostrarToast(`✦ ${qty > 1 ? qty + 'x ' : ''}${m.nome} adicionado(s)!`);
+  closeModal('modal-monster-detail'); mostrarToast(`✦ ${qty>1?qty+'x ':''}${m.nome} adicionado(s)!`);
 };
 
 // ===== TOKEN LIST =====
 function renderTokenList() {
-  const el = document.getElementById('token-list-panel');
-  const list = Object.entries(tokens);
-  if (list.length === 0) {
-    el.innerHTML = '<div style="font-size:0.7rem;color:var(--dim);font-family:\'Share Tech Mono\',monospace;">Nenhum token na mesa.</div>';
-    return;
-  }
-  el.innerHTML = list.map(([id, t]) => {
-    const pct = t.pvmax > 0 ? Math.max(0, Math.min(100, (t.pv/t.pvmax)*100)) : 0;
-    const hpColor = pct > 50 ? '#39d353' : pct > 25 ? '#f5c842' : '#e84040';
-    return `<div class="token-list-item ${selectedTokenId===id?'selected':''}" onclick="selecionarTokenLista('${id}')">
-      <div class="token-avatar" style="border-color:${t.cor||'#3a7bd5'};background:${(t.cor||'#3a7bd5')}22;">
-        ${t.img ? `<img src="${t.img}" alt="">` : `<span style="font-size:1.1rem;">${t.icon||'?'}</span>`}
+  const el=document.getElementById('token-list-panel');
+  const list=Object.entries(tokens);
+  if (list.length===0) { el.innerHTML='<div style="font-size:11px;color:var(--text3);font-family:\'JetBrains Mono\',monospace;padding:8px 0;">Nenhum token na mesa.</div>'; return; }
+  el.innerHTML = list.map(([id,t])=>{
+    const pct=t.pvmax>0?Math.max(0,Math.min(100,(t.pv/t.pvmax)*100)):0;
+    const hpColor=pct>50?'#00b894':pct>25?'#fdcb6e':'#e84040';
+    return `<div class="ob-token-item ${selectedTokenId===id?'selected':''}" onclick="selecionarTokenLista('${id}')">
+      <div class="ob-token-avatar" style="background:${(t.cor||'#4a8fe8')}22;">
+        ${t.img?`<img src="${t.img}" alt="">`:`<span>${t.icon||'?'}</span>`}
       </div>
-      <div class="token-info">
-        <div class="token-name">${t.nome}</div>
-        <div class="token-hp-bar"><div class="token-hp-fill" style="width:${pct}%;background:${hpColor};"></div></div>
-        <div class="token-hp-text">PV ${t.pv??'?'}/${t.pvmax??'?'}</div>
+      <div class="ob-token-info">
+        <div class="ob-token-name">${t.nome}</div>
+        <div class="ob-hp-bar"><div class="ob-hp-fill" style="width:${pct}%;background:${hpColor};"></div></div>
+        <div class="ob-token-sub">PV ${t.pv??'?'}/${t.pvmax??'?'}</div>
       </div>
-      ${isMestre ? `<button onclick="event.stopPropagation();abrirEditarToken('${id}')" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.75rem;" title="Editar">✎</button>` : ''}
+      ${isMestre?`<button class="ob-token-edit-btn" onclick="event.stopPropagation();abrirEditarToken('${id}')" title="Editar">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:13px;height:13px;"><path d="M3 13l8-8a1.5 1.5 0 012 2L5 15H3v-2z"/></svg>
+      </button>`:''}
     </div>`;
   }).join('');
 }
 
 window.selecionarTokenLista = function(id) {
-  selectedTokenId = id;
-  const t = tokens[id]; if (!t) return;
-  // Centralizar view no token
-  const wx = t.x * cellSize + cellSize / 2;
-  const wy = t.y * cellSize + cellSize / 2;
-  const W = canvas.width, H = canvas.height;
-  camX = W/2 - wx * camZoom;
-  camY = H/2 - wy * camZoom;
-  renderAll();
-  renderTokenList();
+  selectedTokenId=id;
+  const t=tokens[id]; if (!t) return;
+  camX = canvas.width/2 - (t.x*cellSize+cellSize/2)*camZoom;
+  camY = canvas.height/2 - (t.y*cellSize+cellSize/2)*camZoom;
+  renderAll(); renderTokenList();
 };
 
-// ===== MAPA =====
+// ===== MAP =====
 window.uploadMapa = function(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const url = e.target.result;
-    salvarEstado({ mapUrl: url });
-    mostrarToast('🗺 Mapa carregado!');
-  };
+  const file=input.files[0]; if (!file) return;
+  const reader=new FileReader();
+  reader.onload = e => { salvarEstado({mapUrl:e.target.result}); mostrarToast('🗺 Mapa carregado!'); };
   reader.readAsDataURL(file);
 };
-
 window.setMapaURL = function() {
-  const url = document.getElementById('map-url-input').value.trim();
-  if (!url) return;
-  salvarEstado({ mapUrl: url });
-  mostrarToast('🗺 Mapa atualizado!');
+  const url=document.getElementById('map-url-input').value.trim(); if (!url) return;
+  salvarEstado({mapUrl:url}); mostrarToast('🗺 Mapa atualizado!');
 };
-
 function carregarMapa(url) {
-  if (!url) { mapImg = null; renderAll(); return; }
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = () => { mapImg = img; renderAll(); };
-  img.onerror = () => { mapImg = null; renderAll(); };
-  img.src = url;
+  if (!url) { mapImg=null; renderAll(); return; }
+  const img=new Image(); img.crossOrigin='anonymous';
+  img.onload=()=>{mapImg=img;renderAll();}; img.onerror=()=>{mapImg=null;renderAll();};
+  img.src=url;
 }
-
 function renderMapPresets() {
-  const grid = document.getElementById('map-presets');
-  grid.innerHTML = MAPAS_PRESET.map((m,i) => `
-    <div class="map-thumb" onclick="usarMapaPreset(${i})" title="${m.nome}">
-      <div style="width:100%;height:100%;background:${m.cor||'#111'};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
-        <div style="font-size:1.3rem;">${m.emoji||'🗺'}</div>
+  document.getElementById('map-presets').innerHTML = MAPAS_PRESET.map((m,i)=>`
+    <div class="ob-map-thumb" onclick="usarMapaPreset(${i})" title="${m.nome}">
+      <div style="width:100%;height:100%;background:${m.cor||'#111'};display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:1.3rem;">${m.emoji||'🗺'}</span>
       </div>
-      <div class="map-thumb-label">${m.nome}</div>
+      <div class="ob-map-thumb-label">${m.nome}</div>
     </div>`).join('');
 }
-
 window.usarMapaPreset = function(i) {
-  const m = MAPAS_PRESET[i];
-  salvarEstado({ mapUrl: m.url });
-  mostrarToast(`🗺 ${m.nome} carregado!`);
+  salvarEstado({mapUrl:MAPAS_PRESET[i].url}); mostrarToast(`🗺 ${MAPAS_PRESET[i].nome}!`);
 };
-
-window.setGridType = function(val) {
-  gridType = val;
-  salvarEstado({ gridType: val });
-  renderAll();
-};
-
+window.setGridType = function(val) { gridType=val; salvarEstado({gridType:val}); renderAll(); };
 window.setCellSize = function(val) {
-  cellSize = val;
-  document.getElementById('grid-size-label').textContent = val;
-  salvarEstado({ cellSize: val });
-  renderAll();
+  cellSize=val; document.getElementById('grid-size-label').textContent=val;
+  salvarEstado({cellSize:val}); renderAll();
 };
-
 async function salvarEstado(data) {
   if (!isMestre) return;
-  await update(ref(rtdb, `tabletop/${campanhaId}/state`), data);
+  await update(ref(rtdb,`tabletop/${campanhaId}/state`), data);
 }
 
 // ===== FOG =====
-function cobrirCelula(cx, cy) {
-  fogCells[`${cx},${cy}`] = true;
-  renderAll();
-}
-function revelarCelula(cx, cy) {
-  delete fogCells[`${cx},${cy}`];
-  renderAll();
-}
+function cobrirCelula(cx,cy) { fogCells[`${cx},${cy}`]=true; renderAll(); }
+function revelarCelula(cx,cy) { delete fogCells[`${cx},${cy}`]; renderAll(); }
 async function sincronizarFog() {
   if (!isMestre) return;
-  await set(ref(rtdb, `tabletop/${campanhaId}/fog`), fogCells);
+  await set(ref(rtdb,`tabletop/${campanhaId}/fog`), fogCells);
 }
+window.cobrir_tudo = function() {
+  if (!isMestre) return;
+  for (let x=0;x<67;x++) for (let y=0;y<50;y++) fogCells[`${x},${y}`]=true;
+  sincronizarFog(); renderAll();
+};
+window.revelar_tudo = function() {
+  if (!isMestre) return;
+  fogCells={};
+  sincronizarFog(); renderAll();
+};
 
 // ===== DRAWINGS =====
 async function sincronizarDrawings() {
-  const drawRef = ref(rtdb, `tabletop/${campanhaId}/drawings`);
-  await set(drawRef, drawings.reduce((acc, d, i) => { acc[i] = d; return acc; }, {}));
+  const drawRef=ref(rtdb,`tabletop/${campanhaId}/drawings`);
+  await set(drawRef, drawings.reduce((acc,d,i)=>{acc[i]=d;return acc;},{}));
 }
 window.clearDrawings = async function() {
   if (!isMestre) return;
-  drawings = [];
-  await set(ref(rtdb, `tabletop/${campanhaId}/drawings`), {});
-  renderDrawings();
-  mostrarToast('Desenhos limpos.');
+  drawings=[];
+  await set(ref(rtdb,`tabletop/${campanhaId}/drawings`),{});
+  renderDrawings(); mostrarToast('Desenhos limpos.');
 };
 
 // ===== PINGS =====
 window.enviarPing = async function(wx, wy) {
-  const cor = '#f5c842';
-  mostrarPing(wx, wy, cor);
-  const pingRef = push(ref(rtdb, `tabletop/${campanhaId}/pings`));
-  await set(pingRef, { worldX: wx, worldY: wy, cor, uid: currentUser.uid, ts: Date.now() });
-  setTimeout(() => remove(pingRef), 3000);
+  mostrarPing(wx, wy, '#fdcb6e');
+  const pingRef=push(ref(rtdb,`tabletop/${campanhaId}/pings`));
+  await set(pingRef,{worldX:wx,worldY:wy,cor:'#fdcb6e',uid:currentUser.uid,ts:Date.now()});
+  setTimeout(()=>remove(pingRef), 3000);
 };
-
 function mostrarPing(wx, wy, cor) {
-  const layer = document.getElementById('tt-pings-layer');
-  const sx = wx * camZoom + camX;
-  const sy = wy * camZoom + camY;
-  const el = document.createElement('div');
-  el.className = 'tt-ping';
-  el.style.left = sx + 'px'; el.style.top = sy + 'px';
-  el.style.borderColor = cor || '#f5c842';
+  const layer=document.getElementById('tt-pings-layer');
+  const sx=wx*camZoom+camX, sy=wy*camZoom+camY;
+  const el=document.createElement('div');
+  el.className='ob-ping';
+  el.style.left=sx+'px'; el.style.top=sy+'px'; el.style.borderColor=cor||'#fdcb6e';
   layer.appendChild(el);
-  setTimeout(() => el.remove(), 1600);
+  setTimeout(()=>el.remove(), 1600);
 }
 
-// ===== INICIATIVA =====
+// ===== INITIATIVE =====
 function renderInitiative() {
-  const el = document.getElementById('initiative-list');
-  if (initList.length === 0) {
-    el.innerHTML = '<div style="font-size:0.7rem;color:var(--dim);font-family:\'Share Tech Mono\',monospace;">Nenhuma entrada ainda.</div>';
-    return;
-  }
-  const sorted = [...initList].sort((a,b) => (b.valor||0) - (a.valor||0));
-  el.innerHTML = sorted.map((item, i) => {
-    const ativo = i === (currentTurn % sorted.length);
-    const pct = item.pvmax > 0 ? (item.pv / item.pvmax * 100) : 100;
-    return `<div class="init-item ${ativo?'ativo':''}">
-      <div class="init-num">${item.valor}</div>
-      <div class="init-avatar" style="background:${(tokens[item.tokenId]?.cor||'#3a7bd5')}33;border:1px solid ${tokens[item.tokenId]?.cor||'#3a7bd5'};">
-        ${tokens[item.tokenId]?.icon || item.icon || '?'}
+  const el=document.getElementById('initiative-list');
+  if (initList.length===0) { el.innerHTML='<div style="font-size:11px;color:var(--text3);font-family:\'JetBrains Mono\',monospace;padding:8px 0;">Nenhuma entrada ainda.</div>'; return; }
+  const sorted=[...initList].sort((a,b)=>(b.valor||0)-(a.valor||0));
+  el.innerHTML = sorted.map((item,i)=>{
+    const ativo = i===(currentTurn%sorted.length);
+    return `<div class="ob-init-item ${ativo?'active-turn':''}">
+      <div class="ob-init-num">${item.valor}</div>
+      <div class="ob-init-avatar" style="background:${(tokens[item.tokenId]?.cor||'#4a8fe8')}22;">
+        ${tokens[item.tokenId]?.icon||item.icon||'?'}
       </div>
-      <div style="flex:1;min-width:0;">
-        <div class="init-name">${item.nome}</div>
-        <div class="init-hp-small">PV ${item.pv??'?'}/${item.pvmax??'?'}</div>
+      <div class="ob-init-info">
+        <div class="ob-init-name">${item.nome}</div>
+        <div class="ob-init-hp">PV ${item.pv??'?'}/${item.pvmax??'?'}</div>
       </div>
-      ${ativo ? '<div style="font-size:0.6rem;color:var(--yellow);letter-spacing:1px;">▶ VEZ</div>' : ''}
-      ${isMestre ? `<div class="init-btns">
-        <button class="init-btn-sm" onclick="alterarHP('${item.id}',-5)">-5</button>
-        <button class="init-btn-sm" onclick="alterarHP('${item.id}',+5)">+5</button>
-        <button class="init-btn-sm" onclick="removerInit('${item.id}')">✕</button>
-      </div>` : ''}
+      ${ativo?'<div class="ob-init-turn-badge">▶ VEZ</div>':''}
+      ${isMestre?`<div class="ob-init-ctrl">
+        <button class="ob-init-btn" onclick="alterarHP('${item.id}',-5)">-5</button>
+        <button class="ob-init-btn" onclick="alterarHP('${item.id}',+5)">+5</button>
+        <button class="ob-init-btn" onclick="removerInit('${item.id}')">✕</button>
+      </div>`:''}
     </div>`;
   }).join('');
 }
-
-window.adicionarIniciativa = async function() {
-  const tokenId = document.getElementById('init-token-select').value;
-  let nome  = document.getElementById('init-nome-manual').value.trim();
-  const val = parseInt(document.getElementById('init-valor').value) || 0;
-  const pvStr = document.getElementById('init-pv').value || '30/30';
-  const [pv, pvmax] = pvStr.split('/').map(Number);
-
-  if (tokenId && tokens[tokenId]) {
-    const t = tokens[tokenId];
-    nome = nome || t.nome;
-  }
-  if (!nome) { mostrarToast('⚠ Informe o nome'); return; }
-
-  const entry = {
-    id: Date.now().toString(),
-    tokenId: tokenId || null,
-    nome, valor: val,
-    pv: isNaN(pv) ? 30 : pv,
-    pvmax: isNaN(pvmax) ? (isNaN(pv) ? 30 : pv) : pvmax,
-    icon: tokenId ? (tokens[tokenId]?.icon || '?') : '🎲'
-  };
-
-  const newList = [...initList, entry];
-  await set(ref(rtdb, `tabletop/${campanhaId}/initiative`), { list: newList, currentTurn: currentTurn });
-  closeModal('modal-add-init');
-  mostrarToast(`⚔ ${nome} adicionado!`);
-};
 
 window.nextTurn = async function() {
   if (!isMestre) return;
-  const next = (currentTurn + 1) % Math.max(1, initList.length);
-  await update(ref(rtdb, `tabletop/${campanhaId}/initiative`), { currentTurn: next });
+  const next=(currentTurn+1)%Math.max(1,initList.length);
+  await update(ref(rtdb,`tabletop/${campanhaId}/initiative`),{currentTurn:next});
 };
-
 window.clearInitiative = async function() {
   if (!isMestre) return;
-  await set(ref(rtdb, `tabletop/${campanhaId}/initiative`), { list: [], currentTurn: 0 });
+  await set(ref(rtdb,`tabletop/${campanhaId}/initiative`),{list:[],currentTurn:0});
 };
-
 window.removerInit = async function(id) {
-  const newList = initList.filter(i => i.id !== id);
-  await set(ref(rtdb, `tabletop/${campanhaId}/initiative`), { list: newList, currentTurn: currentTurn });
+  const newList=initList.filter(i=>i.id!==id);
+  await set(ref(rtdb,`tabletop/${campanhaId}/initiative`),{list:newList,currentTurn});
 };
-
 window.alterarHP = async function(id, delta) {
-  const idx = initList.findIndex(i => i.id === id);
-  if (idx === -1) return;
-  const newList = [...initList];
-  newList[idx] = { ...newList[idx], pv: Math.max(0, (newList[idx].pv || 0) + delta) };
-  await update(ref(rtdb, `tabletop/${campanhaId}/initiative`), { list: newList });
-  // Sincronizar HP no token também
-  const tId = newList[idx].tokenId;
-  if (tId && tokens[tId]) await update(ref(rtdb, `tabletop/${campanhaId}/tokens/${tId}`), { pv: newList[idx].pv });
+  const idx=initList.findIndex(i=>i.id===id); if (idx===-1) return;
+  const newList=[...initList];
+  newList[idx]={...newList[idx],pv:Math.max(0,(newList[idx].pv||0)+delta)};
+  await update(ref(rtdb,`tabletop/${campanhaId}/initiative`),{list:newList});
+  const tId=newList[idx].tokenId;
+  if (tId&&tokens[tId]) await update(ref(rtdb,`tabletop/${campanhaId}/tokens/${tId}`),{pv:newList[idx].pv});
 };
-
 function atualizarInitTokenSelect() {
-  const sel = document.getElementById('init-token-select');
-  const current = sel.value;
-  sel.innerHTML = '<option value="">— Selecionar token —</option>' +
-    Object.entries(tokens).map(([id,t]) => `<option value="${id}" ${current===id?'selected':''}>${t.icon||'?'} ${t.nome}</option>`).join('');
+  const sel=document.getElementById('init-token-select');
+  const current=sel.value;
+  sel.innerHTML='<option value="">— Selecionar token —</option>'+
+    Object.entries(tokens).map(([id,t])=>`<option value="${id}" ${current===id?'selected':''}>${t.icon||'?'} ${t.nome}</option>`).join('');
 }
+
+window.adicionarIniciativa = async function() {
+  const tokenId=document.getElementById('init-token-select').value;
+  let nome=document.getElementById('init-nome-manual').value.trim();
+  const val=parseInt(document.getElementById('init-valor').value)||0;
+  const pvStr=document.getElementById('init-pv').value||'30/30';
+  const [pv,pvmax]=pvStr.split('/').map(Number);
+  if (tokenId&&tokens[tokenId]) nome=nome||tokens[tokenId].nome;
+  if (!nome) { mostrarToast('⚠ Informe o nome'); return; }
+  const entry={id:Date.now().toString(),tokenId:tokenId||null,nome,valor:val,
+    pv:isNaN(pv)?30:pv, pvmax:isNaN(pvmax)?(isNaN(pv)?30:pv):pvmax,
+    icon:tokenId?(tokens[tokenId]?.icon||'?'):'🎲'};
+  await set(ref(rtdb,`tabletop/${campanhaId}/initiative`),{list:[...initList,entry],currentTurn});
+  closeModal('modal-add-init'); mostrarToast(`⚔ ${nome} adicionado!`);
+};
 
 // ===== CHAT =====
 function renderChat(msgs) {
-  const el = document.getElementById('chat-messages');
-  el.innerHTML = msgs.map(m => {
-    let cls = '';
-    if (m.tipo === 'sistema') cls = 'sistema';
-    else if (m.tipo === 'dado')    cls = 'dado';
-    else if (m.tipo === 'ping')    cls = 'ping';
-    return `<div class="chat-msg ${cls}">
-      <div class="chat-msg-autor">${m.autor || '?'} · ${m.ts ? new Date(m.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : ''}</div>
-      <div class="chat-msg-texto">${m.tipo==='dado' ? `<span class="chat-msg-dado-res">${m.resultado}</span> ${m.texto}` : (m.texto||'')}</div>
+  const el=document.getElementById('chat-messages');
+  el.innerHTML=msgs.map(m=>{
+    let cls=''; if (m.tipo==='sistema') cls='sistema'; else if (m.tipo==='dado') cls='dado'; else if (m.tipo==='ping') cls='ping';
+    return `<div class="ob-msg ${cls}">
+      <div class="ob-msg-autor">${m.autor||'?'} · ${m.ts?new Date(m.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):''}</div>
+      <div class="ob-msg-text">${m.tipo==='dado'?`<span class="ob-msg-roll">${m.resultado}</span>${m.texto}`:(m.texto||'')}</div>
     </div>`;
   }).join('');
-  el.scrollTop = el.scrollHeight;
+  el.scrollTop=el.scrollHeight;
 }
 
 window.enviarChat = async function() {
-  const input = document.getElementById('chat-input');
-  const raw = input.value.trim(); if (!raw) return;
-  input.value = '';
-
-  const base = { autor: nomeLocal, ts: Date.now(), uid: currentUser.uid };
-
-  // Rolar dados: /r 2d6+3 ou /roll 2d6
-  if (raw.startsWith('/r ') || raw.startsWith('/roll ')) {
-    const expr = raw.replace(/^\/r(oll)?\s+/,'').trim();
-    const { resultado, texto } = rolarDados(expr);
-    await push(ref(rtdb, `tabletop/${campanhaId}/chat`), { ...base, tipo:'dado', texto, resultado });
+  const input=document.getElementById('chat-input');
+  const raw=input.value.trim(); if (!raw) return;
+  input.value='';
+  const base={autor:nomeLocal,ts:Date.now(),uid:currentUser.uid};
+  if (raw.startsWith('/r ')||raw.startsWith('/roll ')) {
+    const expr=raw.replace(/^\/r(oll)?\s+/,'').trim();
+    const {resultado,texto}=rolarDados(expr);
+    await push(ref(rtdb,`tabletop/${campanhaId}/chat`),{...base,tipo:'dado',texto,resultado});
   } else if (raw.startsWith('/ping')) {
-    // Ping pelo chat
-    await push(ref(rtdb, `tabletop/${campanhaId}/chat`), { ...base, tipo:'ping', texto: `📍 ${nomeLocal} marcou uma posição.` });
+    await push(ref(rtdb,`tabletop/${campanhaId}/chat`),{...base,tipo:'ping',texto:`📍 ${nomeLocal} marcou uma posição.`});
   } else {
-    await push(ref(rtdb, `tabletop/${campanhaId}/chat`), { ...base, tipo:'normal', texto: raw });
+    await push(ref(rtdb,`tabletop/${campanhaId}/chat`),{...base,tipo:'normal',texto:raw});
   }
 };
 
 function rolarDados(expr) {
   try {
-    // Suporta: 2d6, 1d20+3, 2d8-1, d6, 4d6kh3 (keep highest)
-    let total = 0;
-    const parts = [];
-    const rolls = [];
-    // Remove espaços
-    const clean = expr.replace(/\s/g,'').toLowerCase();
-    // Tokenizar
-    const tokens_r = clean.split(/(?=[+-])/).filter(Boolean);
-    tokens_r.forEach(tok => {
-      const sign = tok.startsWith('-') ? -1 : 1;
-      const t = tok.replace(/^[+-]/,'');
-      const dMatch = t.match(/^(\d*)d(\d+)(?:kh(\d+))?$/);
+    let total=0; const parts=[];
+    const clean=expr.replace(/\s/g,'').toLowerCase();
+    const tokens_r=clean.split(/(?=[+-])/).filter(Boolean);
+    tokens_r.forEach(tok=>{
+      const sign=tok.startsWith('-')?-1:1, t=tok.replace(/^[+-]/,'');
+      const dMatch=t.match(/^(\d*)d(\d+)(?:kh(\d+))?$/);
       if (dMatch) {
-        const n = parseInt(dMatch[1]) || 1;
-        const d = parseInt(dMatch[2]);
-        const kh = dMatch[3] ? parseInt(dMatch[3]) : n;
-        const rs = Array.from({length:n}, () => Math.floor(Math.random()*d)+1).sort((a,b)=>b-a);
-        const kept = rs.slice(0, kh);
-        const sum  = kept.reduce((s,r)=>s+r,0) * sign;
-        total += sum;
-        parts.push(`${n}d${d}[${rs.join(',')}]${kh<n?`→top${kh}[${kept.join(',')}]`:''}`);
-        rolls.push(...kept.map(r=>r*sign));
+        const n=parseInt(dMatch[1])||1, d=parseInt(dMatch[2]);
+        const kh=dMatch[3]?parseInt(dMatch[3]):n;
+        const rs=Array.from({length:n},()=>Math.floor(Math.random()*d)+1).sort((a,b)=>b-a);
+        const kept=rs.slice(0,kh); const sum=kept.reduce((s,r)=>s+r,0)*sign;
+        total+=sum; parts.push(`${n}d${d}[${rs.join(',')}]${kh<n?`→top${kh}[${kept.join(',')}]`:''}`);
       } else {
-        const n = parseInt(t) * sign;
-        if (!isNaN(n)) { total += n; parts.push(String(n)); }
+        const n=parseInt(t)*sign; if (!isNaN(n)) { total+=n; parts.push(String(n)); }
       }
     });
-    return { resultado: String(total), texto: `= ${expr} → ${parts.join(' ')}` };
-  } catch(e) {
-    return { resultado: '⚠', texto: `Expressão inválida: ${expr}` };
-  }
+    return {resultado:String(total),texto:`= ${expr} → ${parts.join(' ')}`};
+  } catch(e) { return {resultado:'⚠',texto:`Inválido: ${expr}`}; }
 }
 
 // ===== MODAL =====
-window.openModal = function(id) {
-  document.getElementById(id)?.classList.add('open');
-};
-window.closeModal = function(id) {
-  document.getElementById(id)?.classList.remove('open');
-};
-document.querySelectorAll('.tt-modal-bg').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+window.openModal = function(id) { document.getElementById(id)?.classList.add('open'); };
+window.closeModal = function(id) { document.getElementById(id)?.classList.remove('open'); };
+document.querySelectorAll('.ob-modal-bg').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});
 });
 
 // ===== PANEL =====
 window.showPanel = function(name) {
-  document.querySelectorAll('.tt-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tt-ptab').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel-' + name)?.classList.add('active');
-  const tabs = document.querySelectorAll('.tt-ptab');
-  const names = ['tokens','initiative','chat','map'];
-  const idx = names.indexOf(name);
-  if (idx >= 0 && tabs[idx]) tabs[idx].classList.add('active');
+  document.querySelectorAll('.ob-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ob-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name)?.classList.add('active');
+  const names=['tokens','initiative','chat','map'];
+  const tabs=document.querySelectorAll('.ob-tab');
+  const idx=names.indexOf(name);
+  if (idx>=0&&tabs[idx]) tabs[idx].classList.add('active');
 };
 
 window.toggleSidebar = function() {
-  const s = document.getElementById('tt-sidebar-r');
-  s.classList.toggle('collapsed');
+  document.getElementById('tt-sidebar-r').classList.toggle('collapsed');
 };
 
 // ===== TOAST =====
 window.mostrarToast = function(msg) {
-  const el = document.getElementById('tt-toast');
-  el.textContent = msg; el.classList.add('show');
+  const el=document.getElementById('tt-toast');
+  el.textContent=msg; el.classList.add('show');
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 2500);
+  el._t=setTimeout(()=>el.classList.remove('show'), 2500);
 };
 
 // ===== TEMA =====
 function aplicarTemaLocal() {
-  const tema = localStorage.getItem('ficha_tema') || 'medo';
-  document.documentElement.setAttribute('data-tema', tema);
+  const tema=localStorage.getItem('ficha_tema')||'medo';
+  document.documentElement.setAttribute('data-tema',tema);
 }
 
-// Mensagem de boas-vindas ao entrar
-setTimeout(() => {
+setTimeout(()=>{
   if (!campanhaId) return;
-  push(ref(rtdb, `tabletop/${campanhaId}/chat`), {
-    autor: 'Sistema', ts: Date.now(), uid: 'sistema', tipo: 'sistema',
-    texto: `✦ ${nomeLocal || 'Agente'} entrou na mesa.`
+  push(ref(rtdb,`tabletop/${campanhaId}/chat`),{
+    autor:'Sistema',ts:Date.now(),uid:'sistema',tipo:'sistema',
+    texto:`✦ ${nomeLocal||'Agente'} entrou na mesa.`
   });
 }, 2000);
 
