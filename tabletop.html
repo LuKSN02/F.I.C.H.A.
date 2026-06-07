@@ -2124,11 +2124,13 @@ window.switchLayer = function(name) {
   document.querySelectorAll('[id^="asset-layer-"]').forEach(b=>b.classList.remove('active'));
   document.getElementById('asset-layer-'+name)?.classList.add('active');
 };
+
+async function enviarPing(wx, wy) {
   mostrarPing(wx, wy, '#fdcb6e');
   const pingRef=push(ref(rtdb,`tabletop/${campanhaId}/pings`));
   await set(pingRef,{worldX:wx,worldY:wy,cor:'#fdcb6e',uid:currentUser.uid,ts:Date.now()});
   setTimeout(()=>remove(pingRef), 3000);
-};
+}
 function mostrarPing(wx, wy, cor) {
   const layer=document.getElementById('tt-pings-layer');
   const sx=wx*camZoom+camX, sy=wy*camZoom+camY;
