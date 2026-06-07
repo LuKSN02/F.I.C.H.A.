@@ -1088,7 +1088,7 @@ input[type="color"] {
 // ===== FIREBASE =====
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, collection, onSnapshot, setDoc, updateDoc, deleteDoc, addDoc, getDocs, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDatabase, ref, onValue, set, push, remove, update, off } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, onValue, set, push, remove, update, off, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -1190,9 +1190,10 @@ window.addEventListener('DOMContentLoaded', () => {
   onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = 'index.html'; return; }
     currentUser = user;
-    nomeLocal = localStorage.getItem('ficha_user') || user.email?.split('@')[0] || 'Agente';
+    nomeLocal = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user') || user.displayName || user.email?.split('@')[0] || 'Agente';
     await verificarPapel();
     conectarFirebase();
+    iniciarPresenca();
     atualizarToolbarPorPapel();
   });
 });
@@ -1206,7 +1207,6 @@ async function verificarPapel() {
     document.getElementById('tt-camp-nome').textContent = camp.nome || 'Mesa';
     document.getElementById('tt-role-badge').textContent = isMestre ? '★ MESTRE' : '◆ JOGADOR';
     document.getElementById('tt-role-badge').className = 'ob-role-badge ' + (isMestre ? 'mestre' : 'jogador');
-    renderPlayersPanel();
   } catch(e) { console.error(e); }
 }
 
@@ -2013,15 +2013,46 @@ window.setMapaURL = function() {
 };
 
 // ===== PLAYERS PANEL =====
-function renderPlayersPanel() {
+// ===== PRESENÇA EM TEMPO REAL =====
+function iniciarPresenca() {
+  if (!campanhaId || !currentUser) return;
+  const presenceRef = ref(rtdb, `tabletop/${campanhaId}/presence/${currentUser.uid}`);
+  const presenceData = {
+    nome: nomeLocal,
+    role: isMestre ? 'mestre' : 'jogador',
+    cor: '#4a8fe8',
+    online: true,
+    ts: Date.now()
+  };
+  set(presenceRef, presenceData);
+  onDisconnect(presenceRef).remove();
+  const connectedRef = ref(rtdb, '.info/connected');
+  onValue(connectedRef, snap => {
+    if (snap.val() === true) {
+      set(presenceRef, presenceData);
+      onDisconnect(presenceRef).remove();
+    }
+  });
+  // Ouve todos os presentes e atualiza o painel em tempo real
+  onValue(ref(rtdb, `tabletop/${campanhaId}/presence`), snap => {
+    const data = snap.val() || {};
+    const players = Object.values(data).filter(p => p.online);
+    renderPlayersPanel(players);
+    const onlineEl = document.getElementById('tt-online-players');
+    if (onlineEl) onlineEl.textContent = players.length;
+  });
+}
+
+function renderPlayersPanel(players) {
   const list = document.getElementById('players-list');
   if (!list) return;
-  // Show current user always; in real multi-user scenario this would come from presence
-  const players = [{name: nomeLocal, color:'#4a8fe8', role: isMestre?'mestre':'jogador'}];
+  if (!players) {
+    players = [{nome: nomeLocal, role: isMestre?'mestre':'jogador', cor:'#4a8fe8'}];
+  }
   list.innerHTML = players.map(p=>`
     <div class="ob-player-row">
-      <div class="ob-player-dot" style="background:${p.color};"></div>
-      <span class="ob-player-name">${p.name}</span>
+      <div class="ob-player-dot" style="background:${p.cor||'#4a8fe8'};"></div>
+      <span class="ob-player-name">${p.nome||'Agente'}</span>
       <span class="ob-player-badge ${p.role}">${p.role==='mestre'?'★ GM':'◆ JOG'}</span>
     </div>`).join('');
 }
