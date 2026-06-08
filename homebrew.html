@@ -1856,6 +1856,7 @@ function getPrefix() {
   // abre o homebrew em uma aba nova sem passar pelo login.
   const usuario = sessionStorage.getItem('ficha_user')
     || localStorage.getItem('ficha_user_backup')
+    || localStorage.getItem('ficha_user_ativo')
     || 'guest';
   return usuario + '_';
 }
@@ -3226,6 +3227,8 @@ window.addEventListener('load', () => {
   // Espelha o usuário no localStorage para que getPrefix() funcione
   // mesmo quando a sessionStorage estiver vazia (aba nova, sessão expirada)
   localStorage.setItem('ficha_user_backup', usuario);
+  // Também grava ficha_user_ativo para compatibilidade com ficha.html
+  localStorage.setItem('ficha_user_ativo', usuario);
 
   // Recupera itens que foram salvos com prefixo errado (ex: guest_)
   const recuperados = recuperarItensPerdidos(usuario);

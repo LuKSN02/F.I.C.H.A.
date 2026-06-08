@@ -1055,6 +1055,460 @@ footer { isolation: isolate; }
 /* ── Tema transition glow ── */
 body { transition: background 0.6s ease; }
 
+/* ═══════════════════════════════════════════
+   HERO SECTION — NOVA ESTÉTICA
+═══════════════════════════════════════════ */
+
+.hero-outer {
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0 60px;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+}
+
+/* Grade de linhas de fundo */
+.hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(var(--tema-glow-rgb),0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--tema-glow-rgb),0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    pointer-events: none;
+}
+
+/* Scanlines animadas */
+.hero-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(var(--tema-glow-rgb),0.015) 2px,
+        rgba(var(--tema-glow-rgb),0.015) 4px
+    );
+    pointer-events: none;
+    animation: scanScroll 8s linear infinite;
+}
+@keyframes scanScroll {
+    from { background-position: 0 0; }
+    to   { background-position: 0 200px; }
+}
+
+.hero-container { position: relative; z-index: 1; }
+
+/* Eyebrow */
+.hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    color: var(--tema-primary-light);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 20px;
+    opacity: 0.85;
+}
+.eyebrow-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--tema-primary-light);
+    box-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb), 1);
+    animation: eyebrowPulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+@keyframes eyebrowPulse {
+    0%,100% { box-shadow: 0 0 6px rgba(var(--tema-glow-light-rgb),0.8); }
+    50%      { box-shadow: 0 0 18px rgba(var(--tema-glow-light-rgb),1), 0 0 30px rgba(var(--tema-glow-rgb),0.4); }
+}
+
+/* Título hero */
+.hero-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 6px;
+    margin: 0 0 8px;
+    color: #fff;
+    text-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3);
+}
+
+/* Subtítulo */
+.hero-subtitle {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+    font-weight: 300;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 28px;
+    border-bottom: 2px solid rgba(var(--tema-glow-rgb),0.25);
+    padding-bottom: 28px;
+}
+.hero-subtitle-accent {
+    color: var(--tema-primary-light);
+    font-weight: 700;
+    text-shadow: 0 0 20px rgba(var(--tema-glow-light-rgb),0.6);
+}
+
+/* Descrição */
+.hero-desc {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+    letter-spacing: 0.5px;
+    margin-bottom: 32px;
+    max-width: 480px;
+}
+.hero-desc-strong {
+    color: var(--tema-primary-light);
+    font-weight: 600;
+}
+
+/* CTAs */
+.hero-ctas {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 40px;
+}
+.btn-cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 36px;
+    background: transparent;
+    border: 2px solid var(--tema-primary);
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(.22,1,.36,1);
+    position: relative;
+    overflow: hidden;
+}
+.btn-cta-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(var(--tema-glow-rgb),0.1);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+.btn-cta-primary:hover::before { transform: scaleX(1); }
+.btn-cta-primary:hover {
+    border-color: var(--tema-primary-light);
+    color: white;
+    box-shadow: 0 0 30px rgba(var(--tema-glow-rgb),0.4), 0 0 60px rgba(var(--tema-glow-rgb),0.15);
+    text-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb),0.6);
+}
+.cta-icon { font-size: 0.85em; }
+
+.btn-cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 28px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-cta-secondary:hover {
+    border-color: rgba(255,255,255,0.35);
+    color: rgba(255,255,255,0.85);
+}
+
+/* Estatísticas */
+.hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.hstat { text-align: center; }
+.hstat-num {
+    display: block;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--tema-primary-light);
+    text-shadow: 0 0 15px rgba(var(--tema-glow-light-rgb),0.5);
+    line-height: 1;
+}
+.hstat-label {
+    display: block;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-top: 4px;
+}
+.hstat-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(var(--tema-glow-rgb),0.25);
+}
+
+/* Imagem hero */
+.hero-img-wrap {
+    position: relative;
+    display: inline-block;
+    max-width: 240px;
+    width: 100%;
+    margin: 0 auto;
+}
+.hero-img-glow {
+    position: absolute;
+    inset: -40px;
+    background: radial-gradient(ellipse at center,
+        rgba(var(--tema-glow-rgb),0.2) 0%,
+        transparent 70%);
+    pointer-events: none;
+    animation: glowPulse 3s ease-in-out infinite;
+}
+@keyframes glowPulse {
+    0%,100% { opacity: 0.6; transform: scale(1); }
+    50%      { opacity: 1;   transform: scale(1.05); }
+}
+.hero-img {
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid rgba(var(--tema-glow-rgb),0.25);
+    box-shadow:
+        0 0 0 1px rgba(var(--tema-glow-rgb),0.1),
+        0 20px 60px rgba(0,0,0,0.6),
+        0 0 80px rgba(var(--tema-glow-rgb),0.15);
+    position: relative;
+    z-index: 1;
+}
+
+/* Cantos decorativos da imagem */
+.hero-img-corner {
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: var(--tema-primary-light);
+    border-style: solid;
+    opacity: 0.6;
+    z-index: 2;
+    animation: cornerPulse 3s ease-in-out infinite;
+}
+.hero-img-corner.tl { top: -4px; left: -4px; border-width: 2px 0 0 2px; }
+.hero-img-corner.tr { top: -4px; right: -4px; border-width: 2px 2px 0 0; animation-delay: 0.75s; }
+.hero-img-corner.bl { bottom: -4px; left: -4px; border-width: 0 0 2px 2px; animation-delay: 1.5s; }
+.hero-img-corner.br { bottom: -4px; right: -4px; border-width: 0 2px 2px 0; animation-delay: 2.25s; }
+
+/* Badge flutuante */
+.hero-badge {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    z-index: 3;
+    background: rgba(0,0,0,0.8);
+    border: 1px solid rgba(var(--tema-glow-rgb),0.35);
+    border-radius: 99px;
+    padding: 6px 14px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--tema-primary-light);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    backdrop-filter: blur(8px);
+}
+.hero-badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #39d353;
+    box-shadow: 0 0 8px #39d353;
+    animation: badgeBlink 1.4s ease-in-out infinite;
+    flex-shrink: 0;
+}
+@keyframes badgeBlink {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.3; }
+}
+
+/* ═══════════════════════════════════════════
+   FEATURES SECTION
+═══════════════════════════════════════════ */
+.features-section {
+    padding: 60px 0 80px;
+    position: relative;
+}
+.features-section::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--tema-glow-rgb),0.3), transparent);
+    margin-bottom: 60px;
+}
+
+.features-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+.features-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--tema-glow-rgb),0.2));
+    max-width: 200px;
+}
+.features-line:last-child {
+    background: linear-gradient(270deg, transparent, rgba(var(--tema-glow-rgb),0.2));
+}
+.features-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    white-space: nowrap;
+}
+
+/* Cards de feature */
+.feat-card-link { text-decoration: none; display: block; height: 100%; }
+.feat-card {
+    background: rgba(var(--tema-glow-rgb),0.03);
+    border: 1px solid rgba(var(--tema-glow-rgb),0.1);
+    border-radius: 6px;
+    padding: 28px 24px;
+    height: 100%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(.22,1,.36,1);
+    position: relative;
+    overflow: hidden;
+}
+.feat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(var(--tema-glow-rgb),0.06) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.feat-card:hover {
+    border-color: rgba(var(--tema-glow-rgb),0.35);
+    background: rgba(var(--tema-glow-rgb),0.06);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(var(--tema-glow-rgb),0.1);
+}
+.feat-card:hover::before { opacity: 1; }
+
+.feat-icon {
+    font-size: 1.8rem;
+    margin-bottom: 16px;
+    display: block;
+    filter: drop-shadow(0 0 8px currentColor);
+}
+.feat-icon-blue  { color: #7ab3f5; }
+.feat-icon-red   { color: #ff6666; }
+.feat-icon-green { color: #39d353; }
+.feat-icon-gold  { color: #f5c842; }
+
+.feat-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 10px;
+}
+.feat-desc {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+}
+.feat-arrow {
+    font-size: 1.2rem;
+    color: rgba(var(--tema-glow-rgb-as-str, 255,255,255),0.2);
+    color: rgba(var(--tema-glow-rgb),0.3);
+    margin-top: 16px;
+    transition: transform 0.2s ease, color 0.2s;
+}
+.feat-card:hover .feat-arrow {
+    transform: translateX(6px);
+    color: var(--tema-primary-light);
+}
+
+/* ═══════════════════════════════════════════
+   FAIXA DE ALERTA PARANORMAL
+═══════════════════════════════════════════ */
+.alert-strip {
+    overflow: hidden;
+    border-top: 1px solid rgba(var(--tema-glow-rgb),0.15);
+    border-bottom: 1px solid rgba(var(--tema-glow-rgb),0.15);
+    background: rgba(var(--tema-glow-rgb),0.03);
+    padding: 12px 0;
+    margin-top: 0;
+}
+.alert-strip-track {
+    display: inline-flex;
+    gap: 28px;
+    align-items: center;
+    white-space: nowrap;
+    animation: stripScroll 40s linear infinite;
+}
+@keyframes stripScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+.alert-strip-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+}
+.alert-strip-sep {
+    color: var(--tema-primary);
+    font-size: 0.5rem;
+    opacity: 0.5;
+}
+.alert-strip-icon {
+    color: var(--tema-primary-light);
+    font-size: 0.75rem;
+    opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════
+   ATUALIZA CONTADOR DE AGENTES NA HERO
+═══════════════════════════════════════════ */
+
 </style>
 
 <body>
@@ -1220,28 +1674,137 @@ body { transition: background 0.6s ease; }
         </div>
     </nav>
 
-    <!-- SEÇÃO INÍCIO -->
-    <main id="secao-inicio" class="container my-5 text-white">
-        <div class="row align-items-center">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <h1 class="display-4 fw-bold anim-fade-up">
-                    <span class="glitch-wrap" data-text="Fichas">Fichas</span>
-                    <span style="border-bottom: 4px solid var(--tema-primary);"> Digitais</span>
-                </h1>
-                <p class="fs-4 mt-4 text-secondary anim-fade-up delay-1">
-                    Com uma ideia simples, você pode fazer uma ficha de ordem paranormal de maneira rápida e um pouco complicada, porém isso faz ficar mais divertido!
-                </p>
-                <p class="fs-4 text-secondary anim-fade-up delay-2">
-                    Talvez a matemática aqui seja um pouco necessária viu, então se você é de exatas, tenho certeza que vai se sair bem
-                </p>
-                <a href="criar.html" class="btn-criar-ficha mt-3 anim-fade-up delay-3">Criar ficha</a>
-            </div>
-            <div class="col-lg-6 text-center anim-fade-up delay-2">
-                <div class="scan-wrap d-inline-block rounded">
-                    <img src="./image.png" alt="Ficha Digital" class="img-fluid rounded shadow-lg border-purple">
+    <!-- ===== HERO ===== -->
+    <main id="secao-inicio" class="text-white" style="flex:1;">
+
+        <!-- HERO PRINCIPAL -->
+        <div class="hero-outer">
+            <div class="hero-grid-bg" aria-hidden="true"></div>
+            <div class="hero-scanlines" aria-hidden="true"></div>
+
+            <div class="container hero-container">
+                <div class="row align-items-center g-5">
+
+                    <div class="col-lg-6">
+                        <div class="hero-eyebrow anim-fade-up">
+                            <span class="eyebrow-dot"></span>
+                            SISTEMA DE AGENTES PARANORMAIS
+                        </div>
+                        <h1 class="hero-title anim-fade-up delay-1">
+                            <span class="glitch-wrap" data-text="F.I.C.H.A.">F.I.C.H.A.</span>
+                        </h1>
+                        <div class="hero-subtitle anim-fade-up delay-2">
+                            Fichas <span class="hero-subtitle-accent">Digitais</span>
+                        </div>
+                        <p class="hero-desc anim-fade-up delay-3">
+                            Gerencie seus agentes, rituais e habilidades em um sistema completo para
+                            <strong class="hero-desc-strong">Ordem Paranormal</strong>.
+                            Monte sua ficha, entre em campanha e enfrente o desconhecido.
+                        </p>
+                        <div class="hero-ctas anim-fade-up delay-4">
+                            <a href="criar.html" class="btn-criar-ficha btn-cta-primary">
+                                <span class="cta-icon">✦</span> Criar Agente
+                            </a>
+                            <a href="#" onclick="mostrarAgentes()" class="btn-cta-secondary">
+                                Ver Agentes
+                            </a>
+                        </div>
+                        <div class="hero-stats anim-fade-up delay-4">
+                            <div class="hstat">
+                                <span class="hstat-num" id="stat-agentes">—</span>
+                                <span class="hstat-label">Agentes</span>
+                            </div>
+                            <div class="hstat-divider"></div>
+                            <div class="hstat">
+                                <span class="hstat-num">5</span>
+                                <span class="hstat-label">Elementos</span>
+                            </div>
+                            <div class="hstat-divider"></div>
+                            <div class="hstat">
+                                <span class="hstat-num">∞</span>
+                                <span class="hstat-label">Homebrew</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 text-center anim-fade-up delay-2">
+                        <div class="hero-img-wrap">
+                            <div class="hero-img-glow" aria-hidden="true"></div>
+                            <div class="hero-img-corner tl" aria-hidden="true"></div>
+                            <div class="hero-img-corner tr" aria-hidden="true"></div>
+                            <div class="hero-img-corner bl" aria-hidden="true"></div>
+                            <div class="hero-img-corner br" aria-hidden="true"></div>
+                            <div class="scan-wrap">
+                                <img src="./image.png" alt="Ficha Digital" class="hero-img">
+                            </div>
+                            <div class="hero-badge" aria-hidden="true">
+                                <span class="hero-badge-dot"></span>
+                                SISTEMA ATIVO
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
+
+        <!-- CARDS DE FEATURES -->
+        <div class="features-section">
+            <div class="container">
+                <div class="features-header anim-fade-up">
+                    <span class="features-line"></span>
+                    <span class="features-label">O QUE VOCÊ ENCONTRA</span>
+                    <span class="features-line"></span>
+                </div>
+                <div class="row g-4 mt-2">
+                    <div class="col-md-6 col-lg-3 anim-fade-up delay-1">
+                        <div class="feat-card" onclick="mostrarAgentes()">
+                            <div class="feat-icon feat-icon-blue">⚔</div>
+                            <div class="feat-title">Agentes</div>
+                            <div class="feat-desc">Crie e gerencie fichas completas com atributos, habilidades, trilhas e poderes paranormais.</div>
+                            <div class="feat-arrow">→</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3 anim-fade-up delay-2">
+                        <a href="campanhas.html" class="feat-card-link">
+                            <div class="feat-card">
+                                <div class="feat-icon feat-icon-red">◈</div>
+                                <div class="feat-title">Campanhas</div>
+                                <div class="feat-desc">Organize sessões com mestre e jogadores, sincronizando estado em tempo real via Firebase.</div>
+                                <div class="feat-arrow">→</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-3 anim-fade-up delay-3">
+                        <a href="homebrew.html" class="feat-card-link">
+                            <div class="feat-card">
+                                <div class="feat-icon feat-icon-green">🧪</div>
+                                <div class="feat-title">Homebrew</div>
+                                <div class="feat-desc">Crie ameaças, rituais, itens e habilidades personalizadas e compartilhe com a comunidade.</div>
+                                <div class="feat-arrow">→</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6 col-lg-3 anim-fade-up delay-4">
+                        <div class="feat-card">
+                            <div class="feat-icon feat-icon-gold">✦</div>
+                            <div class="feat-title">Temas</div>
+                            <div class="feat-desc">Cinco elementos paranormais — Medo, Sangue, Morte, Conhecimento e Energia — cada um com sua estética.</div>
+                            <div class="feat-arrow">→</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAIXA DE ALERTA -->
+        <div class="alert-strip">
+            <div class="alert-strip-track">
+                <span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span>
+                <span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span>
+            </div>
+        </div>
+
     </main>
 
     <!-- SEÇÃO AGENTES -->
@@ -1573,6 +2136,9 @@ body { transition: background 0.6s ease; }
 
         function _renderAgentes(agentes, lista, contador) {
             contador.textContent = agentes.length;
+            // Atualiza stat na hero
+            const statEl = document.getElementById('stat-agentes');
+            if (statEl) statEl.textContent = agentes.length || '0';
 
             if (agentes.length === 0) {
                 lista.innerHTML = `

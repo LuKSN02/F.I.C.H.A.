@@ -1237,6 +1237,9 @@
       const usuario = user.displayName || user.email.replace('@ficha.local', '');
       sessionStorage.setItem('ficha_user', usuario);
       sessionStorage.setItem('ficha_uid', user.uid);
+      // Espelha no localStorage para compatibilidade entre páginas (homebrew.html / ficha.html)
+      localStorage.setItem('ficha_user_ativo', usuario);
+      localStorage.setItem('ficha_user_backup', usuario);
     } else {
       sessionStorage.removeItem('ficha_user');
       sessionStorage.removeItem('ficha_uid');
@@ -4204,7 +4207,9 @@ const HABILIDADES_DB = {
 // PREFIXO DE USUÁRIO (mesmo que index.html)
 // ══════════════════════════════════════════════
 function getPrefix() {
-    const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo');
+    const user = sessionStorage.getItem('ficha_user')
+               || localStorage.getItem('ficha_user_ativo')
+               || localStorage.getItem('ficha_user_backup');
     return user ? user + '_' : '';
 }
 
@@ -5018,7 +5023,10 @@ const HB_SUBTIPO_CAT = {
 };
 
 function getHbPrefix() {
-    return (sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'guest') + '_';
+    return (sessionStorage.getItem('ficha_user')
+         || localStorage.getItem('ficha_user_ativo')
+         || localStorage.getItem('ficha_user_backup')
+         || 'guest') + '_';
 }
 
 function carregarItensHomebrew() {
@@ -6384,7 +6392,7 @@ function _mritAtualizarCirculos() {
 }
 
 function _getHomebrewRituais() {
-    const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'guest';
+    const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || localStorage.getItem('ficha_user_backup') || 'guest';
     const key  = user + '_homebrew_rituais';
     return JSON.parse(localStorage.getItem(key) || '[]');
 }
@@ -6735,7 +6743,7 @@ function removerHabilidade(e, nome) {
 // MODAL HABILIDADES HOMEBREW — painel de seleção
 // ══════════════════════════════════════════════
 function _getHomebrewHabilidades() {
-    const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || 'guest';
+    const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || localStorage.getItem('ficha_user_backup') || 'guest';
     const key  = user + '_homebrew_habilidades';
     return JSON.parse(localStorage.getItem(key) || '[]');
 }
