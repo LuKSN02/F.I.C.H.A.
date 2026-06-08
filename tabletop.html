@@ -1065,6 +1065,71 @@ input[type="color"] {
 }
 .modo3d-on #modo3d-vignette { opacity:1; }
 
+/* ---- PAINEL EDITOR DE TERRENO 3D ---- */
+#terrain3d-panel {
+  position:fixed; bottom:58px; left:60px; z-index:400;
+  background:rgba(10,6,6,0.95); border:1px solid rgba(200,40,40,0.4);
+  border-radius:12px; padding:10px 12px; min-width:220px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(180,20,20,0.15);
+  backdrop-filter:blur(8px);
+  display:none; flex-direction:column; gap:7px;
+  font-family:'JetBrains Mono',monospace;
+}
+#terrain3d-panel.show { display:flex; }
+.terrain3d-title {
+  font-size:9px; font-weight:700; letter-spacing:2px; color:rgba(220,60,60,0.9);
+  text-transform:uppercase; display:flex; align-items:center; gap:6px; margin-bottom:2px;
+}
+.terrain3d-title svg { width:12px; height:12px; }
+.terrain3d-tools {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:4px;
+}
+.t3d-tool {
+  height:34px; border-radius:7px; border:1px solid rgba(80,20,20,0.6);
+  background:rgba(20,8,8,0.7); color:rgba(200,140,140,0.8); font-size:10px;
+  cursor:pointer; transition:0.12s; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:2px; font-weight:600;
+  font-family:'JetBrains Mono',monospace; letter-spacing:0.2px;
+}
+.t3d-tool svg { width:13px; height:13px; }
+.t3d-tool:hover { background:rgba(140,20,20,0.3); border-color:rgba(200,60,60,0.6); color:#ff9999; }
+.t3d-tool.active { background:rgba(180,20,20,0.35); border-color:rgba(255,80,80,0.7); color:#ffaaaa; box-shadow:0 0 8px rgba(200,30,30,0.4); }
+.terrain3d-row { display:flex; align-items:center; gap:8px; }
+.terrain3d-label { font-size:9px; color:rgba(180,100,100,0.8); letter-spacing:0.5px; min-width:44px; }
+.terrain3d-slider {
+  flex:1; -webkit-appearance:none; height:3px;
+  background:rgba(120,30,30,0.4); border-radius:2px; outline:none; cursor:pointer;
+}
+.terrain3d-slider::-webkit-slider-thumb {
+  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+  background:#cc3333; border:1px solid rgba(255,100,100,0.6); cursor:pointer;
+  box-shadow:0 0 5px rgba(200,30,30,0.6);
+}
+.terrain3d-val { font-size:10px; color:rgba(220,140,140,0.9); min-width:24px; text-align:right; }
+.terrain3d-presets {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:4px; margin-top:2px;
+}
+.t3d-preset {
+  padding:5px 2px; border-radius:6px; border:1px solid rgba(80,20,20,0.5);
+  background:rgba(15,5,5,0.7); color:rgba(180,120,120,0.85);
+  font-size:9px; font-weight:600; letter-spacing:0.3px; cursor:pointer;
+  font-family:'JetBrains Mono',monospace; text-align:center; transition:0.15s;
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+}
+.t3d-preset:hover { background:rgba(100,15,15,0.5); border-color:rgba(200,60,60,0.5); color:#ff9999; }
+.t3d-preset span { font-size:14px; }
+.t3d-reset {
+  width:100%; padding:5px 0; border-radius:6px; border:1px solid rgba(80,20,20,0.4);
+  background:rgba(20,8,8,0.6); color:rgba(160,80,80,0.8); font-size:9px;
+  font-family:'JetBrains Mono',monospace; cursor:pointer; letter-spacing:0.5px;
+  transition:0.15s; font-weight:600;
+}
+.t3d-reset:hover { border-color:rgba(200,60,60,0.5); color:#ff8888; }
+#btn-terrain3d {
+  display:none;
+}
+.modo3d-on #btn-terrain3d { display:flex; }
+
 /* ---- PARTÍCULAS DE NÉVOA ---- */
 #modo3d-particles {
   position:absolute; inset:0; z-index:11;
@@ -1320,6 +1385,15 @@ input[type="color"] {
           <line x1="8" y1="2" x2="8" y2="14" stroke-dasharray="2 2"/>
           <line x1="2" y1="5.5" x2="14" y2="10.5" stroke-dasharray="2 2"/>
           <line x1="14" y1="5.5" x2="2" y2="10.5" stroke-dasharray="2 2"/>
+        </svg>
+      </button>
+      <!-- BOTÃO TERRENO 3D -->
+      <button class="ob-rtool" id="btn-terrain3d" onclick="toggleTerrain3DPanel()" title="Editor de Terreno 3D">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 13l4-6 3 4 2-3 5 5H1z"/>
+          <path d="M11 3a1 1 0 11-2 0 1 1 0 012 0z" fill="currentColor" stroke="none"/>
+          <path d="M13 6l1.5-2"/>
+          <path d="M10 5l2 1"/>
         </svg>
       </button>
       <!-- BOTÕES CÂMERA CIMA/BAIXO (só visíveis no modo 3D) -->
@@ -4144,7 +4218,8 @@ function _criarChao3D() {
   const sc = cellSize / 60;
   const boardW = boardCols * sc;
   const boardH = boardRows * sc;
-  const segs = Math.min(Math.max(boardCols, boardRows), 80); // max 80 segmentos para GPU
+  // Mais segmentos = mais resolução para escultura de terreno
+  const segs = Math.min(Math.max(boardCols, boardRows, 40), 120);
 
   const tex = criarTexturaDoMapa();
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
@@ -4162,11 +4237,20 @@ function _criarChao3D() {
   three.floorMesh.receiveShadow = true;
   three.scene.add(three.floorMesh);
 
+  // Inicializa e aplica heightmap (pode já ter dados de uma sessão anterior)
+  _initTerrainHeightMap();
+
   // Grid lines no chão
   _addGridLines3D(boardW, boardH, sc);
 
   // Névoa de guerra — plano elevado
   _criarFog3D();
+
+  // Carrega terreno salvo do Firebase
+  _loadTerrain().then(() => {
+    const hasData = terrain3d.heightMap && terrain3d.heightMap.some(v => v !== 0);
+    if (hasData) _applyHeightMapToFloor();
+  });
 }
 
 function _addGridLines3D(boardW, boardH, sc) {
@@ -4276,15 +4360,57 @@ function _criarParticulas3D() {
   three.scene.add(points);
 }
 
+function _sampleTerrainHeight(worldX, worldZ) {
+  // Retorna a altura do terreno em coordenadas de cena (worldX, worldZ)
+  if (!terrain3d.heightMap || terrain3d.mapW === 0) return 0;
+  const sc = cellSize / 60;
+  const W = terrain3d.mapW, H = terrain3d.mapH;
+  const maxH = terrain3d.maxHeight || 6;
+
+  // Normaliza 0-1 e clipa
+  const u = Math.max(0, Math.min(1, worldX / (W * sc)));
+  const v = Math.max(0, Math.min(1, worldZ / (H * sc)));
+
+  // Índices bilineares
+  const fx = u * W, fz = v * H;
+  const ix = Math.floor(fx), iz = Math.floor(fz);
+  const tx = fx - ix, tz = fz - iz;
+  const mapW1 = W + 1;
+
+  const i00 = Math.min(H, iz)     * mapW1 + Math.min(W, ix);
+  const i10 = Math.min(H, iz)     * mapW1 + Math.min(W, ix + 1);
+  const i01 = Math.min(H, iz + 1) * mapW1 + Math.min(W, ix);
+  const i11 = Math.min(H, iz + 1) * mapW1 + Math.min(W, ix + 1);
+
+  const h00 = terrain3d.heightMap[i00] || 0;
+  const h10 = terrain3d.heightMap[i10] || 0;
+  const h01 = terrain3d.heightMap[i01] || 0;
+  const h11 = terrain3d.heightMap[i11] || 0;
+
+  // Interpolação bilinear
+  return ((h00 * (1-tx) + h10 * tx) * (1-tz) +
+          (h01 * (1-tx) + h11 * tx) * tz) * maxH;
+}
+
 function _updateCamera3D() {
-  const elev = three.camElev !== undefined ? three.camElev : Math.PI / 5.5; // ~33° de elevação padrão
+  const elev = three.camElev !== undefined ? three.camElev : Math.PI / 5.5;
+  // Clipa elevação: mínimo 5°, máximo 85°
+  const elevClamped = Math.max(0.08, Math.min(Math.PI / 2 - 0.05, elev));
+  three.camElev = elevClamped;
+
   const dist = three.camDist;
+  const targetX = three.camPanX;
+  const targetZ = three.camPanY;
+
+  // Altura do terreno no ponto de órbita, para câmera não mergulhar no chão
+  const groundY = _sampleTerrainHeight(targetX, targetZ);
+
   three.camera.position.set(
-    three.camPanX + dist * Math.sin(three.orbitAngle) * Math.cos(elev),
-    dist * Math.sin(elev),
-    three.camPanY + dist * Math.cos(three.orbitAngle) * Math.cos(elev)
+    targetX + dist * Math.sin(three.orbitAngle) * Math.cos(elevClamped),
+    groundY  + dist * Math.sin(elevClamped),
+    targetZ  + dist * Math.cos(three.orbitAngle) * Math.cos(elevClamped)
   );
-  three.camera.lookAt(three.camPanX, 0, three.camPanY);
+  three.camera.lookAt(targetX, groundY, targetZ);
 }
 
 function _loop3D() {
@@ -4368,9 +4494,10 @@ function _loop3D() {
     group.scale.z += (targetScale - group.scale.z) * 0.12;
     group.scale.y += (targetScale - group.scale.y) * 0.12;
 
-    // Flutua levemente quando arrastado
-    const targetY = isDragging3d ? 0.28 : 0.01;
-    group.position.y += (targetY - group.position.y) * 0.15;
+    // Colisão com o terreno: token pousa sobre a superfície
+    const terrainY = _sampleTerrainHeight(group.position.x, group.position.z);
+    const targetY = isDragging3d ? (terrainY + 0.35) : (terrainY + 0.01);
+    group.position.y += (targetY - group.position.y) * 0.18;
   });
 
   // Movimento por teclado (setas / WASD)
@@ -4380,7 +4507,7 @@ function _loop3D() {
   three.renderer.render(three.scene, three.camera);
 }
 
-// Raycasting no chão (plano Y=0) para pegar posição 3D do cursor
+// Raycasting no terreno real (mesh do chão) com fallback no plano Y=0
 function _raycastFloor(mouseEvent) {
   const canvas3d = document.getElementById('canvas3d');
   const rect = canvas3d.getBoundingClientRect();
@@ -4390,6 +4517,14 @@ function _raycastFloor(mouseEvent) {
     -((mouseEvent.clientY - rect.top) / rect.height) * 2 + 1
   );
   raycaster.setFromCamera(mouse, three.camera);
+
+  // Tenta acertar o mesh real do terreno primeiro
+  if (three.floorMesh) {
+    const hits = raycaster.intersectObject(three.floorMesh, false);
+    if (hits.length > 0) return hits[0].point;
+  }
+
+  // Fallback: plano plano Y=0
   const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   const target = new THREE.Vector3();
   raycaster.ray.intersectPlane(plane, target);
@@ -4434,6 +4569,14 @@ function _setupEventos3D(canvas3d) {
     e.preventDefault();
 
     const tool = activeTool;
+
+    // ── Pintura de Terreno 3D (painel ativo) ──
+    if (e.button === 0 && document.getElementById('terrain3d-panel')?.classList.contains('show')) {
+      terrain3d.isPainting = true;
+      const wp = _raycastFloor(e);
+      if (wp) _paintTerrain3D(wp.x, wp.z);
+      return; // consome o evento
+    }
 
     // ── Ferramentas que precisam de coordenada no chão 3D ──
     if (['draw','eraser','fog','unfog','ping','measure','text'].includes(tool) && e.button === 0) {
@@ -4508,6 +4651,13 @@ function _setupEventos3D(canvas3d) {
 
     const tool = activeTool;
 
+    // ── Pintura de Terreno 3D ──
+    if (terrain3d.isPainting && document.getElementById('terrain3d-panel')?.classList.contains('show')) {
+      const wp = _raycastFloor(e);
+      if (wp) _paintTerrain3D(wp.x, wp.z);
+      return;
+    }
+
     // ── Desenho no 3D ──
     if (tool === 'draw' && isDrawing3D && draw3dPath) {
       const wp = _raycastFloor(e);
@@ -4581,6 +4731,7 @@ function _setupEventos3D(canvas3d) {
       if (worldPos) {
         const group = three.tokenMeshes[three.draggingTokenId];
         if (group) {
+          // Usa só X e Z do raycast — Y é controlado pela colisão no loop
           group.position.x = worldPos.x;
           group.position.z = worldPos.z;
           const sc = cellSize / 60;
@@ -4616,6 +4767,12 @@ function _setupEventos3D(canvas3d) {
   canvas3d.addEventListener('mouseup', async e => {
     canvas3d.style.cursor = '';
     const tool = activeTool;
+
+    // ── Finaliza pintura de terreno ──
+    if (terrain3d.isPainting) {
+      terrain3d.isPainting = false;
+      return;
+    }
 
     // ── Finaliza desenho ──
     if (tool === 'draw' && isDrawing3D && draw3dPath) {
@@ -4861,6 +5018,275 @@ function _raycastTokens3D(mouseEvent) {
   return null;
 }
 
+// ============================================================
+// SISTEMA DE TERRENO 3D — Editor de Displacement Map
+// ============================================================
+
+const terrain3d = {
+  tool: 'raise',         // raise | lower | smooth | flat
+  heightMap: null,       // Float32Array [cols+1 x rows+1]
+  mapW: 0, mapH: 0,      // dimensões em células
+  isPainting: false,
+  maxHeight: 6,          // altura máxima em unidades de cena
+};
+
+function _initTerrainHeightMap() {
+  // Cria mapa de alturas zerado para o tamanho do board atual
+  const w = boardCols + 1;
+  const h = boardRows + 1;
+  if (!terrain3d.heightMap || terrain3d.mapW !== boardCols || terrain3d.mapH !== boardRows) {
+    terrain3d.heightMap = new Float32Array(w * h);
+    terrain3d.mapW = boardCols;
+    terrain3d.mapH = boardRows;
+  }
+}
+
+function _terrainIdx(cx, cy) {
+  const w = terrain3d.mapW + 1;
+  return cy * w + cx;
+}
+
+function _applyHeightMapToFloor() {
+  if (!three.floorMesh || !terrain3d.heightMap) return;
+  const geo = three.floorMesh.geometry;
+  const pos = geo.attributes.position;
+  const maxH = parseFloat(document.getElementById('t3d-maxheight')?.value || 6);
+  terrain3d.maxHeight = maxH;
+
+  // PlaneGeometry antes da rotação:
+  //   X: -boardW/2 a +boardW/2
+  //   Y: -boardH/2 a +boardH/2
+  //   Z (antes da rotação): displacement sai em Z do plano
+  // Após rotation.x = -PI/2: Y vira -Z e Z vira Y no espaço da cena
+  // Portanto o displacement deve ser aplicado em Z (pre-rotação) = Y (pós-rotação)
+  const W = terrain3d.mapW, H = terrain3d.mapH;
+  const sc = cellSize / 60;
+  const halfW = (W * sc) / 2;
+  const halfH = (H * sc) / 2;
+  const mapW1 = W + 1;
+
+  for (let i = 0; i < pos.count; i++) {
+    const vx = pos.getX(i); // -halfW a +halfW
+    const vy = pos.getY(i); // -halfH a +halfH (antes da rotação)
+    // Normaliza para 0-1
+    const u = (vx + halfW) / (W * sc);
+    const v = (vy + halfH) / (H * sc);
+    // Índice no heightmap
+    const ci = Math.min(H, Math.round(v * H)) * mapW1 + Math.min(W, Math.round(u * W));
+    const h = (terrain3d.heightMap[ci] || 0) * maxH;
+    pos.setZ(i, h);
+  }
+  pos.needsUpdate = true;
+  geo.computeVertexNormals();
+}
+
+function _applyTerrainMaxHeight() {
+  _applyHeightMapToFloor();
+}
+
+function _paintTerrain3D(worldX, worldZ) {
+  if (!terrain3d.heightMap) return;
+  const sc = cellSize / 60;
+  const W = terrain3d.mapW, H = terrain3d.mapH;
+  const mapW1 = W + 1, mapH1 = H + 1;
+  const radius = parseInt(document.getElementById('t3d-radius')?.value || 2);
+  const strength = parseInt(document.getElementById('t3d-strength')?.value || 4) * 0.008;
+  const tool = terrain3d.tool;
+
+  // worldX e worldZ estão em unidades da cena (floor está de 0 a W*sc em X e 0 a H*sc em Z)
+  // Normaliza para 0-1
+  const cx = worldX / (W * sc);
+  const cy = worldZ / (H * sc);
+
+  // Raio em frações do heightmap
+  const rx = radius / W;
+  const ry = radius / H;
+
+  for (let j = 0; j < mapH1; j++) {
+    for (let i = 0; i < mapW1; i++) {
+      const nx = i / W - cx;
+      const ny = j / H - cy;
+      const dist = Math.sqrt((nx / rx) * (nx / rx) + (ny / ry) * (ny / ry));
+      if (dist > 1) continue;
+      const falloff = Math.exp(-dist * dist * 3);
+      const idx = j * mapW1 + i;
+      const cur = terrain3d.heightMap[idx] || 0;
+
+      if (tool === 'raise') {
+        terrain3d.heightMap[idx] = Math.min(1, cur + strength * falloff);
+      } else if (tool === 'lower') {
+        terrain3d.heightMap[idx] = Math.max(-0.3, cur - strength * falloff);
+      } else if (tool === 'smooth') {
+        let sum = 0, count = 0;
+        for (let dj = -1; dj <= 1; dj++) {
+          for (let di = -1; di <= 1; di++) {
+            const ni = Math.max(0, Math.min(W, i + di));
+            const nj = Math.max(0, Math.min(H, j + dj));
+            sum += terrain3d.heightMap[nj * mapW1 + ni] || 0;
+            count++;
+          }
+        }
+        const avg = sum / count;
+        terrain3d.heightMap[idx] = cur + (avg - cur) * strength * falloff * 4;
+      } else if (tool === 'flat') {
+        terrain3d.heightMap[idx] = cur + (0 - cur) * strength * falloff * 5;
+      }
+    }
+  }
+
+  _applyHeightMapToFloor();
+  _debouncedSaveTerrain();
+}
+
+// Geração procedural de terrenos
+function gerarTerrenoPreset(tipo) {
+  _initTerrainHeightMap();
+  const W = terrain3d.mapW, H = terrain3d.mapH;
+  const mapW1 = W + 1, mapH1 = H + 1;
+
+  for (let j = 0; j < mapH1; j++) {
+    for (let i = 0; i < mapW1; i++) {
+      const nx = (i / W) * 2 - 1;  // -1 a 1
+      const ny = (j / H) * 2 - 1;
+      const r = Math.sqrt(nx * nx + ny * ny);
+      const idx = j * mapW1 + i;
+      let h = 0;
+
+      if (tipo === 'montanha') {
+        h = Math.max(0, 1.2 - r * 1.6 + _noise2D(nx * 3, ny * 3) * 0.2);
+        h = Math.pow(Math.max(0, h), 1.4);
+      } else if (tipo === 'colinas') {
+        h = (_noise2D(nx * 2.5, ny * 2.5) * 0.5 + 0.5) * 0.65
+          + (_noise2D(nx * 5, ny * 5) * 0.5 + 0.5) * 0.25;
+      } else if (tipo === 'crateras') {
+        const n1 = _noise2D(nx * 4 + 1.3, ny * 4 - 0.7);
+        const n2 = _noise2D(nx * 4 - 2.1, ny * 4 + 1.8);
+        const crater1 = Math.max(0, 0.5 - Math.abs(Math.sqrt((nx-0.2)*(nx-0.2)+(ny-0.1)*(ny-0.1)) - 0.3)) * 1.2;
+        const crater2 = Math.max(0, 0.45 - Math.abs(Math.sqrt((nx+0.35)*(nx+0.35)+(ny+0.3)*(ny+0.3)) - 0.25));
+        h = crater1 + crater2 * 0.7 + n1 * 0.1;
+        h = Math.max(-0.25, h);
+      } else if (tipo === 'ruinas') {
+        // Paredes simétricas
+        const wx = Math.sin(nx * Math.PI * 2.5) > 0.7 ? 0.7 : 0;
+        const wy = Math.sin(ny * Math.PI * 2.5) > 0.7 ? 0.6 : 0;
+        h = Math.max(wx, wy) + _noise2D(nx * 8, ny * 8) * 0.08;
+        h *= (Math.random() > 0.15 ? 1 : 0); // buracos nas paredes
+      } else if (tipo === 'pantano') {
+        h = _noise2D(nx * 3, ny * 3) * 0.25 - 0.15
+          + Math.sin(nx * 8) * 0.05 + Math.cos(ny * 7) * 0.05;
+        h = Math.max(-0.3, Math.min(0.2, h));
+      } else if (tipo === 'caos') {
+        h = _noise2D(nx * 4, ny * 4) * 0.5
+          + _noise2D(nx * 8 + 3, ny * 8 - 2) * 0.3
+          + _noise2D(nx * 16, ny * 16) * 0.15
+          - 0.1;
+        h = Math.max(-0.3, Math.min(1, h));
+      }
+
+      terrain3d.heightMap[idx] = h;
+    }
+  }
+
+  _applyHeightMapToFloor();
+  _debouncedSaveTerrain();
+  mostrarToast(`🏔 Terreno "${tipo}" gerado!`);
+}
+
+// Noise 2D simples (baseado em gradientes)
+function _noise2D(x, y) {
+  const X = Math.floor(x) & 255;
+  const Y = Math.floor(y) & 255;
+  x -= Math.floor(x); y -= Math.floor(y);
+  const u = _fade(x), v = _fade(y);
+  const _p = _noiseP;
+  const a = _p[X] + Y, b = _p[X+1] + Y;
+  return _lerp(v,
+    _lerp(u, _grad(_p[a], x, y), _grad(_p[b], x-1, y)),
+    _lerp(u, _grad(_p[a+1], x, y-1), _grad(_p[b+1], x-1, y-1))
+  );
+}
+const _noiseP = (() => {
+  const perm = Array.from({length:256}, (_,i)=>i);
+  for (let i = 255; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [perm[i],perm[j]]=[perm[j],perm[i]]; }
+  return [...perm,...perm];
+})();
+function _fade(t) { return t*t*t*(t*(t*6-15)+10); }
+function _lerp(t, a, b) { return a + t*(b-a); }
+function _grad(h, x, y) { const v=h&3; const u=v<2?x:y,w=v<2?y:x; return ((h&1)?-u:u)+((h&2)?-w:w); }
+
+function resetarTerreno() {
+  _initTerrainHeightMap();
+  terrain3d.heightMap.fill(0);
+  _applyHeightMapToFloor();
+  _debouncedSaveTerrain();
+  mostrarToast('↺ Terreno nivelado');
+}
+
+function setTerrainTool(tool) {
+  terrain3d.tool = tool;
+  ['raise','lower','smooth','flat'].forEach(t => {
+    const el = document.getElementById(`t3d-${t}`);
+    if (el) el.classList.toggle('active', t === tool);
+  });
+}
+
+function toggleTerrain3DPanel() {
+  const panel = document.getElementById('terrain3d-panel');
+  if (!panel) return;
+  panel.classList.toggle('show');
+  if (panel.classList.contains('show')) {
+    _initTerrainHeightMap();
+  }
+}
+
+// Expõe para onclick inline no HTML (fora do module)
+window.setTerrainTool = setTerrainTool;
+window.toggleTerrain3DPanel = toggleTerrain3DPanel;
+window.gerarTerrenoPreset = gerarTerrenoPreset;
+window.resetarTerreno = resetarTerreno;
+window._applyTerrainMaxHeight = _applyTerrainMaxHeight;
+
+// Debounce para salvar terreno no Firebase
+let _terrainSaveTimer = null;
+function _debouncedSaveTerrain() {
+  clearTimeout(_terrainSaveTimer);
+  _terrainSaveTimer = setTimeout(_saveTerrain, 1500);
+}
+
+async function _saveTerrain() {
+  if (!terrain3d.heightMap || !campanhaId) return;
+  try {
+    // Comprime para Base64 (Float32 → arraybuffer → base64)
+    const buf = terrain3d.heightMap.buffer;
+    const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+    const ref = window.db ? window.db.ref(`campanhas/${campanhaId}/tabletop/terrain3d`) : null;
+    if (ref) await ref.set({
+      data: b64,
+      w: terrain3d.mapW,
+      h: terrain3d.mapH,
+      ts: Date.now()
+    });
+  } catch(e) { /* silencioso */ }
+}
+
+async function _loadTerrain() {
+  if (!campanhaId) return;
+  try {
+    const ref = window.db ? window.db.ref(`campanhas/${campanhaId}/tabletop/terrain3d`) : null;
+    if (!ref) return;
+    const snap = await ref.once('value');
+    const val = snap.val();
+    if (!val || !val.data) return;
+    const bytes = Uint8Array.from(atob(val.data), c => c.charCodeAt(0));
+    const arr = new Float32Array(bytes.buffer);
+    _initTerrainHeightMap();
+    if (arr.length === terrain3d.heightMap.length) {
+      terrain3d.heightMap.set(arr);
+      _applyHeightMapToFloor();
+    }
+  } catch(e) { /* silencioso */ }
+}
+
 // -- Dispose cena --
 function destroy3D() {
   if (three.animFrame) cancelAnimationFrame(three.animFrame);
@@ -4958,6 +5384,10 @@ function _desativarModo3D() {
   document.getElementById('btn-cam3d-sep').style.display = 'none';
   document.getElementById('btn-cam-up').style.display = 'none';
   document.getElementById('btn-cam-down').style.display = 'none';
+  // Fecha painel de terreno
+  const tp = document.getElementById('terrain3d-panel');
+  if (tp) tp.classList.remove('show');
+  terrain3d.isPainting = false;
   // Remove overlay de desenho 3D
   const ov = document.getElementById('canvas3d-overlay');
   if (ov) ov.remove();
@@ -4998,6 +5428,60 @@ window._modo3dSyncTokens = function() {
   <div id="modo3d-logo-text">MODO 3D ATIVADO</div>
   <div id="modo3d-sub-text">ORDEM PARANORMAL · TABLETOP</div>
   <div id="modo3d-bar"></div>
+</div>
+
+<!-- PAINEL EDITOR DE TERRENO 3D (fora do canvas-wrap para não ser bloqueado) -->
+<div id="terrain3d-panel">
+  <div class="terrain3d-title">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M1 13l4-6 3 4 2-3 5 5H1z"/>
+    </svg>
+    TERRENO 3D
+  </div>
+  <div class="terrain3d-tools">
+    <button class="t3d-tool active" id="t3d-raise" onclick="setTerrainTool('raise')" title="Elevar terreno">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="4,10 8,4 12,10"/></svg>
+      ERGUER
+    </button>
+    <button class="t3d-tool" id="t3d-lower" onclick="setTerrainTool('lower')" title="Abaixar terreno">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="4,6 8,12 12,6"/></svg>
+      DEPRIMIR
+    </button>
+    <button class="t3d-tool" id="t3d-smooth" onclick="setTerrainTool('smooth')" title="Suavizar terreno">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 10 Q8 4 14 10"/></svg>
+      SUAVIZAR
+    </button>
+    <button class="t3d-tool" id="t3d-flat" onclick="setTerrainTool('flat')" title="Nivelar terreno">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="12" x2="14" y2="12"/></svg>
+      NIVELAR
+    </button>
+  </div>
+  <div class="terrain3d-row">
+    <span class="terrain3d-label">FORÇA</span>
+    <input type="range" class="terrain3d-slider" id="t3d-strength" min="1" max="10" value="4" oninput="document.getElementById('t3d-strength-val').textContent=this.value">
+    <span class="terrain3d-val" id="t3d-strength-val">4</span>
+  </div>
+  <div class="terrain3d-row">
+    <span class="terrain3d-label">RAIO</span>
+    <input type="range" class="terrain3d-slider" id="t3d-radius" min="1" max="8" value="2" oninput="document.getElementById('t3d-radius-val').textContent=this.value">
+    <span class="terrain3d-val" id="t3d-radius-val">2</span>
+  </div>
+  <div class="terrain3d-row">
+    <span class="terrain3d-label">ALTURA</span>
+    <input type="range" class="terrain3d-slider" id="t3d-maxheight" min="1" max="20" value="6" oninput="document.getElementById('t3d-maxheight-val').textContent=this.value;_applyTerrainMaxHeight()">
+    <span class="terrain3d-val" id="t3d-maxheight-val">6</span>
+  </div>
+  <div style="height:1px;background:rgba(120,30,30,0.3);margin:2px 0;"></div>
+  <div class="terrain3d-title" style="font-size:8px;margin-bottom:0;">GERAR TERRENO</div>
+  <div class="terrain3d-presets">
+    <button class="t3d-preset" onclick="gerarTerrenoPreset('montanha')"><span>🏔</span>MONTANHA</button>
+    <button class="t3d-preset" onclick="gerarTerrenoPreset('colinas')"><span>🌄</span>COLINAS</button>
+    <button class="t3d-preset" onclick="gerarTerrenoPreset('crateras')"><span>🌑</span>CRATERAS</button>
+    <button class="t3d-preset" onclick="gerarTerrenoPreset('ruinas')"><span>🏚</span>RUÍNAS</button>
+    <button class="t3d-preset" onclick="gerarTerrenoPreset('pantano')"><span>🌿</span>PÂNTANO</button>
+    <button class="t3d-preset" onclick="gerarTerrenoPreset('caos')"><span>🔴</span>CAOS</button>
+  </div>
+  <button class="t3d-reset" onclick="resetarTerreno()">↺ RESETAR TERRENO PLANO</button>
 </div>
 
 </body>
