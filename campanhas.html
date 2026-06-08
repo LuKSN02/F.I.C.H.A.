@@ -1106,6 +1106,7 @@ body { transition: background 0.5s ease; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getDatabase, ref as rtdbRef, get as rtdbGet } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // ══ CONFIG FIREBASE ══
@@ -1121,6 +1122,7 @@ const firebaseConfig = {
 
 const app  = initializeApp(firebaseConfig);
 const db   = getFirestore(app);
+const rtdb = getDatabase(app);
 const auth = getAuth(app);
 
 // ══ ESTADO GLOBAL ══
@@ -1256,10 +1258,9 @@ function renderAgentes(agentes, isMestre) {
         el.innerHTML = `<div class="empty-state"><div class="icon">👤</div><div>Nenhum agente na campanha ainda.</div></div>`;
         return;
     }
-    const usuario = sessionStorage.getItem('ficha_user') || '';
     el.innerHTML = agentes.map(a => `
         <div class="agente-camp-card">
-            <img class="agente-camp-foto" src="${a.foto || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(a.nome)}`}" alt="${a.nome}">
+            <img class="agente-camp-foto" id="foto-agente-${a.id}" src="${a.foto || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(a.nome)}`}" alt="${a.nome}">
             <div class="agente-camp-info">
                 <div class="agente-camp-nome">${a.nome}${a.codinome ? ` <span style="color:#555;font-size:0.75rem">"${a.codinome}"</span>` : ''}</div>
                 <div class="agente-camp-meta">${a.classe || '—'} • ${a.origem || '—'} • Nível ${a.nivel || 1}</div>
@@ -1274,6 +1275,33 @@ function renderAgentes(agentes, isMestre) {
                 ${(isMestre || a.playerUid === currentUser.uid) ? `<button onclick="removerAgente('${a.id}')" style="background:none;border:none;color:#444;cursor:pointer;font-size:0.85rem;" title="Remover" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#444'">🗑</button>` : ''}
             </div>
         </div>`).join('');
+
+    // Para agentes sem foto no Firestore, busca do Realtime Database e atualiza
+    agentes.forEach(a => {
+        if (!a.foto && a.playerNome && a.fichaLocalId) {
+            _buscarEAtualizarFotoAgente(a);
+        }
+    });
+}
+
+// Busca foto no Realtime Database e atualiza o Firestore + UI
+async function _buscarEAtualizarFotoAgente(agente) {
+    try {
+        const snap = await rtdbGet(rtdbRef(rtdb, `agentes/${agente.playerNome}/${agente.fichaLocalId}`));
+        if (!snap.exists()) return;
+        const dados = snap.val();
+        const foto = dados.fotoCostum || '';
+        if (!foto) return;
+
+        // Atualiza a imagem na UI imediatamente
+        const imgEl = document.getElementById(`foto-agente-${agente.id}`);
+        if (imgEl) imgEl.src = foto;
+
+        // Persiste no Firestore para que futuras carregamentos já tenham a foto
+        await updateDoc(doc(db, 'campanhas', campanhaAtual, 'agentes', agente.id), { foto });
+    } catch(e) {
+        console.warn('[CAMP] Erro ao buscar foto do RTDB para agente:', agente.nome, e);
+    }
 }
 
 // ══ RENDER JOGADORES ══

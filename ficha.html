@@ -1209,6 +1209,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
@@ -1220,16 +1221,25 @@
     appId: "1:5463680704:web:3d6296c296699f4d41af25"
   };
 
-  const app  = initializeApp(firebaseConfig);
-  const db   = getDatabase(app);
-  const auth = getAuth(app);
+  const app      = initializeApp(firebaseConfig);
+  const db       = getDatabase(app);
+  const firestoreDB = getFirestore(app);
+  const auth     = getAuth(app);
 
   // Expõe globalmente para o restante do código
   window._firebaseDB       = db;
+  window._firestoreDB      = firestoreDB;
   window._firebaseRef      = ref;
   window._firebaseSet      = set;
   window._firebaseOnValue  = onValue;
   window._firebaseGet      = get;
+  // Funções do Firestore usadas fora do módulo (sincronizarFotoNasCampanhas)
+  window._fsCollection     = collection;
+  window._fsQuery          = query;
+  window._fsWhere          = where;
+  window._fsGetDocs        = getDocs;
+  window._fsDoc            = doc;
+  window._fsUpdateDoc      = updateDoc;
 
   // Mantém sessionStorage atualizado mesmo quando ficha.html é aberto diretamente
   onAuthStateChanged(auth, user => {
@@ -1240,9 +1250,13 @@
       // Espelha no localStorage para compatibilidade entre páginas (homebrew.html / ficha.html)
       localStorage.setItem('ficha_user_ativo', usuario);
       localStorage.setItem('ficha_user_backup', usuario);
+      localStorage.setItem('ficha_uid', user.uid);
+      // Expõe globalmente para funções fora do módulo (ex: sincronizarFotoNasCampanhas)
+      window._currentUser = user;
     } else {
       sessionStorage.removeItem('ficha_user');
       sessionStorage.removeItem('ficha_uid');
+      window._currentUser = null;
     }
   });
 </script>
@@ -1878,6 +1892,9 @@
               <option>Legista do Turno da Noite</option><option>Mateiro</option><option>Mergulhador</option>
               <option>Motorista</option><option>Nerd Entusiasta</option><option>Profetizado</option>
               <option>Psicólogo</option><option>Repórter Investigativo</option>
+            </optgroup>
+            <optgroup label="── Arquivos Secretos #5 ──">
+              <option>Ufólogo</option><option>Funcionário de Beira de Estrada</option>
             </optgroup>
           </select>
         </div>
@@ -3991,6 +4008,24 @@ const HABILIDADES_DB = {
       desc:'Gaste ação padrão e 3 PE para memorizar o odor de uma vítima, recebendo +1d20 em testes para rastreá-la, percebê-la e atacá-la. Só pode memorizar uma vítima por vez. Afinidade: até 3 vítimas simultaneamente.' },
     { nome:'Engolir Sangue', elemento:'SANGUE', tipo:'paranormal', elem:'SANGUE', nex:'—', src:'Arquivos Secretos #2',
       desc:'Gaste ação completa para consumir carne humana e recuperar 2d8+2 PV, mas perde 1d4 SAN. Afinidade: cura 4d8+4 PV.' },
+    // AS#5 — Poderes Paranormais
+    { nome:'Ácido Corrosivo', elemento:'ENERGIA', tipo:'paranormal', elem:'ENERGIA', nex:'—', src:'Arquivos Secretos #5',
+      desc:'Gaste 1 PE para expelir um ácido grosso e corrosivo pelas mãos. Até o fim da cena: +2 em testes de ataque desarmado, +5 nas rolagens de dano desarmado, e o dano desarmado muda para químico. Se estiver com arma corpo a corpo, pode afetá-la também. Porém, se ela não for amaldiçoada, será destruída ao fim da cena. Afinidade: bônus mudam para +4 em ataques e +10 em dano.' },
+    { nome:'Dead Man Switch', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', src:'Arquivos Secretos #5',
+      desc:'Quando estiver machucado, pode escolher um alvo em alcance médio e uma perícia na qual seja treinado. O alvo recebe o mesmo nível de treinamento que você na perícia escolhida. O efeito termina quando você se recuperar acima da metade dos PV ou quando morrer. Afinidade: pode escolher até 3 alvos e 1 perícia adicional; se morrer, os alvos mantém as perícias até o fim da missão.' },
+    { nome:'Paralinguística Ampliada', elemento:'CONHECIMENTO', tipo:'paranormal', elem:'CONHECIMENTO', nex:'—', src:'Arquivos Secretos #5',
+      desc:'Recebe +5 em testes para tentar compreender "linguagens" do Outro Lado (como os Sigilos de Conhecimento). Além disso, aprende o ritual Compreensão Paranormal. Se já o conhecer, o custo para conjurá-lo diminui em –1 PE. Afinidade: o bônus muda para +10 e você está sempre sob efeito de Compreensão Paranormal em sua forma discente.' },
+    // AS#5 — Poderes de Transmissão (requerem 2+ portadores e conexão com o Sino)
+    { nome:'Conexão Comunicativa', elemento:'TRANSMISSÃO', tipo:'paranormal', elem:'NEUTRO', nex:'—', src:'Arquivos Secretos #5',
+      desc:'Você consegue se comunicar telepaticamente com qualquer outro ser que tenha esse poder em raio de 90m (como uma chamada de rádio). Detecta a localização desses seres no mesmo raio. Recebe +2 em testes de resistência contra efeitos negativos de comunicação de Alheios para cada ser com este poder no raio (exceto você mesmo). Requer: 2 ou mais portadores do poder.' },
+    { nome:'Sincronia Conectiva', elemento:'TRANSMISSÃO', tipo:'paranormal', elem:'NEUTRO', nex:'—', src:'Arquivos Secretos #5',
+      desc:'Se você e outros têm este poder, todos podem gastar uma reação e 3 PE para ficar sincronizados até o fim da cena. Efeitos: escolher Iniciativa de qualquer ser em sincronia; conhecer itens dos aliados sincronizados; saber ações dos aliados antes de ocorrerem; gastar PE de seres em sincronia; sofrer perda/dano que seria de outro sincronizado (não se aplica a dano mental). Requer: 2 ou mais portadores.' },
+    { nome:'Transmissão de Perícia', elemento:'TRANSMISSÃO', tipo:'paranormal', elem:'NEUTRO', nex:'—', src:'Arquivos Secretos #5',
+      desc:'Uma vez por cena, gaste ação de movimento e 2 PE para conectar-se às perícias de 1 ser em alcance curto que tenha este mesmo poder. Escolha uma perícia do alvo. Até o fim da cena, faz testes dessa perícia usando os valores permanentes dele em vez dos seus. Requer: 2 ou mais portadores do poder.' },
+    { nome:'Transmissão de Poder', elemento:'TRANSMISSÃO', tipo:'paranormal', elem:'NEUTRO', nex:'—', src:'Arquivos Secretos #5',
+      desc:'Uma vez por cena, gaste ação de movimento e 3 PE para conectar-se aos poderes de 1 ser em alcance curto que tenha este mesmo poder. Escolha um poder do alvo que você seja capaz de atender aos pré-requisitos. Pode usar esse poder como se estivesse em sua ficha até o fim da cena. Requer: 2 ou mais portadores.' },
+    { nome:'Transmissão de Ritual', elemento:'TRANSMISSÃO', tipo:'paranormal', elem:'NEUTRO', nex:'—', src:'Arquivos Secretos #5',
+      desc:'Uma vez por cena, gaste ação de movimento e 3 PE para conectar-se aos rituais de 1 ser em alcance curto que tenha este mesmo poder. Escolha um ritual do alvo que você seja capaz de conjurar. Pode usar esse ritual como se estivesse em sua ficha até o fim da cena. Requer: 2 ou mais portadores.' },
   ],
 
   // ══════════════════════════════════════════════
@@ -4048,6 +4083,45 @@ const HABILIDADES_DB = {
       desc:'Em uma cena de interlúdio, pode alimentar-se uma vez sem gastar uma ação e sem precisar ter acesso à refeição (improvisa com os restos que encontra).' },
     { nome:'Ruído Branco', tipo:'poder_geral', elem:'NEUTRO', src:'Suplemento',
       desc:'Enquanto estiver em um ambiente movimentado ou com muitas conversas paralelas, recebe +1d6 em testes de Investigação e Percepção. Além disso, a critério do mestre, pode gastar 1 PE, uma vez por cena, para ouvir entre as vozes uma conversa que forneça informação útil para a missão.' },
+    // AS#5 — Poderes de Combatente
+    { nome:'Aura de Confiança', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #5',
+      desc:'Entrar em combate tendo você do lado é inspirador. Todos os seus aliados em um raio de 18m a partir de você recebem +5 em testes de Iniciativa e em testes contra presença perturbadora (você não recebe esses bônus, apenas seus aliados).' },
+    { nome:'Fôlego de Emergência', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #5',
+      desc:'Uma vez por cena, pode gastar uma ação de movimento para se recompor em meio ao conflito e recuperar 1d8+Vig PV ou PE, à sua escolha. Só pode usar esse poder se houver alguma ameaça presente.' },
+    { nome:'Parede de Carne', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #5',
+      desc:'Seu corpo robusto fornece cobertura leve (+5 na defesa) para aliados em espaços adjacentes ao seu. Pré-requisito: Vig 3 ou For 3.' },
+    // AS#5 — Poderes de Especialista
+    { nome:'Adepto do Escuro', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #5',
+      desc:'Você ignora camuflagem leve e total por escuridão. Além disso, recebe +2 em testes de investigação feitos em ambientes de penumbra (pouca luz, iluminado somente por lanternas, velas ou ao pôr do sol, por exemplo).' },
+    { nome:'Saudosista Hi-Tech', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #5',
+      desc:'Você recebe +5 em testes de Tecnologia para lidar com aparelhos eletrônicos anteriores aos anos 2000. Além disso, consegue fazer bizarrices tecnológicas e gambiarras para que eles funcionem com os aparelhos digitais do novo milênio.' },
+    { nome:'Treinado nas Telas', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #5',
+      desc:'O tempo gasto à frente dos videogames te proporcionou olhos treinados e uma melhora significativa em seu tempo de reação. Quando faz um teste de Iniciativa ou de Reflexos, pode gastar 2 PE para usar Intelecto em vez de Agilidade nesse teste.' },
+    // AS#5 — Poderes de Ocultista
+    { nome:'Catálogo de Criaturas Ambulante', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #5',
+      desc:'Sua memória é inquestionável quando o assunto é criaturas. Você recebe +5 em testes de Ocultismo para identificar criaturas paranormais e pode fazer isso sem vê-las pessoalmente, analisando somente algum vestígio deixado no ambiente.' },
+    { nome:'Meditação Ocultista', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #5',
+      desc:'Você recebe uma nova ação de interlúdio: Meditação. Com esta ação, recupera uma quantidade de PE conforme seu limite de PE e sua condição de meditação. Normal: dobro do limite de PE por rodada. Precária: metade. Confortável: triplicada. Luxuosa: quadruplicada. Só pode meditar uma vez por interlúdio.' },
+    { nome:'Ruído de Comunicação', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Arquivos Secretos #5',
+      desc:'Ao presenciar uma situação em que um alvo em alcance curto recebe um efeito (bônus ou penalidade) em dados rolados, pode gastar uma reação e 4 PE para alterar o efeito, transformando bônus em penalidade ou vice-versa. A transformação dura até o fim da cena.' },
+    // AS#5 — Trilha de Ocultista: Criptologista do Oculto
+    { nome:'Método Intuitivo', trilha:'Criptologista do Oculto', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'10%', src:'Arquivos Secretos #5',
+      desc:'Você recebe o poder Criar Selo. Se recebê-lo novamente, dobra a quantidade máxima de selos criados ao mesmo tempo. Pode criar 2 selos com uma ação de interlúdio (em vez de apenas 1); o número de selos por interlúdio aumenta em +1 para cada outra habilidade desta trilha que adquirir.' },
+    { nome:'Caligrafia Eficiente', trilha:'Criptologista do Oculto', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'40%', src:'Arquivos Secretos #5',
+      desc:'Selos feitos por você são mais fáceis de usar. O teste para usar o Selo de um ritual que o usuário não conhece muda para Ocultismo (DT 10 + custo em PE do ritual). Além disso, recebe +5 em testes para identificar rituais.' },
+    { nome:'Decifrar à Distância', trilha:'Criptologista do Oculto', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'65%', src:'Arquivos Secretos #5',
+      desc:'Quando usa um Selo Paranormal, não precisa estar empunhando-o nem precisa lê-lo em voz alta. Basta poder lê-lo mentalmente, mas o Selo precisa estar em alcance curto. Além disso, recebe +5 em testes para compreender "linguagens" do Outro Lado como Sigilos ou Sinais.' },
+    { nome:'Selo Supremo', trilha:'Criptologista do Oculto', classe:'Ocultista', tipo:'trilha', elem:'NEUTRO', nex:'99%', src:'Arquivos Secretos #5',
+      desc:'Selos feitos por você dispensam testes de Ocultismo para serem usados. Além disso, os rituais dos seus Selos sofrem: DT de resistência +5; rolagem de dano +3 dados do mesmo tipo; e se usado em forma avançada, o usuário não paga o custo adicional em PE da forma avançada.' },
+    // AS#5 — Poderes Gerais
+    { nome:'Apaixonado por Veículos', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #5',
+      desc:'Recebe treinamento em Pilotagem ou, se já for treinado, +2 nela. Qualquer teste envolvendo garantir a segurança do veículo recebe +1d20. Se usar a regra de Veículos Operacionais (AS #03, p. 125), pode adicionar 1 regalia no seu veículo sem contar para o limite. Pré-requisito: Agi 2.' },
+    { nome:'Desafiar o Ego', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #5',
+      desc:'Uma vez por rodada, quando presenciar um ataque sendo feito por um aliado, pode, como reação, gastar 1 PE e gritar palavras de incentivo ou provocação. Se o ataque acertar, o aliado causa dano extra igual ao valor da sua presença. Se o ataque errar, recupera o PE gasto. Pré-requisito: Pre 2.' },
+    { nome:'Direção Defensiva', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #5',
+      desc:'Recebe treinamento em Pilotagem ou, se já for treinado, +2 nela. Se você estiver dirigindo, todos os seres dentro do veículo (incluindo você) recebem +2 na Defesa e em testes de resistência. Se usar Veículos Operacionais (AS #03, p. 125), seu veículo também recebe +2 na Defesa.' },
+    { nome:'Rastrear Trilha Digital (Veterano)', tipo:'poder_geral', elem:'NEUTRO', src:'Arquivos Secretos #5',
+      desc:'Novo uso de Tecnologia (Veterano). Gaste 1d4+1 ações completas para usar um algoritmo capaz de interpretar a movimentação de aparelhos eletrônicos através de suas partículas de radiação. Rastreie o caminho de um aparelho refazendo o trajeto pelo qual a pessoa que o portava passou. DT conforme complexidade: trajeto simples (DT 20); trajeto tortuoso (DT 25); trajeto enigmático (DT 30).' },
   ],
 
   // ══════════════════════════════════════════════
@@ -4199,6 +4273,11 @@ const HABILIDADES_DB = {
       desc:'Perícias: Ocultismo e 1 perícia do elemento (Fortitude=Sangue, Vontade=Morte/Conhecimento, Reflexos=Energia). Aprende e pode conjurar ritual de 1º círculo do elemento correspondente; uma vez por cena, pode conjurá-lo sem gastar PE. Sofre –5 em testes de resistência contra efeitos desse elemento.' },
     { nome:'Sofrimento de Sangue', origem:'Transtornado Arrependido', tipo:'origem', elem:'SANGUE', src:'Arquivos Secretos #1',
       desc:'Perícias: Luta e Ocultismo. Recebe RD 2/mental, +1 para cada 2 rituais/poderes de Sangue que possua. Pesadelos impedem descanso tranquilo: condição de descanso é sempre 1 categoria pior.' },
+    // AS#5
+    { nome:'Minha Teoria Absurda', origem:'Ufólogo', tipo:'origem', elem:'NEUTRO', src:'Arquivos Secretos #5',
+      desc:'Perícias treinadas: Ciências e Ocultismo. Uma vez por missão em que há algo a ser investigado, pode gastar 10 minutos para apresentar ao grupo sua tese sobre as prováveis respostas para a investigação (antes de terem todas as respostas). Se, quando a missão acabar, sua tese se provar correta, recebe +3 PE máximos e atuais.' },
+    { nome:'Turno Invertido', origem:'Funcionário de Beira de Estrada', tipo:'origem', elem:'NEUTRO', src:'Arquivos Secretos #5',
+      desc:'Perícias treinadas: Fortitude e Intuição. Uma vez por missão, durante uma cena de interlúdio, pode receber os benefícios da ação dormir sem precisar realizá-la. Além disso, recebe +2 em testes contra qualquer efeito que tente te deixar inconsciente.' },
   ],
 };
 
@@ -4276,6 +4355,7 @@ window.onload = function() {
                 }
                 salvarEstado();
                 sincronizarAgenteFirebase();
+                sincronizarFotoNasCampanhas(base64);
                 mostrarToast('📷 FOTO ATUALIZADA');
                 document.getElementById('foto-input').value = '';
                 return;
@@ -4458,6 +4538,50 @@ function sincronizarAgenteFirebase() {
       fotoCostum: estado.fotoCostum || ficha.fotoCostum || '',
     }).catch(err => console.warn('sincronizarAgenteFirebase erro:', err));
   } catch(e) { console.warn('sincronizarAgenteFirebase:', e); }
+}
+
+// ══ SINCRONIZA FOTO DO AGENTE NOS DOCUMENTOS DE CAMPANHA (Firestore) ══
+async function sincronizarFotoNasCampanhas(novaFoto) {
+  const uid = (window._currentUser && window._currentUser.uid)
+              || sessionStorage.getItem('ficha_uid')
+              || localStorage.getItem('ficha_uid');
+  const fsDB = window._firestoreDB;
+  if (!uid || !fsDB || !ficha) return;
+  const col      = window._fsCollection;
+  const qry      = window._fsQuery;
+  const whr      = window._fsWhere;
+  const getDs    = window._fsGetDocs;
+  const docRef   = window._fsDoc;
+  const updDoc   = window._fsUpdateDoc;
+  if (!col || !qry || !whr || !getDs || !docRef || !updDoc) {
+    console.warn('[FICHA] Firestore helpers não disponíveis ainda.');
+    return;
+  }
+  try {
+    const qMestre  = qry(col(fsDB, 'campanhas'), whr('mestreUid',       '==', uid));
+    const qJogador = qry(col(fsDB, 'campanhas'), whr('jogadoresUids',   'array-contains', uid));
+    const [snapM, snapJ] = await Promise.all([getDs(qMestre), getDs(qJogador)]);
+
+    const campIds = new Set();
+    snapM.forEach(d => campIds.add(d.id));
+    snapJ.forEach(d => campIds.add(d.id));
+
+    const updates = [];
+    for (const campId of campIds) {
+      const snapAgentes = await getDs(col(fsDB, 'campanhas', campId, 'agentes'));
+      snapAgentes.forEach(d => {
+        const data = d.data();
+        if (data.playerUid === uid && String(data.fichaLocalId) === String(ficha.id)) {
+          updates.push(updDoc(docRef(fsDB, 'campanhas', campId, 'agentes', d.id), { foto: novaFoto }));
+        }
+      });
+    }
+    await Promise.all(updates);
+    if (updates.length > 0) console.log(`[FICHA] Foto sincronizada em ${updates.length} agente(s) nas campanhas.`);
+    else console.log('[FICHA] Nenhum agente encontrado para atualizar. uid:', uid, 'fichaId:', ficha.id);
+  } catch(e) {
+    console.warn('[FICHA] Erro ao sincronizar foto nas campanhas:', e);
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -5268,6 +5392,56 @@ const OP_ITENS_DB = [
     src:'Arquivos Secretos #3' },
 
   // ════════════════════════════════════════════════
+  // ARQUIVOS SECRETOS #5 — Itens
+  // ════════════════════════════════════════════════
+  { nome:'Câmera Filmadora', subtipo:'Geral', cat:'GERAL', grupo:'Utensílios', catItem:'0', espaco:1,
+    desc:'Utensílio. Fornece +2 em testes de Investigação e Percepção. Pode ser usada como lanterna (cone de 9m) ou na função de visão noturna de fósforo verde (funciona como Visão no Escuro).',
+    src:'Arquivos Secretos #5' },
+  { nome:'Faixas da Vidência', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Morte', catItem:'III', espaco:1,
+    desc:'Faixa de tecido preto com espirais gravadas. Vestimenta: +5 na Defesa e em testes de resistência contra ataques/habilidades de alcance curto, –5 na Defesa e em testes de resistência contra ataques/habilidades além de 9m. Além disso, +2 em Intimidação.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Joias da Mente', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Conhecimento', catItem:'III', espaco:1,
+    desc:'Piercing e brinco dourados com Sigilos de Conhecimento. Vestimenta: +2 em Diplomacia e resistência mental 10. Só funciona se o usuário estiver vestindo as duas peças (piercing e brinco), que contam como uma única vestimenta.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Larva da Fúria', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Sangue', catItem:'II', espaco:1,
+    desc:'Larva de Sangue gosmenta com 15cm e dentes longos. Item operacional maldito: consumir com ação de movimento. Até o fim da cena: +4 em testes de ataque e rolagens de dano corpo a corpo, mas não pode fazer ações que exijam calma (Furtividade, conjurar rituais). A fúria termina se ao fim da rodada você não tiver atacado nem sido alvo de efeito hostil.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Skate Caótico', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Energia', catItem:'II', espaco:2,
+    desc:'Skate com sigilos e raios verdes. Três usos: (1) Transporte: treinado em Acrobacia, Atletismo ou Pilotagem recebe +3m de deslocamento. (2) Arma improvisada (2 mãos, 1d12 impacto, Crítico x2). (3) Escudo com "consciência caótica" que fornece +5 na Defesa.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Tênis Lépidos', subtipo:'Itens Amaldiçoados', cat:'ITEM_AMALD', grupo:'Energia', catItem:'III', espaco:1,
+    desc:'Tênis com partes queimadas e cabos neon. Vestimenta: +12 em testes de Atletismo e +3m de deslocamento. Pode gastar 2 PE para se mover de forma sobrenatural até o fim do turno: ignora terreno difícil, recebe deslocamento de escalada igual ao terrestre e fica imune a dano por queda de até 9m.',
+    src:'Arquivos Secretos #5' },
+  // AS#5 — Regalias de Veículos (Veículos Operacionais, expansão AS#3)
+  { nome:'Conversão de Combustível para Alto Rendimento', subtipo:'Geral', cat:'GERAL', grupo:'Regalias de Veículo', catItem:'0', espaco:0,
+    desc:'Regalia de veículo. Instalação de motores elétricos auxiliares e substituição do motor para maior rendimento. O tanque de combustível passa a ter 10 dados de combustível.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Gaiola de Proteção', subtipo:'Geral', cat:'GERAL', grupo:'Regalias de Veículo', catItem:'0', espaco:0,
+    desc:'Regalia de veículo. Estrutura tubular interna de aço cromo-molibdênio. Ocupantes recebem +5 na Defesa e sofrem metade do dano causado por capotamento ou amassado na lataria.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Indução Forçada', subtipo:'Geral', cat:'GERAL', grupo:'Regalias de Veículo', catItem:'0', espaco:0,
+    desc:'Regalia de veículo. Compressores que forçam mais ar no motor. Modifica o deslocamento de manobra conforme DT de Pilotagem (DT 5: 18m; DT 10: 21m; DT 15: 24m; DT 20: 27m; DT 25: 30m; DT 30: 33m; DT 35+: 36m).',
+    src:'Arquivos Secretos #5' },
+  { nome:'Pneus Run-Flat ou com Gel Selante', subtipo:'Geral', cat:'GERAL', grupo:'Regalias de Veículo', catItem:'0', espaco:0,
+    desc:'Regalia de veículo. Pneus modificados com paredes reforçadas ou câmaras auto-selantes. O veículo continua rodando mesmo se os pneus forem perfurados.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Sistema de Óxido Nitroso', subtipo:'Geral', cat:'GERAL', grupo:'Regalias de Veículo', catItem:'0', espaco:0,
+    desc:'Regalia de veículo. Injeta oxigênio puro e combustível extra na câmara de combustão. Ação livre, uma vez por cena: dobra o deslocamento do veículo por 1 rodada.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Sistema Multicombustível Avançado', subtipo:'Geral', cat:'GERAL', grupo:'Regalias de Veículo', catItem:'0', espaco:0,
+    desc:'Regalia de veículo. Motor adaptado para combustíveis alternativos (biodiesel caseiro, etanol de alta pureza, metano sintetizado). Personagens recebem +1d20 em testes para encontrar combustível compatível.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Sistema de Snorkel Selado', subtipo:'Geral', cat:'GERAL', grupo:'Regalias de Veículo', catItem:'0', espaco:0,
+    desc:'Regalia de veículo. Extensão vertical para entrada de ar do motor e saída do escapamento. Enquanto a ponta do snorkel estiver acima da superfície, o motor continua funcionando. O veículo pode ficar quase totalmente submerso sem ser prejudicado.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Tanques de Lastro Hidrodinâmicos', subtipo:'Geral', cat:'GERAL', grupo:'Regalias de Veículo', catItem:'0', espaco:0,
+    desc:'Regalia de veículo. Tanques de lastro inundáveis que impedem o veículo de flutuar. Enchem de água para firmar no leito do rio/mar; usam ar comprimido para expulsar a água ao emergir.',
+    src:'Arquivos Secretos #5' },
+  { nome:'Vedação Hermética', subtipo:'Geral', cat:'GERAL', grupo:'Regalias de Veículo', catItem:'0', espaco:0,
+    desc:'Regalia de veículo. Componentes eletrônicos revestidos com resina isolante e caixas estanques pressurizadas. O veículo recebe imunidade a dano de eletricidade e não sofre curtos-circuitos.',
+    src:'Arquivos Secretos #5' },
+
+  // ════════════════════════════════════════════════
   // INICIATIVA T20 — ORDEM PARANORMAL RPG (v1.2)
   // ════════════════════════════════════════════════
 
@@ -6028,11 +6202,18 @@ function salvarEstado() {
 function carregarFotoSalva() {
   if (!ficha) return;
   // Prioridade: estado em memória > localStorage separado > agente.fotoCostum
-  if (estado.fotoCostum) return; // já tem em memória
+  if (estado.fotoCostum) {
+    document.getElementById('foto-agente').src = estado.fotoCostum;
+    // Sincroniza foto nas campanhas ao carregar (corrige agentes vinculados antes da atualização)
+    setTimeout(() => sincronizarFotoNasCampanhas(estado.fotoCostum), 1500);
+    return;
+  }
   const fotoLocal = localStorage.getItem(getPrefix() + `foto_ficha_${ficha.id}`);
   if (fotoLocal) {
     estado.fotoCostum = fotoLocal;
     document.getElementById('foto-agente').src = fotoLocal;
+    // Sincroniza foto nas campanhas ao carregar
+    setTimeout(() => sincronizarFotoNasCampanhas(fotoLocal), 1500);
   }
 }
 function mostrarToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
@@ -7121,6 +7302,7 @@ function salvarNex() {
             }
             salvarEstado();
             sincronizarAgenteFirebase();
+            sincronizarFotoNasCampanhas(base64);
             mostrarToast('📷 FOTO ATUALIZADA');
             cancelarFotoCrop();
         }
