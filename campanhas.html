@@ -1518,6 +1518,36 @@ window.removerJogador = async function(playerUid, playerNome) {
     }
 };
 
+// ══ SINCRONIZAR FOTO DO PERFIL NOS AGENTES DA CAMPANHA ══
+async function sincronizarFotoAgentes(novaFoto) {
+    if (!currentUser) return;
+    try {
+        // Busca todas as campanhas em que o usuário participa
+        const qMestre  = query(collection(db, 'campanhas'), where('mestreUid', '==', currentUser.uid));
+        const qJogador = query(collection(db, 'campanhas'), where('jogadoresUids', 'array-contains', currentUser.uid));
+        const [snapM, snapJ] = await Promise.all([getDocs(qMestre), getDocs(qJogador)]);
+
+        const campIds = new Set();
+        snapM.forEach(d => campIds.add(d.id));
+        snapJ.forEach(d => campIds.add(d.id));
+
+        // Para cada campanha, atualiza todos os agentes que pertencem ao usuário
+        const updates = [];
+        for (const campId of campIds) {
+            const snapAgentes = await getDocs(collection(db, 'campanhas', campId, 'agentes'));
+            snapAgentes.forEach(d => {
+                if (d.data().playerUid === currentUser.uid) {
+                    updates.push(updateDoc(doc(db, 'campanhas', campId, 'agentes', d.id), { foto: novaFoto }));
+                }
+            });
+        }
+        await Promise.all(updates);
+        if (updates.length > 0) console.log(`[FICHA] Foto sincronizada em ${updates.length} agente(s).`);
+    } catch(e) {
+        console.warn('[FICHA] Erro ao sincronizar foto dos agentes:', e);
+    }
+}
+
 // ══ EDITAR CAMPANHA ══
 window.abrirModalEditarCamp = async function() {
     const snap = await getDoc(doc(db, 'campanhas', campanhaAtual));
@@ -1963,6 +1993,7 @@ if (animado) {
                 await _imgDB.set(getAvatarKey(), resultDataUrl);
                 const perfil = getPerfilLocal(); perfil.foto = resultDataUrl; perfil.fotoAnimada = isAnim;
                 setPerfilLocal(perfil); await salvarPerfilFirebase(perfil); atualizarAvatar();
+                sincronizarFotoAgentes(resultDataUrl);
                 const avatarEl = document.getElementById('perfil-avatar-img');
                 if (avatarEl) avatarEl.innerHTML = `<img src="${resultDataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
             });
@@ -1990,6 +2021,7 @@ window.confirmarCrop = async function() {
     setPerfilLocal(perfil);
     await salvarPerfilFirebase(perfil);
     atualizarAvatar();
+    sincronizarFotoAgentes(dataUrl);
     window.cancelarCrop();
     const avatarEl = document.getElementById('perfil-avatar-img');
     if (avatarEl) avatarEl.innerHTML = `<img src="${dataUrl}" alt="avatar"><div class="perfil-avatar-edit">📷</div>`;
