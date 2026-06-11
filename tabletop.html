@@ -235,16 +235,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); colo
 }
 .ob-token-edit-btn:hover { color:var(--text); background:var(--surface3); }
 
-/* Monster grid */
-.ob-monster-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-.ob-monster-card {
-  background:var(--surface2); border:1px solid var(--border); border-radius:10px;
-  padding:10px 8px; cursor:pointer; transition:0.15s; text-align:center;
-}
-.ob-monster-card:hover { border-color:var(--border2); background:var(--surface3); }
-.ob-monster-card-icon { font-size:22px; line-height:1; }
-.ob-monster-card-name { font-size:10px; font-weight:600; color:var(--text); margin-top:5px; }
-.ob-monster-card-nd { font-size:9px; color:var(--text3); font-family:'JetBrains Mono',monospace; margin-top:2px; }
+
 
 /* Chat */
 .ob-chat-messages {
@@ -348,11 +339,7 @@ html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); colo
 .ob-modal-actions { display:flex; gap:8px; margin-top:16px; }
 .ob-modal-actions .ob-btn { flex:1; justify-content:center; }
 
-/* Monster info */
-.ob-monster-stat { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border); font-size:12px; }
-.ob-monster-stat:last-of-type { border-bottom:none; }
-.ob-monster-stat-key { color:var(--text3); font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:500; }
-.ob-monster-stat-val { color:var(--text); font-weight:600; }
+
 
 /* ===== CONDITIONS GRID ===== */
 .ob-cond-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:12px; }
@@ -780,6 +767,65 @@ input[type="color"] {
   border:2px solid var(--border2); background:none; cursor:pointer; padding:1px;
 }
 
+/* ===== BLOCK MODE CURSOR ===== */
+.ob-canvas-wrap.block-mode { cursor:cell; }
+
+/* ===== CENÁRIOS ===== */
+.t3d-scenario-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:4px;
+}
+.t3d-scenario-btn {
+  display:flex; flex-direction:column; align-items:flex-start; gap:2px;
+  background:var(--surface3); border:1px solid var(--border2); border-radius:8px;
+  padding:8px 10px; cursor:pointer; transition:0.15s; text-align:left;
+}
+.t3d-scenario-btn:hover { border-color:rgba(var(--glow),0.6); background:rgba(var(--glow),0.07); }
+.t3d-scenario-btn.active-scenario { border-color:var(--accent); background:rgba(var(--glow),0.14);
+  box-shadow:0 0 0 1px rgba(var(--glow),0.25); }
+.t3d-scenario-name { font-size:10px; font-weight:700; color:var(--text); letter-spacing:0.3px; font-family:'JetBrains Mono',monospace; }
+.t3d-scenario-meta { font-size:9px; color:var(--text3); font-family:'JetBrains Mono',monospace; }
+.t3d-scenario-actions { display:flex; gap:4px; margin-top:4px; align-self:stretch; }
+.t3d-scenario-action-btn {
+  flex:1; font-size:9px; font-family:'JetBrains Mono',monospace; font-weight:600;
+  letter-spacing:0.4px; padding:3px 0; border-radius:5px; border:1px solid var(--border2);
+  background:var(--surface2); color:var(--text3); cursor:pointer; transition:0.15s; text-align:center;
+}
+.t3d-scenario-action-btn:hover { color:var(--text); border-color:var(--border2); background:var(--surface3); }
+.t3d-scenario-action-btn.save-btn:hover { border-color:rgba(var(--glow),0.6); color:var(--accent-l); }
+.t3d-scenario-action-btn.del-btn:hover { border-color:rgba(214,48,49,0.6); color:#ff6b6b; }
+.t3d-add-scenario-btn {
+  width:100%; display:flex; align-items:center; justify-content:center; gap:6px;
+  background:transparent; border:1px dashed var(--border2); border-radius:8px;
+  color:var(--text3); font-size:10px; font-family:'JetBrains Mono',monospace;
+  padding:7px; cursor:pointer; transition:0.15s; letter-spacing:0.4px; font-weight:600;
+}
+.t3d-add-scenario-btn:hover { border-color:rgba(var(--glow),0.5); color:var(--accent-l); background:rgba(var(--glow),0.05); }
+
+/* Block mode palette */
+.t3d-block-palette {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:5px; margin-bottom:4px;
+}
+.t3d-block-type {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  background:var(--surface3); border:1px solid var(--border2); border-radius:7px;
+  padding:7px 4px 5px; cursor:pointer; transition:0.15s; font-size:8.5px;
+  font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--text3);
+  letter-spacing:0.2px; text-align:center;
+}
+.t3d-block-type:hover { border-color:rgba(var(--glow),0.5); color:var(--text); }
+.t3d-block-type.active { border-color:var(--accent); background:rgba(var(--glow),0.14); color:var(--accent-l); }
+.t3d-block-swatch { width:20px; height:20px; border-radius:4px; flex-shrink:0; }
+.t3d-block-height-row { display:flex; align-items:center; gap:6px; margin:4px 0; }
+.t3d-block-height-row .t3d-lbl { min-width:50px; }
+.t3d-block-action-row { display:flex; gap:5px; margin-bottom:2px; }
+.t3d-block-action-btn {
+  flex:1; padding:6px 4px; border-radius:7px; border:1px solid var(--border2);
+  background:var(--surface3); color:var(--text3); font-size:9px; font-weight:700;
+  font-family:'JetBrains Mono',monospace; cursor:pointer; transition:0.15s;
+  letter-spacing:0.3px; text-align:center;
+}
+.t3d-block-action-btn:hover { border-color:rgba(var(--glow),0.5); color:var(--accent-l); }
+
 /* ===== ANIMATED MAP VIDEO LAYER ===== */
 #tt-map-video-layer {
   position:absolute; top:0; left:0; width:100%; height:100%;
@@ -1066,68 +1112,263 @@ input[type="color"] {
 .modo3d-on #modo3d-vignette { opacity:1; }
 
 /* ---- PAINEL EDITOR DE TERRENO 3D ---- */
+/* ═══════════════════════════════════════════════════
+   EDITOR DE TERRENO 3D — Painel polido com abas
+═══════════════════════════════════════════════════ */
 #terrain3d-panel {
-  position:fixed; bottom:58px; left:60px; z-index:400;
-  background:rgba(10,6,6,0.95); border:1px solid rgba(200,40,40,0.4);
-  border-radius:12px; padding:10px 12px; min-width:220px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.6), 0 0 20px rgba(180,20,20,0.15);
-  backdrop-filter:blur(8px);
-  display:none; flex-direction:column; gap:7px;
-  font-family:'JetBrains Mono',monospace;
+  position: fixed;
+  bottom: 58px; left: 60px;
+  z-index: 400;
+  width: 300px;
+  background: rgba(8,4,4,0.97);
+  border: 1px solid rgba(180,35,35,0.35);
+  border-radius: 14px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.75),
+              0 0 0 1px rgba(255,255,255,0.03),
+              inset 0 1px 0 rgba(255,255,255,0.05),
+              0 0 30px rgba(160,15,15,0.12);
+  backdrop-filter: blur(12px);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'JetBrains Mono', monospace;
+  animation: t3d-slide-in 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes t3d-slide-in {
+  from { opacity:0; transform:translateY(10px) scale(0.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
 }
 #terrain3d-panel.show { display:flex; }
-.terrain3d-title {
-  font-size:9px; font-weight:700; letter-spacing:2px; color:rgba(220,60,60,0.9);
-  text-transform:uppercase; display:flex; align-items:center; gap:6px; margin-bottom:2px;
+
+/* Header do painel */
+.t3d-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 14px 0;
+  margin-bottom: 2px;
 }
-.terrain3d-title svg { width:12px; height:12px; }
-.terrain3d-tools {
-  display:grid; grid-template-columns:repeat(4,1fr); gap:4px;
+.t3d-header-icon {
+  width: 26px; height: 26px; border-radius: 7px;
+  background: rgba(180,25,25,0.25); border: 1px solid rgba(200,50,50,0.3);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.t3d-header-icon svg { width: 13px; height: 13px; color: rgba(255,120,120,0.9); }
+.t3d-header-text { flex: 1; }
+.t3d-header-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  color: rgba(255,140,140,0.95); text-transform: uppercase;
+}
+.t3d-header-sub {
+  font-size: 8px; color: rgba(160,80,80,0.6); letter-spacing: 0.5px; margin-top: 1px;
+}
+.t3d-close-btn {
+  width: 22px; height: 22px; border-radius: 6px;
+  background: transparent; border: 1px solid transparent;
+  color: rgba(160,80,80,0.5); cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  transition: 0.15s; flex-shrink: 0;
+}
+.t3d-close-btn:hover { background: rgba(180,20,20,0.25); border-color: rgba(200,50,50,0.4); color: #ff9999; }
+
+/* Tabs */
+.t3d-tabs {
+  display: flex; gap: 2px; padding: 8px 8px 0;
+}
+.t3d-tab {
+  flex: 1; height: 32px; border-radius: 7px; border: 1px solid transparent;
+  background: transparent; color: rgba(150,70,70,0.65);
+  font-size: 0; font-weight: 700; letter-spacing: 0;
+  text-transform: uppercase; cursor: pointer; transition: 0.14s;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  position: relative;
+}
+.t3d-tab span { font-size: 7px; letter-spacing: 0.5px; }
+.t3d-tab svg { width: 13px; height: 13px; }
+.t3d-tab:hover { background: rgba(120,20,20,0.2); color: rgba(220,130,130,0.8); }
+.t3d-tab.active {
+  background: rgba(160,20,20,0.28); border-color: rgba(200,50,50,0.35);
+  color: rgba(255,160,160,0.95);
+  box-shadow: 0 0 8px rgba(180,20,20,0.2);
+}
+
+/* Divisor */
+.t3d-divider {
+  height: 1px; background: rgba(140,25,25,0.22); margin: 6px 10px;
+}
+
+/* Conteúdo das abas */
+.t3d-pane { display: none; flex-direction: column; gap: 7px; padding: 2px 12px 12px; }
+.t3d-pane.active { display: flex; }
+
+/* --- ESCULTURA --- */
+.t3d-tools-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
 }
 .t3d-tool {
-  height:34px; border-radius:7px; border:1px solid rgba(80,20,20,0.6);
-  background:rgba(20,8,8,0.7); color:rgba(200,140,140,0.8); font-size:10px;
-  cursor:pointer; transition:0.12s; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; gap:2px; font-weight:600;
-  font-family:'JetBrains Mono',monospace; letter-spacing:0.2px;
+  height: 44px; border-radius: 8px;
+  border: 1px solid rgba(80,20,20,0.5);
+  background: rgba(18,6,6,0.8); color: rgba(180,110,110,0.75);
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.3px;
+  cursor: pointer; transition: 0.12s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  font-family: 'JetBrains Mono', monospace; text-transform: uppercase;
 }
-.t3d-tool svg { width:13px; height:13px; }
-.t3d-tool:hover { background:rgba(140,20,20,0.3); border-color:rgba(200,60,60,0.6); color:#ff9999; }
-.t3d-tool.active { background:rgba(180,20,20,0.35); border-color:rgba(255,80,80,0.7); color:#ffaaaa; box-shadow:0 0 8px rgba(200,30,30,0.4); }
-.terrain3d-row { display:flex; align-items:center; gap:8px; }
-.terrain3d-label { font-size:9px; color:rgba(180,100,100,0.8); letter-spacing:0.5px; min-width:44px; }
-.terrain3d-slider {
-  flex:1; -webkit-appearance:none; height:3px;
-  background:rgba(120,30,30,0.4); border-radius:2px; outline:none; cursor:pointer;
+.t3d-tool svg { width: 15px; height: 15px; }
+.t3d-tool:hover {
+  background: rgba(120,18,18,0.35); border-color: rgba(210,60,60,0.55);
+  color: #ffaaaa; transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(160,10,10,0.25);
 }
-.terrain3d-slider::-webkit-slider-thumb {
-  -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
-  background:#cc3333; border:1px solid rgba(255,100,100,0.6); cursor:pointer;
-  box-shadow:0 0 5px rgba(200,30,30,0.6);
+.t3d-tool.active {
+  background: rgba(160,18,18,0.38); border-color: rgba(255,75,75,0.65);
+  color: #ffcccc;
+  box-shadow: 0 0 12px rgba(200,20,20,0.3), inset 0 1px 0 rgba(255,180,180,0.08);
 }
-.terrain3d-val { font-size:10px; color:rgba(220,140,140,0.9); min-width:24px; text-align:right; }
-.terrain3d-presets {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:4px; margin-top:2px;
+
+/* Sliders */
+.t3d-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.t3d-lbl {
+  font-size: 8.5px; color: rgba(180,90,90,0.7); letter-spacing: 0.8px;
+  text-transform: uppercase; min-width: 46px;
+}
+.t3d-slider {
+  flex: 1; -webkit-appearance: none; height: 4px;
+  background: rgba(100,20,20,0.4); border-radius: 3px; outline: none; cursor: pointer;
+  transition: 0.15s;
+}
+.t3d-slider:hover { background: rgba(140,25,25,0.55); }
+.t3d-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: linear-gradient(135deg, #e03030, #a01010);
+  border: 1.5px solid rgba(255,120,120,0.5); cursor: pointer;
+  box-shadow: 0 0 7px rgba(200,20,20,0.55), 0 1px 3px rgba(0,0,0,0.4);
+  transition: 0.12s;
+}
+.t3d-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(255,50,50,0.7);
+}
+.t3d-val {
+  font-size: 9.5px; color: rgba(230,150,150,0.9); min-width: 22px; text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Seção de presets */
+.t3d-section-label {
+  font-size: 8px; font-weight: 700; letter-spacing: 1.5px; color: rgba(160,60,60,0.6);
+  text-transform: uppercase; padding: 2px 0 0;
+}
+.t3d-presets-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
 }
 .t3d-preset {
-  padding:5px 2px; border-radius:6px; border:1px solid rgba(80,20,20,0.5);
-  background:rgba(15,5,5,0.7); color:rgba(180,120,120,0.85);
-  font-size:9px; font-weight:600; letter-spacing:0.3px; cursor:pointer;
-  font-family:'JetBrains Mono',monospace; text-align:center; transition:0.15s;
-  display:flex; flex-direction:column; align-items:center; gap:2px;
+  padding: 7px 4px 6px; border-radius: 8px;
+  border: 1px solid rgba(75,18,18,0.5);
+  background: rgba(14,5,5,0.75); color: rgba(170,110,110,0.85);
+  font-size: 8px; font-weight: 700; letter-spacing: 0.3px;
+  cursor: pointer; font-family: 'JetBrains Mono', monospace;
+  text-align: center; transition: 0.14s;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  text-transform: uppercase;
 }
-.t3d-preset:hover { background:rgba(100,15,15,0.5); border-color:rgba(200,60,60,0.5); color:#ff9999; }
-.t3d-preset span { font-size:14px; }
-.t3d-reset {
-  width:100%; padding:5px 0; border-radius:6px; border:1px solid rgba(80,20,20,0.4);
-  background:rgba(20,8,8,0.6); color:rgba(160,80,80,0.8); font-size:9px;
-  font-family:'JetBrains Mono',monospace; cursor:pointer; letter-spacing:0.5px;
-  transition:0.15s; font-weight:600;
+.t3d-preset:hover {
+  background: rgba(100,12,12,0.45); border-color: rgba(210,55,55,0.5);
+  color: #ffaaaa; transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(140,8,8,0.3);
 }
-.t3d-reset:hover { border-color:rgba(200,60,60,0.5); color:#ff8888; }
-#btn-terrain3d {
-  display:none;
+.t3d-preset-icon { font-size: 16px; line-height: 1; }
+
+/* Botão de reset */
+/* Botão de preset de câmera ativo */
+[id^="cam-preset-"].active {
+  background: rgba(var(--glow),0.18);
+  color: var(--accent-l);
+  border-color: rgba(var(--glow),0.5);
 }
+
+.t3d-reset-btn {
+  width: 100%; height: 30px; border-radius: 7px;
+  border: 1px solid rgba(80,20,20,0.4);
+  background: rgba(16,5,5,0.7); color: rgba(150,70,70,0.75);
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.8px;
+  font-family: 'JetBrains Mono', monospace; cursor: pointer; transition: 0.14s;
+  text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.t3d-reset-btn:hover { border-color: rgba(200,50,50,0.45); color: #ff8888; background: rgba(100,12,12,0.3); }
+.t3d-reset-btn svg { width: 11px; height: 11px; }
+
+/* --- ABA AMBIENTE --- */
+.t3d-sky-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+}
+.t3d-sky-btn {
+  height: 42px; border-radius: 8px; border: 1px solid rgba(60,15,15,0.5);
+  background: rgba(14,5,5,0.75); cursor: pointer; transition: 0.14s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; font-size: 7.5px; font-weight: 700; letter-spacing: 0.3px;
+  font-family: 'JetBrains Mono', monospace; color: rgba(160,90,90,0.75);
+  text-transform: uppercase;
+}
+.t3d-sky-btn:hover { border-color: rgba(200,55,55,0.45); color: #ffaaaa; transform: translateY(-1px); }
+.t3d-sky-btn.active { border-color: rgba(230,70,70,0.6); background: rgba(150,18,18,0.3); color: #ffcccc; box-shadow: 0 0 10px rgba(180,15,15,0.25); }
+.t3d-sky-dot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.12); }
+
+/* Fog control */
+.t3d-fog-row { display: flex; align-items: center; gap: 6px; }
+.t3d-toggle {
+  position: relative; width: 32px; height: 17px; cursor: pointer;
+  flex-shrink: 0;
+}
+.t3d-toggle input { opacity: 0; width: 0; height: 0; }
+.t3d-toggle-track {
+  position: absolute; inset: 0; border-radius: 9px;
+  background: rgba(80,20,20,0.4); border: 1px solid rgba(120,30,30,0.4);
+  transition: 0.2s;
+}
+.t3d-toggle input:checked + .t3d-toggle-track {
+  background: rgba(180,25,25,0.5); border-color: rgba(220,60,60,0.6);
+}
+.t3d-toggle-thumb {
+  position: absolute; top: 2px; left: 2px; width: 11px; height: 11px;
+  border-radius: 50%; background: rgba(160,70,70,0.7); transition: 0.2s;
+}
+.t3d-toggle input:checked ~ .t3d-toggle-thumb {
+  left: 17px; background: #e04040;
+  box-shadow: 0 0 5px rgba(220,40,40,0.7);
+}
+
+/* --- ABA OBJETOS --- */
+.t3d-obj-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+}
+.t3d-obj-btn {
+  height: 48px; border-radius: 8px;
+  border: 1px solid rgba(60,15,15,0.5);
+  background: rgba(14,5,5,0.75); cursor: pointer; transition: 0.14s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; font-size: 7px; font-weight: 700; letter-spacing: 0.2px;
+  font-family: 'JetBrains Mono', monospace; color: rgba(150,80,80,0.7);
+  text-transform: uppercase;
+}
+.t3d-obj-btn:hover { border-color: rgba(200,55,55,0.45); color: #ffaaaa; transform: translateY(-1px); box-shadow: 0 3px 8px rgba(140,8,8,0.25); }
+.t3d-obj-btn.active { border-color: rgba(230,70,70,0.6); background: rgba(150,18,18,0.28); color: #ffcccc; }
+.t3d-obj-icon { font-size: 15px; line-height: 1; }
+.t3d-obj-hint {
+  font-size: 8px; color: rgba(140,70,70,0.6); letter-spacing: 0.3px;
+  padding: 2px 4px; background: rgba(0,0,0,0.2); border-radius: 4px;
+  text-align: center; line-height: 1.5;
+}
+
+/* Cursor brush no terreno */
+#t3d-brush-cursor {
+  pointer-events: none;
+  position: absolute;
+  display: none;
+}
+
+#btn-terrain3d { display:none; }
 .modo3d-on #btn-terrain3d { display:flex; }
 
 /* ---- PARTÍCULAS DE NÉVOA ---- */
@@ -1452,15 +1693,6 @@ input[type="color"] {
 
       <div class="ob-asset-sep"></div>
 
-      <!-- Search -->
-      <button class="ob-asset-btn" title="Buscar monstros" onclick="openModal('modal-monsters')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-          <circle cx="7" cy="7" r="4.5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/>
-        </svg>
-      </button>
-
-      <div class="ob-asset-sep"></div>
-
       <!-- Token thumbnails from active tokens -->
       <div id="asset-token-thumbs" style="display:flex;gap:4px;align-items:center;"></div>
 
@@ -1533,10 +1765,7 @@ input[type="color"] {
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
         Token de Jogador / NPC
       </button>
-      <button class="ob-btn" onclick="openModal('modal-monsters')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="4"/><path d="M4 11l-2 3h12l-2-3"/><circle cx="6" cy="7" r="0.8" fill="currentColor"/><circle cx="10" cy="7" r="0.8" fill="currentColor"/></svg>
-        Monstros do OP
-      </button>
+
       <div class="ob-section" style="margin-top:4px;">Na Mesa</div>
       <div id="token-list-panel"></div>
     </div>
@@ -1628,6 +1857,10 @@ input[type="color"] {
         <button class="ob-btn" style="flex:1;font-size:10px;" onclick="setBoardSize(50,50)">50×50</button>
         <button class="ob-btn" style="flex:1;font-size:10px;" onclick="setBoardSize(100,100)">100×100</button>
       </div>
+      <button class="ob-btn" onclick="exportarMapa()" style="margin-top:6px;border-color:rgba(var(--glow),0.4);color:var(--accent-l);">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:13px;height:13px;"><path d="M3 10V13h10V10M8 2v8M5 5l3-3 3 3"/></svg>
+        Exportar Mapa (Print)
+      </button>
 
       <div class="ob-section" style="margin-top:4px;">Névoa de Guerra</div>
       <div style="display:flex;gap:6px;">
@@ -1755,43 +1988,6 @@ input[type="color"] {
 </div>
 
 <!-- Modal: Lista de Monstros OP -->
-<div class="ob-modal-bg" id="modal-monsters">
-  <div class="ob-modal" style="max-width:560px;">
-    <div class="ob-modal-title">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px;"><circle cx="8" cy="7" r="4"/><path d="M4 11l-2 3h12l-2-3"/></svg>
-      Monstros do Ordem Paranormal
-    </div>
-    <input class="ob-input" id="monster-search" type="text" placeholder="Buscar monstro..." oninput="filtrarMonstros(this.value)">
-    <div class="ob-monster-grid" id="monster-grid"></div>
-    <div class="ob-modal-actions">
-      <button class="ob-btn" onclick="closeModal('modal-monsters')">Fechar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Detalhe do Monstro -->
-<div class="ob-modal-bg" id="modal-monster-detail">
-  <div class="ob-modal">
-    <div style="font-size:2.5rem;text-align:center;margin-bottom:8px;" id="md-icon">👾</div>
-    <div class="ob-modal-title" id="md-nome" style="justify-content:center;text-align:center;">—</div>
-    <div id="md-stats"></div>
-    <div class="ob-row" style="margin-top:12px;gap:10px;">
-      <div style="flex:1;">
-        <div class="ob-label">PV para esta instância</div>
-        <input class="ob-input" id="md-pv-custom" type="number" style="margin-bottom:0;">
-      </div>
-      <div style="flex:1;">
-        <div class="ob-label">Quantidade</div>
-        <input class="ob-input" id="md-qty" type="number" value="1" min="1" max="10" style="margin-bottom:0;">
-      </div>
-    </div>
-    <div class="ob-modal-actions">
-      <button class="ob-btn" onclick="closeModal('modal-monster-detail');openModal('modal-monsters')">← Voltar</button>
-      <button class="ob-btn primary" onclick="adicionarMonstro()">Colocar na Mesa</button>
-    </div>
-  </div>
-</div>
-
 <!-- Modal: Editar Token -->
 <div class="ob-modal-bg" id="modal-edit-token">
   <div class="ob-modal">
@@ -1822,6 +2018,37 @@ input[type="color"] {
         <input type="range" id="et-escalah3d" min="0.3" max="3" step="0.05" value="1" style="flex:1;" oninput="document.getElementById('et-escalah3d-label').textContent=parseFloat(this.value).toFixed(2)+'×'">
         <span id="et-escalah3d-label" style="font-size:12px;color:var(--accent-l);font-family:'JetBrains Mono',monospace;width:40px;text-align:right;">1.00×</span>
       </div>
+    </div>
+    <!-- Forma 2D: Largura × Altura em células -->
+    <div class="ob-label" style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="width:11px;height:11px;opacity:0.6"><rect x="2" y="2" width="12" height="12" rx="2"/></svg>
+      Forma 2D (células)
+      <span id="et-forma-preview" style="font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--text3);margin-left:auto;">1.0 × 1.0 cel</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div>
+        <div style="font-size:9px;color:#82b8ff;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;margin-bottom:4px;">← LARGURA →</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="range" id="et-tw" min="0.1" max="8" step="0.1" value="1" style="flex:1;"
+            oninput="document.getElementById('et-tw-val').textContent=parseFloat(this.value).toFixed(1);_atualizarFormaPreview()">
+          <span id="et-tw-val" style="font-size:11px;color:var(--accent-l);font-family:'JetBrains Mono',monospace;width:26px;text-align:right;">1.0</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:9px;color:#00cba6;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px;margin-bottom:4px;">↕ ALTURA</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="range" id="et-th" min="0.1" max="8" step="0.1" value="1" style="flex:1;"
+            oninput="document.getElementById('et-th-val').textContent=parseFloat(this.value).toFixed(1);_atualizarFormaPreview()">
+          <span id="et-th-val" style="font-size:11px;color:var(--accent-l);font-family:'JetBrains Mono',monospace;width:26px;text-align:right;">1.0</span>
+        </div>
+      </div>
+    </div>
+    <!-- Presets de forma 2D -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:14px;">
+      <button class="ob-btn" style="font-size:9px;padding:4px;" onclick="_preset2D(1,1)" title="Quadrado 1×1">◼ 1×1</button>
+      <button class="ob-btn" style="font-size:9px;padding:4px;" onclick="_preset2D(2,1)" title="Retângulo 2×1">▬ 2×1</button>
+      <button class="ob-btn" style="font-size:9px;padding:4px;" onclick="_preset2D(0.2,1)" title="Parede fina">▏Parede</button>
+      <button class="ob-btn" style="font-size:9px;padding:4px;" onclick="_preset2D(2,2)" title="Grande 2×2">⬛ 2×2</button>
     </div>
     <div class="ob-label">Condições</div>
     <div class="ob-cond-grid" id="et-cond-grid">
@@ -1974,6 +2201,8 @@ let measureStart = null;
 
 let draggingToken = null;
 let dragOffX = 0, dragOffY = 0;
+let dragOrigX = 0, dragOrigY = 0; // posição original antes do drag (para reverter em colisão)
+let dragVisX = 0, dragVisY = 0;   // posição visual em pixels do mundo durante o drag
 let selectedTokenId = null;
 let hoveredTokenId  = null;
 
@@ -1981,24 +2210,7 @@ let fogCells = {};
 let drawings = [];
 let rtdbListeners = [];
 
-// ===== MONSTROS OP =====
-const MONSTROS_OP = [
-  { id:"zumbi_sangue",  nome:"Zumbi de Sangue",   tipo:"Morto-Vivo",      nd:"1", pv:30,  def:10, ataque:"Mordida +4 (1d6+2)",       mov:6,  res:"Sangue",           img:"🧟", cor:"#8B0000", desc:"Humano reanimado pelo elemento Sangue. Move-se lentamente mas é incansável." },
-  { id:"caotico",       nome:"Caótico",            tipo:"Aberração",       nd:"2", pv:45,  def:12, ataque:"Garras +5 (1d8+3)",         mov:9,  res:"Energia",          img:"👁️", cor:"#9b30d9", desc:"Ser do Outro Lado que assumiu forma caótica. Ignora armadura convencional." },
-  { id:"espectro",      nome:"Espectro",           tipo:"Morto-Vivo",      nd:"2", pv:25,  def:14, ataque:"Toque Espectral +6 (1d6)",  mov:12, res:"Morte",            img:"👻", cor:"#888888", desc:"Alma presa entre os mundos. Atravessa paredes e é imune a dano físico." },
-  { id:"cuca",          nome:"Cuca",               tipo:"Entidade",        nd:"4", pv:80,  def:15, ataque:"Pesadelo +8 (2d10 Medo)",   mov:9,  res:"Medo, Conhec.",    img:"🐊", cor:"#1a4a1a", desc:"Entidade do folclore potencializada pelo Outro Lado. Ataca a mente." },
-  { id:"saci",          nome:"Saci Paranormal",    tipo:"Entidade",        nd:"3", pv:55,  def:16, ataque:"Redemoinho +7 (1d8+4)",     mov:15, res:"Energia, Medo",    img:"🌪️", cor:"#c8960c", desc:"Versão corrompida do folclore. Incrivelmente ágil, difícil de acertar." },
-  { id:"boto",          nome:"Boto Cor-de-Rosa",   tipo:"Entidade",        nd:"3", pv:60,  def:13, ataque:"Encanto +9 (Controle)",     mov:12, res:"Medo, Sangue",     img:"🐬", cor:"#FF69B4", desc:"Entidade sedutora das águas. Assume forma humana e controla mentes." },
-  { id:"lobisomem",     nome:"Lobisomem",          tipo:"Metamorfo",       nd:"3", pv:70,  def:14, ataque:"Garras +8 (2d6+5)",         mov:12, res:"Sangue, Energia",  img:"🐺", cor:"#5a3a1a", desc:"Amaldiçoado pelo Sangue. Regenera PV no início do turno." },
-  { id:"vampiro",       nome:"Vampiro",            tipo:"Morto-Vivo",      nd:"5", pv:100, def:16, ataque:"Mordida +10 (2d8+5, drain)", mov:9,  res:"Morte, Sangue",   img:"🧛", cor:"#4a0010", desc:"Morto-vivo poderoso que drena força vital. Vulnerável à luz solar." },
-  { id:"poltergeist",   nome:"Poltergeist",        tipo:"Espírito",        nd:"2", pv:20,  def:16, ataque:"Telequinese +5 (1d6+2)",    mov:9,  res:"Morte, Energia",   img:"💫", cor:"#4a4a8a", desc:"Espírito invisível que arremessa objetos telecineticamente." },
-  { id:"demonio",       nome:"Demônio Menor",      tipo:"Demônio",         nd:"3", pv:50,  def:15, ataque:"Chamas +7 (2d6 fogo)",      mov:9,  res:"Energia, Sangue",  img:"😈", cor:"#cc1111", desc:"Demônio do Outro Lado. Imune ao fogo e resistente a danos físicos." },
-  { id:"cultista",      nome:"Cultista Paranormal", tipo:"Humanoide",      nd:"1", pv:25,  def:12, ataque:"Ritual +4 (1d8 Conhec.)",   mov:9,  res:"Conhecimento",     img:"🕯️", cor:"#2a2a1a", desc:"Humano corrompido pelo Outro Lado. Capaz de rituais básicos." },
-  { id:"fera_sangue",   nome:"Fera de Sangue",     tipo:"Aberração",       nd:"4", pv:90,  def:13, ataque:"Massacre +9 (3d6+6)",       mov:12, res:"Sangue",           img:"🩸", cor:"#8B0000", desc:"Criatura de Sangue paranormal. Fica mais forte ao drenar vítimas." },
-  { id:"sombra",        nome:"Sombra Rastejante",  tipo:"Sombra",          nd:"2", pv:35,  def:15, ataque:"Toque +6 (1d6 + medo)",     mov:9,  res:"Morte, Medo",      img:"🌑", cor:"#111111", desc:"Sombra viva na escuridão. Funde-se com sombras e ataca de surpresa." },
-  { id:"golem_ossos",   nome:"Golem de Ossos",     tipo:"Construto",       nd:"3", pv:65,  def:16, ataque:"Golpe +7 (2d8+4)",          mov:6,  res:"Morte, Sangue",    img:"💀", cor:"#d4c5a9", desc:"Construto animado por magia negra. Imune a venenos e ataques mentais." },
-  { id:"criatura_lago", nome:"Criatura do Lago",   tipo:"Aberração Aquát.", nd:"4",pv:85,  def:14, ataque:"Tentáculos +8 (2d6+5)",     mov:12, res:"Energia, Morte",   img:"🦑", cor:"#1a5a5a", desc:"Entidade aquática de origem desconhecida. Arrasta vítimas para profundezas." },
-];
+
 
 const MAPAS_PRESET = [
   { nome:"Floresta Noturna",    emoji:"🌲", cor:"#0a1a0a", url:"https://i.imgur.com/JkqYWjP.jpg" },
@@ -2028,7 +2240,6 @@ window.addEventListener('DOMContentLoaded', () => {
   setupCanvasEvents();
   aplicarTemaLocal();
   renderMapPresets();
-  renderMonsters(MONSTROS_OP);
 
   onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = 'index.html'; return; }
@@ -2141,25 +2352,40 @@ function resizeCanvas() {
   renderAll();
 }
 
+function _getMaxZoom() {
+  const mapW = boardCols * cellSize;
+  const mapH = boardRows * cellSize;
+  const maxByW = 16000 / mapW;
+  const maxByH = 16000 / mapH;
+  return Math.min(20, maxByW, maxByH);
+}
+
+function _clampZoom(z) {
+  return Math.max(0.2, Math.min(_getMaxZoom(), z));
+}
+
 function renderAll() {
   if (!ctx) return;
   const W = canvas.width, H = canvas.height;
+  camZoom = _clampZoom(camZoom);
   ctx.clearRect(0, 0, W, H);
   ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, W, H);
+  ctx.clip();
   ctx.translate(camX, camY);
   ctx.scale(camZoom, camZoom);
   const mapW = boardCols * cellSize;
   const mapH = boardRows * cellSize;
   if (animMapType) {
-    // Just draw grid/fog/tokens on transparent canvas; video is behind
     ctx.fillStyle = 'transparent';
   } else if (mapImg) {
+    // Estica a imagem para cobrir todo o board (mapW × mapH)
     ctx.drawImage(mapImg, 0, 0, mapW, mapH);
   } else {
     ctx.fillStyle = '#0d0d0e';
     ctx.fillRect(0, 0, mapW, mapH);
   }
-  // Borda do mapa
   ctx.strokeStyle = 'rgba(255,255,255,0.18)';
   ctx.lineWidth = 2;
   ctx.strokeRect(0, 0, mapW, mapH);
@@ -2239,14 +2465,63 @@ function getCachedImage(src) {
   _imgCache[src] = img; return null;
 }
 
+// ── Helpers para forma 2D do token ──
+function _atualizarFormaPreview() {
+  const tw = parseFloat(document.getElementById('et-tw')?.value || 1).toFixed(1);
+  const th = parseFloat(document.getElementById('et-th')?.value || 1).toFixed(1);
+  const el = document.getElementById('et-forma-preview');
+  if (el) el.textContent = `${tw} × ${th} cel`;
+}
+
+function _preset2D(w, h) {
+  const elW = document.getElementById('et-tw');
+  const elH = document.getElementById('et-th');
+  if (elW) { elW.value = w; document.getElementById('et-tw-val').textContent = parseFloat(w).toFixed(1); }
+  if (elH) { elH.value = h; document.getElementById('et-th-val').textContent = parseFloat(h).toFixed(1); }
+  _atualizarFormaPreview();
+}
+
+// ── Verifica colisão: retorna true se a célula (gx,gy) está ocupada por outro token ──
+function isCelulaOcupada(gx, gy, excluirId) {
+  for (const [id, t] of Object.entries(tokens)) {
+    if (id === excluirId) continue;
+    const tx = t.x || 0, ty = t.y || 0;
+    const tw = t.tw || 1, th = t.th || 1;
+    // Bounding box do token em células (snap de grade)
+    const x0 = tx, x1 = tx + Math.ceil(tw) - 1;
+    const y0 = ty, y1 = ty + Math.ceil(th) - 1;
+    if (gx >= x0 && gx <= x1 && gy >= y0 && gy <= y1) return true;
+  }
+  return false;
+}
+
 function renderTokens() {
   Object.entries(tokens).forEach(([id, t]) => {
-    const tx = t.x||0, ty = t.y||0;
-    const cx  = tx*cellSize + cellSize/2;
-    const cy  = ty*cellSize + cellSize/2;
-    const half = cellSize * 0.46; // metade do tamanho do token
+    // Dimensões 2D: tw e th em células (default 1×1)
+    const tw = Math.max(0.1, t.tw || 1);
+    const th = Math.max(0.1, t.th || 1);
+    const pixW = tw * cellSize;
+    const pixH = th * cellSize;
+
+    // Durante o drag: usa posição visual livre em pixels
+    // Em repouso: usa px/py se disponível, senão x/y em células
+    const isDragging = id === draggingToken;
+    let baseX, baseY;
+    if (isDragging && t._dragVisX !== undefined) {
+      baseX = t._dragVisX;
+      baseY = t._dragVisY;
+    } else {
+      const bp = tokenBasePx(t);
+      baseX = bp.bx;
+      baseY = bp.by;
+    }
+
+    const cx   = baseX + pixW / 2;
+    const cy   = baseY + pixH / 2;
+    const halfX = pixW * 0.47;
+    const halfY = pixH * 0.47;
+    const isRect = (tw !== th);
     const isSelected = id === selectedTokenId;
-    const isDragging  = id === draggingToken;
     const cor = t.cor || '#4a8fe8';
 
     ctx.save();
@@ -2255,16 +2530,13 @@ function renderTokens() {
     const cachedImg = imgSrc ? getCachedImage(imgSrc) : null;
 
     if (cachedImg) {
-      const iw = cachedImg.naturalWidth  || cachedImg.width  || 1;
-      const ih = cachedImg.naturalHeight || cachedImg.height || 1;
       const escala = t.escala || 1;
-      const halfScaled = half * escala;
-      // contain: imagem inteira visível, proporcional, solta no mapa
-      const scale = Math.min((halfScaled * 2) / iw, (halfScaled * 2) / ih);
-      const dw = iw * scale, dh = ih * scale;
+      // Preenche o retângulo do token com a imagem (cover mode)
+      const dw = pixW * escala;
+      const dh = pixH * escala;
       const dx = cx - dw / 2, dy = cy - dh / 2;
 
-      // Seleção / drag — glow sutil SEM borda visível
+      // Seleção / drag — glow sutil
       if (isSelected || isDragging) {
         ctx.save();
         ctx.shadowColor = isDragging ? 'rgba(255,255,255,0.8)' : cor;
@@ -2272,27 +2544,53 @@ function renderTokens() {
         ctx.drawImage(cachedImg, dx, dy, dw, dh);
         ctx.restore();
       }
-
-      // Desenha a imagem solta, sem borda nenhuma
       ctx.drawImage(cachedImg, dx, dy, dw, dh);
 
-    } else {
-      // Fallback sem imagem: círculo simples com emoji
-      const r = half;
+      // Borda de seleção retangular
       if (isSelected || isDragging) {
-        ctx.beginPath(); ctx.arc(cx, cy, r + 5, 0, Math.PI * 2);
+        ctx.strokeStyle = isDragging ? '#fff' : cor;
+        ctx.lineWidth = 2; ctx.shadowColor = cor; ctx.shadowBlur = 12;
+        ctx.strokeRect(dx + 1, dy + 1, dw - 2, dh - 2);
+        ctx.shadowBlur = 0;
+      }
+
+    } else {
+      // Fallback sem imagem
+      // Para retângulos: rect com canto arredondado. Para quadrados: círculo.
+      if (isSelected || isDragging) {
         ctx.strokeStyle = isDragging ? '#fff' : cor;
         ctx.lineWidth = 2.5; ctx.shadowColor = cor; ctx.shadowBlur = 20;
+        if (isRect) {
+          ctx.beginPath(); ctx.roundRect(cx - halfX - 5, cy - halfY - 5, pixW * 0.94 + 10, pixH * 0.94 + 10, 6);
+        } else {
+          const r = halfX;
+          ctx.beginPath(); ctx.arc(cx, cy, r + 5, 0, Math.PI * 2);
+        }
         ctx.stroke(); ctx.shadowBlur = 0;
       }
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.strokeStyle = cor + 'aa'; ctx.lineWidth = 1.5;
-      ctx.shadowColor = cor; ctx.shadowBlur = 6; ctx.stroke(); ctx.shadowBlur = 0;
-      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-      grad.addColorStop(0, cor + '44'); grad.addColorStop(1, '#0a0a0c');
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.fillStyle = grad; ctx.fill();
-      ctx.font = `${r * 0.9}px serif`;
+
+      if (isRect) {
+        // Retângulo preenchido com gradiente
+        const grad = ctx.createLinearGradient(cx - halfX, cy - halfY, cx + halfX, cy + halfY);
+        grad.addColorStop(0, cor + '55'); grad.addColorStop(1, '#0a0a0c');
+        ctx.beginPath(); ctx.roundRect(cx - halfX, cy - halfY, pixW * 0.94, pixH * 0.94, 5);
+        ctx.fillStyle = grad; ctx.fill();
+        ctx.strokeStyle = cor + 'aa'; ctx.lineWidth = 1.5;
+        ctx.shadowColor = cor; ctx.shadowBlur = 6; ctx.stroke(); ctx.shadowBlur = 0;
+      } else {
+        const r = halfX;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = cor + 'aa'; ctx.lineWidth = 1.5;
+        ctx.shadowColor = cor; ctx.shadowBlur = 6; ctx.stroke(); ctx.shadowBlur = 0;
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        grad.addColorStop(0, cor + '44'); grad.addColorStop(1, '#0a0a0c');
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad; ctx.fill();
+      }
+
+      // Emoji/ícone centralizado
+      const fontSize = Math.min(halfX, halfY) * 0.9;
+      ctx.font = `${fontSize}px serif`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillStyle = '#fff'; ctx.fillText(t.icon || '?', cx, cy + 2);
     }
@@ -2305,7 +2603,7 @@ function renderTokens() {
       const badgeR = Math.max(6, cellSize * 0.1);
       condIcons.slice(0, 5).forEach((icon, i) => {
         const bx = cx - (condIcons.length - 1) * badgeR * 1.1 / 2 + i * badgeR * 1.1 * 2;
-        const by = cy + half + badgeR + 2;
+        const by = cy + halfY + badgeR + 2;
         ctx.fillStyle = 'rgba(10,10,12,0.8)';
         ctx.beginPath(); ctx.arc(bx, by, badgeR, 0, Math.PI * 2); ctx.fill();
         ctx.font = `${badgeR * 1.3}px serif`;
@@ -2354,8 +2652,10 @@ function setupCanvasEvents() {
       if (hit) {
         if (isMestre || hit.owner === currentUser?.uid) {
           draggingToken = hit.id;
-          dragOffX = wx-((hit.x||0)*cellSize+cellSize/2);
-          dragOffY = wy-((hit.y||0)*cellSize+cellSize/2);
+          const bp = tokenBasePx(hit);
+          dragOffX = wx - bp.bx;
+          dragOffY = wy - bp.by;
+          dragOrigX = bp.bx; dragOrigY = bp.by;
           selectedTokenId = hit.id; e.preventDefault(); renderAll();
         }
         mostrarTooltip(hit, e.clientX, e.clientY);
@@ -2386,9 +2686,14 @@ function setupCanvasEvents() {
   wrap.addEventListener('mousemove', e => {
     const wx = (e.offsetX-camX)/camZoom, wy = (e.offsetY-camY)/camZoom;
     if (draggingToken) {
-      const newX = Math.max(0,Math.floor((wx-dragOffX)/cellSize));
-      const newY = Math.max(0,Math.floor((wy-dragOffY)/cellSize));
-      if (tokens[draggingToken]) { tokens[draggingToken].x = newX; tokens[draggingToken].y = newY; renderAll(); }
+      // Movimento livre em pixels — sem snap durante o arraste
+      dragVisX = wx - dragOffX;
+      dragVisY = wy - dragOffY;
+      if (tokens[draggingToken]) {
+        tokens[draggingToken]._dragVisX = dragVisX;
+        tokens[draggingToken]._dragVisY = dragVisY;
+        renderAll();
+      }
       return;
     }
     if (isPanning) { camX = panCamX+(e.clientX-panStartX); camY = panCamY+(e.clientY-panStartY); renderAll(); return; }
@@ -2422,7 +2727,15 @@ function setupCanvasEvents() {
   wrap.addEventListener('mouseup', e => {
     if (draggingToken) {
       const wx=(e.offsetX-camX)/camZoom, wy=(e.offsetY-camY)/camZoom;
-      moverToken(draggingToken, Math.max(0,Math.floor((wx-dragOffX)/cellSize)), Math.max(0,Math.floor((wy-dragOffY)/cellSize)));
+      // Posição final em pixels do mundo — sem snap nenhum
+      const finalPx = Math.max(0, wx - dragOffX);
+      const finalPy = Math.max(0, wy - dragOffY);
+      // Limpar posição visual temporária
+      if (tokens[draggingToken]) {
+        delete tokens[draggingToken]._dragVisX;
+        delete tokens[draggingToken]._dragVisY;
+      }
+      moverTokenPx(draggingToken, finalPx, finalPy);
       draggingToken = null;
     }
     if (isPanning) isPanning = false;
@@ -2449,10 +2762,12 @@ function setupCanvasEvents() {
 
   wrap.addEventListener('wheel', e => {
     e.preventDefault();
-    const factor = e.deltaY>0 ? 0.9 : 1.1;
-    camZoom = Math.max(0.2, Math.min(4, camZoom*factor));
-    camX = e.offsetX-(e.offsetX-camX)*factor;
-    camY = e.offsetY-(e.offsetY-camY)*factor;
+    const rawFactor = e.deltaY>0 ? 0.9 : 1.1;
+    const prevZoom = camZoom;
+    camZoom = _clampZoom(camZoom*rawFactor);
+    const actualFactor = camZoom / prevZoom;
+    camX = e.offsetX-(e.offsetX-camX)*actualFactor;
+    camY = e.offsetY-(e.offsetY-camY)*actualFactor;
     renderAll();
   }, {passive:false});
 
@@ -2466,7 +2781,7 @@ function setupCanvasEvents() {
       const wx=(e.touches[0].clientX-rect.left-camX)/camZoom, wy=(e.touches[0].clientY-rect.top-camY)/camZoom;
       const hit=getTokenAtWorld(wx,wy);
       if (hit&&(isMestre||hit.owner===currentUser?.uid)) {
-        draggingToken=hit.id; dragOffX=wx-((hit.x||0)*cellSize+cellSize/2); dragOffY=wy-((hit.y||0)*cellSize+cellSize/2); selectedTokenId=hit.id;
+        const _bp=tokenBasePx(hit); draggingToken=hit.id; dragOffX=wx-_bp.bx; dragOffY=wy-_bp.by; dragOrigX=_bp.bx; dragOrigY=_bp.by; selectedTokenId=hit.id;
       }
     } else if (e.touches.length===2) {
       draggingToken=null;
@@ -2480,15 +2795,23 @@ function setupCanvasEvents() {
     if (e.touches.length===1) {
       if (draggingToken) {
         const wx=(e.touches[0].clientX-rect.left-camX)/camZoom, wy=(e.touches[0].clientY-rect.top-camY)/camZoom;
-        const newX=Math.max(0,Math.floor((wx-dragOffX)/cellSize)), newY=Math.max(0,Math.floor((wy-dragOffY)/cellSize));
-        if (tokens[draggingToken]) { tokens[draggingToken].x=newX; tokens[draggingToken].y=newY; renderAll(); }
+        dragVisX = wx - dragOffX;
+        dragVisY = wy - dragOffY;
+        if (tokens[draggingToken]) {
+          tokens[draggingToken]._dragVisX = dragVisX;
+          tokens[draggingToken]._dragVisY = dragVisY;
+          renderAll();
+        }
       } else { camX=touchStartCamX+(e.touches[0].clientX-touchStartX); camY=touchStartCamY+(e.touches[0].clientY-touchStartY); renderAll(); }
     } else if (e.touches.length===2) {
       const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
       if (lastTouchDist) {
         const factor=dist/lastTouchDist;
         const mx=(e.touches[0].clientX+e.touches[1].clientX)/2-rect.left, my=(e.touches[0].clientY+e.touches[1].clientY)/2-rect.top;
-        camZoom=Math.max(0.2,Math.min(4,camZoom*factor)); camX=mx-(mx-camX)*factor; camY=my-(my-camY)*factor; renderAll();
+        const prevZoom2 = camZoom;
+        camZoom=_clampZoom(camZoom*factor);
+        const actualFactor2 = camZoom / prevZoom2;
+        camX=mx-(mx-camX)*actualFactor2; camY=my-(my-camY)*actualFactor2; renderAll();
       }
       lastTouchDist=dist;
     }
@@ -2498,7 +2821,10 @@ function setupCanvasEvents() {
     if (draggingToken) {
       const rect=wrap.getBoundingClientRect(), t=e.changedTouches[0];
       const wx=(t.clientX-rect.left-camX)/camZoom, wy=(t.clientY-rect.top-camY)/camZoom;
-      moverToken(draggingToken, Math.max(0,Math.floor((wx-dragOffX)/cellSize)), Math.max(0,Math.floor((wy-dragOffY)/cellSize)));
+      const finalPx = Math.max(0, wx - dragOffX);
+      const finalPy = Math.max(0, wy - dragOffY);
+      if (tokens[draggingToken]) { delete tokens[draggingToken]._dragVisX; delete tokens[draggingToken]._dragVisY; }
+      moverTokenPx(draggingToken, finalPx, finalPy);
       draggingToken=null;
     }
     lastTouchDist=0;
@@ -2535,7 +2861,7 @@ window.setTool = function(tool) {
 
 window.zoomIn  = () => {
   if (modo3dAtivo) { three.camDist = Math.max(3, three.camDist * 0.82); }
-  else { camZoom = Math.min(4, camZoom * 1.2); renderAll(); }
+  else { camZoom = _clampZoom(camZoom * 1.2); renderAll(); }
 };
 window.zoomOut = () => {
   if (modo3dAtivo) { three.camDist = Math.min(50, three.camDist * 1.22); }
@@ -2552,11 +2878,12 @@ function getTokenAtWorld(wx, wy) {
   const entries = Object.entries(tokens);
   for (let i=entries.length-1; i>=0; i--) {
     const [id,t] = entries[i];
-    const escala = t.escala || 1;
-    const half = cellSize * 0.46 * escala;
-    const cx = (t.x||0)*cellSize + cellSize/2;
-    const cy = (t.y||0)*cellSize + cellSize/2;
-    if (wx >= cx - half && wx <= cx + half && wy >= cy - half && wy <= cy + half) return {...t, id};
+    const tw = Math.max(0.1, t.tw || 1);
+    const th = Math.max(0.1, t.th || 1);
+    const pixW = tw * cellSize;
+    const pixH = th * cellSize;
+    const bp = tokenBasePx(t);
+    if (wx >= bp.bx && wx <= bp.bx + pixW && wy >= bp.by && wy <= bp.by + pixH) return {...t, id};
   }
   return null;
 }
@@ -2577,6 +2904,22 @@ function esconderTooltip() { document.getElementById('tt-token-tooltip').classLi
 async function moverToken(id, x, y) {
   if (!isMestre && tokens[id]?.owner !== currentUser?.uid) return;
   await update(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`), {x,y});
+}
+
+// Salva posição em pixels do mundo (movimento livre, sem snap de grade)
+async function moverTokenPx(id, px, py) {
+  if (!isMestre && tokens[id]?.owner !== currentUser?.uid) return;
+  if (tokens[id]) { tokens[id].px = px; tokens[id].py = py; }
+  renderAll();
+  await update(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`), {px, py});
+}
+
+// Retorna a posição base em pixels do mundo para um token (px/py têm prioridade sobre x/y em células)
+function tokenBasePx(t) {
+  if (t.px !== undefined && t.py !== undefined) {
+    return { bx: t.px, by: t.py };
+  }
+  return { bx: (t.x||0) * cellSize, by: (t.y||0) * cellSize };
 }
 
 window.adicionarToken = async function() {
@@ -2888,6 +3231,14 @@ function abrirEditarToken(id) {
   document.getElementById('et-escalah3d').value=escalah3d;
   document.getElementById('et-escalah3d-label').textContent=parseFloat(escalah3d).toFixed(2)+'×';
   document.getElementById('et-escalah3d-row').style.display = modo3dAtivo ? '' : 'none';
+  // Carregar dimensões 2D (largura e altura em células)
+  const tw = t.tw || 1;
+  const th = t.th || 1;
+  document.getElementById('et-tw').value = tw;
+  document.getElementById('et-tw-val').textContent = parseFloat(tw).toFixed(1);
+  document.getElementById('et-th').value = th;
+  document.getElementById('et-th-val').textContent = parseFloat(th).toFixed(1);
+  _atualizarFormaPreview();
   // Carregar condições
   const conds = t.conditions || {};
   document.querySelectorAll('#et-cond-grid .ob-cond-btn').forEach(btn => {
@@ -2904,12 +3255,15 @@ window.salvarToken = async function() {
   const cor=document.getElementById('et-cor').value;
   const escala=parseFloat(document.getElementById('et-escala').value)||1;
   const escalaH3d=parseFloat(document.getElementById('et-escalah3d').value)||1;
+  // Dimensões 2D (largura e altura em células)
+  const tw = Math.max(0.1, parseFloat(document.getElementById('et-tw').value)||1);
+  const th = Math.max(0.1, parseFloat(document.getElementById('et-th').value)||1);
   // Coletar condições ativas
   const conditions = {};
   document.querySelectorAll('#et-cond-grid .ob-cond-btn').forEach(btn => {
     if (btn.classList.contains('on')) conditions[btn.dataset.cond] = true;
   });
-  await update(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`),{nome,pv,pvmax,cor,escala,escalaH3d,conditions});
+  await update(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`),{nome,pv,pvmax,cor,escala,escalaH3d,tw,th,conditions});
   closeModal('modal-edit-token'); mostrarToast('✦ Token atualizado!');
 };
 
@@ -2918,53 +3272,6 @@ window.removerToken = async function(id) {
   await remove(ref(rtdb,`tabletop/${campanhaId}/tokens/${id}`));
   if (selectedTokenId===id) selectedTokenId=null;
   closeModal('modal-edit-token'); mostrarToast('Token removido.');
-};
-
-// ===== MONSTERS =====
-window.filtrarMonstros = function(q) {
-  renderMonsters(MONSTROS_OP.filter(m=>m.nome.toLowerCase().includes(q.toLowerCase())||m.tipo.toLowerCase().includes(q.toLowerCase())));
-};
-
-function renderMonsters(list) {
-  document.getElementById('monster-grid').innerHTML = list.map(m=>`
-    <div class="ob-monster-card" onclick="abrirDetalhesMonstro('${m.id}')">
-      <div class="ob-monster-card-icon">${m.img}</div>
-      <div class="ob-monster-card-name">${m.nome}</div>
-      <div class="ob-monster-card-nd">ND ${m.nd} · PV ${m.pv}</div>
-    </div>`).join('');
-}
-
-let monstroSelecionado = null;
-window.abrirDetalhesMonstro = function(id) {
-  monstroSelecionado = MONSTROS_OP.find(m=>m.id===id); if (!monstroSelecionado) return;
-  const m = monstroSelecionado;
-  document.getElementById('md-icon').textContent = m.img;
-  document.getElementById('md-nome').textContent = m.nome;
-  document.getElementById('md-pv-custom').value = m.pv;
-  document.getElementById('md-qty').value = 1;
-  document.getElementById('md-stats').innerHTML = `
-    <div class="ob-monster-stat"><span class="ob-monster-stat-key">TIPO</span><span class="ob-monster-stat-val">${m.tipo}</span></div>
-    <div class="ob-monster-stat"><span class="ob-monster-stat-key">ND</span><span class="ob-monster-stat-val">${m.nd}</span></div>
-    <div class="ob-monster-stat"><span class="ob-monster-stat-key">PV</span><span class="ob-monster-stat-val">${m.pv}</span></div>
-    <div class="ob-monster-stat"><span class="ob-monster-stat-key">DEF</span><span class="ob-monster-stat-val">${m.def}</span></div>
-    <div class="ob-monster-stat"><span class="ob-monster-stat-key">ATAQUE</span><span class="ob-monster-stat-val">${m.ataque}</span></div>
-    <div class="ob-monster-stat"><span class="ob-monster-stat-key">MOV</span><span class="ob-monster-stat-val">${m.mov}m</span></div>
-    <div class="ob-monster-stat"><span class="ob-monster-stat-key">RESIST.</span><span class="ob-monster-stat-val">${m.res}</span></div>
-    <p style="margin-top:10px;font-size:11px;color:var(--text3);line-height:1.6;font-family:'JetBrains Mono',monospace;">${m.desc}</p>`;
-  closeModal('modal-monsters'); openModal('modal-monster-detail');
-};
-
-window.adicionarMonstro = async function() {
-  if (!monstroSelecionado) return;
-  const m=monstroSelecionado;
-  const pv=parseInt(document.getElementById('md-pv-custom').value)||m.pv;
-  const qty=Math.max(1,Math.min(10,parseInt(document.getElementById('md-qty').value)||1));
-  for (let i=0; i<qty; i++) {
-    const token={nome:qty>1?`${m.nome} ${i+1}`:m.nome, tipo:m.tipo,pv,pvmax:pv,cor:m.cor,icon:m.img,img:'',res:m.res,ataque:m.ataque,
-      x:Math.floor(Math.random()*10)+i,y:Math.floor(Math.random()*6),owner:currentUser.uid,criadoEm:Date.now()};
-    await set(push(ref(rtdb,`tabletop/${campanhaId}/tokens`)), token);
-  }
-  closeModal('modal-monster-detail'); mostrarToast(`✦ ${qty>1?qty+'x ':''}${m.nome} adicionado(s)!`);
 };
 
 // ===== TOKEN LIST =====
@@ -3421,6 +3728,13 @@ function atualizarAnimMapTransform() {
   const gifEl = document.getElementById('tt-map-gif');
   const el = animMapType === 'video' ? vidEl : gifEl;
   if (!el || el.style.display === 'none') return;
+  const mapW = boardCols * cellSize;
+  const mapH = boardRows * cellSize;
+  el.style.width  = mapW + 'px';
+  el.style.height = mapH + 'px';
+  el.style.minWidth  = 'unset';
+  el.style.minHeight = 'unset';
+  el.style.objectFit = 'fill';
   el.style.transform = `translate(${camX}px,${camY}px) scale(${camZoom})`;
   el.style.transformOrigin = '0 0';
 }
@@ -3434,6 +3748,93 @@ window.limparMapa = function() {
   desativarMapaAnimado(); mapImg = null; mapImgData = null;
   salvarEstado({mapUrl:'', animMapUrl:'', animMapType:''});
   renderAll(); mostrarToast('Mapa removido.');
+};
+
+// ===== EXPORTAR MAPA (Print) =====
+window.exportarMapa = function() {
+  const mapW = boardCols * cellSize;
+  const mapH = boardRows * cellSize;
+
+  // Limita resolução máxima para não estourar memória
+  const MAX_PX = 8192;
+  const scale = Math.min(1, MAX_PX / Math.max(mapW, mapH));
+  const outW = Math.round(mapW * scale);
+  const outH = Math.round(mapH * scale);
+
+  const cv = document.createElement('canvas');
+  cv.width = outW;
+  cv.height = outH;
+  const cx = cv.getContext('2d');
+
+  cx.save();
+  cx.scale(scale, scale);
+
+  // Fundo
+  if (mapImg) {
+    cx.drawImage(mapImg, 0, 0, mapW, mapH);
+  } else {
+    cx.fillStyle = '#0d0d0e';
+    cx.fillRect(0, 0, mapW, mapH);
+  }
+
+  // Grade
+  if (gridType !== 'none') {
+    cx.strokeStyle = 'rgba(255,255,255,0.055)';
+    cx.lineWidth = 0.5;
+    if (gridType === 'square') {
+      for (let x = 0; x <= boardCols; x++) {
+        cx.beginPath(); cx.moveTo(x * cellSize, 0); cx.lineTo(x * cellSize, mapH); cx.stroke();
+      }
+      for (let y = 0; y <= boardRows; y++) {
+        cx.beginPath(); cx.moveTo(0, y * cellSize); cx.lineTo(mapW, y * cellSize); cx.stroke();
+      }
+    }
+  }
+
+  // Névoa
+  if (fogCells && Object.keys(fogCells).length > 0) {
+    cx.fillStyle = 'rgba(0,0,0,0.87)';
+    Object.keys(fogCells).forEach(key => {
+      if (!fogCells[key]) return;
+      const [px, py] = key.split(',').map(Number);
+      cx.fillRect(px * cellSize, py * cellSize, cellSize, cellSize);
+    });
+  }
+
+  // Tokens
+  Object.values(tokens).forEach(t => {
+    const sz = (t.tamanho || 1) * cellSize;
+    const tx = t.x * cellSize + cellSize / 2;
+    const ty = t.y * cellSize + cellSize / 2;
+    const r  = sz / 2;
+    cx.save();
+    cx.beginPath(); cx.arc(tx, ty, r, 0, Math.PI * 2);
+    cx.fillStyle = (t.cor || '#4a8fe8') + '33';
+    cx.fill();
+    cx.strokeStyle = t.cor || '#4a8fe8';
+    cx.lineWidth = 2;
+    cx.stroke();
+    cx.font = `${Math.max(12, r * 0.9)}px serif`;
+    cx.textAlign = 'center';
+    cx.textBaseline = 'middle';
+    cx.fillStyle = '#fff';
+    cx.fillText(t.icon || '?', tx, ty);
+    cx.restore();
+  });
+
+  // Borda do mapa
+  cx.strokeStyle = 'rgba(255,255,255,0.18)';
+  cx.lineWidth = 2;
+  cx.strokeRect(0, 0, mapW, mapH);
+
+  cx.restore();
+
+  // Download
+  const link = document.createElement('a');
+  link.download = `mapa-${boardCols}x${boardRows}.png`;
+  link.href = cv.toDataURL('image/png');
+  link.click();
+  mostrarToast('🖼 Mapa exportado!');
 };
 
 // Override setMapaURL to detect animated URLs
@@ -4208,6 +4609,9 @@ function init3D() {
   // ---- EVENTOS ----
   _setupEventos3D(canvas3d);
 
+  // ---- CENÁRIOS ----
+  _initCenarios();
+
   // ---- LOOP ----
   _loop3D();
 }
@@ -4402,15 +4806,13 @@ function _updateCamera3D() {
   const targetX = three.camPanX;
   const targetZ = three.camPanY;
 
-  // Altura do terreno no ponto de órbita, para câmera não mergulhar no chão
-  const groundY = _sampleTerrainHeight(targetX, targetZ);
-
+  // Câmera orbita livremente — sem colisão com terreno (não é um personagem)
   three.camera.position.set(
     targetX + dist * Math.sin(three.orbitAngle) * Math.cos(elevClamped),
-    groundY  + dist * Math.sin(elevClamped),
+    dist * Math.sin(elevClamped),
     targetZ  + dist * Math.cos(three.orbitAngle) * Math.cos(elevClamped)
   );
-  three.camera.lookAt(targetX, groundY, targetZ);
+  three.camera.lookAt(targetX, 0, targetZ);
 }
 
 function _loop3D() {
@@ -4503,6 +4905,9 @@ function _loop3D() {
   // Movimento por teclado (setas / WASD)
   if (three._arrowKeyLoop) three._arrowKeyLoop(delta);
 
+  // Animação de objetos colocáveis
+  if (typeof _animarObjetos3D === 'function') _animarObjetos3D(elapsed);
+
   _updateCamera3D();
   three.renderer.render(three.scene, three.camera);
 }
@@ -4572,9 +4977,22 @@ function _setupEventos3D(canvas3d) {
 
     // ── Pintura de Terreno 3D (painel ativo) ──
     if (e.button === 0 && document.getElementById('terrain3d-panel')?.classList.contains('show')) {
-      terrain3d.isPainting = true;
       const wp = _raycastFloor(e);
-      if (wp) _paintTerrain3D(wp.x, wp.z);
+      if (wp) {
+        // Modo bloco: colocar/remover bloco
+        if (_blockModeAtivo) {
+          colocarBloco3D(wp, e.ctrlKey);
+          three._blockPainting = (_blockAction === 'place' && !e.ctrlKey);
+          return;
+        }
+        // Modo objeto: colocar objeto 3D
+        if (typeof _objToolAtivo !== 'undefined' && _objToolAtivo) {
+          colocarObjeto3D(wp);
+          return;
+        }
+        terrain3d.isPainting = true;
+        _paintTerrain3D(wp.x, wp.z);
+      }
       return; // consome o evento
     }
 
@@ -4639,7 +5057,18 @@ function _setupEventos3D(canvas3d) {
     }
   });
 
-  canvas3d.addEventListener('contextmenu', e => e.preventDefault());
+  canvas3d.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    if (document.getElementById('terrain3d-panel')?.classList.contains('show')) {
+      if (_blockModeAtivo) {
+        removerBloco3DAt(e);
+        return;
+      }
+      if (typeof _objToolAtivo !== 'undefined' && _objToolAtivo) {
+        removerObjeto3DAt(e);
+      }
+    }
+  });
 
   canvas3d.addEventListener('mousemove', e => {
     const dx = e.clientX - three.lastMX;
@@ -4655,6 +5084,15 @@ function _setupEventos3D(canvas3d) {
     if (terrain3d.isPainting && document.getElementById('terrain3d-panel')?.classList.contains('show')) {
       const wp = _raycastFloor(e);
       if (wp) _paintTerrain3D(wp.x, wp.z);
+      return;
+    }
+
+    // ── Preview de bloco (modo bloco ativo) ──
+    if (_blockModeAtivo && document.getElementById('terrain3d-panel')?.classList.contains('show')) {
+      const wp = _raycastFloor(e);
+      _updateBlockPreview(wp || null);
+      // Se botão esquerdo pressionado e modo place, coloca continuamente
+      if (three._blockPainting && wp) colocarBloco3D(wp, false);
       return;
     }
 
@@ -4752,8 +5190,8 @@ function _setupEventos3D(canvas3d) {
       const fwd = new THREE.Vector3();
       three.camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
       right.crossVectors(fwd, new THREE.Vector3(0,1,0)).normalize();
-      three.camPanX -= right.x * dx * 0.025 * factor + fwd.x * dy * 0.025 * factor;
-      three.camPanY -= right.z * dx * 0.025 * factor + fwd.z * dy * 0.025 * factor;
+      three.camPanX -= right.x * dx * 0.025 * factor - fwd.x * dy * 0.025 * factor;
+      three.camPanY -= right.z * dx * 0.025 * factor - fwd.z * dy * 0.025 * factor;
     }
 
     // Hover cursor
@@ -4767,6 +5205,9 @@ function _setupEventos3D(canvas3d) {
   canvas3d.addEventListener('mouseup', async e => {
     canvas3d.style.cursor = '';
     const tool = activeTool;
+
+    // ── Finaliza pintura de bloco ──
+    three._blockPainting = false;
 
     // ── Finaliza pintura de terreno ──
     if (terrain3d.isPainting) {
@@ -4842,6 +5283,8 @@ function _setupEventos3D(canvas3d) {
   });
 
   canvas3d.addEventListener('mouseleave', () => {
+    three._blockPainting = false;
+    if (_blockModeAtivo && _blockPreviewMesh) _blockPreviewMesh.visible = false;
     if (three.draggingTokenId) {
       const id = three.draggingTokenId;
       const t = tokens[id];
@@ -4933,7 +5376,7 @@ function _setupEventos3D(canvas3d) {
       } else {
         three.orbitAngle -= dx * 0.007;
         three.camElev = Math.max(0.05, Math.min(Math.PI / 2.1,
-          three.camElev - dy * 0.004
+          three.camElev + dy * 0.004
         ));
       }
       t0x = e.touches[0].clientX; t0y = e.touches[0].clientY;
@@ -5030,6 +5473,452 @@ const terrain3d = {
   maxHeight: 6,          // altura máxima em unidades de cena
 };
 
+// ============================================================
+// SISTEMA DE BLOCOS 3D (Roblox Studio style) — v2
+// Dimensões X, Y, Z independentes · colisão real · preview
+// ============================================================
+
+const BLOCK_TYPES = {
+  stone: { color: 0x4a4035, roughness: 0.92, metalness: 0.05, name: 'PEDRA' },
+  dirt:  { color: 0x5a3a20, roughness: 0.98, metalness: 0.0,  name: 'TERRA' },
+  grass: { color: 0x1a4010, roughness: 0.95, metalness: 0.0,  name: 'GRAMA' },
+  wood:  { color: 0x6a4020, roughness: 0.9,  metalness: 0.0,  name: 'MADEIRA' },
+  brick: { color: 0x6a2010, roughness: 0.9,  metalness: 0.0,  name: 'TIJOLO' },
+  metal: { color: 0x505866, roughness: 0.4,  metalness: 0.7,  name: 'METAL' },
+  glass: { color: 0x64a0dc, roughness: 0.1,  metalness: 0.0,  transparent: true, opacity: 0.45, name: 'VIDRO' },
+  dark:  { color: 0x220818, roughness: 0.98, metalness: 0.0,  emissive: 0x110008, emissiveIntensity: 0.3, name: 'SOMBRIO' },
+};
+
+// _blocos3D: chave única por posição de célula → dados
+// Cada bloco tem dimensões físicas independentes em células:
+//   sx = largura  (eixo X, células)
+//   sy = altura   (eixo Y, em unidades de step = sc/4)
+//   sz = profund. (eixo Z, células)
+// E posição de grade:   cx (célula X início), cz (célula Z início)
+// E empilhamento (cy): número de "steps" de altura acima do chão
+const _blocos3D = {};
+let _blockType   = 'stone';
+let _blockAction = 'place';  // place | remove | paint
+let _blockModeAtivo = false;
+let _blockPreviewMesh = null;   // ghost de preview
+let _blockPreviewWire = null;
+
+// ── Pega dimensões atuais dos sliders ──
+function _getBlockDims() {
+  const sc = cellSize / 60;
+  // Largura X em células (0.1 a 10)
+  const rawX = parseFloat(document.getElementById('t3d-bdim-x')?.value ?? 1);
+  // Profundidade Z em células (0.1 a 10)
+  const rawZ = parseFloat(document.getElementById('t3d-bdim-z')?.value ?? 1);
+  // Altura Y em "steps" de 0.25 células (0.1 a 16) → stepSize = sc * 0.25
+  const rawY = parseFloat(document.getElementById('t3d-bdim-y')?.value ?? 4);
+  const stepSize = sc * 0.25;  // 1 step = 0.25 célula
+  return {
+    bx: rawX * sc,         // largura física
+    bz: rawZ * sc,         // profundidade física
+    by: rawY * stepSize,   // altura física
+    sx: rawX,              // largura em células (para chave)
+    sz: rawZ,
+    sy: rawY,
+  };
+}
+
+window.setBlockType = function(type) {
+  _blockType = type;
+  document.querySelectorAll('.t3d-block-type').forEach(el => el.classList.remove('active'));
+  document.getElementById(`t3d-btype-${type}`)?.classList.add('active');
+  // Atualiza preview se ativo
+  _updateBlockPreview(null);
+};
+
+window.setBlockAction = function(action) {
+  _blockAction = action;
+  ['place','remove','paint'].forEach(a => {
+    const btn = document.getElementById(`t3d-bact-${a}`);
+    if (!btn) return;
+    if (a === action) {
+      btn.style.borderColor = 'rgba(var(--glow),0.5)';
+      btn.style.color = 'var(--accent-l)';
+      btn.style.background = 'rgba(var(--glow),0.1)';
+    } else {
+      btn.style.borderColor = '';
+      btn.style.color = '';
+      btn.style.background = '';
+    }
+  });
+};
+
+// ── Cria material por tipo ──
+function _makeBlockMat(type, opacity) {
+  const def = BLOCK_TYPES[type] || BLOCK_TYPES.stone;
+  const p = {
+    color: def.color,
+    roughness: def.roughness ?? 0.9,
+    metalness: def.metalness ?? 0.05,
+  };
+  if (opacity !== undefined && opacity < 1) { p.transparent = true; p.opacity = opacity; }
+  else if (def.transparent) { p.transparent = true; p.opacity = def.opacity ?? 0.5; }
+  if (def.emissive) { p.emissive = def.emissive; p.emissiveIntensity = def.emissiveIntensity ?? 0.2; }
+  return new THREE.MeshStandardMaterial(p);
+}
+
+// ── Cria o Mesh de um bloco com dimensões físicas explícitas ──
+// wx, wz = posição mundo (canto inf-esq do bloco)
+// bx, bz = dimensões físicas X e Z
+// by = altura física
+// baseY = altura do terreno naquela posição
+function _criarBlocoMesh(type, wx, wz, bx, bz, by, baseY, blockKey) {
+  const geo = new THREE.BoxGeometry(bx, by, bz);
+  const mat = _makeBlockMat(type);
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+
+  // Centro do bloco: wx + bx/2, baseY + by/2, wz + bz/2
+  mesh.position.set(wx + bx * 0.5, baseY + by * 0.5, wz + bz * 0.5);
+
+  mesh.userData.isBloco3D = true;
+  mesh.userData.blockKey  = blockKey;
+
+  // Wireframe sutil de bordas
+  const wireGeo = new THREE.EdgesGeometry(geo);
+  const wireMat = new THREE.LineBasicMaterial({ color: 0x000000, opacity: 0.30, transparent: true });
+  const wire = new THREE.LineSegments(wireGeo, wireMat);
+  mesh.add(wire);
+  return mesh;
+}
+
+// ── Ghost de preview ──
+function _criarBlockPreview(bx, bz, by) {
+  _removerBlockPreview();
+  if (!three.scene) return;
+  const geo = new THREE.BoxGeometry(bx, by, bz);
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0x4a8fe8, transparent: true, opacity: 0.28, depthWrite: false
+  });
+  _blockPreviewMesh = new THREE.Mesh(geo, mat);
+  _blockPreviewMesh.renderOrder = 999;
+
+  const wireGeo = new THREE.EdgesGeometry(geo);
+  _blockPreviewWire = new THREE.LineSegments(wireGeo,
+    new THREE.LineBasicMaterial({ color: 0x82b8ff, opacity: 0.8, transparent: true, depthTest: false })
+  );
+  _blockPreviewMesh.add(_blockPreviewWire);
+  three.scene.add(_blockPreviewMesh);
+}
+
+function _removerBlockPreview() {
+  if (_blockPreviewMesh && three.scene) {
+    three.scene.remove(_blockPreviewMesh);
+    _blockPreviewMesh.geometry?.dispose();
+    _blockPreviewMesh.material?.dispose();
+    _blockPreviewMesh = null;
+    _blockPreviewWire = null;
+  }
+}
+
+function _updateBlockPreview(worldPos) {
+  if (!_blockModeAtivo || !three.scene) return;
+  const { bx, bz, by } = _getBlockDims();
+  if (!_blockPreviewMesh ||
+    Math.abs(_blockPreviewMesh.geometry.parameters.width  - bx) > 0.001 ||
+    Math.abs(_blockPreviewMesh.geometry.parameters.height - by) > 0.001 ||
+    Math.abs(_blockPreviewMesh.geometry.parameters.depth  - bz) > 0.001) {
+    _criarBlockPreview(bx, bz, by);
+  }
+  if (!worldPos) { if (_blockPreviewMesh) _blockPreviewMesh.visible = false; return; }
+  if (!_blockPreviewMesh) return;
+
+  const sc = cellSize / 60;
+  // Snap ao grid: cx = célula mais próxima, cz = célula mais próxima
+  const cx = Math.floor(worldPos.x / sc);
+  const cz = Math.floor(worldPos.z / sc);
+  const wx = cx * sc;
+  const wz = cz * sc;
+  const baseY = _sampleTerrainHeight(wx + bx * 0.5, wz + bz * 0.5);
+  _blockPreviewMesh.position.set(wx + bx * 0.5, baseY + by * 0.5, wz + bz * 0.5);
+  _blockPreviewMesh.visible = true;
+}
+
+// ── Calcula chave única de posição ──
+function _blocoKey(cx, cz, sx, sz) {
+  return `${cx},${cz}`;
+}
+
+// ── Coloca / remove / pinta bloco ──
+function colocarBloco3D(worldPos, ctrlKey) {
+  if (!three.scene) return;
+  const sc = cellSize / 60;
+  const action = ctrlKey ? 'paint' : _blockAction;
+  const { bx, bz, by, sx, sz, sy } = _getBlockDims();
+
+  // Snap ao grid de células
+  const cx = Math.floor(worldPos.x / sc);
+  const cz = Math.floor(worldPos.z / sc);
+  const wx = cx * sc;
+  const wz = cz * sc;
+  const key = _blocoKey(cx, cz, sx, sz);
+
+  if (action === 'remove') {
+    if (_blocos3D[key]) {
+      three.scene.remove(_blocos3D[key].mesh);
+      delete _blocos3D[key];
+      _debouncedSaveTerrain();
+      mostrarToast('🗑 Bloco removido');
+    }
+    return;
+  }
+
+  const baseY = _sampleTerrainHeight(wx + bx * 0.5, wz + bz * 0.5);
+
+  if (action === 'paint' && _blocos3D[key]) {
+    const b = _blocos3D[key];
+    three.scene.remove(b.mesh);
+    const newMesh = _criarBlocoMesh(_blockType, b.wx, b.wz, b.bx, b.bz, b.by, b.baseY, key);
+    three.scene.add(newMesh);
+    b.type = _blockType;
+    b.mesh = newMesh;
+    _debouncedSaveTerrain();
+    return;
+  }
+
+  // Place — substitui se já existe na mesma posição
+  if (_blocos3D[key]) { three.scene.remove(_blocos3D[key].mesh); }
+  const mesh = _criarBlocoMesh(_blockType, wx, wz, bx, bz, by, baseY, key);
+  three.scene.add(mesh);
+  _blocos3D[key] = { mesh, type: _blockType, cx, cz, wx, wz, bx, bz, by, baseY, sx, sz, sy };
+  _debouncedSaveTerrain();
+}
+
+function removerBloco3DAt(mouseEvent) {
+  if (!three.scene) return false;
+  const canvas3d = document.getElementById('canvas3d');
+  const rect = canvas3d.getBoundingClientRect();
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2(
+    ((mouseEvent.clientX - rect.left) / rect.width) * 2 - 1,
+    -((mouseEvent.clientY - rect.top) / rect.height) * 2 + 1
+  );
+  raycaster.setFromCamera(mouse, three.camera);
+  // Inclui faces filhas (wireframes) nas intersecções
+  const meshes = Object.values(_blocos3D).map(b => b.mesh);
+  const hits = raycaster.intersectObjects(meshes, false);
+  if (hits.length > 0) {
+    const target = hits[0].object;
+    const key = target.userData.blockKey;
+    if (key && _blocos3D[key]) {
+      three.scene.remove(_blocos3D[key].mesh);
+      delete _blocos3D[key];
+      _debouncedSaveTerrain();
+      return true;
+    }
+  }
+  return false;
+}
+
+window.limparBlocos3D = function() {
+  Object.values(_blocos3D).forEach(b => three.scene?.remove(b.mesh));
+  for (const k in _blocos3D) delete _blocos3D[k];
+  _removerBlockPreview();
+  _debouncedSaveTerrain();
+  mostrarToast('🗑 Blocos removidos');
+};
+
+// Atualiza label dos sliders de dimensão
+window.atualizarDimBloco = function(axis, val) {
+  const sc = cellSize / 60;
+  const v = parseFloat(val);
+  let label = '';
+  if (axis === 'y') {
+    // Y está em steps de 0.25 célula
+    const cells = (v * 0.25).toFixed(2);
+    label = cells + ' cel';
+  } else {
+    label = v.toFixed(1) + ' cel';
+  }
+  const el = document.getElementById(`t3d-bdim-${axis}-val`);
+  if (el) el.textContent = label;
+  // Reconstrói o preview com novas dimensões
+  _updateBlockPreview(null);
+};
+
+// ── Preset de formas rápidas de bloco ──
+window.presetBloco = function(sx, sy, sz) {
+  // sx = largura X em células, sy = altura Y em steps (0.25 cel cada), sz = profundidade Z em células
+  const elX = document.getElementById('t3d-bdim-x');
+  const elY = document.getElementById('t3d-bdim-y');
+  const elZ = document.getElementById('t3d-bdim-z');
+  if (elX) { elX.value = sx; atualizarDimBloco('x', sx); }
+  if (elZ) { elZ.value = sz; atualizarDimBloco('z', sz); }
+  if (elY) { elY.value = sy; atualizarDimBloco('y', sy); }
+};
+
+// ============================================================
+// SISTEMA DE CENÁRIOS
+// ============================================================
+
+const _cenarios = {};          // id → { nome, heightMap, objs, blocos, ts }
+let _cenarioAtivo = null;
+
+function _initCenarios() {
+  // Carrega cenários do localStorage (funciona offline + persiste)
+  const saved = localStorage.getItem(`t3d_cenarios_${campanhaId}`);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      Object.assign(_cenarios, parsed);
+    } catch(e) {}
+  }
+  // Garante que existe pelo menos o cenário padrão
+  if (Object.keys(_cenarios).length === 0) {
+    const id = 'cenario_' + Date.now();
+    _cenarios[id] = { nome: 'Cena 1', heightMap: null, objs: [], blocos: [], ts: Date.now() };
+    _cenarioAtivo = id;
+    _salvarCenariosLocal();
+  } else {
+    // Ativa o primeiro cenário
+    _cenarioAtivo = Object.keys(_cenarios)[0];
+  }
+  _renderCenarios();
+}
+
+function _salvarCenariosLocal() {
+  if (!campanhaId) return;
+  try {
+    // Serializa os cenários (heightMap como array normal para JSON)
+    const toSave = {};
+    for (const [id, c] of Object.entries(_cenarios)) {
+      toSave[id] = {
+        ...c,
+        heightMap: c.heightMap ? Array.from(c.heightMap) : null,
+      };
+    }
+    localStorage.setItem(`t3d_cenarios_${campanhaId}`, JSON.stringify(toSave));
+  } catch(e) { console.warn('Cenário save:', e); }
+}
+
+function _renderCenarios() {
+  const grid = document.getElementById('t3d-scenario-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  Object.entries(_cenarios).forEach(([id, c]) => {
+    const isActive = id === _cenarioAtivo;
+    const btn = document.createElement('div');
+    btn.className = 't3d-scenario-btn' + (isActive ? ' active-scenario' : '');
+    btn.innerHTML = `
+      <div class="t3d-scenario-name">${c.nome}</div>
+      <div class="t3d-scenario-meta">${isActive ? '▶ ATIVO' : '—'}</div>
+      <div class="t3d-scenario-actions">
+        <button class="t3d-scenario-action-btn save-btn" onclick="salvarCenario('${id}')" title="Salvar estado atual neste cenário">SALVAR</button>
+        <button class="t3d-scenario-action-btn" onclick="carregarCenario('${id}')" title="Carregar este cenário" ${isActive?'disabled style="opacity:0.4;"':''}>USAR</button>
+        <button class="t3d-scenario-action-btn del-btn" onclick="deletarCenario('${id}')" title="Deletar este cenário">✕</button>
+      </div>
+    `;
+    // Renomear com duplo clique
+    btn.querySelector('.t3d-scenario-name').addEventListener('dblclick', e => {
+      e.stopPropagation();
+      const novoNome = prompt('Novo nome para o cenário:', c.nome);
+      if (novoNome?.trim()) {
+        _cenarios[id].nome = novoNome.trim();
+        _salvarCenariosLocal();
+        _renderCenarios();
+      }
+    });
+    grid.appendChild(btn);
+  });
+}
+
+window.criarNovoCenario = function() {
+  const nome = prompt('Nome do novo cenário:', `Cena ${Object.keys(_cenarios).length + 1}`);
+  if (!nome?.trim()) return;
+  const id = 'cenario_' + Date.now();
+  _cenarios[id] = { nome: nome.trim(), heightMap: null, objs: [], blocos: [], ts: Date.now() };
+  _salvarCenariosLocal();
+  _renderCenarios();
+  mostrarToast(`📋 Cenário "${nome.trim()}" criado!`);
+};
+
+window.salvarCenario = function(id) {
+  if (!_cenarios[id]) return;
+  // Snapshot do terreno atual
+  _cenarios[id].heightMap = terrain3d.heightMap ? Array.from(terrain3d.heightMap) : null;
+  _cenarios[id].objs = Object.entries(_objetos3D).map(([oid, o]) => ({
+    id: oid, type: o.type, wx: o.wx, wz: o.wz, escala: o.escala
+  }));
+  _cenarios[id].blocos = Object.entries(_blocos3D).map(([bkey, b]) => ({
+    key: bkey, type: b.type, cx: b.cx, cy: b.cy, cz: b.cz, height: b.height, size: b.size
+  }));
+  _cenarios[id].ts = Date.now();
+  _salvarCenariosLocal();
+  _renderCenarios();
+  mostrarToast(`💾 Cenário "${_cenarios[id].nome}" salvo!`);
+};
+
+window.carregarCenario = function(id) {
+  if (!_cenarios[id] || !three.scene) return;
+  const c = _cenarios[id];
+  _cenarioAtivo = id;
+
+  // Limpa estado atual
+  resetarTerreno();
+  limparObjetos3D();
+  limparBlocos3D();
+
+  // Restaura heightMap
+  if (c.heightMap) {
+    _initTerrainHeightMap();
+    const arr = new Float32Array(c.heightMap);
+    if (arr.length === terrain3d.heightMap.length) {
+      terrain3d.heightMap.set(arr);
+      _applyHeightMapToFloor();
+    }
+  }
+
+  // Restaura objetos
+  if (c.objs) {
+    c.objs.forEach(o => {
+      try {
+        const terrainY = _sampleTerrainHeight(o.wx, o.wz);
+        const mesh = _criarObjMesh(o.type, o.wx, o.wz, terrainY, o.escala);
+        mesh.userData.objId = o.id;
+        three.scene.add(mesh);
+        _objetos3D[o.id] = { type: o.type, mesh, wx: o.wx, wz: o.wz, escala: o.escala };
+      } catch(e) {}
+    });
+  }
+
+  // Restaura blocos
+  if (c.blocos) {
+    c.blocos.forEach(b => {
+      try {
+        const mesh = _criarBlocoMesh(b.type, b.wx, b.wz, b.bx, b.bz, b.by, b.baseY, b.key);
+        mesh.userData.blockKey = b.key;
+        three.scene.add(mesh);
+        _blocos3D[b.key] = { mesh, type: b.type, cx: b.cx, cz: b.cz, wx: b.wx, wz: b.wz,
+          bx: b.bx, bz: b.bz, by: b.by, baseY: b.baseY };
+      } catch(e) {}
+    });
+  }
+
+  _renderCenarios();
+  mostrarToast(`📂 Cenário "${c.nome}" carregado!`);
+};
+
+window.deletarCenario = function(id) {
+  if (!_cenarios[id]) return;
+  if (Object.keys(_cenarios).length <= 1) {
+    mostrarToast('⚠ Não é possível deletar o único cenário');
+    return;
+  }
+  const nome = _cenarios[id].nome;
+  if (!confirm(`Deletar o cenário "${nome}"? Esta ação não pode ser desfeita.`)) return;
+  delete _cenarios[id];
+  if (_cenarioAtivo === id) _cenarioAtivo = Object.keys(_cenarios)[0];
+  _salvarCenariosLocal();
+  _renderCenarios();
+  mostrarToast(`🗑 Cenário "${nome}" deletado`);
+};
+
 function _initTerrainHeightMap() {
   // Cria mapa de alturas zerado para o tamanho do board atual
   const w = boardCols + 1;
@@ -5053,12 +5942,14 @@ function _applyHeightMapToFloor() {
   const maxH = parseFloat(document.getElementById('t3d-maxheight')?.value || 6);
   terrain3d.maxHeight = maxH;
 
-  // PlaneGeometry antes da rotação:
-  //   X: -boardW/2 a +boardW/2
-  //   Y: -boardH/2 a +boardH/2
-  //   Z (antes da rotação): displacement sai em Z do plano
-  // Após rotation.x = -PI/2: Y vira -Z e Z vira Y no espaço da cena
-  // Portanto o displacement deve ser aplicado em Z (pre-rotação) = Y (pós-rotação)
+  // PlaneGeometry(boardW, boardH) no espaco local XY, depois rotation.x = -PI/2:
+  //   X local: -boardW/2 a +boardW/2  →  X cena = X local + boardW/2  (offset de position.x)
+  //   Y local: -boardH/2 a +boardH/2  →  Z cena = -(Y local) + boardH/2  (negado pela rotação + offset)
+  //   Z local: displacement           →  Y cena (altura)
+  //
+  // Para sincronizar com _paintTerrain3D que recebe worldX (0..boardW) e worldZ (0..boardH):
+  //   u = (vx + halfW) / (W*sc)          => coluna do heightmap
+  //   v = (-vy + halfH) / (H*sc)         => linha do heightmap (Y local negado pela rotação)
   const W = terrain3d.mapW, H = terrain3d.mapH;
   const sc = cellSize / 60;
   const halfW = (W * sc) / 2;
@@ -5066,12 +5957,10 @@ function _applyHeightMapToFloor() {
   const mapW1 = W + 1;
 
   for (let i = 0; i < pos.count; i++) {
-    const vx = pos.getX(i); // -halfW a +halfW
-    const vy = pos.getY(i); // -halfH a +halfH (antes da rotação)
-    // Normaliza para 0-1
-    const u = (vx + halfW) / (W * sc);
-    const v = (vy + halfH) / (H * sc);
-    // Índice no heightmap
+    const vx = pos.getX(i); // -halfW a +halfW (espaco local)
+    const vy = pos.getY(i); // -halfH a +halfH (espaco local, negado pela rotacao no espaco da cena)
+    const u = (vx + halfW) / (W * sc);          // 0..1 no eixo X
+    const v = (-vy + halfH) / (H * sc);         // 0..1 no eixo Z (corrigido: Y local e negado)
     const ci = Math.min(H, Math.round(v * H)) * mapW1 + Math.min(W, Math.round(u * W));
     const h = (terrain3d.heightMap[ci] || 0) * maxH;
     pos.setZ(i, h);
@@ -5086,19 +5975,18 @@ function _applyTerrainMaxHeight() {
 
 function _paintTerrain3D(worldX, worldZ) {
   if (!terrain3d.heightMap) return;
+  if (!terrain3d.tool) return; // modo objeto ativo
   const sc = cellSize / 60;
   const W = terrain3d.mapW, H = terrain3d.mapH;
   const mapW1 = W + 1, mapH1 = H + 1;
   const radius = parseInt(document.getElementById('t3d-radius')?.value || 2);
   const strength = parseInt(document.getElementById('t3d-strength')?.value || 4) * 0.008;
+  const targetH = parseFloat(document.getElementById('t3d-target-height')?.value || 5) / (terrain3d.maxHeight || 6);
   const tool = terrain3d.tool;
 
-  // worldX e worldZ estão em unidades da cena (floor está de 0 a W*sc em X e 0 a H*sc em Z)
-  // Normaliza para 0-1
+  // Normaliza coordenadas de cena para 0-1
   const cx = worldX / (W * sc);
   const cy = worldZ / (H * sc);
-
-  // Raio em frações do heightmap
   const rx = radius / W;
   const ry = radius / H;
 
@@ -5130,11 +6018,35 @@ function _paintTerrain3D(worldX, worldZ) {
         terrain3d.heightMap[idx] = cur + (avg - cur) * strength * falloff * 4;
       } else if (tool === 'flat') {
         terrain3d.heightMap[idx] = cur + (0 - cur) * strength * falloff * 5;
+      } else if (tool === 'plateau') {
+        // Aplaina na altura alvo definida pelo slider
+        terrain3d.heightMap[idx] = cur + (targetH - cur) * strength * falloff * 3;
+      } else if (tool === 'noise') {
+        // Adiciona ruído de alta frequência
+        const n = _noise2D(cx * 40 + i * 0.3, cy * 40 + j * 0.3);
+        terrain3d.heightMap[idx] = Math.max(-0.3, Math.min(1, cur + n * strength * falloff * 0.6));
+      } else if (tool === 'erode') {
+        // Erosão: suaviza as bordas e rebaixa ligeiramente
+        let sum = 0, count = 0;
+        for (let dj = -2; dj <= 2; dj++) {
+          for (let di = -2; di <= 2; di++) {
+            const ni = Math.max(0, Math.min(W, i + di));
+            const nj = Math.max(0, Math.min(H, j + dj));
+            sum += terrain3d.heightMap[nj * mapW1 + ni] || 0;
+            count++;
+          }
+        }
+        const avg = sum / count;
+        terrain3d.heightMap[idx] = Math.max(-0.3, cur + (avg - cur) * strength * falloff * 5 - strength * falloff * 0.015);
+      } else if (tool === 'paint-height') {
+        // Pinta exatamente na altura alvo
+        terrain3d.heightMap[idx] = cur + (targetH - cur) * Math.min(1, strength * falloff * 8);
       }
     }
   }
 
   _applyHeightMapToFloor();
+  if (_biomeEnabled) _applyBiomeColors();
   _debouncedSaveTerrain();
 }
 
@@ -5166,11 +6078,10 @@ function gerarTerrenoPreset(tipo) {
         h = crater1 + crater2 * 0.7 + n1 * 0.1;
         h = Math.max(-0.25, h);
       } else if (tipo === 'ruinas') {
-        // Paredes simétricas
         const wx = Math.sin(nx * Math.PI * 2.5) > 0.7 ? 0.7 : 0;
         const wy = Math.sin(ny * Math.PI * 2.5) > 0.7 ? 0.6 : 0;
         h = Math.max(wx, wy) + _noise2D(nx * 8, ny * 8) * 0.08;
-        h *= (Math.random() > 0.15 ? 1 : 0); // buracos nas paredes
+        h *= (Math.random() > 0.15 ? 1 : 0);
       } else if (tipo === 'pantano') {
         h = _noise2D(nx * 3, ny * 3) * 0.25 - 0.15
           + Math.sin(nx * 8) * 0.05 + Math.cos(ny * 7) * 0.05;
@@ -5181,6 +6092,15 @@ function gerarTerrenoPreset(tipo) {
           + _noise2D(nx * 16, ny * 16) * 0.15
           - 0.1;
         h = Math.max(-0.3, Math.min(1, h));
+      } else if (tipo === 'abismo') {
+        h = _extendedPresets.abismo(nx, ny, r);
+        h = Math.max(-0.3, Math.min(1, h));
+      } else if (tipo === 'fortaleza') {
+        h = _extendedPresets.fortaleza(nx, ny);
+        h = Math.max(0, Math.min(1, h));
+      } else if (tipo === 'ondas') {
+        h = _extendedPresets.ondas(nx, ny);
+        h = Math.max(0, Math.min(1, h));
       }
 
       terrain3d.heightMap[idx] = h;
@@ -5188,6 +6108,7 @@ function gerarTerrenoPreset(tipo) {
   }
 
   _applyHeightMapToFloor();
+  if (_biomeEnabled) _applyBiomeColors();
   _debouncedSaveTerrain();
   mostrarToast(`🏔 Terreno "${tipo}" gerado!`);
 }
@@ -5214,12 +6135,20 @@ function _fade(t) { return t*t*t*(t*(t*6-15)+10); }
 function _lerp(t, a, b) { return a + t*(b-a); }
 function _grad(h, x, y) { const v=h&3; const u=v<2?x:y,w=v<2?y:x; return ((h&1)?-u:u)+((h&2)?-w:w); }
 
-function resetarTerreno() {
+function resetarTerreno(forceNoConfirm) {
+  const hasData = terrain3d.heightMap && terrain3d.heightMap.some(v => v !== 0);
+  const hasBlocos = Object.keys(_blocos3D).length > 0;
+  if (!forceNoConfirm && (hasData || hasBlocos)) {
+    if (!confirm('Isso irá apagar todo o terreno esculpido e os blocos colocados. Deseja continuar?')) return;
+  }
   _initTerrainHeightMap();
   terrain3d.heightMap.fill(0);
   _applyHeightMapToFloor();
+  // Limpa blocos
+  Object.values(_blocos3D).forEach(b => three.scene?.remove(b.mesh));
+  for (const k in _blocos3D) delete _blocos3D[k];
   _debouncedSaveTerrain();
-  mostrarToast('↺ Terreno nivelado');
+  mostrarToast('↺ Mapa 3D resetado');
 }
 
 function setTerrainTool(tool) {
@@ -5239,12 +6168,757 @@ function toggleTerrain3DPanel() {
   }
 }
 
-// Expõe para onclick inline no HTML (fora do module)
+// --- Sistema de abas do painel ---
+window.switchT3DTab = function(tab) {
+  ['sculpt','block','env','obj','cam'].forEach(t => {
+    document.getElementById(`t3d-tab-${t}`)?.classList.toggle('active', t === tab);
+    document.getElementById(`t3d-pane-${t}`)?.classList.toggle('active', t === tab);
+  });
+  // Ao sair da aba obj, desativa ferramenta de objeto
+  if (tab !== 'obj') _setObjToolActive(null);
+  // Ao entrar na aba block, ativa modo block; sair desativa
+  if (tab === 'block') {
+    _blockModeAtivo = true;
+    terrain3d.tool = null;
+    document.getElementById('canvas3d')?.closest('.ob-canvas-wrap')?.classList.add('block-mode');
+  } else {
+    _blockModeAtivo = false;
+    document.getElementById('canvas3d')?.closest('.ob-canvas-wrap')?.classList.remove('block-mode');
+  }
+};
+
+// --- Cursor de brush visual ---
+let _brushCursorMesh = null;
+function _initBrushCursor() {
+  if (_brushCursorMesh) { three.scene?.remove(_brushCursorMesh); _brushCursorMesh = null; }
+  if (!three.scene) return;
+  const geo = new THREE.TorusGeometry(1, 0.03, 8, 32);
+  const mat = new THREE.MeshBasicMaterial({ color: 0xff4444, transparent: true, opacity: 0.65, depthTest: false });
+  _brushCursorMesh = new THREE.Mesh(geo, mat);
+  _brushCursorMesh.rotation.x = -Math.PI / 2;
+  _brushCursorMesh.visible = false;
+  three.scene.add(_brushCursorMesh);
+}
+function _updateBrushCursor(worldPos) {
+  if (!_brushCursorMesh || !three.scene) return;
+  const radius = parseInt(document.getElementById('t3d-radius')?.value || 2);
+  const sc = cellSize / 60;
+  const r = radius * sc;
+  _brushCursorMesh.scale.setScalar(r);
+  if (worldPos) {
+    _brushCursorMesh.position.set(worldPos.x, worldPos.y + 0.05, worldPos.z);
+    _brushCursorMesh.visible = true;
+  } else {
+    _brushCursorMesh.visible = false;
+  }
+}
+
+// --- Sky presets ---
+const _skyPresets = {
+  paranormal: { bg: 0x080304, fog: 0x100002, fogNear: 8, fogFar: 40, ambient: 0x150508, ambIntensity: 0.8, dirColor: 0xff4422, dirIntensity: 1.2 },
+  noite:      { bg: 0x02020e, fog: 0x01010a, fogNear: 10, fogFar: 55, ambient: 0x050510, ambIntensity: 0.6, dirColor: 0x4466cc, dirIntensity: 0.6 },
+  crepusculo: { bg: 0x180408, fog: 0x1a0408, fogNear: 6, fogFar: 35, ambient: 0x180808, ambIntensity: 0.7, dirColor: 0xff6622, dirIntensity: 1.5 },
+  dia:        { bg: 0x0c1a30, fog: 0x0a1828, fogNear: 15, fogFar: 80, ambient: 0x101828, ambIntensity: 1.1, dirColor: 0xfff0cc, dirIntensity: 2.0 },
+};
+window.setSky = function(preset) {
+  const p = _skyPresets[preset];
+  if (!p || !three.renderer) return;
+  three.renderer.setClearColor(p.bg, 1);
+  if (three.scene.fog) { three.scene.fog.color.setHex(p.fog); three.scene.fog.near = p.fogNear; three.scene.fog.far = p.fogFar; }
+  if (three.ambientLight) { three.ambientLight.color.setHex(p.ambient); three.ambientLight.intensity = p.ambIntensity; }
+  if (three.dirLight) { three.dirLight.color.setHex(p.dirColor); three.dirLight.intensity = p.dirIntensity; }
+  // Atualiza botões
+  ['paranormal','noite','crepusculo','dia'].forEach(k => {
+    document.getElementById(`t3d-sky-${k}`)?.classList.toggle('active', k === preset);
+  });
+  mostrarToast(`🌌 Céu: ${preset}`);
+};
+
+// --- Névoa ---
+window.setFogDensity = function(val) {
+  if (!three.scene?.fog) return;
+  const base = parseFloat(document.getElementById('t3d-fog-range')?.value || 40);
+  const d = val / 100;
+  three.scene.fog.near = base * (1 - d * 0.85);
+  three.scene.fog.far  = base + base * (1 - d) * 0.5;
+};
+window.setFogRange = function(val) {
+  if (!three.scene?.fog) return;
+  const d = parseFloat(document.getElementById('t3d-fog-density')?.value || 40) / 100;
+  three.scene.fog.near = val * (1 - d * 0.85);
+  three.scene.fog.far  = parseFloat(val) + parseFloat(val) * (1 - d) * 0.5;
+};
+
+// --- Luz ---
+window.setLightIntensity = function(val) { if (three.dirLight) three.dirLight.intensity = val; };
+window.setLightAngle = function(deg) {
+  if (!three.dirLight) return;
+  const a = (deg * Math.PI) / 180;
+  three.dirLight.position.set(Math.cos(a) * 10, 12, Math.sin(a) * 10);
+};
+
+// --- Coloração por bioma ---
+let _biomeEnabled = false;
+window.setBiomeColoring = function(enabled) {
+  _biomeEnabled = enabled;
+  if (!three.floorMesh) return;
+  if (enabled) {
+    _applyBiomeColors();
+  } else {
+    // Restaura textura original
+    _criarChao3D();
+  }
+};
+function _applyBiomeColors() {
+  if (!three.floorMesh || !terrain3d.heightMap) return;
+  const geo = three.floorMesh.geometry;
+  const pos = geo.attributes.position;
+  const maxH = terrain3d.maxHeight || 6;
+  const count = pos.count;
+  const colors = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const h = (pos.getZ(i) / maxH); // 0..1
+    let r, g, b;
+    if (h > 0.85)      { r=0.95; g=0.95; b=0.98; }  // neve
+    else if (h > 0.65) { r=0.50; g=0.44; b=0.38; }  // rocha
+    else if (h > 0.35) { r=0.30; g=0.22; b=0.14; }  // terra
+    else if (h > 0.05) { r=0.12; g=0.28; b=0.10; }  // grama escura (paranormal)
+    else               { r=0.08; g=0.10; b=0.06; }  // lama
+    colors[i*3]=r; colors[i*3+1]=g; colors[i*3+2]=b;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  three.floorMesh.material.vertexColors = true;
+  three.floorMesh.material.needsUpdate = true;
+}
+
+// --- Sistema de Objetos 3D ---
+const _objetos3D = {};   // id → { type, mesh, wx, wz }
+let _objToolAtivo = null;
+
+function _setObjToolActive(tool) {
+  _objToolAtivo = tool;
+  ['rock','arvore','tocha','pilar','altar','nexus','circulo','agente','barril','parede'].forEach(t => {
+    document.getElementById(`t3d-obj-${t}`)?.classList.toggle('active', t === tool);
+  });
+  const hint = document.getElementById('t3d-obj-hint');
+  if (hint) {
+    const nomes = {
+      rock:'PEDRA', arvore:'ÁRVORE', tocha:'TOCHA', pilar:'PILAR',
+      altar:'ALTAR', nexus:'NEXUS', circulo:'CÍRCULO RITUAL',
+      agente:'AGENTE', barril:'BARRIL', parede:'PAREDE'
+    };
+    hint.textContent = tool
+      ? `Clique no mapa para colocar ${nomes[tool]||tool.toUpperCase()}. Clique direito para remover.`
+      : 'Selecione um objeto e clique no mapa para colocar. Clique direito sobre um objeto para remover.';
+  }
+}
+window.setObjTool = function(tool) {
+  _setObjToolActive(_objToolAtivo === tool ? null : tool);
+  // Garante que nenhum brush tool fique ativo junto
+  if (_objToolAtivo) terrain3d.tool = null;
+};
+
+function _criarObjMesh(tipo, wx, wz, terrainY, escala) {
+  const sc = cellSize / 60;
+  const sz = escala !== undefined ? escala : parseFloat(document.getElementById('t3d-obj-size')?.value || 1.0);
+  const group = new THREE.Group();
+  group.userData.isObj3D = true;
+  group.userData.tipo = tipo;
+  group.userData.escala = sz;
+
+  // Helpers de material
+  const mat = (color, rough=0.75, metal=0, emissive=0, emInt=0, transp=false, opacity=1) =>
+    new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: metal,
+      emissive, emissiveIntensity: emInt,
+      transparent: transp || opacity < 1, opacity });
+
+  switch(tipo) {
+    // ─────────────────────────────────────────────
+    // PEDRA — conjunto de rochas com deformação
+    // ─────────────────────────────────────────────
+    case 'rock': {
+      const base = sc * sz * 0.28;
+      const configs = [
+        { r: base,       ox: 0,         oz: 0,         ry: 1.0, rx: 1.0, rz: 1.0 },
+        { r: base*0.65,  ox: base*1.1,  oz: base*0.4,  ry: 0.9, rx: 0.75, rz: 0.9 },
+        { r: base*0.45,  ox: -base*0.8, oz: base*0.7,  ry: 0.85, rx: 0.9, rz: 0.8 },
+      ];
+      configs.forEach(({ r, ox, oz, ry, rx, rz }) => {
+        const geo = new THREE.DodecahedronGeometry(r, 1);
+        const pos = geo.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+          pos.setXYZ(i,
+            pos.getX(i) * (rx + (Math.random()-0.5)*0.25),
+            pos.getY(i) * (ry + (Math.random()-0.5)*0.3),
+            pos.getZ(i) * (rz + (Math.random()-0.5)*0.25)
+          );
+        }
+        pos.needsUpdate = true; geo.computeVertexNormals();
+        const m = new THREE.Mesh(geo, mat(0x3a3028, 0.95, 0.05));
+        m.position.set(ox, r * 0.55, oz);
+        m.rotation.set(Math.random()*0.3, Math.random()*Math.PI, Math.random()*0.3);
+        m.castShadow = true; group.add(m);
+      });
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // ÁRVORE — sinistra/paranormal: tronco torto, folhagem escura
+    // ─────────────────────────────────────────────
+    case 'arvore': {
+      const h = sc * sz * 2.2;
+      // Tronco principal segmentado (torto)
+      const segments = 5;
+      let curY = 0, curX = 0, curZ = 0;
+      for (let s = 0; s < segments; s++) {
+        const segH = h / segments;
+        const r1 = sc*sz*(0.10 - s*0.015);
+        const r2 = sc*sz*(0.12 - s*0.015);
+        const seg = new THREE.Mesh(
+          new THREE.CylinderGeometry(Math.max(0.005,r1), r2, segH, 7),
+          mat(0x1a0804, 0.97, 0.0)
+        );
+        const tiltX = (Math.random()-0.5)*0.18;
+        const tiltZ = (Math.random()-0.5)*0.18;
+        seg.position.set(curX, curY + segH/2, curZ);
+        seg.rotation.set(tiltX, 0, tiltZ);
+        seg.castShadow = true; group.add(seg);
+        curY += segH * Math.cos(Math.abs(tiltX));
+        curX += segH * Math.sin(tiltZ);
+        curZ += segH * Math.sin(tiltX);
+      }
+      // Galhos
+      for (let b = 0; b < 4; b++) {
+        const bY = h * (0.45 + b*0.12);
+        const bLen = sc*sz*(0.5 - b*0.08);
+        const bAng = (b/4)*Math.PI*2 + Math.random()*0.5;
+        const branch = new THREE.Mesh(
+          new THREE.CylinderGeometry(sc*sz*0.025, sc*sz*0.04, bLen, 5),
+          mat(0x1a0804, 0.97)
+        );
+        branch.position.set(Math.cos(bAng)*bLen*0.4, bY, Math.sin(bAng)*bLen*0.4);
+        branch.rotation.set(0, -bAng, Math.PI/2 - 0.3 - b*0.1);
+        branch.castShadow = true; group.add(branch);
+      }
+      // Folhagem escura em 3 camadas
+      const leafColors = [0x0a1606, 0x0d1c08, 0x071204];
+      [[h*0.52, sc*sz*0.55, sc*sz*0.55],
+       [h*0.68, sc*sz*0.42, sc*sz*0.45],
+       [h*0.83, sc*sz*0.28, sc*sz*0.38]].forEach(([y, br, bh], i) => {
+        const cone = new THREE.Mesh(
+          new THREE.ConeGeometry(br, bh, 8),
+          mat(leafColors[i], 0.85, 0, 0x010800, 0.2)
+        );
+        cone.position.y = y; cone.castShadow = true; group.add(cone);
+      });
+      // Névoa de spores (esferas translúcidas)
+      for (let sp = 0; sp < 5; sp++) {
+        const sph = new THREE.Mesh(
+          new THREE.SphereGeometry(sc*sz*0.04, 6, 6),
+          mat(0x880022, 0.5, 0, 0x660011, 0.8, true, 0.35)
+        );
+        sph.position.set(
+          (Math.random()-0.5)*sc*sz*0.6,
+          h*(0.3 + Math.random()*0.6),
+          (Math.random()-0.5)*sc*sz*0.6
+        );
+        group.add(sph);
+      }
+      group.userData.isTree = true;
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // TOCHA — mais alta, suporte de ferro, chama viva
+    // ─────────────────────────────────────────────
+    case 'tocha': {
+      const th = sc * sz * 1.0;
+      // Poste de ferro
+      const pole = new THREE.Mesh(
+        new THREE.CylinderGeometry(sc*sz*0.025, sc*sz*0.035, th, 6),
+        mat(0x1a1210, 0.8, 0.4)
+      );
+      pole.position.y = th/2; group.add(pole);
+      // Suporte (anel)
+      const bracket = new THREE.Mesh(
+        new THREE.TorusGeometry(sc*sz*0.07, sc*sz*0.018, 6, 12),
+        mat(0x2a1a08, 0.7, 0.5)
+      );
+      bracket.position.y = th - sc*sz*0.06; group.add(bracket);
+      // Copa
+      const cup = new THREE.Mesh(
+        new THREE.CylinderGeometry(sc*sz*0.075, sc*sz*0.045, sc*sz*0.1, 8),
+        mat(0x2a1a08, 0.75, 0.4)
+      );
+      cup.position.y = th + sc*sz*0.02; group.add(cup);
+      // Chama — cone duplo
+      const flameOuter = new THREE.Mesh(
+        new THREE.ConeGeometry(sc*sz*0.07, sc*sz*0.22, 8),
+        mat(0xff6600, 0.3, 0, 0xff4400, 3.0, true, 0.85)
+      );
+      flameOuter.position.y = th + sc*sz*0.21; group.add(flameOuter);
+      const flameInner = new THREE.Mesh(
+        new THREE.ConeGeometry(sc*sz*0.04, sc*sz*0.16, 7),
+        mat(0xffdd00, 0.2, 0, 0xffaa00, 4.0, true, 0.9)
+      );
+      flameInner.position.y = th + sc*sz*0.19; group.add(flameInner);
+      // Luz
+      const light = new THREE.PointLight(0xff7722, 2.2, sc*sz*10);
+      light.position.y = th + sc*sz*0.3; group.add(light);
+      group.userData.isFlame = true;
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // PILAR — coluna romana degradada
+    // ─────────────────────────────────────────────
+    case 'pilar': {
+      const ph = sc * sz * 1.4;
+      // Plinto (base)
+      const base = new THREE.Mesh(
+        new THREE.BoxGeometry(sc*sz*0.5, sc*sz*0.08, sc*sz*0.5),
+        mat(0x2c2018, 0.85, 0.1)
+      );
+      base.position.y = sc*sz*0.04; group.add(base);
+      // Coluna principal
+      const pillar = new THREE.Mesh(
+        new THREE.CylinderGeometry(sc*sz*0.13, sc*sz*0.16, ph, 12),
+        mat(0x2c2018, 0.82, 0.08)
+      );
+      pillar.position.y = ph/2 + sc*sz*0.08; pillar.castShadow = true; group.add(pillar);
+      // Capitel
+      const cap = new THREE.Mesh(
+        new THREE.CylinderGeometry(sc*sz*0.24, sc*sz*0.16, sc*sz*0.12, 12),
+        mat(0x241c10, 0.8, 0.1)
+      );
+      cap.position.y = ph + sc*sz*0.14; group.add(cap);
+      const capTop = new THREE.Mesh(
+        new THREE.BoxGeometry(sc*sz*0.52, sc*sz*0.09, sc*sz*0.52),
+        mat(0x241c10, 0.8, 0.1)
+      );
+      capTop.position.y = ph + sc*sz*0.24; group.add(capTop);
+      // Rachaduras (planos finos escuros)
+      for (let c = 0; c < 3; c++) {
+        const crack = new THREE.Mesh(
+          new THREE.BoxGeometry(sc*sz*0.005, sc*sz*(0.2+Math.random()*0.3), sc*sz*0.28),
+          mat(0x0a0604, 0.99)
+        );
+        crack.position.set(sc*sz*0.14, ph*(0.3+c*0.2), (Math.random()-0.5)*sc*sz*0.1);
+        crack.rotation.y = Math.random()*0.4;
+        group.add(crack);
+      }
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // ALTAR — temático Ordem Paranormal
+    // ─────────────────────────────────────────────
+    case 'altar': {
+      const aw = sc * sz * 0.7;
+      const ad = sc * sz * 0.45;
+      // Base do altar
+      const altarBase = new THREE.Mesh(
+        new THREE.BoxGeometry(aw*1.15, sc*sz*0.07, ad*1.15),
+        mat(0x1a0e0a, 0.9, 0.05)
+      );
+      altarBase.position.y = sc*sz*0.035; group.add(altarBase);
+      // Corpo
+      const altarBody = new THREE.Mesh(
+        new THREE.BoxGeometry(aw, sc*sz*0.4, ad),
+        mat(0x1a0e0a, 0.88, 0.06)
+      );
+      altarBody.position.y = sc*sz*0.27; altarBody.castShadow = true; group.add(altarBody);
+      // Topo plano
+      const altarTop = new THREE.Mesh(
+        new THREE.BoxGeometry(aw*1.08, sc*sz*0.06, ad*1.08),
+        mat(0x130a07, 0.85, 0.08)
+      );
+      altarTop.position.y = sc*sz*0.50; group.add(altarTop);
+      // Símbolo Octal (octógono emissivo no topo)
+      const octGeo = new THREE.CylinderGeometry(sc*sz*0.18, sc*sz*0.18, sc*sz*0.012, 8);
+      const octSymbol = new THREE.Mesh(octGeo,
+        mat(0xcc1111, 0.3, 0, 0xaa0000, 2.5, true, 0.85));
+      octSymbol.position.y = sc*sz*0.535; group.add(octSymbol);
+      // Cruz central (2 boxes)
+      [-1,1].forEach(dir => {
+        const crossH = new THREE.Mesh(
+          new THREE.BoxGeometry(sc*sz*0.3, sc*sz*0.012, sc*sz*0.06),
+          mat(0xdd1111, 0.2, 0, 0xcc0000, 3.0, true, 0.9)
+        );
+        crossH.position.y = sc*sz*0.537;
+        crossH.rotation.y = dir === 1 ? 0 : Math.PI/2;
+        group.add(crossH);
+      });
+      // Luz vermelha pulsante
+      const aLight = new THREE.PointLight(0xcc1111, 1.2, sc*sz*6);
+      aLight.position.y = sc*sz*0.6; group.add(aLight);
+      group.userData.isAltar = true;
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // NEXUS — cristal paranormal com energia
+    // ─────────────────────────────────────────────
+    case 'nexus': {
+      const nh = sc * sz * 0.8;
+      // Base octogonal
+      const baseGeo = new THREE.CylinderGeometry(sc*sz*0.22, sc*sz*0.26, sc*sz*0.08, 8);
+      const base = new THREE.Mesh(baseGeo, mat(0x200810, 0.9, 0.2));
+      base.position.y = sc*sz*0.04; group.add(base);
+      // Cristal central (bipirâmide = 2 cones)
+      const cMat = mat(0x9900cc, 0.05, 0.6, 0x7700aa, 2.0, true, 0.78);
+      const cTop = new THREE.Mesh(
+        new THREE.ConeGeometry(sc*sz*0.16, nh*0.65, 6),
+        cMat
+      );
+      cTop.position.y = sc*sz*0.08 + nh*0.65/2; cTop.castShadow = true; group.add(cTop);
+      const cBot = new THREE.Mesh(
+        new THREE.ConeGeometry(sc*sz*0.16, nh*0.35, 6),
+        cMat.clone()
+      );
+      cBot.position.y = sc*sz*0.08 + nh*0.35/2;
+      cBot.rotation.x = Math.PI; group.add(cBot);
+      // Cristais menores orbitando
+      for (let i = 0; i < 4; i++) {
+        const ang = (i/4)*Math.PI*2;
+        const cs = new THREE.Mesh(
+          new THREE.ConeGeometry(sc*sz*0.05, nh*0.25, 5),
+          mat(0xbb00ff, 0.1, 0.5, 0x9900dd, 1.8, true, 0.7)
+        );
+        cs.position.set(Math.cos(ang)*sc*sz*0.28, nh*0.4, Math.sin(ang)*sc*sz*0.28);
+        cs.rotation.z = 0.6; group.add(cs);
+      }
+      const nLight = new THREE.PointLight(0xaa00ff, 2.5, sc*sz*10);
+      nLight.position.y = nh*0.7; group.add(nLight);
+      group.userData.isNexus = true;
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // CÍRCULO RITUAL — inscrito no chão
+    // ─────────────────────────────────────────────
+    case 'circulo': {
+      const cr = sc * sz * 0.55;
+      // Anel externo
+      const ring1 = new THREE.Mesh(
+        new THREE.TorusGeometry(cr, sc*sz*0.025, 8, 48),
+        mat(0xcc1111, 0.3, 0, 0xaa0000, 2.5)
+      );
+      ring1.rotation.x = -Math.PI/2; ring1.position.y = sc*0.01; group.add(ring1);
+      // Anel interno
+      const ring2 = new THREE.Mesh(
+        new THREE.TorusGeometry(cr*0.65, sc*sz*0.018, 8, 36),
+        mat(0xdd2222, 0.3, 0, 0xbb1111, 2.0)
+      );
+      ring2.rotation.x = -Math.PI/2; ring2.position.y = sc*0.012; group.add(ring2);
+      // Pentagrama — 5 linhas
+      for (let p = 0; p < 5; p++) {
+        const a1 = (p/5)*Math.PI*2 - Math.PI/2;
+        const a2 = ((p+2)/5)*Math.PI*2 - Math.PI/2;
+        const x1 = Math.cos(a1)*cr*0.62, z1 = Math.sin(a1)*cr*0.62;
+        const x2 = Math.cos(a2)*cr*0.62, z2 = Math.sin(a2)*cr*0.62;
+        const dx = x2-x1, dz = z2-z1;
+        const len = Math.sqrt(dx*dx+dz*dz);
+        const line = new THREE.Mesh(
+          new THREE.BoxGeometry(len, sc*sz*0.015, sc*sz*0.015),
+          mat(0xff2222, 0.2, 0, 0xdd0000, 3.0)
+        );
+        line.position.set((x1+x2)/2, sc*0.015, (z1+z2)/2);
+        line.rotation.y = -Math.atan2(dz, dx);
+        group.add(line);
+      }
+      // 5 velas nas pontas
+      for (let v = 0; v < 5; v++) {
+        const va = (v/5)*Math.PI*2 - Math.PI/2;
+        const vx = Math.cos(va)*cr*0.65, vz = Math.sin(va)*cr*0.65;
+        const candle = new THREE.Mesh(
+          new THREE.CylinderGeometry(sc*sz*0.018, sc*sz*0.02, sc*sz*0.12, 6),
+          mat(0xf0ead6, 0.9)
+        );
+        candle.position.set(vx, sc*sz*0.06, vz); group.add(candle);
+        const cf = new THREE.Mesh(
+          new THREE.ConeGeometry(sc*sz*0.014, sc*sz*0.06, 6),
+          mat(0xff8800, 0.2, 0, 0xff5500, 3.5, true, 0.88)
+        );
+        cf.position.set(vx, sc*sz*0.17, vz); group.add(cf);
+        const cl = new THREE.PointLight(0xff6600, 0.5, sc*sz*2.5);
+        cl.position.set(vx, sc*sz*0.2, vz); group.add(cl);
+      }
+      // Glow central
+      const glow = new THREE.PointLight(0xcc0000, 1.0, sc*sz*5);
+      glow.position.y = sc*sz*0.1; group.add(glow);
+      group.userData.isCirculo = true;
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // AGENTE — silhueta humanóide (agente da Ordem)
+    // ─────────────────────────────────────────────
+    case 'agente': {
+      const ah = sc * sz * 1.4;
+      // Pernas
+      [-1,1].forEach(side => {
+        const leg = new THREE.Mesh(
+          new THREE.CylinderGeometry(sc*sz*0.055, sc*sz*0.06, ah*0.42, 6),
+          mat(0x101820, 0.85, 0.15)
+        );
+        leg.position.set(side*sc*sz*0.09, ah*0.21, 0); group.add(leg);
+      });
+      // Torso
+      const torso = new THREE.Mesh(
+        new THREE.BoxGeometry(sc*sz*0.28, ah*0.38, sc*sz*0.18),
+        mat(0x0e1820, 0.82, 0.2)
+      );
+      torso.position.y = ah*0.56; group.add(torso);
+      // Capa (cone traseiro)
+      const cape = new THREE.Mesh(
+        new THREE.ConeGeometry(sc*sz*0.22, ah*0.65, 8),
+        mat(0x0a0810, 0.9, 0)
+      );
+      cape.position.set(0, ah*0.3, sc*sz*0.06); cape.rotation.x = -0.2; group.add(cape);
+      // Braços
+      [-1,1].forEach(side => {
+        const arm = new THREE.Mesh(
+          new THREE.CylinderGeometry(sc*sz*0.04, sc*sz*0.045, ah*0.34, 5),
+          mat(0x101820, 0.85, 0.15)
+        );
+        arm.position.set(side*sc*sz*0.2, ah*0.56, 0);
+        arm.rotation.z = side*0.25; group.add(arm);
+      });
+      // Cabeça
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(sc*sz*0.11, 8, 8),
+        mat(0x0c1418, 0.8, 0.1)
+      );
+      head.position.y = ah*0.84; group.add(head);
+      // Chapéu (cone)
+      const hat = new THREE.Mesh(
+        new THREE.ConeGeometry(sc*sz*0.14, sc*sz*0.22, 8),
+        mat(0x0a0808, 0.88, 0.05)
+      );
+      hat.position.y = ah*0.84 + sc*sz*0.22; group.add(hat);
+      // Olhos emissivos
+      [-1,1].forEach(side => {
+        const eye = new THREE.Mesh(
+          new THREE.SphereGeometry(sc*sz*0.022, 6, 6),
+          mat(0xcc4400, 0.1, 0, 0xaa3300, 3.0)
+        );
+        eye.position.set(side*sc*sz*0.045, ah*0.855, sc*sz*0.09); group.add(eye);
+      });
+      const eyeLight = new THREE.PointLight(0xcc4400, 0.4, sc*sz*2);
+      eyeLight.position.set(0, ah*0.86, sc*sz*0.1); group.add(eyeLight);
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // BARRIL — objeto de cenário genérico
+    // ─────────────────────────────────────────────
+    case 'barril': {
+      const bh = sc * sz * 0.35;
+      // Corpo do barril (cilindro ligeiramente barrigudo)
+      const barrel = new THREE.Mesh(
+        new THREE.CylinderGeometry(sc*sz*0.14, sc*sz*0.12, bh, 10),
+        mat(0x3a2010, 0.88, 0.05)
+      );
+      barrel.position.y = bh/2; barrel.castShadow = true; group.add(barrel);
+      // Arcos de metal (3)
+      [0.2, 0.5, 0.8].forEach(t => {
+        const hoop = new THREE.Mesh(
+          new THREE.TorusGeometry(sc*sz*0.145, sc*sz*0.012, 6, 14),
+          mat(0x1a1008, 0.7, 0.5)
+        );
+        hoop.rotation.x = Math.PI/2;
+        hoop.position.y = bh*t; group.add(hoop);
+      });
+      // Tampa
+      const lid = new THREE.Mesh(
+        new THREE.CylinderGeometry(sc*sz*0.13, sc*sz*0.13, sc*sz*0.03, 10),
+        mat(0x2e1a0c, 0.85, 0.05)
+      );
+      lid.position.y = bh + sc*sz*0.015; group.add(lid);
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // PAREDE — bloco de pedra modular
+    // ─────────────────────────────────────────────
+    case 'parede': {
+      const pw = sc * sz * 0.9;
+      const ph2 = sc * sz * 0.55;
+      const pd = sc * sz * 0.2;
+      // Estrutura principal
+      const wall = new THREE.Mesh(
+        new THREE.BoxGeometry(pw, ph2, pd),
+        mat(0x2a2018, 0.92, 0.04)
+      );
+      wall.position.y = ph2/2; wall.castShadow = true; group.add(wall);
+      // Detalhe de blocos (grade em relevo)
+      const rows = 3, cols = 4;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if ((r+c)%2 === 0) continue; // alterna
+          const block = new THREE.Mesh(
+            new THREE.BoxGeometry(pw/cols*0.88, ph2/rows*0.82, sc*sz*0.018),
+            mat(0x221a10, 0.94, 0.03)
+          );
+          block.position.set(
+            -pw/2 + pw/cols*(c+0.5),
+            ph2/rows*(r+0.5),
+            pd/2 + sc*sz*0.009
+          );
+          group.add(block);
+        }
+      }
+      // Musgo/detalhe emissivo sutil
+      const moss = new THREE.Mesh(
+        new THREE.BoxGeometry(pw*0.3, ph2*0.15, sc*sz*0.005),
+        mat(0x0a1a06, 0.95, 0, 0x040c02, 0.4, true, 0.6)
+      );
+      moss.position.set(-pw*0.2, ph2*0.2, pd/2+sc*sz*0.003); group.add(moss);
+      break;
+    }
+  }
+
+  group.position.set(wx, terrainY, wz);
+  group.rotation.y = Math.random() * Math.PI * 2;
+  group.scale.setScalar(1); // escala já aplicada internamente via sz
+  return group;
+}
+
+
+function colocarObjeto3D(worldPos) {
+  if (!_objToolAtivo || !three.scene) return;
+  const id = `obj_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
+  const terrainY = _sampleTerrainHeight(worldPos.x, worldPos.z);
+  const escala = parseFloat(document.getElementById('t3d-obj-size')?.value || 1.0);
+  const mesh = _criarObjMesh(_objToolAtivo, worldPos.x, worldPos.z, terrainY, escala);
+  mesh.userData.objId = id;
+  three.scene.add(mesh);
+  _objetos3D[id] = { type: _objToolAtivo, mesh, wx: worldPos.x, wz: worldPos.z, escala };
+  const nomeObj = { rock:'Pedra', arvore:'Árvore', tocha:'Tocha', pilar:'Pilar',
+    altar:'Altar', nexus:'Nexus', circulo:'Círculo', agente:'Agente',
+    barril:'Barril', parede:'Parede' };
+  mostrarToast(`+ ${nomeObj[_objToolAtivo]||_objToolAtivo} colocado`);
+}
+
+function removerObjeto3DAt(mouseEvent) {
+  if (!three.scene) return;
+  const canvas3d = document.getElementById('canvas3d');
+  const rect = canvas3d.getBoundingClientRect();
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2(
+    ((mouseEvent.clientX - rect.left) / rect.width) * 2 - 1,
+    -((mouseEvent.clientY - rect.top) / rect.height) * 2 + 1
+  );
+  raycaster.setFromCamera(mouse, three.camera);
+  const objs = Object.values(_objetos3D).map(o => o.mesh);
+  const hits = raycaster.intersectObjects(objs, true);
+  if (hits.length > 0) {
+    let target = hits[0].object;
+    while (target.parent && !target.userData.isObj3D) target = target.parent;
+    const id = target.userData.objId;
+    if (id && _objetos3D[id]) {
+      three.scene.remove(_objetos3D[id].mesh);
+      delete _objetos3D[id];
+      mostrarToast('🗑 Objeto removido');
+      return true;
+    }
+  }
+  return false;
+}
+
+window.limparObjetos3D = function() {
+  Object.values(_objetos3D).forEach(o => three.scene?.remove(o.mesh));
+  for (const k in _objetos3D) delete _objetos3D[k];
+  mostrarToast('🗑 Objetos removidos');
+};
+
+// Animação de objetos no loop 3D (tochas, portais)
+function _animarObjetos3D(elapsed) {
+  Object.values(_objetos3D).forEach(({ mesh }) => {
+    // Tochas — chama viva
+    if (mesh.userData.isFlame) {
+      mesh.children.forEach(c => {
+        if (c.isMesh && c.material?.emissive && c.geometry?.type === 'ConeGeometry') {
+          const t = elapsed * 8 + mesh.position.x * 3;
+          c.scale.y = 0.88 + Math.sin(t) * 0.16 + Math.sin(t*1.7)*0.06;
+          c.scale.x = 0.92 + Math.sin(t*1.3)*0.08;
+          c.material.opacity = 0.75 + Math.sin(elapsed*12)*0.2;
+        }
+      });
+      const lights = mesh.children.filter(c => c.isPointLight);
+      lights.forEach(l => { l.intensity = 2.0 + Math.sin(elapsed*9 + mesh.position.z*2)*0.7; });
+    }
+    // Altar — pulso vermelho
+    if (mesh.userData.isAltar) {
+      const lights = mesh.children.filter(c => c.isPointLight);
+      lights.forEach(l => { l.intensity = 1.0 + Math.sin(elapsed*1.8)*0.5; });
+      mesh.children.forEach(c => {
+        if (c.isMesh && c.material?.emissiveIntensity > 1.5) {
+          c.material.emissiveIntensity = 2.5 + Math.sin(elapsed*1.8)*0.8;
+        }
+      });
+    }
+    // Nexus — rotação e pulso
+    if (mesh.userData.isNexus) {
+      mesh.rotation.y += 0.008;
+      const lights = mesh.children.filter(c => c.isPointLight);
+      lights.forEach(l => { l.intensity = 2.2 + Math.sin(elapsed*2.5)*1.0; });
+      // Cristais menores orbitam
+      mesh.children.forEach((c, i) => {
+        if (c.isMesh && i > 2 && i < 7) {
+          const ang = elapsed * 0.8 + (i/4)*Math.PI*2;
+          const r = c.userData._orbitR || 0;
+          if (r) { c.position.x = Math.cos(ang)*r; c.position.z = Math.sin(ang)*r; }
+        }
+      });
+    }
+    // Círculo ritual — rotação lenta + pulsação das velas
+    if (mesh.userData.isCirculo) {
+      mesh.rotation.y += 0.003;
+      const lights = mesh.children.filter(c => c.isPointLight);
+      lights.forEach((l, i) => {
+        l.intensity = 0.45 + Math.sin(elapsed*4 + i*1.2)*0.2;
+      });
+    }
+    // Árvore — oscilação sutil de folhagem
+    if (mesh.userData.isTree) {
+      mesh.children.forEach((c, i) => {
+        if (c.isMesh && c.geometry?.type === 'ConeGeometry') {
+          const t = elapsed * 0.7 + i * 1.5 + mesh.position.x;
+          c.rotation.z = Math.sin(t) * 0.04;
+          c.rotation.x = Math.sin(t * 0.8) * 0.03;
+        }
+      });
+    }
+  });
+}
+
+// Novos presets de terreno
+const _extendedPresets = {
+  abismo: (nx, ny, r) => {
+    const d = Math.sqrt(nx*nx + ny*ny);
+    const rim = Math.max(0, 0.7 - Math.abs(d - 0.5) * 4) * 0.8;
+    const pit = d < 0.4 ? -(0.4 - d) * 0.9 : 0;
+    return rim + pit + _noise2D(nx*5, ny*5) * 0.06;
+  },
+  fortaleza: (nx, ny) => {
+    const wx = Math.abs(Math.sin(nx * Math.PI * 1.8)) > 0.75 ? 0.85 : 0;
+    const wy = Math.abs(Math.sin(ny * Math.PI * 1.8)) > 0.75 ? 0.85 : 0;
+    const wall = Math.max(wx, wy);
+    const jitter = _noise2D(nx*12, ny*12) * 0.1;
+    return wall > 0 ? Math.min(1, wall + jitter) * (Math.random() > 0.1 ? 1 : 0) : jitter * 0.3;
+  },
+  ondas: (nx, ny) => {
+    const wave = Math.sin(nx * Math.PI * 3) * Math.cos(ny * Math.PI * 3);
+    const wave2 = Math.sin((nx+ny) * Math.PI * 2.5) * 0.4;
+    return (wave * 0.4 + wave2 * 0.3) * 0.8 + 0.2 + _noise2D(nx*6, ny*6) * 0.08;
+  }
+};
+
 window.setTerrainTool = setTerrainTool;
 window.toggleTerrain3DPanel = toggleTerrain3DPanel;
+window.setObjTool = setObjTool;
 window.gerarTerrenoPreset = gerarTerrenoPreset;
 window.resetarTerreno = resetarTerreno;
 window._applyTerrainMaxHeight = _applyTerrainMaxHeight;
+window._updateBrushCursor = _updateBrushCursor;
+// setBlockType, setBlockAction, limparBlocos3D already declared as window.*
+window.criarNovoCenario = criarNovoCenario;
+window.salvarCenario = salvarCenario;
+window.carregarCenario = carregarCenario;
+window.deletarCenario = deletarCenario;
 
 // Debounce para salvar terreno no Firebase
 let _terrainSaveTimer = null;
@@ -5258,33 +6932,78 @@ async function _saveTerrain() {
   try {
     // Comprime para Base64 (Float32 → arraybuffer → base64)
     const buf = terrain3d.heightMap.buffer;
-    const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-    const ref = window.db ? window.db.ref(`campanhas/${campanhaId}/tabletop/terrain3d`) : null;
-    if (ref) await ref.set({
+    const bytes = new Uint8Array(buf);
+    // Divide em chunks para evitar stack overflow no btoa
+    let b64 = '';
+    const CHUNK = 8192;
+    for (let i = 0; i < bytes.length; i += CHUNK) {
+      b64 += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+    }
+    b64 = btoa(b64);
+    // Salva também objetos 3D e blocos
+    const objsData = Object.entries(_objetos3D).map(([id, o]) => ({
+      id, type: o.type, wx: o.wx, wz: o.wz, escala: o.escala
+    }));
+    const blocosData = Object.entries(_blocos3D).map(([key, b]) => ({
+      key, type: b.type, cx: b.cx, cz: b.cz, wx: b.wx, wz: b.wz,
+      bx: b.bx, bz: b.bz, by: b.by, baseY: b.baseY
+    }));
+    const terrainRef = ref(rtdb, `tabletop/${campanhaId}/terrain3d`);
+    await set(terrainRef, {
       data: b64,
       w: terrain3d.mapW,
       h: terrain3d.mapH,
+      maxH: terrain3d.maxHeight || 6,
+      objs: objsData,
+      blocos: blocosData,
       ts: Date.now()
     });
-  } catch(e) { /* silencioso */ }
+  } catch(e) { console.warn('[terrain save]', e); }
 }
 
 async function _loadTerrain() {
   if (!campanhaId) return;
   try {
-    const ref = window.db ? window.db.ref(`campanhas/${campanhaId}/tabletop/terrain3d`) : null;
-    if (!ref) return;
-    const snap = await ref.once('value');
+    const { get: rtdbGet } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js");
+    const terrainRef = ref(rtdb, `tabletop/${campanhaId}/terrain3d`);
+    const snap = await rtdbGet(terrainRef);
     const val = snap.val();
     if (!val || !val.data) return;
-    const bytes = Uint8Array.from(atob(val.data), c => c.charCodeAt(0));
+    const binary = atob(val.data);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     const arr = new Float32Array(bytes.buffer);
     _initTerrainHeightMap();
     if (arr.length === terrain3d.heightMap.length) {
       terrain3d.heightMap.set(arr);
+      if (val.maxH) terrain3d.maxHeight = val.maxH;
       _applyHeightMapToFloor();
     }
-  } catch(e) { /* silencioso */ }
+    // Restaura objetos 3D
+    if (val.objs && Array.isArray(val.objs)) {
+      val.objs.forEach(o => {
+        try {
+          const terrainY = _sampleTerrainHeight(o.wx, o.wz);
+          const mesh = _criarObjMesh(o.type, o.wx, o.wz, terrainY, o.escala);
+          mesh.userData.objId = o.id;
+          three.scene.add(mesh);
+          _objetos3D[o.id] = { type: o.type, mesh, wx: o.wx, wz: o.wz, escala: o.escala };
+        } catch(e2) { /* ignora obj inválido */ }
+      });
+    }
+    // Restaura blocos 3D
+    if (val.blocos && Array.isArray(val.blocos)) {
+      val.blocos.forEach(b => {
+        try {
+          const mesh = _criarBlocoMesh(b.type, b.wx, b.wz, b.bx, b.bz, b.by, b.baseY, b.key);
+          mesh.userData.blockKey = b.key;
+          three.scene.add(mesh);
+          _blocos3D[b.key] = { mesh, type: b.type, cx: b.cx, cz: b.cz, wx: b.wx, wz: b.wz,
+            bx: b.bx, bz: b.bz, by: b.by, baseY: b.baseY };
+        } catch(e2) { /* ignora bloco inválido */ }
+      });
+    }
+  } catch(e) { console.warn('[terrain load]', e); }
 }
 
 // -- Dispose cena --
@@ -5300,6 +7019,10 @@ function destroy3D() {
   }
   three.tokenMeshes = {};
   three.floorMesh = null;
+  // Limpa referências de blocos e objetos (os meshes já foram dispostos com a cena)
+  for (const k in _blocos3D) delete _blocos3D[k];
+  for (const k in _objetos3D) delete _objetos3D[k];
+  _blockModeAtivo = false;
 }
 
 // -- Partículas CSS (overlay) --
@@ -5414,6 +7137,161 @@ window._modo3dSyncTokens = function() {
 };
 
 
+// =====================================================================
+//  CÂMERA 3D — FOCO NO TOKEN
+// =====================================================================
+
+let _camFocusAnim = null;    // requestAnimationFrame handle da interpolação
+let _autoOrbitActive = false;
+let _autoOrbitFrame  = null;
+
+// Presets de ângulo: [elevação_rad, distância_multiplicador, offset_ângulo_orbit]
+const CAM_PRESETS = {
+  'top':      { elev: Math.PI / 2 - 0.08, distMult: 1.0, orbitOffset: 0       },
+  'diagonal': { elev: Math.PI / 4,        distMult: 1.0, orbitOffset: Math.PI / 4 },
+  'low':      { elev: 0.15,               distMult: 1.1, orbitOffset: Math.PI / 6 },
+  'front':    { elev: 0.28,               distMult: 0.85, orbitOffset: 0       },
+  'orbit-l':  { elev: Math.PI / 5,        distMult: 1.0, orbitOffset: -Math.PI / 2 },
+  'orbit-r':  { elev: Math.PI / 5,        distMult: 1.0, orbitOffset:  Math.PI / 2 },
+};
+
+window.focarTokenAngulo = function(preset) {
+  if (!modo3dAtivo) return;
+
+  // Para auto-órbita se estiver rodando
+  if (_autoOrbitFrame) { cancelAnimationFrame(_autoOrbitFrame); _autoOrbitFrame = null; }
+
+  const sc = cellSize / 60;
+
+  // Token alvo: selecionado ou primeiro disponível
+  let token = null;
+  if (selectedTokenId && tokens[selectedTokenId]) {
+    token = tokens[selectedTokenId];
+  } else {
+    const vals = Object.values(tokens);
+    if (vals.length > 0) token = vals[0];
+  }
+
+  // Centro do board se não há token
+  const targetX = token ? ((token.x || 0) + 0.5) * sc : (boardCols / 2) * sc;
+  const targetZ = token ? ((token.y || 0) + 0.5) * sc : (boardRows / 2) * sc;
+
+  const p = CAM_PRESETS[preset] || CAM_PRESETS['diagonal'];
+  const dist = parseFloat(document.getElementById('cam-focus-dist')?.value || 8) * p.distMult;
+
+  // Calcula ângulo de órbita: direção atual + offset do preset
+  const newOrbitAngle = (three.orbitAngle || 0) + p.orbitOffset;
+
+  // Estado inicial e final para interpolação suave
+  const fromPanX   = three.camPanX;
+  const fromPanY   = three.camPanY;
+  const fromElev   = three.camElev !== undefined ? three.camElev : Math.PI / 5.5;
+  const fromDist   = three.camDist;
+  const fromOrbit  = three.orbitAngle;
+
+  const DURATION = 700; // ms
+  const startTime = performance.now();
+
+  // Cancela animação anterior
+  if (_camFocusAnim) cancelAnimationFrame(_camFocusAnim);
+
+  function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+  function animStep(now) {
+    const raw = Math.min(1, (now - startTime) / DURATION);
+    const t = easeInOut(raw);
+
+    // Interpola ângulo de órbita pelo caminho mais curto
+    let dOrbit = ((newOrbitAngle - fromOrbit) % (Math.PI * 2));
+    if (dOrbit > Math.PI)  dOrbit -= Math.PI * 2;
+    if (dOrbit < -Math.PI) dOrbit += Math.PI * 2;
+
+    three.camPanX    = fromPanX  + (targetX - fromPanX)  * t;
+    three.camPanY    = fromPanY  + (targetZ - fromPanY)  * t;
+    three.camElev    = fromElev  + (p.elev  - fromElev)  * t;
+    three.camDist    = fromDist  + (dist    - fromDist)  * t;
+    three.orbitAngle = fromOrbit + dOrbit * t;
+
+    if (raw < 1) {
+      _camFocusAnim = requestAnimationFrame(animStep);
+    } else {
+      _camFocusAnim = null;
+      // Marca preset ativo
+      document.querySelectorAll('[id^="cam-preset-"]').forEach(b => b.classList.remove('active'));
+      document.getElementById('cam-preset-' + preset)?.classList.add('active');
+      // Inicia auto-órbita se ativa
+      if (_autoOrbitActive) _startAutoOrbit();
+    }
+  }
+
+  _camFocusAnim = requestAnimationFrame(animStep);
+  mostrarToast(`🎥 Câmera: ${preset.toUpperCase()}`);
+};
+
+function _startAutoOrbit() {
+  if (_autoOrbitFrame) return;
+  let last = null;
+  function step(now) {
+    if (!_autoOrbitActive || !modo3dAtivo) { _autoOrbitFrame = null; return; }
+    if (last !== null) {
+      const speed = parseFloat(document.getElementById('cam-orbit-speed')?.value || 0.5);
+      three.orbitAngle += (now - last) * 0.001 * speed;
+    }
+    last = now;
+    _autoOrbitFrame = requestAnimationFrame(step);
+  }
+  _autoOrbitFrame = requestAnimationFrame(step);
+}
+
+window.toggleAutoOrbit = function(on) {
+  _autoOrbitActive = on;
+  if (on) {
+    _startAutoOrbit();
+    mostrarToast('🔄 Auto-órbita ativada');
+  } else {
+    if (_autoOrbitFrame) { cancelAnimationFrame(_autoOrbitFrame); _autoOrbitFrame = null; }
+    mostrarToast('⏹ Auto-órbita desativada');
+  }
+};
+
+window.resetarCamera3D = function() {
+  if (!modo3dAtivo) return;
+  if (_camFocusAnim) cancelAnimationFrame(_camFocusAnim);
+  if (_autoOrbitFrame) cancelAnimationFrame(_autoOrbitFrame);
+  _autoOrbitActive = false;
+  _autoOrbitFrame  = null;
+  const cb = document.getElementById('cam-auto-orbit');
+  if (cb) cb.checked = false;
+  document.querySelectorAll('[id^="cam-preset-"]').forEach(b => b.classList.remove('active'));
+
+  const sc = cellSize / 60;
+  const boardCX = (boardCols / 2) * sc;
+  const boardCZ = (boardRows / 2) * sc;
+
+  const fromPanX  = three.camPanX;
+  const fromPanY  = three.camPanY;
+  const fromElev  = three.camElev || Math.PI / 5.5;
+  const fromDist  = three.camDist;
+  const fromOrbit = three.orbitAngle;
+  const DURATION = 600;
+  const startTime = performance.now();
+
+  function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+  function animStep(now) {
+    const raw = Math.min(1, (now - startTime) / DURATION);
+    const t = easeInOut(raw);
+    three.camPanX    = fromPanX  + (boardCX - fromPanX) * t;
+    three.camPanY    = fromPanY  + (boardCZ - fromPanY) * t;
+    three.camElev    = fromElev  + (Math.PI / 5.5 - fromElev) * t;
+    three.camDist    = fromDist  + (18 - fromDist) * t;
+    three.orbitAngle = fromOrbit + (0 - fromOrbit) * t;
+    if (raw < 1) requestAnimationFrame(animStep);
+  }
+  requestAnimationFrame(animStep);
+  mostrarToast('🔄 Câmera resetada');
+};
+
 
 </script>
 
@@ -5432,56 +7310,470 @@ window._modo3dSyncTokens = function() {
 
 <!-- PAINEL EDITOR DE TERRENO 3D (fora do canvas-wrap para não ser bloqueado) -->
 <div id="terrain3d-panel">
-  <div class="terrain3d-title">
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M1 13l4-6 3 4 2-3 5 5H1z"/>
-    </svg>
-    TERRENO 3D
+
+  <!-- Header -->
+  <div class="t3d-header">
+    <div class="t3d-header-icon">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 13l4-6 3 4 2-3 5 5H1z"/>
+        <circle cx="12" cy="3" r="1.2" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="t3d-header-text">
+      <div class="t3d-header-title">Editor de Terreno</div>
+      <div class="t3d-header-sub">MODO 3D PARANORMAL</div>
+    </div>
+    <button class="t3d-close-btn" onclick="toggleTerrain3DPanel()" title="Fechar">✕</button>
   </div>
-  <div class="terrain3d-tools">
-    <button class="t3d-tool active" id="t3d-raise" onclick="setTerrainTool('raise')" title="Elevar terreno">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="4,10 8,4 12,10"/></svg>
-      ERGUER
+
+  <!-- Abas -->
+  <div class="t3d-tabs">
+    <button class="t3d-tab active" id="t3d-tab-sculpt" onclick="switchT3DTab('sculpt')" title="Escultura de Terreno">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 13l3-5 3 4 2-3 4 4H2z"/></svg>
+      <span>SCULPT</span>
     </button>
-    <button class="t3d-tool" id="t3d-lower" onclick="setTerrainTool('lower')" title="Abaixar terreno">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="4,6 8,12 12,6"/></svg>
-      DEPRIMIR
+    <button class="t3d-tab" id="t3d-tab-block" onclick="switchT3DTab('block')" title="Blocos 3D">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="5" height="8" rx="0.5"/><rect x="9" y="4" width="5" height="10" rx="0.5"/><line x1="2" y1="6" x2="4.5" y2="3.5"/><line x1="7" y1="6" x2="9.5" y2="3.5"/><line x1="9.5" y1="3.5" x2="14.5" y2="3.5"/><line x1="4.5" y1="3.5" x2="9.5" y2="3.5"/></svg>
+      <span>BLOCOS</span>
     </button>
-    <button class="t3d-tool" id="t3d-smooth" onclick="setTerrainTool('smooth')" title="Suavizar terreno">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 10 Q8 4 14 10"/></svg>
-      SUAVIZAR
+    <button class="t3d-tab" id="t3d-tab-env" onclick="switchT3DTab('env')" title="Ambiente e Iluminação">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="7" r="3"/><path d="M8 1v2M8 12v2M1 7h2M12 7h2M3.5 3.5l1.5 1.5M11 3.5l-1.5 1.5M3.5 10.5l1.5-1.5M11 10.5l-1.5-1.5"/></svg>
+      <span>ENV</span>
     </button>
-    <button class="t3d-tool" id="t3d-flat" onclick="setTerrainTool('flat')" title="Nivelar terreno">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="12" x2="14" y2="12"/></svg>
-      NIVELAR
+    <button class="t3d-tab" id="t3d-tab-obj" onclick="switchT3DTab('obj')" title="Objetos 3D">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="8" width="5" height="6" rx="1"/><path d="M7 11h3l3-6-3-1z"/></svg>
+      <span>OBJS</span>
+    </button>
+    <button class="t3d-tab" id="t3d-tab-cam" onclick="switchT3DTab('cam')" title="Câmera — Foco no Token">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="4" width="10" height="8" rx="1.5"/><path d="M11 7l4-3v8l-4-3"/></svg>
+      <span>CAM</span>
     </button>
   </div>
-  <div class="terrain3d-row">
-    <span class="terrain3d-label">FORÇA</span>
-    <input type="range" class="terrain3d-slider" id="t3d-strength" min="1" max="10" value="4" oninput="document.getElementById('t3d-strength-val').textContent=this.value">
-    <span class="terrain3d-val" id="t3d-strength-val">4</span>
+  <div class="t3d-divider"></div>
+
+  <!-- ABA: ESCULTURA -->
+  <div class="t3d-pane active" id="t3d-pane-sculpt">
+
+    <!-- Ferramentas de pincel -->
+    <div class="t3d-section-label">FERRAMENTAS DE PINCEL</div>
+    <div class="t3d-tools-grid">
+      <button class="t3d-tool active" id="t3d-raise" onclick="setTerrainTool('raise')" title="Erguer terreno">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,10 8,4 12,10"/><line x1="8" y1="4" x2="8" y2="13" stroke-dasharray="2 2" stroke-width="1.2"/></svg>
+        ERGUER
+      </button>
+      <button class="t3d-tool" id="t3d-lower" onclick="setTerrainTool('lower')" title="Deprimir terreno">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4,6 8,12 12,6"/><line x1="8" y1="3" x2="8" y2="12" stroke-dasharray="2 2" stroke-width="1.2"/></svg>
+        DEPRIMIR
+      </button>
+      <button class="t3d-tool" id="t3d-smooth" onclick="setTerrainTool('smooth')" title="Suavizar">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 11 Q5 5 8 8 Q11 11 14 5"/></svg>
+        SUAVIZAR
+      </button>
+      <button class="t3d-tool" id="t3d-flat" onclick="setTerrainTool('flat')" title="Nivelar para zero">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="2" y1="8" x2="14" y2="8"/><line x1="5" y1="11" x2="5" y2="5"/><line x1="11" y1="11" x2="11" y2="5"/></svg>
+        NIVELAR
+      </button>
+      <button class="t3d-tool" id="t3d-plateau" onclick="setTerrainTool('plateau')" title="Platô — aplaina na altura atual do brush">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 10l3-5h6l3 5"/><line x1="2" y1="10" x2="14" y2="10" stroke-width="2.2"/></svg>
+        PLATÔ
+      </button>
+      <button class="t3d-tool" id="t3d-noise" onclick="setTerrainTool('noise')" title="Adicionar ruído/rugosidade">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 9l1.5-3 1.5 4 2-6 2 8 1.5-4 1.5 3 1.5-2 1.5 2"/></svg>
+        RUÍDO
+      </button>
+      <button class="t3d-tool" id="t3d-erode" onclick="setTerrainTool('erode')" title="Erosão — apaga bordas abruptas">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 13c2-3 3-8 5-8s2 5 5 8"/><path d="M6 13c1-2 1.5-5 2-5s1 3 2 5" stroke-width="1.2" stroke-dasharray="1.5 1.5"/></svg>
+        EROSÃO
+      </button>
+      <button class="t3d-tool" id="t3d-paint-height" onclick="setTerrainTool('paint-height')" title="Pintar altura exata (usa slider ALVO)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12l2-8h4l2 8"/><path d="M3 10h10" stroke-dasharray="2 2" stroke-width="1.2"/><circle cx="8" cy="7" r="1.5" fill="currentColor" stroke="none"/></svg>
+        PINTAR
+      </button>
+    </div>
+
+    <!-- Controles do pincel -->
+    <div class="t3d-section-label" style="margin-top:2px;">PINCEL</div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">FORÇA</span>
+      <input type="range" class="t3d-slider" id="t3d-strength" min="1" max="10" value="4"
+        oninput="document.getElementById('t3d-strength-val').textContent=this.value">
+      <span class="t3d-val" id="t3d-strength-val">4</span>
+    </div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">RAIO</span>
+      <input type="range" class="t3d-slider" id="t3d-radius" min="1" max="12" value="2"
+        oninput="document.getElementById('t3d-radius-val').textContent=this.value;_updateBrushCursor()">
+      <span class="t3d-val" id="t3d-radius-val">2</span>
+    </div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">ALVO</span>
+      <input type="range" class="t3d-slider" id="t3d-target-height" min="0" max="20" value="5"
+        oninput="document.getElementById('t3d-target-val').textContent=this.value">
+      <span class="t3d-val" id="t3d-target-val">5</span>
+    </div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">ALTURA</span>
+      <input type="range" class="t3d-slider" id="t3d-maxheight" min="1" max="20" value="6"
+        oninput="document.getElementById('t3d-maxheight-val').textContent=this.value;_applyTerrainMaxHeight()">
+      <span class="t3d-val" id="t3d-maxheight-val">6</span>
+    </div>
+
+    <div class="t3d-divider"></div>
+
+    <!-- Presets de terreno -->
+    <div class="t3d-section-label">GERAR TERRENO</div>
+    <div class="t3d-presets-grid">
+      <button class="t3d-preset" onclick="gerarTerrenoPreset('montanha')">
+        <span class="t3d-preset-icon">🏔</span>MONTANHA
+      </button>
+      <button class="t3d-preset" onclick="gerarTerrenoPreset('colinas')">
+        <span class="t3d-preset-icon">🌄</span>COLINAS
+      </button>
+      <button class="t3d-preset" onclick="gerarTerrenoPreset('crateras')">
+        <span class="t3d-preset-icon">🌑</span>CRATERAS
+      </button>
+      <button class="t3d-preset" onclick="gerarTerrenoPreset('ruinas')">
+        <span class="t3d-preset-icon">🏚</span>RUÍNAS
+      </button>
+      <button class="t3d-preset" onclick="gerarTerrenoPreset('pantano')">
+        <span class="t3d-preset-icon">🌿</span>PÂNTANO
+      </button>
+      <button class="t3d-preset" onclick="gerarTerrenoPreset('caos')">
+        <span class="t3d-preset-icon">🔴</span>CAOS
+      </button>
+      <button class="t3d-preset" onclick="gerarTerrenoPreset('abismo')">
+        <span class="t3d-preset-icon">🕳</span>ABISMO
+      </button>
+      <button class="t3d-preset" onclick="gerarTerrenoPreset('fortaleza')">
+        <span class="t3d-preset-icon">🏰</span>FORTE
+      </button>
+      <button class="t3d-preset" onclick="gerarTerrenoPreset('ondas')">
+        <span class="t3d-preset-icon">🌊</span>ONDAS
+      </button>
+    </div>
+
+    <button class="t3d-reset-btn" onclick="resetarTerreno()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8a5 5 0 105 5"/><polyline points="3,4 3,8 7,8"/></svg>
+      RESETAR MAPA 3D COMPLETO
+    </button>
+
+    <div class="t3d-divider"></div>
+
+    <!-- Cenários salvos -->
+    <div class="t3d-section-label">CENÁRIOS</div>
+    <div class="t3d-scenario-grid" id="t3d-scenario-grid"></div>
+    <button class="t3d-add-scenario-btn" onclick="criarNovoCenario()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:12px;height:12px;"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+      NOVO CENÁRIO
+    </button>
   </div>
-  <div class="terrain3d-row">
-    <span class="terrain3d-label">RAIO</span>
-    <input type="range" class="terrain3d-slider" id="t3d-radius" min="1" max="8" value="2" oninput="document.getElementById('t3d-radius-val').textContent=this.value">
-    <span class="terrain3d-val" id="t3d-radius-val">2</span>
+
+  <!-- ABA: BLOCOS (modo Roblox Studio) -->
+  <div class="t3d-pane" id="t3d-pane-block">
+
+    <div class="t3d-section-label">TIPO DE BLOCO</div>
+    <div class="t3d-block-palette" id="t3d-block-palette">
+      <div class="t3d-block-type active" id="t3d-btype-stone" onclick="setBlockType('stone')">
+        <div class="t3d-block-swatch" style="background:linear-gradient(135deg,#4a4035,#2a2018)"></div>
+        PEDRA
+      </div>
+      <div class="t3d-block-type" id="t3d-btype-dirt" onclick="setBlockType('dirt')">
+        <div class="t3d-block-swatch" style="background:linear-gradient(135deg,#5a3a20,#3a2010)"></div>
+        TERRA
+      </div>
+      <div class="t3d-block-type" id="t3d-btype-grass" onclick="setBlockType('grass')">
+        <div class="t3d-block-swatch" style="background:linear-gradient(135deg,#1a4010,#0a2006)"></div>
+        GRAMA
+      </div>
+      <div class="t3d-block-type" id="t3d-btype-wood" onclick="setBlockType('wood')">
+        <div class="t3d-block-swatch" style="background:linear-gradient(135deg,#6a4020,#3a2010)"></div>
+        MADEIRA
+      </div>
+      <div class="t3d-block-type" id="t3d-btype-brick" onclick="setBlockType('brick')">
+        <div class="t3d-block-swatch" style="background:linear-gradient(135deg,#6a2010,#3a1008)"></div>
+        TIJOLO
+      </div>
+      <div class="t3d-block-type" id="t3d-btype-metal" onclick="setBlockType('metal')">
+        <div class="t3d-block-swatch" style="background:linear-gradient(135deg,#505866,#2a3040)"></div>
+        METAL
+      </div>
+      <div class="t3d-block-type" id="t3d-btype-glass" onclick="setBlockType('glass')">
+        <div class="t3d-block-swatch" style="background:linear-gradient(135deg,rgba(100,160,220,0.7),rgba(60,100,160,0.5));border:1px solid rgba(100,160,220,0.4)"></div>
+        VIDRO
+      </div>
+      <div class="t3d-block-type" id="t3d-btype-dark" onclick="setBlockType('dark')">
+        <div class="t3d-block-swatch" style="background:linear-gradient(135deg,#220818,#0a0308)"></div>
+        SOMBRIO
+      </div>
+    </div>
+
+    <div class="t3d-section-label" style="margin-top:4px;">AÇÃO</div>
+    <div class="t3d-block-action-row">
+      <button class="t3d-block-action-btn" id="t3d-bact-place" onclick="setBlockAction('place')" style="border-color:rgba(var(--glow),0.5);color:var(--accent-l);background:rgba(var(--glow),0.1);">
+        ▪ COLOCAR
+      </button>
+      <button class="t3d-block-action-btn" id="t3d-bact-remove" onclick="setBlockAction('remove')">
+        ✕ REMOVER
+      </button>
+      <button class="t3d-block-action-btn" id="t3d-bact-paint" onclick="setBlockAction('paint')">
+        ◈ PINTAR
+      </button>
+    </div>
+
+    <div class="t3d-section-label" style="margin-top:6px;">DIMENSÕES DO BLOCO</div>
+
+    <!-- Eixo X (largura) -->
+    <div class="t3d-row">
+      <span class="t3d-lbl" style="color:#82b8ff;">← X →</span>
+      <input type="range" class="t3d-slider" id="t3d-bdim-x"
+        min="0.1" max="10" step="0.1" value="1"
+        oninput="atualizarDimBloco('x', this.value)">
+      <span class="t3d-val" id="t3d-bdim-x-val">1.0 cel</span>
+    </div>
+
+    <!-- Eixo Z (profundidade) -->
+    <div class="t3d-row">
+      <span class="t3d-lbl" style="color:#00cba6;">↑ Z ↓</span>
+      <input type="range" class="t3d-slider" id="t3d-bdim-z"
+        min="0.1" max="10" step="0.1" value="1"
+        oninput="atualizarDimBloco('z', this.value)">
+      <span class="t3d-val" id="t3d-bdim-z-val">1.0 cel</span>
+    </div>
+
+    <!-- Eixo Y (altura) — em steps de 0.25 -->
+    <div class="t3d-row">
+      <span class="t3d-lbl" style="color:#fdcb6e;">↕ Y</span>
+      <input type="range" class="t3d-slider" id="t3d-bdim-y"
+        min="0.4" max="32" step="0.4" value="4"
+        oninput="atualizarDimBloco('y', this.value)">
+      <span class="t3d-val" id="t3d-bdim-y-val">1.00 cel</span>
+    </div>
+
+    <!-- Presets rápidos de forma -->
+    <div class="t3d-section-label" style="margin-top:2px;">FORMAS RÁPIDAS</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:4px;">
+      <button class="t3d-block-action-btn" onclick="presetBloco(1,4,1)" title="Cubo padrão (1×1×1 cel)">
+        ◼ CUBO
+      </button>
+      <button class="t3d-block-action-btn" onclick="presetBloco(0.1,4,1)" title="Parede fina (0.1×1×1)">
+        ▏PAREDE
+      </button>
+      <button class="t3d-block-action-btn" onclick="presetBloco(1,4,0.1)" title="Parede lateral">
+        ▬ LAJE
+      </button>
+      <button class="t3d-block-action-btn" onclick="presetBloco(1,1,1)" title="Chão fino (1×0.25×1)">
+        ▭ PISO
+      </button>
+      <button class="t3d-block-action-btn" onclick="presetBloco(2,4,2)" title="Pilar 2×1×2">
+        ⊞ PILAR
+      </button>
+      <button class="t3d-block-action-btn" onclick="presetBloco(4,16,4)" title="Torre alta">
+        ⬆ TORRE
+      </button>
+    </div>
+
+    <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;line-height:1.6;margin:4px 0 6px;">
+      Clique → colocar &nbsp;·&nbsp; Clique dir. → remover<br>
+      Ctrl+clique → pintar &nbsp;·&nbsp; Segurar → arrastar
+    </div>
+
+    <div class="t3d-divider"></div>
+    <button class="t3d-reset-btn" onclick="limparBlocos3D()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="3,3 13,13"/><polyline points="13,3 3,13"/></svg>
+      REMOVER TODOS OS BLOCOS
+    </button>
   </div>
-  <div class="terrain3d-row">
-    <span class="terrain3d-label">ALTURA</span>
-    <input type="range" class="terrain3d-slider" id="t3d-maxheight" min="1" max="20" value="6" oninput="document.getElementById('t3d-maxheight-val').textContent=this.value;_applyTerrainMaxHeight()">
-    <span class="terrain3d-val" id="t3d-maxheight-val">6</span>
+  <div class="t3d-pane" id="t3d-pane-env">
+
+    <!-- Iluminação -->
+    <div class="t3d-section-label">CÉU / ILUMINAÇÃO</div>
+    <div class="t3d-sky-grid">
+      <button class="t3d-sky-btn active" id="t3d-sky-paranormal" onclick="setSky('paranormal')">
+        <div class="t3d-sky-dot" style="background:radial-gradient(#1a0003,#400010)"></div>
+        PARA&shy;NORMAL
+      </button>
+      <button class="t3d-sky-btn" id="t3d-sky-noite" onclick="setSky('noite')">
+        <div class="t3d-sky-dot" style="background:radial-gradient(#050514,#0a0a30)"></div>
+        NOITE
+      </button>
+      <button class="t3d-sky-btn" id="t3d-sky-crepusculo" onclick="setSky('crepusculo')">
+        <div class="t3d-sky-dot" style="background:radial-gradient(#301000,#600820)"></div>
+        CREPÚS&shy;CULO
+      </button>
+      <button class="t3d-sky-btn" id="t3d-sky-dia" onclick="setSky('dia')">
+        <div class="t3d-sky-dot" style="background:radial-gradient(#2060c0,#0a2050)"></div>
+        DIA
+      </button>
+    </div>
+
+    <div class="t3d-divider"></div>
+    <div class="t3d-section-label">NÉVOA</div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">DENSIDADE</span>
+      <input type="range" class="t3d-slider" id="t3d-fog-density" min="0" max="100" value="40"
+        oninput="document.getElementById('t3d-fog-val').textContent=this.value+'%';setFogDensity(this.value)">
+      <span class="t3d-val" id="t3d-fog-val">40%</span>
+    </div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">ALCANCE</span>
+      <input type="range" class="t3d-slider" id="t3d-fog-range" min="10" max="120" value="40"
+        oninput="document.getElementById('t3d-fog-range-val').textContent=this.value;setFogRange(this.value)">
+      <span class="t3d-val" id="t3d-fog-range-val">40</span>
+    </div>
+
+    <div class="t3d-divider"></div>
+    <div class="t3d-section-label">LUZ DIRECIONAL</div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">INTENSIDADE</span>
+      <input type="range" class="t3d-slider" id="t3d-light-int" min="0" max="30" value="12"
+        oninput="document.getElementById('t3d-light-val').textContent=(this.value/10).toFixed(1);setLightIntensity(this.value/10)">
+      <span class="t3d-val" id="t3d-light-val">1.2</span>
+    </div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">ÂNGULO</span>
+      <input type="range" class="t3d-slider" id="t3d-light-angle" min="0" max="360" value="45"
+        oninput="document.getElementById('t3d-light-angle-val').textContent=this.value+'°';setLightAngle(this.value)">
+      <span class="t3d-val" id="t3d-light-angle-val">45°</span>
+    </div>
+
+    <div class="t3d-divider"></div>
+    <div class="t3d-section-label">TEXTURA POR ALTITUDE</div>
+    <div class="t3d-row" style="gap:6px;">
+      <label class="t3d-toggle" title="Colorir o terreno por altitude (neve/rocha/terra/grama)">
+        <input type="checkbox" id="t3d-biome-toggle" onchange="setBiomeColoring(this.checked)">
+        <div class="t3d-toggle-track"></div>
+        <div class="t3d-toggle-thumb"></div>
+      </label>
+      <span class="t3d-lbl" style="min-width:unset;font-size:8.5px;">COLORAÇÃO POR BIOMA</span>
+    </div>
   </div>
-  <div style="height:1px;background:rgba(120,30,30,0.3);margin:2px 0;"></div>
-  <div class="terrain3d-title" style="font-size:8px;margin-bottom:0;">GERAR TERRENO</div>
-  <div class="terrain3d-presets">
-    <button class="t3d-preset" onclick="gerarTerrenoPreset('montanha')"><span>🏔</span>MONTANHA</button>
-    <button class="t3d-preset" onclick="gerarTerrenoPreset('colinas')"><span>🌄</span>COLINAS</button>
-    <button class="t3d-preset" onclick="gerarTerrenoPreset('crateras')"><span>🌑</span>CRATERAS</button>
-    <button class="t3d-preset" onclick="gerarTerrenoPreset('ruinas')"><span>🏚</span>RUÍNAS</button>
-    <button class="t3d-preset" onclick="gerarTerrenoPreset('pantano')"><span>🌿</span>PÂNTANO</button>
-    <button class="t3d-preset" onclick="gerarTerrenoPreset('caos')"><span>🔴</span>CAOS</button>
+
+  <!-- ABA: OBJETOS 3D -->
+  <div class="t3d-pane" id="t3d-pane-obj">
+
+    <!-- Slider de tamanho -->
+    <div class="t3d-section-label">TAMANHO</div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">ESCALA</span>
+      <input type="range" class="t3d-slider" id="t3d-obj-size" min="0.3" max="4.0" step="0.1" value="1.0"
+        oninput="document.getElementById('t3d-obj-size-val').textContent=parseFloat(this.value).toFixed(1)+'×'">
+      <span class="t3d-val" id="t3d-obj-size-val">1.0×</span>
+    </div>
+
+    <!-- Grid de objetos -->
+    <div class="t3d-section-label" style="margin-top:2px;">COLOCAR OBJETO</div>
+    <div class="t3d-obj-grid">
+      <button class="t3d-obj-btn" id="t3d-obj-rock" onclick="setObjTool('rock')">
+        <span class="t3d-obj-icon">🪨</span>PEDRA
+      </button>
+      <button class="t3d-obj-btn" id="t3d-obj-arvore" onclick="setObjTool('arvore')">
+        <span class="t3d-obj-icon">🌲</span>ÁRVORE
+      </button>
+      <button class="t3d-obj-btn" id="t3d-obj-tocha" onclick="setObjTool('tocha')">
+        <span class="t3d-obj-icon">🔥</span>TOCHA
+      </button>
+      <button class="t3d-obj-btn" id="t3d-obj-pilar" onclick="setObjTool('pilar')">
+        <span class="t3d-obj-icon">🏛</span>PILAR
+      </button>
+      <button class="t3d-obj-btn" id="t3d-obj-altar" onclick="setObjTool('altar')">
+        <span class="t3d-obj-icon">⛩️</span>ALTAR
+      </button>
+      <button class="t3d-obj-btn" id="t3d-obj-nexus" onclick="setObjTool('nexus')">
+        <span class="t3d-obj-icon">🔮</span>NEXUS
+      </button>
+      <button class="t3d-obj-btn" id="t3d-obj-circulo" onclick="setObjTool('circulo')">
+        <span class="t3d-obj-icon">⭕</span>CÍRCULO
+      </button>
+      <button class="t3d-obj-btn" id="t3d-obj-agente" onclick="setObjTool('agente')">
+        <span class="t3d-obj-icon">🕵️</span>AGENTE
+      </button>
+      <button class="t3d-obj-btn" id="t3d-obj-barril" onclick="setObjTool('barril')">
+        <span class="t3d-obj-icon">🪣</span>BARRIL
+      </button>
+      <button class="t3d-obj-btn" id="t3d-obj-parede" onclick="setObjTool('parede')">
+        <span class="t3d-obj-icon">🧱</span>PAREDE
+      </button>
+    </div>
+
+    <div class="t3d-obj-hint" id="t3d-obj-hint">Selecione um objeto e clique no mapa para colocar. Clique direito sobre um objeto para remover.</div>
+    <div class="t3d-divider"></div>
+    <button class="t3d-reset-btn" onclick="limparObjetos3D()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="3,3 13,13"/><polyline points="13,3 3,13"/></svg>
+      REMOVER TODOS OS OBJETOS
+    </button>
   </div>
-  <button class="t3d-reset" onclick="resetarTerreno()">↺ RESETAR TERRENO PLANO</button>
+
+  <!-- ABA: CÂMERA -->
+  <div class="t3d-pane" id="t3d-pane-cam">
+
+    <!-- FOCO NO TOKEN -->
+    <div class="t3d-section-label">FOCO NO TOKEN</div>
+    <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;line-height:1.6;margin-bottom:6px;">
+      Selecione um token e escolha um ângulo para focar a câmera nele com uma transição suave.
+    </div>
+
+    <!-- Grid de ângulos predefinidos -->
+    <div class="t3d-section-label" style="margin-top:2px;">ÂNGULO DE CÂMERA</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px;">
+      <button class="t3d-block-action-btn" id="cam-preset-top" onclick="focarTokenAngulo('top')" title="Vista de cima — aérea">
+        ⬆ AÉREO
+      </button>
+      <button class="t3d-block-action-btn" id="cam-preset-diagonal" onclick="focarTokenAngulo('diagonal')" title="Diagonal isométrico — padrão RPG">
+        ◆ DIAGONAL
+      </button>
+      <button class="t3d-block-action-btn" id="cam-preset-low" onclick="focarTokenAngulo('low')" title="Ângulo baixo — dramático">
+        ↙ BAIXO
+      </button>
+      <button class="t3d-block-action-btn" id="cam-preset-front" onclick="focarTokenAngulo('front')" title="Frontal — rosto do personagem">
+        ◉ FRONTAL
+      </button>
+      <button class="t3d-block-action-btn" id="cam-preset-orbit-l" onclick="focarTokenAngulo('orbit-l')" title="Lateral esquerda">
+        ◁ LATERAL E
+      </button>
+      <button class="t3d-block-action-btn" id="cam-preset-orbit-r" onclick="focarTokenAngulo('orbit-r')" title="Lateral direita">
+        ▷ LATERAL D
+      </button>
+    </div>
+
+    <div class="t3d-divider"></div>
+
+    <!-- Distância de foco -->
+    <div class="t3d-section-label">DISTÂNCIA</div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">ZOOM</span>
+      <input type="range" class="t3d-slider" id="cam-focus-dist" min="2" max="20" step="0.5" value="8"
+        oninput="document.getElementById('cam-focus-dist-val').textContent=parseFloat(this.value).toFixed(1)">
+      <span class="t3d-val" id="cam-focus-dist-val">8.0</span>
+    </div>
+
+    <div class="t3d-divider"></div>
+
+    <!-- Auto-orbit -->
+    <div class="t3d-section-label">AUTO-ÓRBITA</div>
+    <div class="t3d-row" style="gap:6px;">
+      <label class="t3d-toggle" title="Girar câmera continuamente ao redor do token focado">
+        <input type="checkbox" id="cam-auto-orbit" onchange="toggleAutoOrbit(this.checked)">
+        <div class="t3d-toggle-track"></div>
+        <div class="t3d-toggle-thumb"></div>
+      </label>
+      <span class="t3d-lbl" style="min-width:unset;font-size:8.5px;">GIRAR EM TORNO DO TOKEN</span>
+    </div>
+    <div class="t3d-row">
+      <span class="t3d-lbl">VELOCIDADE</span>
+      <input type="range" class="t3d-slider" id="cam-orbit-speed" min="0.1" max="3.0" step="0.1" value="0.5"
+        oninput="document.getElementById('cam-orbit-speed-val').textContent=parseFloat(this.value).toFixed(1)+'×'">
+      <span class="t3d-val" id="cam-orbit-speed-val">0.5×</span>
+    </div>
+
+    <div class="t3d-divider"></div>
+
+    <!-- Reset câmera -->
+    <button class="t3d-reset-btn" onclick="resetarCamera3D()" style="margin-top:2px;">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 8a6 6 0 1 1 1.5 4"/><polyline points="2,12 2,8 6,8"/></svg>
+      RESETAR CÂMERA
+    </button>
+
+  </div>
 </div>
 
 </body>
