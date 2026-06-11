@@ -1207,7 +1207,7 @@
     <!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue, get, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -1233,6 +1233,7 @@
   window._firebaseSet      = set;
   window._firebaseOnValue  = onValue;
   window._firebaseGet      = get;
+  window._firebasePush     = push;
   // Funções do Firestore usadas fora do módulo (sincronizarFotoNasCampanhas)
   window._fsCollection     = collection;
   window._fsQuery          = query;
@@ -4411,6 +4412,9 @@ async function carregarFicha() {
     const params  = new URLSearchParams(window.location.search);
     const id      = params.get('id');
     const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    // Guarda a campanha atual para publicar rolagens no Escudo do Mestre
+    const campanhaParam = params.get('campanha') || '';
+    if (campanhaParam) window._fichaCurrentCampanha = campanhaParam;
 
     // 1) Tenta carregar agente do localStorage (cache local)
     const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
@@ -4775,9 +4779,30 @@ function rolarAtributo(atrib) {
 // ══════════════════════════════════════════════
 function adicionarAoLog(nome,expr,total,tipo) {
     if (!estado.logRolagens) estado.logRolagens=[];
-    estado.logRolagens.unshift({ nome,expr,total,tipo, hora:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) });
+    const hora = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    estado.logRolagens.unshift({ nome,expr,total,tipo, hora });
     if (estado.logRolagens.length>50) estado.logRolagens.pop();
     salvarEstado(); renderLog();
+    // Publica a rolagem no RTDB para o Escudo do Mestre receber em tempo real
+    _publicarRolagemEscudo(nome, expr, total, tipo, hora);
+}
+
+function _publicarRolagemEscudo(nome, expr, total, tipo, hora) {
+    const campId = window._fichaCurrentCampanha || '';
+    if (!campId || !window._firebaseDB || !window._firebasePush || !window._firebaseRef) return;
+    const autor = sessionStorage.getItem('ficha_user') || 'Player';
+    const nomeAgente = ficha ? ficha.nome : autor;
+    try {
+        const rolagemRef = window._firebaseRef(window._firebaseDB, `campanhas_rolagens/${campId}`);
+        window._firebasePush(rolagemRef, {
+            autor:  nomeAgente,
+            tipo:   nome,
+            dados:  `[${expr}]`,
+            total:  total,
+            hora:   hora,
+            ts:     Date.now(),
+        }).catch(e => console.warn('[FICHA] push rolagem falhou:', e));
+    } catch(e) { console.warn('[FICHA] _publicarRolagemEscudo:', e); }
 }
 
 function renderLog() {

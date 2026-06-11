@@ -1448,7 +1448,7 @@ body { transition: background 0.5s ease; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getDatabase, ref as rtdbRef, get as rtdbGet, update as rtdbUpdate } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref as rtdbRef, get as rtdbGet, update as rtdbUpdate, onValue as rtdbOnValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // ══ CONFIG FIREBASE ══
@@ -2053,6 +2053,8 @@ let _escudoOcultar   = false;
 let _escudoAgentes   = []; // cache com dados completos do RTDB
 let _reditState      = null;
 let _rolagens        = [];
+let _unsubRolagens   = null; // listener de rolagens dos players
+let _unsubRecursos   = [];   // listeners de recursos (vida/san/esf) por agente
 
 window.abrirEscudoMestre = async function() {
     if (!campanhaAtual) { mostrarToast('⚠ Abra uma campanha primeiro'); return; }
@@ -2075,10 +2077,19 @@ window.abrirEscudoMestre = async function() {
 
     // Carrega agentes
     await _carregarAgentesEscudo();
+
+    // Escuta rolagens dos players em tempo real
+    _iniciarListenerRolagens();
+
+    // Escuta recursos (vida/san/esf) de cada agente em tempo real
+    _iniciarListenersRecursos();
 };
 
 window.fecharEscudo = function() {
     document.getElementById('escudo-overlay').classList.remove('show');
+    if (_unsubRolagens) { _unsubRolagens(); _unsubRolagens = null; }
+    _unsubRecursos.forEach(fn => fn());
+    _unsubRecursos = [];
 };
 
 async function _carregarAgentesEscudo() {
@@ -2100,21 +2111,34 @@ async function _carregarAgentesEscudo() {
         return;
     }
 
-    // 2. Para cada agente, tenta buscar dados completos do RTDB usando
-    //    o caminho: agentes/<playerNome>/<fichaLocalId>
-    //    (mesmo caminho usado por _buscarEAtualizarFotoAgente)
+    // 2. Para cada agente, busca dados completos do RTDB em dois caminhos:
+    //    - agentes/<playerNome>/<fichaLocalId>  → atributos, nex, defesa…
+    //    - fichas/<fichaLocalId>/estado         → vida, san, esf, progressao atuais
     const promises = agentesFS.map(async a => {
         if (!a.playerNome || !a.fichaLocalId) return a;
+        let merged = { ...a };
+
         try {
-            const snap = await rtdbGet(rtdbRef(rtdb, `agentes/${a.playerNome}/${a.fichaLocalId}`));
-            if (snap.exists()) {
-                // Mescla: dados do RTDB sobrepõem Firestore, mas mantemos _fsId
-                return { ...a, ...snap.val(), _fsId: a._fsId };
+            const snapA = await rtdbGet(rtdbRef(rtdb, `agentes/${a.playerNome}/${a.fichaLocalId}`));
+            if (snapA.exists()) merged = { ...merged, ...snapA.val(), _fsId: a._fsId };
+        } catch(e) { console.warn('[ESCUDO] RTDB agente falhou para', a.nome, e); }
+
+        try {
+            const snapE = await rtdbGet(rtdbRef(rtdb, `fichas/${a.fichaLocalId}/estado`));
+            if (snapE.exists()) {
+                const est = snapE.val();
+                if (est.vida)       { merged.vidaAtual    = est.vida.atual ?? merged.vidaAtual;    merged.vidaMax      = est.vida.max   ?? merged.vidaMax; }
+                if (est.san)        { merged.sanidadeAtual = est.san.atual  ?? merged.sanidadeAtual; merged.sanidadeMax  = est.san.max    ?? merged.sanidadeMax; }
+                if (est.esf)        { merged.esforcoAtual = est.esf.atual  ?? merged.esforcoAtual;  merged.esforcoMax   = est.esf.max    ?? merged.esforcoMax; }
+                if (est.progressao) {
+                    if (est.progressao.nex  != null) merged.nex          = est.progressao.nex;
+                    if (est.progressao.pe   != null) merged.pe           = est.progressao.pe;
+                    if (est.progressao.desl != null) merged.deslocamento = est.progressao.desl;
+                }
             }
-        } catch(e) {
-            console.warn('[ESCUDO] RTDB falhou para', a.nome, e);
-        }
-        return a; // fallback: só dados do Firestore
+        } catch(e) { console.warn('[ESCUDO] RTDB estado falhou para', a.nome, e); }
+
+        return merged;
     });
 
     _escudoAgentes = await Promise.all(promises);
@@ -2140,15 +2164,20 @@ function _renderAgentesEscudo(lista) {
             ? (typeof nexRaw === 'number' && nexRaw <= 100 ? nexRaw + '%' : 'Nível ' + nexRaw)
             : '—';
 
-        // Atributos — a ficha.html salva como agi, for, int, pre, vig (minúsculas)
-        const agi = a.agi  ?? '—';
-        const fr  = a.for  ?? '—';  // "for" é palavra reservada mas como propriedade é OK
-        const int_ = a.int ?? '—';
-        const pre = a.pre  ?? '—';
-        const vig = a.vig  ?? '—';
+        // Atributos: tenta flat minúsculo (novo) → aninhado maiúsculo (legado RTDB)
+        const _at  = a.atributos || {};
+        const agiN = a.agi != null ? a.agi : (_at.AGI != null ? _at.AGI : null);
+        const frN  = a.for != null ? a.for : (_at.FOR != null ? _at.FOR : null);
+        const intN = a.int != null ? a.int : (_at.INT != null ? _at.INT : null);
+        const preN = a.pre != null ? a.pre : (_at.PRE != null ? _at.PRE : null);
+        const vigN = a.vig != null ? a.vig : (_at.VIG != null ? _at.VIG : null);
+        const agi  = agiN != null ? agiN : '—';
+        const fr   = frN  != null ? frN  : '—';
+        const int_ = intN != null ? intN : '—';
+        const pre  = preN != null ? preN : '—';
+        const vig  = vigN != null ? vigN : '—';
 
-        // Recursos — ficha salva vidaAtual/vidaMax, sanidadeAtual/sanidadeMax, esforcoAtual/esforcoMax
-        // Alguns campos legados podem ser só "vida" = max
+        // Recursos
         const vAtual = a.vidaAtual     ?? a.vida     ?? 0;
         const vMax   = a.vidaMax       ?? a.vida     ?? 1;
         const sAtual = a.sanidadeAtual ?? a.sanidade ?? 0;
@@ -2156,11 +2185,12 @@ function _renderAgentesEscudo(lista) {
         const eAtual = a.esforcoAtual  ?? a.esforco  ?? 0;
         const eMax   = a.esforcoMax    ?? a.esforco  ?? 1;
 
-        // Stats de combate
-        const defesa   = a.defesa    ?? '—';
-        const bloqueio = a.bloqueio  ?? '0';
-        const esquiva  = a.esquiva   ?? '—';
-        const pe       = a.pe        ?? a.peTotal ?? '3';
+        // Stats de combate — defesa/esquiva calculada como 10+AGI se não vier do RTDB
+        const agiVal  = agiN != null ? Number(agiN) : 0;
+        const defesa  = a.defesa  != null ? a.defesa  : (agiN != null ? 10 + agiVal : '—');
+        const esquiva = a.esquiva != null ? a.esquiva : (agiN != null ? 10 + agiVal : '—');
+        const bloqueio = a.bloqueio ?? '0';
+        const pe       = a.pe      ?? a.peTotal ?? '3';
         const desl     = a.deslocamento ? a.deslocamento : '9m';
 
         const fichaUrl = a.playerUid === currentUser?.uid
@@ -2327,6 +2357,12 @@ function _addRolagem(entry) {
     _rolagens.unshift(entry);
     if (_rolagens.length > 40) _rolagens.pop();
     _renderRolagens();
+    // Publica no RTDB para persistir o histórico (DM)
+    if (campanhaAtual) {
+        import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js")
+            .then(m => m.push(rtdbRef(rtdb, `campanhas_rolagens/${campanhaAtual}`), { ...entry, ts: Date.now() }))
+            .catch(() => {});
+    }
 }
 function _renderRolagens() {
     const el = document.getElementById('escudo-rol-lista');
@@ -2344,6 +2380,101 @@ function _renderRolagens() {
         </div>`).join('');
 }
 window.limparRolagens = function() { _rolagens = []; _renderRolagens(); };
+
+// ── Listener em tempo real das rolagens dos players ──
+function _iniciarListenerRolagens() {
+    if (_unsubRolagens) { _unsubRolagens(); _unsubRolagens = null; }
+    if (!campanhaAtual) return;
+
+    const rolagemRef = rtdbRef(rtdb, `campanhas_rolagens/${campanhaAtual}`);
+    let primeiroSnap = true;
+
+    _unsubRolagens = rtdbOnValue(rolagemRef, snap => {
+        if (!snap.exists()) return;
+        const entradas = Object.values(snap.val())
+            .sort((a, b) => (b.ts || 0) - (a.ts || 0))
+            .slice(0, 40);
+
+        if (primeiroSnap) {
+            primeiroSnap = false;
+            _rolagens = entradas.map(r => ({
+                autor: r.autor || 'Player', tipo: r.tipo || '—',
+                dados: r.dados || '', total: r.total ?? '—', hora: r.hora || '',
+            }));
+        } else {
+            const nova = entradas[0];
+            if (!nova) return;
+            const jaExiste = _rolagens.length > 0 &&
+                _rolagens[0].hora === nova.hora && _rolagens[0].total === nova.total &&
+                _rolagens[0].autor === nova.autor;
+            if (jaExiste) return;
+            _rolagens.unshift({ autor: nova.autor || 'Player', tipo: nova.tipo || '—',
+                dados: nova.dados || '', total: nova.total ?? '—', hora: nova.hora || '' });
+            if (_rolagens.length > 40) _rolagens.pop();
+        }
+        _renderRolagens();
+    });
+}
+
+// ── Listeners em tempo real dos recursos (vida/san/esf) de cada agente ──
+function _iniciarListenersRecursos() {
+    // Para listeners anteriores
+    _unsubRecursos.forEach(fn => fn());
+    _unsubRecursos = [];
+
+    _escudoAgentes.forEach(agente => {
+        if (!agente.fichaLocalId) return;
+
+        const estadoRef = rtdbRef(rtdb, `fichas/${agente.fichaLocalId}/estado`);
+        const unsub = rtdbOnValue(estadoRef, snap => {
+            if (!snap.exists()) return;
+            const est = snap.val();
+            const fsId = agente._fsId;
+
+            // Extrai valores atualizados
+            const vAtual = est.vida?.atual ?? null;
+            const vMax   = est.vida?.max   ?? null;
+            const sAtual = est.san?.atual  ?? null;
+            const sMax   = est.san?.max    ?? null;
+            const eAtual = est.esf?.atual  ?? null;
+            const eMax   = est.esf?.max    ?? null;
+
+            // Atualiza o cache _escudoAgentes
+            const idx = _escudoAgentes.findIndex(a => a._fsId === fsId);
+            if (idx !== -1) {
+                if (vAtual != null) _escudoAgentes[idx].vidaAtual    = vAtual;
+                if (vMax   != null) _escudoAgentes[idx].vidaMax      = vMax;
+                if (sAtual != null) _escudoAgentes[idx].sanidadeAtual = sAtual;
+                if (sMax   != null) _escudoAgentes[idx].sanidadeMax   = sMax;
+                if (eAtual != null) _escudoAgentes[idx].esforcoAtual  = eAtual;
+                if (eMax   != null) _escudoAgentes[idx].esforcoMax    = eMax;
+            }
+
+            // Atualiza a UI diretamente sem re-renderizar tudo
+            function _pctLocal(v, m) { return Math.max(0, Math.min(100, m > 0 ? Math.round(v / m * 100) : 0)); }
+
+            if (vAtual != null && vMax != null) {
+                const fillV = document.getElementById(`rf-vida-${fsId}`);
+                const txtV  = document.getElementById(`rt-vida-${fsId}`);
+                if (fillV) fillV.style.width = _pctLocal(vAtual, vMax) + '%';
+                if (txtV)  txtV.textContent  = `${vAtual} / ${vMax}`;
+            }
+            if (sAtual != null && sMax != null) {
+                const fillS = document.getElementById(`rf-san-${fsId}`);
+                const txtS  = document.getElementById(`rt-san-${fsId}`);
+                if (fillS) fillS.style.width = _pctLocal(sAtual, sMax) + '%';
+                if (txtS)  txtS.textContent  = `${sAtual} / ${sMax}`;
+            }
+            if (eAtual != null && eMax != null) {
+                const fillE = document.getElementById(`rf-es-${fsId}`);
+                const txtE  = document.getElementById(`rt-es-${fsId}`);
+                if (fillE) fillE.style.width = _pctLocal(eAtual, eMax) + '%';
+                if (txtE)  txtE.textContent  = `${eAtual} / ${eMax}`;
+            }
+        });
+        _unsubRecursos.push(unsub);
+    });
+}
 
 // ── Anotações ──
 window.salvarAnotacoes = function() {
