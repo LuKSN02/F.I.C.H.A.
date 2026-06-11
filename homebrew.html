@@ -444,7 +444,7 @@ body {
 .modal-overlay.show { display: flex; align-items: flex-start; justify-content: center; }
 
 .modal-box {
-  background: var(--card);
+  background: #111115;
   border: 1px solid var(--border2);
   border-radius: 12px;
   padding: 28px;
@@ -487,7 +487,7 @@ body {
 
 .field-input, .field-select, .field-textarea {
   width: 100%;
-  background: #0d000e;
+  background: #1a1a1e;
   border: 1px solid var(--border);
   border-radius: 5px;
   color: var(--white);
@@ -1158,6 +1158,130 @@ body {
 .banner-crop-btn-cancel { background: transparent; border-color: #333; color: #555; }
 .banner-crop-btn-cancel:hover { border-color: #666; color: #888; }
 
+/* ===== MODAL MELHORIAS PARA ITENS ===== */
+.melhorias-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92); z-index: 10010;
+  backdrop-filter: blur(4px);
+}
+.melhorias-overlay.show { display: flex; align-items: flex-start; justify-content: flex-start; }
+.melhorias-panel {
+  width: 100%; max-width: 500px;
+  height: 100vh; overflow-y: auto;
+  background: #0d0d0d;
+  border-right: 1px solid var(--border);
+  padding: 28px 24px;
+  animation: slideInLeft 0.25s ease;
+  box-shadow: 6px 0 40px rgba(0,0,0,0.8);
+}
+@keyframes slideInLeft {
+  from { transform: translateX(-40px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.melhorias-panel-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.melhorias-panel-title {
+  font-size: 1.1rem; font-weight: 700;
+  color: white; font-family: 'Oswald', sans-serif;
+  letter-spacing: 1px;
+}
+.melhorias-panel-close {
+  background: none; border: none; color: #555;
+  font-size: 1.4rem; cursor: pointer; padding: 0;
+  line-height: 1; transition: 0.15s;
+}
+.melhorias-panel-close:hover { color: white; }
+.melhorias-type-tabs {
+  display: flex; gap: 0; margin-bottom: 20px;
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.melhorias-type-tab {
+  flex: 1; padding: 9px 0;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.85rem; font-weight: 700;
+  letter-spacing: 0.5px; color: #666;
+  cursor: pointer; border: none;
+  background: transparent; transition: 0.2s;
+}
+.melhorias-type-tab.active {
+  background: var(--purple); color: white;
+}
+.melhorias-type-tab:hover:not(.active) { color: #ccc; background: #1a1a1a; }
+
+.melhoria-card {
+  background: #161616;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+.melhoria-card:hover { border-color: var(--purple); }
+.melhoria-card-header {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 4px;
+}
+.melhoria-card-name {
+  font-size: 0.95rem; font-weight: 700;
+  color: white; font-family: 'Oswald', sans-serif;
+}
+.melhoria-card-icon {
+  font-size: 0.85rem; opacity: 0.6;
+}
+.melhoria-card-desc {
+  font-size: 0.78rem; color: #888;
+  font-family: 'Oswald', sans-serif;
+  line-height: 1.5; margin-bottom: 10px;
+}
+.melhoria-card-btn {
+  background: var(--purple); border: none;
+  color: white; font-family: 'Oswald', sans-serif;
+  font-size: 0.78rem; font-weight: 700;
+  padding: 5px 16px; border-radius: 4px;
+  cursor: pointer; transition: 0.2s;
+  letter-spacing: 0.5px; float: right;
+}
+.melhoria-card-btn:hover { filter: brightness(1.2); }
+.melhoria-card-btn.adicionada {
+  background: #2a2a2a; color: #555; cursor: default;
+}
+
+/* Tags de melhoria selecionadas */
+.melhoria-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(var(--tema-glow-rgb), 0.15);
+  border: 1px solid rgba(var(--tema-glow-rgb), 0.4);
+  color: var(--tema-primary-light);
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.72rem; font-weight: 700;
+  padding: 3px 10px 3px 10px;
+  border-radius: 20px; cursor: default;
+  letter-spacing: 0.5px;
+}
+.melhoria-tag.maldição {
+  background: rgba(180,0,255,0.1);
+  border-color: rgba(180,0,255,0.4);
+  color: #d070ff;
+}
+.melhoria-tag-remove {
+  background: none; border: none;
+  color: inherit; cursor: pointer;
+  font-size: 0.8rem; padding: 0;
+  line-height: 1; opacity: 0.7;
+  transition: 0.15s;
+}
+.melhoria-tag-remove:hover { opacity: 1; }
+.melhorias-empty {
+  text-align: center; color: #444;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem; letter-spacing: 1px;
+  margin-top: 40px; line-height: 2;
+}
+
 /* ===== ANIMAÇÕES PARANORMAIS ===== */
 #particle-canvas {
     position: fixed; top: 0; left: 0;
@@ -1794,9 +1918,12 @@ body { transition: background 0.5s ease; }
       </div>
       <div class="section-title">
         Melhorias
-        <button class="btn-dyn-add" onclick="addDynItem('arm-melhorias-list')">+ Adicionar</button>
+        <button class="btn-dyn-add" onclick="abrirModalMelhorias()">+ Adicionar</button>
       </div>
-      <div class="dyn-list" id="arm-melhorias-list"></div>
+      <!-- Tags de melhorias selecionadas -->
+      <div id="arm-melhorias-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
+      <!-- Input oculto para armazenar melhorias como JSON -->
+      <input type="hidden" id="arm-melhorias-data" value="[]">
     </div>
 
     <!-- CAMPOS GENÉRICO (Munições, Proteções, Geral, Amaldiçoados) -->
@@ -1806,10 +1933,19 @@ body { transition: background 0.5s ease; }
         <input class="field-input" id="gen-nome" type="text" placeholder="Novo Item">
       </div>
       <div class="fields-row">
-        <div class="field-group"><label class="field-label">Categoria</label><input class="field-input" id="gen-cat" type="text"></div>
-        <div class="field-group"><label class="field-label">Espaços</label><input class="field-input" id="gen-espacos" type="number" value="1"></div>
-        <div class="field-group"><label class="field-label">Bônus / Efeito</label><input class="field-input" id="gen-bonus" type="text"></div>
+        <div class="field-group"><label class="field-label">Categoria *</label><input class="field-input" id="gen-cat" type="number" value="0"></div>
+        <div class="field-group"><label class="field-label">Espaços *</label><input class="field-input" id="gen-espacos" type="number" value="1"></div>
+        <div class="field-group">
+          <label class="field-label">Tag</label>
+          <input class="field-input" id="gen-tag" type="text" placeholder="ex: Acessórios">
+        </div>
       </div>
+      <div class="section-title" id="gen-melhorias-section" style="display:none">
+        Melhorias
+        <button class="btn-dyn-add" onclick="abrirModalMelhorias('gen')">+ Adicionar</button>
+      </div>
+      <div id="gen-melhorias-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
+      <input type="hidden" id="gen-melhorias-data" value="[]">
     </div>
 
     <!-- IMAGEM E DESCRIÇÃO (compartilhados) -->
@@ -1845,11 +1981,473 @@ body { transition: background 0.5s ease; }
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     MODAL MELHORIAS PARA ITENS
+══════════════════════════════════════════ -->
+<div class="melhorias-overlay" id="modal-melhorias" onclick="fecharModalMelhorias(event)">
+  <div class="melhorias-panel" onclick="event.stopPropagation()">
+    <div class="melhorias-panel-header">
+      <div class="melhorias-panel-title">Melhorias para itens</div>
+      <button class="melhorias-panel-close" onclick="fecharModalMelhorias()">✕</button>
+    </div>
+    <div class="melhorias-type-tabs">
+      <button class="melhorias-type-tab active" id="meltab-modificacoes" onclick="trocarTabMelhorias('modificacoes')">Modificações</button>
+      <button class="melhorias-type-tab" id="meltab-maldicoes" onclick="trocarTabMelhorias('maldicoes')">Maldições</button>
+    </div>
+    <div id="melhorias-lista-modificacoes"></div>
+    <div id="melhorias-lista-maldicoes" style="display:none"></div>
+  </div>
+</div>
 
 <script>
 /* ═══════════════════════════════════════════════
-   UTILITÁRIOS
+   SISTEMA DE MELHORIAS PARA ITENS
 ═══════════════════════════════════════════════ */
+
+const MELHORIAS_MODIFICACOES = [
+  {
+    id: 'alongada',
+    nome: 'Alongada',
+    desc: 'Com um cano mais longo, que aumenta a precisão dos disparos, a arma fornece +2 nos testes de ataque.',
+    icone: null
+  },
+  {
+    id: 'calibre_grosso',
+    nome: 'Calibre Grosso',
+    desc: 'A arma é modificada para disparar munição de maior calibre, aumentando seu dano em mais um dado do mesmo tipo. Por exemplo, um revólver de calibre grosso causa 3d6 pontos de dano, enquanto um fuzil de precisão causa 3d10. Armas com esta modificação precisam usar munição específica de calibre grosso. Munição de calibre grosso possui o mesmo custo em categoria de munição normal, mas não pode ser usada em armas normais.',
+    icone: null
+  },
+  {
+    id: 'certeira',
+    nome: 'Certeira',
+    desc: 'Fabricada para ser mais precisa e balanceada, a arma fornece +2 nos testes de ataque.',
+    icone: null
+  },
+  {
+    id: 'compensador',
+    nome: 'Compensador',
+    desc: 'Apenas para armas automáticas. Um sistema de amortecimento reduz o coice da arma, anulando a penalidade em testes de ataque por disparar rajadas.',
+    icone: null
+  },
+  {
+    id: 'cruel',
+    nome: 'Cruel',
+    desc: 'A arma foi feita para causar o máximo de dor. Aumenta o multiplicador de crítico em +1.',
+    icone: null
+  },
+  {
+    id: 'discreta',
+    nome: 'Discreta',
+    desc: 'A arma possui modificações para ocupar menos espaço e chamar menos atenção. Se for uma arma de fogo, pode ser desmontável; se for um bastão pode ser retrátil; se for uma espada, pode ter a lâmina dobrável e assim por diante. Reduz o número de espaços ocupados em 1, fornece +5 em testes de Crime para ser ocultada e permite que você faça esse teste mesmo que não seja treinado na perícia.',
+    icone: '⚙️'
+  },
+  {
+    id: 'dum_dum',
+    nome: 'Dum Dum',
+    desc: 'Estas balas são feitas para se expandir durante o impacto, produzindo ferimentos terríveis. Esta modificação só pode ser aplicada em balas curtas e longas e aumenta o multiplicador de crítico em +1.',
+    icone: '⚙️'
+  },
+  {
+    id: 'explosiva',
+    nome: 'Explosiva',
+    desc: 'Estas munições possuem uma gota de mercúrio ou glicerina, que fazem a bala explodir ao atingir o alvo. Esta modificação só pode ser aplicada em balas curtas e longas e aumenta o dano causado em +2d6.',
+    icone: '⚙️'
+  },
+  {
+    id: 'ferrolho_automatico',
+    nome: 'Ferrolho Automático',
+    desc: 'O mecanismo de ação da arma é modificado para disparar várias vezes em sequência. A arma se torna automática.',
+    icone: null
+  },
+  {
+    id: 'mira_laser',
+    nome: 'Mira Laser',
+    desc: 'Um laser interno cria um reflexo vermelho num retículo luminoso, que é visto pelo atirador e ajuda-o a realizar disparos mais letais. Aumenta a margem de ameaça em +2.',
+    icone: '⚙️'
+  },
+  {
+    id: 'mira_telescopica',
+    nome: 'Mira Telescópica',
+    desc: 'A arma possui uma luneta com marcações de medidas, ideal para disparos precisos de longa distância. Aumenta o alcance da arma em uma categoria (de curto para médio, de médio para longo, de longo para extremo) e permite que a habilidade Ataque Furtivo seja usada em qualquer alcance.',
+    icone: '⚙️'
+  },
+  {
+    id: 'perigosa',
+    nome: 'Perigosa',
+    desc: 'A arma possui lâmina afiada como uma navalha ou foi fabricada com materiais maciços. Seja como for, seus golpes possuem impacto terrível. Aumenta a margem de ameaça em +2.',
+    icone: '⚙️'
+  },
+  {
+    id: 'silenciador',
+    nome: 'Silenciador',
+    desc: 'Um silenciador reduz em -2d20 a penalidade em Furtividade para se esconder no mesmo turno em que atacou com a arma de fogo.',
+    icone: null
+  },
+  {
+    id: 'tatica',
+    nome: 'Tática',
+    desc: 'A arma possui cabo texturizado, bandoleira e outros acessórios que facilitam seu manuseio. Você pode sacar a arma como uma ação livre.',
+    icone: null
+  },
+  {
+    id: 'visao_calor',
+    nome: 'Visão de Calor',
+    desc: 'A mira tem um sistema eletrônico que sobrepõe imagens visíveis e imagens em infravermelho, criando um contraste entre zonas frias e quentes. Ao disparar com a arma, você ignora qualquer camuflagem do alvo.',
+    icone: '⚙️'
+  }
+];
+
+const MELHORIAS_MALDICOES = [
+  {
+    id: 'antielemento',
+    nome: 'Antielemento',
+    desc: 'A arma é letal contra criaturas de um elemento. Quando ataca uma criatura desse elemento, você pode gastar 2 PE. Se fizer isso e acertar o ataque, causa +4d8 pontos de dano. Para determinar o elemento aleatoriamente, role 1d4: 1) Conhecimento; 2) Energia; 3) Morte; 4) Sangue.',
+    icone: '🟠',
+    elemento: 'CONHECIMENTO'
+  },
+  {
+    id: 'ritualistica',
+    nome: 'Ritualística',
+    desc: 'Você pode armazenar na arma um ritual que tenha como alvo um ser ou que afete uma área, gastando os PE como se tivesse conjurado o ritual normalmente. O ritual não gera efeito na hora; em vez disso, fica guardado no item. Quando acerta um ataque com a arma, você pode descarregar o ritual armazenado como uma ação livre. O alvo do ritual, ou o centro da área dele, é o ser atingido. Uma vez que o ritual seja descarregado, outro pode ser armazenado.',
+    icone: '🟠',
+    elemento: 'CONHECIMENTO'
+  },
+  {
+    id: 'senciente',
+    nome: 'Senciente',
+    desc: 'Você pode gastar uma ação de movimento e 2 PE para imbuir a arma com uma fagulha de sua consciência. A arma flutua ao seu lado e, uma vez por rodada, ataca um ser em alcance curto (ou no alcance da arma, o que for maior) a sua escolha, com as mesmas estatísticas que teria se você a estivesse empunhando. Você pode gastar 1 PE no início de cada um de seus turnos para manter esse efeito. Se não o fizer, a arma cai no chão. Você pode usar uma ação de movimento para apanhar a arma no ar caso precise. Soltar a arma para que volte a flutuar para ativar a maldição é uma ação livre.',
+    icone: '🟠',
+    elemento: 'CONHECIMENTO'
+  },
+  {
+    id: 'empuxo',
+    nome: 'Empuxo',
+    desc: 'Com a capacidade de gerar uma descarga momentânea de Energia, a arma ganha a capacidade de ser arremessada em alcance curto (se já podia ser arremessada, seu alcance aumenta em uma categoria) e causa mais um dado de dano do mesmo tipo quando usada dessa forma. Após efetuar um ataque à distância com a arma, ela volta voando para você no mesmo turno. Pegar a arma é uma reação. Somente armas corpo a corpo podem receber essa maldição.',
+    icone: '🟣',
+    elemento: 'ENERGIA'
+  },
+  {
+    id: 'energetica',
+    nome: 'Energética',
+    desc: 'Você pode gastar 2 PE para transformar a arma (exceto seu cabo ou empunhadura) ou a munição disparada pela arma em Energia pura. Durante este ataque, a arma fornece +5 em testes de ataque, ignora resistência a dano e converte todo o dano causado para Energia. Armas corpo a corpo emanam luz como uma lâmpada; munição toma uma forma plasmática iluminada como feixes de luz.',
+    icone: '🟣',
+    elemento: 'ENERGIA'
+  },
+  {
+    id: 'vibrante',
+    nome: 'Vibrante',
+    desc: 'A arma vibra constantemente com um fluxo de Energia. Você recebe a habilidade Ataque Extra, da trilha operações especiais, do combatente. Se já a possui, em vez disso o custo para usá-la diminui em –1 PE.',
+    icone: '🟣',
+    elemento: 'ENERGIA'
+  },
+  {
+    id: 'consumidora',
+    nome: 'Consumidora',
+    desc: 'A arma drena a entropia de seres, deixando alvos atingidos lentos até o final da cena. Quando ataca, você pode gastar 2 PE. Se fizer isso e acertar o ataque, o alvo fica imóvel por uma rodada.',
+    icone: '⬜',
+    elemento: 'MORTE'
+  },
+  {
+    id: 'erosiva',
+    nome: 'Erosiva',
+    desc: 'A arma acelera o envelhecimento dos alvos, causando +1d8 pontos de dano de Morte. Quando ataca, você pode gastar 2 PE. Se fizer isso e acertar o ataque, a vítima sofre 2d4 pontos de dano de Morte no início de seus turnos pelas próximas duas rodadas.',
+    icone: '⬜',
+    elemento: 'MORTE'
+  },
+  {
+    id: 'repulsora',
+    nome: 'Repulsora',
+    desc: 'A arma gera uma aura similar a uma fumaça espiralada que desacelera ataques vindos em sua direção, fornecendo +2 de Defesa enquanto estiver empunhada. Quando você faz um bloqueio, pode gastar 2 PE. Se fizer isso, recebe um bônus adicional de +5 em Defesa.',
+    icone: '⬜',
+    elemento: 'MORTE'
+  },
+  {
+    id: 'lancinante',
+    nome: 'Lancinante',
+    desc: 'A arma inflige ferimentos terríveis, causando +1d8 de dano de Sangue. Este dado é multiplicado em acertos críticos. Por exemplo, se a arma possuir crítico x3, em um acerto crítico o dano adicional de lancinante vira +3d8.',
+    icone: '🔴',
+    elemento: 'SANGUE'
+  },
+  {
+    id: 'predadora',
+    nome: 'Predadora',
+    desc: 'A arma tem sede de sangue e persegue seus alvos, anulando penalidades por camuflagem e cobertura (mas não cobertura total). Caso a arma seja de ataque à distância, seu alcance também aumenta em uma categoria. Além disso, a margem de ameaça da arma duplica. Por exemplo, um fuzil de caça predador tem margem de ameaça 17. Efeitos que duplicam a margem de ameaça são aplicados antes de quaisquer efeitos que a aumentem.',
+    icone: '🔴',
+    elemento: 'SANGUE'
+  },
+  {
+    id: 'sanguinaria',
+    nome: 'Sanguinária',
+    desc: 'Os ferimentos causados pela arma se rasgam além da área acertada. Um ser atingido fica sangrando. Sangramento causado pela arma é cumulativo — um ser atingido duas vezes sofre 2d6 pontos de dano de sangramento por rodada. Além disso, quando você faz um acerto crítico com a arma ela drena o sangue derramado, o que deixa o alvo fraco e concede a você 2d10 pontos de vida temporários.',
+    icone: '🔴',
+    elemento: 'SANGUE'
+  }
+];
+
+const MELHORIAS_ACESSORIOS = [
+  // Sem elemento
+  {
+    id: 'aprimorado',
+    nome: 'Aprimorado',
+    desc: 'O bônus em perícia concedido pelo acessório aumenta para +5. Se o item tiver função adicional, esta modificação poderá ser escolhida uma segunda vez para esta função.',
+    icone: null, elemento: null
+  },
+  {
+    id: 'discreto',
+    nome: 'Discreto',
+    desc: 'O item é miniaturizado ou disfarçado como outro item inócuo (como um relógio). Reduz o número de espaços ocupados em 1, fornece +5 em testes de Crime para ser ocultado e permite que você faça esse teste mesmo que não seja treinado na perícia.',
+    icone: '⚙️', elemento: null
+  },
+  {
+    id: 'funcao_adicional',
+    nome: 'Função Adicional',
+    desc: 'O acessório fornece +2 em uma perícia adicional à sua escolha, sujeita à aprovação do mestre.',
+    icone: null, elemento: null
+  },
+  {
+    id: 'instrumental',
+    nome: 'Instrumental',
+    desc: 'O acessório pode ser usado como um kit de perícia específico (escolhido ao aplicar esta modificação).',
+    icone: null, elemento: null
+  },
+  // Conhecimento
+  {
+    id: 'acess_carisma',
+    nome: 'Carisma',
+    desc: 'O acessório gera uma aura que torna você mais carismático e autoconfiante. Você recebe +1 em Presença (este aumento não fornece PE adicionais).',
+    icone: null, elemento: 'CONHECIMENTO'
+  },
+  {
+    id: 'acess_conjuracao',
+    nome: 'Conjuração',
+    desc: 'Esse acessório tem um ritual de 1º círculo vinculado. Se estiver empunhando o item, você pode conjurar o ritual como se o conhecesse. Caso conheça o ritual, seu custo diminui em –1 PE.',
+    icone: null, elemento: 'CONHECIMENTO'
+  },
+  {
+    id: 'acess_escudo_mental',
+    nome: 'Escudo Mental',
+    desc: 'O acessório gera uma barreira psíquica. Você recebe resistência mental 10.',
+    icone: null, elemento: 'CONHECIMENTO'
+  },
+  {
+    id: 'acess_reflexao',
+    nome: 'Reflexão',
+    desc: 'Quando você é alvo de um ritual, pode gastar PE igual ao custo dele para refleti-lo de volta ao seu conjurador. As características do ritual (efeitos, DT...) se mantêm, mas você toma qualquer decisão exigida por ele.',
+    icone: null, elemento: 'CONHECIMENTO'
+  },
+  {
+    id: 'acess_sagacidade',
+    nome: 'Sagacidade',
+    desc: 'Sua mente é acelerada pelas forças do Conhecimento, fornecendo a você +1 em Intelecto (este aumento não fornece perícias treinadas extras).',
+    icone: null, elemento: 'CONHECIMENTO'
+  },
+  // Energia
+  {
+    id: 'acess_defesa',
+    nome: 'Defesa',
+    desc: 'Uma barreira de energia protetora invisível gerada por este acessório fornece +5 de Defesa.',
+    icone: null, elemento: 'ENERGIA'
+  },
+  {
+    id: 'acess_destreza',
+    nome: 'Destreza',
+    desc: 'Este acessório aprimora sua coordenação e velocidade, fornecendo +1 em Agilidade.',
+    icone: null, elemento: 'ENERGIA'
+  },
+  {
+    id: 'acess_potencia',
+    nome: 'Potência',
+    desc: 'Este acessório aumenta a DT contra suas habilidades, poderes e rituais em +1.',
+    icone: null, elemento: 'ENERGIA'
+  },
+  // Morte
+  {
+    id: 'acess_esforco_adicional',
+    nome: 'Esforço Adicional',
+    desc: 'Este acessório concede +5 PE. Este efeito só se ativa após um dia de uso.',
+    icone: null, elemento: 'MORTE'
+  },
+  // Sangue
+  {
+    id: 'acess_disposicao',
+    nome: 'Disposição',
+    desc: 'Valendo-se do poder do Sangue, você recebe +1 em Vigor.',
+    icone: null, elemento: 'SANGUE'
+  },
+  {
+    id: 'acess_pujanca',
+    nome: 'Pujança',
+    desc: 'O acessório aumenta sua potência muscular, fornecendo +1 em Força.',
+    icone: null, elemento: 'SANGUE'
+  },
+  {
+    id: 'acess_vitalidade',
+    nome: 'Vitalidade',
+    desc: 'Você recebe +15 PV. Os efeitos do anel só se ativam após um dia de uso.',
+    icone: null, elemento: 'SANGUE'
+  },
+  // Varia
+  {
+    id: 'acess_protecao_elemental',
+    nome: 'Proteção Elemental',
+    desc: 'Você recebe resistência 10 contra um elemento. Este acessório conta como um item do elemento contra o qual fornece resistência (por exemplo, um utensílio de proteção elemental contra Energia é um item de Energia).',
+    icone: null, elemento: 'VARIA'
+  }
+];
+
+let _melhoriasSelecionadas = []; // { id, nome, tipo: 'modificacao'|'maldicao'|'acessorio' }
+let _melhoriaTabAtiva = 'modificacoes';
+let _melhoriaContexto = 'arm'; // 'arm' ou 'gen'
+
+function abrirModalMelhorias(ctx) {
+  _melhoriaContexto = ctx || 'arm';
+  const dataId = _melhoriaContexto === 'gen' ? 'gen-melhorias-data' : 'arm-melhorias-data';
+
+  // Carrega estado atual do hidden input
+  try {
+    const raw = document.getElementById(dataId).value;
+    _melhoriasSelecionadas = JSON.parse(raw || '[]');
+  } catch(e) { _melhoriasSelecionadas = []; }
+
+  // Para acessórios (gen): só mostra aba "Modificações" com as melhorias de acessório
+  const isGen = _melhoriaContexto === 'gen';
+  const tabMaldicoes = document.getElementById('meltab-maldicoes');
+  tabMaldicoes.style.display = isGen ? 'none' : '';
+
+  _melhoriaTabAtiva = 'modificacoes';
+  document.getElementById('meltab-modificacoes').classList.add('active');
+  document.getElementById('meltab-maldicoes').classList.remove('active');
+  document.getElementById('melhorias-lista-modificacoes').style.display = '';
+  document.getElementById('melhorias-lista-maldicoes').style.display = 'none';
+
+  _renderizarListaMelhorias();
+  document.getElementById('modal-melhorias').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharModalMelhorias(e) {
+  if (e && e.target !== document.getElementById('modal-melhorias')) return;
+  document.getElementById('modal-melhorias').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function trocarTabMelhorias(tab) {
+  _melhoriaTabAtiva = tab;
+  document.getElementById('meltab-modificacoes').classList.toggle('active', tab === 'modificacoes');
+  document.getElementById('meltab-maldicoes').classList.toggle('active', tab === 'maldicoes');
+  document.getElementById('melhorias-lista-modificacoes').style.display = tab === 'modificacoes' ? '' : 'none';
+  document.getElementById('melhorias-lista-maldicoes').style.display = tab === 'maldicoes' ? '' : 'none';
+  _renderizarListaMelhorias();
+}
+
+function _renderizarListaMelhorias() {
+  const ELEM_CORES = {
+    'CONHECIMENTO': { bg: '#e67e00', color: '#fff' },
+    'ENERGIA':      { bg: '#6b2fa0', color: '#fff' },
+    'MORTE':        { bg: '#3a3a3a', color: '#ccc' },
+    'SANGUE':       { bg: '#cc1111', color: '#fff' },
+    'VARIA':        { bg: '#1a6b3a', color: '#fff' },
+  };
+
+  const renderLista = (containerId, itens, tipo) => {
+    const container = document.getElementById(containerId);
+    if (!itens.length) {
+      container.innerHTML = '<div class="melhorias-empty">Nenhuma melhoria disponível.</div>';
+      return;
+    }
+    container.innerHTML = itens.map(m => {
+      const jaAdicionada = _melhoriasSelecionadas.some(s => s.id === m.id);
+      const safeNome = m.nome.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+
+      // Badge de elemento (maldições e acessórios com elemento definido)
+      let elemBadge = '';
+      if (m.elemento) {
+        const cor = ELEM_CORES[m.elemento] || { bg: '#555', color: '#ccc' };
+        elemBadge = `<span style="display:inline-block;background:${cor.bg};color:${cor.color};font-family:'Oswald',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;padding:2px 9px;border-radius:3px;margin-bottom:8px;">${m.elemento}</span>`;
+      }
+
+      return `
+        <div class="melhoria-card">
+          <div class="melhoria-card-header">
+            <div class="melhoria-card-name">${m.nome}</div>
+          </div>
+          ${elemBadge}
+          <div class="melhoria-card-desc">${m.desc}</div>
+          <button class="melhoria-card-btn${jaAdicionada ? ' adicionada' : ''}"
+            data-mel-id="${m.id}" data-mel-nome="${safeNome}" data-mel-tipo="${tipo}"
+            ${jaAdicionada ? 'disabled' : 'onclick="window._onAdicionarMelhoria(this)"'}>
+            ${jaAdicionada ? '✔ Adicionada' : 'Adicionar'}
+          </button>
+          <div style="clear:both"></div>
+        </div>`;
+    }).join('');
+  };
+
+  const listaModificacoes = _melhoriaContexto === 'gen' ? MELHORIAS_ACESSORIOS : MELHORIAS_MODIFICACOES;
+  renderLista('melhorias-lista-modificacoes', listaModificacoes, _melhoriaContexto === 'gen' ? 'acessorio' : 'modificacao');
+  renderLista('melhorias-lista-maldicoes', MELHORIAS_MALDICOES, 'maldicao');
+}
+
+window._onAdicionarMelhoria = function(btn) {
+  const id   = btn.dataset.melId;
+  const nome = btn.dataset.melNome;
+  const tipo = btn.dataset.melTipo;
+  _adicionarMelhoria(id, nome, tipo);
+};
+
+function _adicionarMelhoria(id, nome, tipo) {
+  if (_melhoriasSelecionadas.some(s => s.id === id)) return;
+  _melhoriasSelecionadas.push({ id, nome, tipo });
+  _sincronizarMelhorias();
+  _renderizarListaMelhorias();
+}
+
+function _removerMelhoria(id) {
+  _melhoriasSelecionadas = _melhoriasSelecionadas.filter(s => s.id !== id);
+  _sincronizarMelhorias();
+  if (document.getElementById('modal-melhorias').classList.contains('show')) {
+    _renderizarListaMelhorias();
+  }
+}
+
+function _sincronizarMelhorias() {
+  const dataId = _melhoriaContexto === 'gen' ? 'gen-melhorias-data' : 'arm-melhorias-data';
+  const tagsId = _melhoriaContexto === 'gen' ? 'gen-melhorias-tags' : 'arm-melhorias-tags';
+
+  // Salva no hidden input
+  document.getElementById(dataId).value = JSON.stringify(_melhoriasSelecionadas);
+  // Renderiza as tags visíveis
+  const container = document.getElementById(tagsId);
+  if (!container) return;
+  if (!_melhoriasSelecionadas.length) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = _melhoriasSelecionadas.map(m => `
+    <span class="melhoria-tag${m.tipo === 'maldicao' ? ' maldição' : ''}">
+      ${m.nome}
+      <button class="melhoria-tag-remove" data-remove-id="${m.id}" data-remove-ctx="${_melhoriaContexto}" onclick="window._onRemoverTag(this)" title="Remover">✕</button>
+    </span>`).join('');
+}
+
+window._onRemoverTag = function(btn) {
+  const prevCtx = _melhoriaContexto;
+  _melhoriaContexto = btn.dataset.removeCtx || 'arm';
+  _removerMelhoria(btn.dataset.removeId);
+  _melhoriaContexto = prevCtx;
+};
+
+function getMelhoriasSelecionadas(ctx) {
+  const dataId = (ctx || 'arm') === 'gen' ? 'gen-melhorias-data' : 'arm-melhorias-data';
+  try {
+    const data = JSON.parse(document.getElementById(dataId).value || '[]');
+    return data.map(m => m.nome);
+  } catch(e) { return []; }
+}
+
+</script>
+
+<script>
 function getPrefix() {
   // Tenta sessionStorage primeiro; cai para localStorage como fallback.
   // Isso evita salvar como 'guest_' quando a sessão expira ou o usuário
@@ -2165,14 +2763,28 @@ function _preencherModalItem(item) {
     document.getElementById('arm-alcance').value   = item.alcance || '-';
     document.getElementById('arm-cat').value       = item.cat || '0';
     document.getElementById('arm-espacos').value   = item.espacos || '1';
-    const mel = document.getElementById('arm-melhorias-list');
-    mel.innerHTML = '';
-    (item.melhorias || []).forEach(v => addDynItem('arm-melhorias-list', v));
+    // Restaura melhorias do novo sistema
+    _melhoriasSelecionadas = item.melhoriasDados || [];
+    // Fallback: se salvou pelo sistema antigo (array de strings), converte
+    if (!_melhoriasSelecionadas.length && item.melhorias && item.melhorias.length) {
+      _melhoriasSelecionadas = item.melhorias.map(nome => {
+        const found = [...MELHORIAS_MODIFICACOES, ...MELHORIAS_MALDICOES].find(m => m.nome === nome);
+        return found ? { id: found.id, nome: found.nome, tipo: MELHORIAS_MALDICOES.includes(found) ? 'maldicao' : 'modificacao' } : { id: nome, nome, tipo: 'modificacao' };
+      });
+    }
+    document.getElementById('arm-melhorias-data').value = JSON.stringify(_melhoriasSelecionadas);
+    _sincronizarMelhorias();
   } else {
     document.getElementById('gen-nome').value    = item.nome || '';
-    document.getElementById('gen-cat').value     = item.cat || '';
+    document.getElementById('gen-cat').value     = item.cat || '0';
     document.getElementById('gen-espacos').value = item.espacos || '1';
-    document.getElementById('gen-bonus').value   = item.bonus || '';
+    document.getElementById('gen-tag').value     = item.tag || '';
+    // Restaura melhorias gen
+    _melhoriaContexto = 'gen';
+    _melhoriasSelecionadas = item.melhoriasDados || [];
+    document.getElementById('gen-melhorias-data').value = JSON.stringify(_melhoriasSelecionadas);
+    _sincronizarMelhorias();
+    _melhoriaContexto = 'arm';
   }
 
   document.getElementById('item-desc').innerHTML = item.descricao || '';
@@ -2393,12 +3005,23 @@ function abrirModalItem() {
     document.getElementById('arm-cat').value   = '0';
     document.getElementById('arm-espacos').value = '1';
     document.getElementById('arm-dano2').value = '';
-    document.getElementById('arm-melhorias-list').innerHTML = '';
+    document.getElementById('arm-melhorias-data').value = '[]';
+    _melhoriaContexto = 'arm';
+    _melhoriasSelecionadas = [];
+    _sincronizarMelhorias();
   } else {
-    document.getElementById('gen-nome').value   = '';
-    document.getElementById('gen-cat').value    = '';
+    document.getElementById('gen-nome').value    = '';
+    document.getElementById('gen-cat').value     = '0';
     document.getElementById('gen-espacos').value = '1';
-    document.getElementById('gen-bonus').value  = '';
+    document.getElementById('gen-tag').value     = '';
+    document.getElementById('gen-melhorias-data').value = '[]';
+    _melhoriaContexto = 'gen';
+    _melhoriasSelecionadas = [];
+    _sincronizarMelhorias();
+    _melhoriaContexto = 'arm';
+    // Mostra seção de melhorias apenas para Geral
+    const genMelSec = document.getElementById('gen-melhorias-section');
+    if (genMelSec) genMelSec.style.display = subItenAtivo === 'Geral' ? '' : 'none';
   }
   // reset img
   const imgPreview = document.getElementById('item-img-preview');
@@ -2474,14 +3097,17 @@ function salvarItem() {
       alcance: document.getElementById('arm-alcance').value,
       cat: document.getElementById('arm-cat').value,
       espacos: document.getElementById('arm-espacos').value,
-      melhorias: getDynValues('arm-melhorias-list'),
+      melhorias: getMelhoriasSelecionadas(),
+      melhoriasDados: JSON.parse(document.getElementById('arm-melhorias-data').value || '[]'),
       sub: document.getElementById('arm-tipo').value + ' · ' + document.getElementById('arm-tipodano').value,
     };
   } else {
     item = { ...item,
       cat: document.getElementById('gen-cat').value,
       espacos: document.getElementById('gen-espacos').value,
-      bonus: document.getElementById('gen-bonus').value,
+      tag: document.getElementById('gen-tag').value,
+      melhorias: getMelhoriasSelecionadas('gen'),
+      melhoriasDados: JSON.parse(document.getElementById('gen-melhorias-data').value || '[]'),
       sub: subItenAtivo,
     };
   }
