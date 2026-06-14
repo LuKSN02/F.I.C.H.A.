@@ -5487,6 +5487,13 @@ const BLOCK_TYPES = {
   metal: { color: 0x505866, roughness: 0.4,  metalness: 0.7,  name: 'METAL' },
   glass: { color: 0x64a0dc, roughness: 0.1,  metalness: 0.0,  transparent: true, opacity: 0.45, name: 'VIDRO' },
   dark:  { color: 0x220818, roughness: 0.98, metalness: 0.0,  emissive: 0x110008, emissiveIntensity: 0.3, name: 'SOMBRIO' },
+  // ── Paleta temática Backrooms ──
+  wallpaper:  { color: 0xc9b54a, roughness: 0.95, metalness: 0.0, name: 'PAPEL DE PAREDE' },
+  carpetmold: { color: 0x6e5a1f, roughness: 0.98, metalness: 0.0, name: 'CARPETE MOFADO' },
+  concrete:   { color: 0x4e4f4a, roughness: 0.9,  metalness: 0.02, name: 'CONCRETO' },
+  rust:       { color: 0x5a3018, roughness: 0.88, metalness: 0.3, name: 'METAL ENFERRUJADO' },
+  tile:       { color: 0x9aa68c, roughness: 0.55, metalness: 0.05, name: 'AZULEJO' },
+  voidblack:  { color: 0x05050a, roughness: 1.0,  metalness: 0.0, emissive: 0x000000, emissiveIntensity: 0, name: 'VAZIO' },
 };
 
 // _blocos3D: chave única por posição de célula → dados
@@ -6113,6 +6120,191 @@ function gerarTerrenoPreset(tipo) {
   mostrarToast(`🏔 Terreno "${tipo}" gerado!`);
 }
 
+// ============================================================
+// GERADOR PROCEDURAL — BACKROOMS (5 NÍVEIS)
+// ============================================================
+// Cada nível define:
+//  - sky: preset de céu/iluminação
+//  - chao: tipo de bloco usado no piso (camada rasa)
+//  - parede: tipo de bloco das paredes/colunas
+//  - layout: função que recebe (cx,cz,W,H) e retorna true se a célula
+//            deve ser parede/obstáculo naquela posição
+//  - altura: altura das paredes em "steps" do sistema de blocos (sy)
+//  - objetos: lista de { tipo, peso } para espalhar pelo mapa (usa _criarObjMesh)
+//  - corredor: se true, gera padrão de corredores em grade (estilo escritório)
+const BACKROOMS_LEVELS = {
+  0: { // LEVEL 0 — O Salão de Entrada (papel de parede amarelo, carpete úmido, zumbido fluorescente)
+    nome: 'Level 0 — Salão Amarelo',
+    sky: 'backrooms',
+    chao: 'carpetmold',
+    parede: 'wallpaper',
+    alturaSteps: 12,
+    fogDensity: 35,
+    objetos: [ { tipo: 'pilar', peso: 1 }, { tipo: 'tocha', peso: 0 } ],
+    layout: (cx, cz, W, H) => {
+      // Salas amplas irregulares separadas por paredes finas — labirinto orgânico
+      const n = _noise2D(cx * 0.35 + 11, cz * 0.35 - 7);
+      const grid = (Math.sin(cx * 0.9) > 0.86 || Math.sin(cz * 0.9 + 1.5) > 0.86);
+      return grid && n > -0.25;
+    }
+  },
+  1: { // LEVEL 1 — Galpões / Almoxarifados (concreto, prateleiras, sirenes)
+    nome: 'Level 1 — Almoxarifados',
+    sky: 'noite',
+    chao: 'concrete',
+    parede: 'concrete',
+    alturaSteps: 16,
+    fogDensity: 45,
+    objetos: [ { tipo: 'pilar', peso: 1 }, { tipo: 'barril', peso: 2 } ],
+    layout: (cx, cz, W, H) => {
+      // Corredores retos em grade larga — estilo galpão industrial
+      return (cx % 6 === 0 && cz % 3 !== 0) || (cz % 8 === 0 && cx % 4 !== 0);
+    }
+  },
+  2: { // LEVEL 2 — Túneis de Manutenção (ferro enferrujado, tubulações, apertado)
+    nome: 'Level 2 — Túneis de Manutenção',
+    sky: 'noite',
+    chao: 'rust',
+    parede: 'rust',
+    alturaSteps: 8,
+    fogDensity: 60,
+    objetos: [ { tipo: 'parede', peso: 1 }, { tipo: 'tocha', peso: 1 } ],
+    layout: (cx, cz, W, H) => {
+      // Túneis estreitos sinuosos — usa noise para serpentear
+      const path = Math.abs(_noise2D(cx * 0.18, cz * 0.18 + 5)) ;
+      return path > 0.18; // só o "caminho" fino fica livre
+    }
+  },
+  5: { // LEVEL 5 — Hub Habitável (azulejo limpo, salas-tipo apartamento)
+    nome: 'Level 5 — Hub Habitável',
+    sky: 'dia',
+    chao: 'tile',
+    parede: 'wood',
+    alturaSteps: 14,
+    fogDensity: 20,
+    objetos: [ { tipo: 'pilar', peso: 1 }, { tipo: 'altar', peso: 0.4 }, { tipo: 'tocha', peso: 1 } ],
+    layout: (cx, cz, W, H) => {
+      // Cômodos regulares tipo apartamento (grade 5x5 com portas)
+      const onWall = (cx % 5 === 0) || (cz % 5 === 0);
+      const isDoor = ((cx % 5 === 0) && (cz % 5 === 2)) || ((cz % 5 === 0) && (cx % 5 === 2));
+      return onWall && !isDoor;
+    }
+  },
+  11: { // LEVEL 11 — Sub-nível Inundado / Ritualístico (água escura, círculos, presença Entidade)
+    nome: 'Level 11 — Sub-nível Ritual',
+    sky: 'paranormal',
+    chao: 'voidblack',
+    parede: 'dark',
+    alturaSteps: 10,
+    fogDensity: 70,
+    objetos: [ { tipo: 'circulo', peso: 1.2 }, { tipo: 'nexus', peso: 0.5 }, { tipo: 'altar', peso: 0.5 }, { tipo: 'agente', peso: 0.3 } ],
+    layout: (cx, cz, W, H) => {
+      // Câmara circular central com pilares ao redor — salão ritual
+      const ox = W / 2, oz = H / 2;
+      const d = Math.sqrt((cx - ox) ** 2 + (cz - oz) ** 2);
+      const ringWall = Math.abs(d - Math.min(W, H) * 0.42) < 0.6;
+      const outerWall = (cx === 0 || cz === 0 || cx === W || cz === H);
+      return ringWall || outerWall;
+    }
+  },
+};
+
+window.gerarBackrooms = function(nivel) {
+  const lv = BACKROOMS_LEVELS[nivel];
+  if (!lv) { window.mostrarToast('⚠ Nível de Backrooms inválido'); return; }
+  if (!three.scene) { window.mostrarToast('⚠ Ative o Modo 3D primeiro'); return; }
+
+  if (!confirm(`Gerar "${lv.nome}"? Isso substitui o terreno, blocos e objetos atuais deste cenário.`)) return;
+
+  // 1) Limpa estado atual
+  resetarTerreno(true);
+  window.limparObjetos3D();
+  window.limparBlocos3D();
+
+  // 2) Piso plano (heightMap zerado já está pronto após resetarTerreno)
+  _initTerrainHeightMap();
+  terrain3d.heightMap.fill(0);
+  _applyHeightMapToFloor();
+
+  const W = terrain3d.mapW, H = terrain3d.mapH;
+  const sc = cellSize / 60;
+  const stepSize = sc * 0.25;
+  const by = lv.alturaSteps * stepSize;
+
+  // 3) Gera paredes/colunas como blocos 1x1 célula segundo o layout do nível
+  let totalParedes = 0;
+  for (let cz = 0; cz <= H; cz++) {
+    for (let cx = 0; cx <= W; cx++) {
+      if (!lv.layout(cx, cz, W, H)) continue;
+      const wx = cx * sc, wz = cz * sc;
+      const baseY = _sampleTerrainHeight(wx + sc * 0.5, wz + sc * 0.5);
+      const key = _blocoKey(cx, cz, 1, 1);
+      const mesh = _criarBlocoMesh(lv.parede, wx, wz, sc, sc, by, baseY, key);
+      three.scene.add(mesh);
+      _blocos3D[key] = { mesh, type: lv.parede, cx, cz, wx, wz, bx: sc, bz: sc, by, baseY, sx: 1, sz: 1, sy: lv.alturaSteps };
+      totalParedes++;
+    }
+  }
+
+  // 4) Camada de piso temático: bloco baixo cobrindo todo o chão livre
+  const floorH = stepSize * 0.6;
+  for (let cz = 0; cz < H; cz++) {
+    for (let cx = 0; cx < W; cx++) {
+      if (lv.layout(cx, cz, W, H)) continue; // não cobre onde há parede
+      const wx = cx * sc, wz = cz * sc;
+      const baseY = _sampleTerrainHeight(wx + sc * 0.5, wz + sc * 0.5) - floorH;
+      const key = `floor_${cx},${cz}`;
+      const mesh = _criarBlocoMesh(lv.chao, wx, wz, sc, sc, floorH, baseY, key);
+      mesh.receiveShadow = true;
+      three.scene.add(mesh);
+      _blocos3D[key] = { mesh, type: lv.chao, cx, cz, wx, wz, bx: sc, bz: sc, by: floorH, baseY, sx: 1, sz: 1, sy: floorH / stepSize };
+    }
+  }
+
+  // 5) Espalha objetos temáticos nas células livres (probabilidade baseada em peso)
+  const pesoTotal = lv.objetos.reduce((s, o) => s + o.peso, 0);
+  for (let cz = 1; cz < H; cz++) {
+    for (let cx = 1; cx < W; cx++) {
+      if (lv.layout(cx, cz, W, H)) continue;
+      // densidade ~6% das células livres recebem objeto
+      if (Math.random() > 0.06) continue;
+      let r = Math.random() * pesoTotal;
+      let escolhido = null;
+      for (const o of lv.objetos) {
+        if (o.peso <= 0) continue;
+        if (r < o.peso) { escolhido = o.tipo; break; }
+        r -= o.peso;
+      }
+      if (!escolhido) continue;
+      const wx = (cx + 0.5) * sc, wz = (cz + 0.5) * sc;
+      const terrainY = _sampleTerrainHeight(wx, wz);
+      const escala = 0.7 + Math.random() * 0.5;
+      const mesh = _criarObjMesh(escolhido, wx, wz, terrainY, escala);
+      const id = `obj_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
+      mesh.userData.objId = id;
+      three.scene.add(mesh);
+      _objetos3D[id] = { type: escolhido, mesh, wx, wz, escala };
+    }
+  }
+
+  // 6) Ajusta céu, névoa e altura máxima
+  window.setSky(lv.sky);
+  if (three.scene.fog) {
+    const d = lv.fogDensity / 100;
+    const base = parseFloat(document.getElementById('t3d-fog-range')?.value || 40);
+    three.scene.fog.near = base * (1 - d * 0.85);
+    three.scene.fog.far  = base + base * (1 - d) * 0.5;
+  }
+  const fogRangeEl = document.getElementById('t3d-fog-range');
+  const fogDensEl  = document.getElementById('t3d-fog-density');
+  if (fogDensEl) fogDensEl.value = lv.fogDensity;
+  if (fogRangeEl) fogRangeEl.dispatchEvent(new Event('input'));
+
+  if (_biomeEnabled) _applyBiomeColors();
+  _debouncedSaveTerrain();
+  window.mostrarToast(`🌀 ${lv.nome} gerado! (${totalParedes} paredes/colunas)`);
+};
+
 // Noise 2D simples (baseado em gradientes)
 function _noise2D(x, y) {
   const X = Math.floor(x) & 255;
@@ -6219,6 +6411,7 @@ const _skyPresets = {
   noite:      { bg: 0x02020e, fog: 0x01010a, fogNear: 10, fogFar: 55, ambient: 0x050510, ambIntensity: 0.6, dirColor: 0x4466cc, dirIntensity: 0.6 },
   crepusculo: { bg: 0x180408, fog: 0x1a0408, fogNear: 6, fogFar: 35, ambient: 0x180808, ambIntensity: 0.7, dirColor: 0xff6622, dirIntensity: 1.5 },
   dia:        { bg: 0x0c1a30, fog: 0x0a1828, fogNear: 15, fogFar: 80, ambient: 0x101828, ambIntensity: 1.1, dirColor: 0xfff0cc, dirIntensity: 2.0 },
+  backrooms:  { bg: 0x9c8f3a, fog: 0xa89a40, fogNear: 12, fogFar: 45, ambient: 0x6e6020, ambIntensity: 1.3, dirColor: 0xfff2b0, dirIntensity: 1.6 },
 };
 window.setSky = function(preset) {
   const p = _skyPresets[preset];
@@ -6228,7 +6421,7 @@ window.setSky = function(preset) {
   if (three.ambientLight) { three.ambientLight.color.setHex(p.ambient); three.ambientLight.intensity = p.ambIntensity; }
   if (three.dirLight) { three.dirLight.color.setHex(p.dirColor); three.dirLight.intensity = p.dirIntensity; }
   // Atualiza botões
-  ['paranormal','noite','crepusculo','dia'].forEach(k => {
+  ['paranormal','noite','crepusculo','dia','backrooms'].forEach(k => {
     document.getElementById(`t3d-sky-${k}`)?.classList.toggle('active', k === preset);
   });
   mostrarToast(`🌌 Céu: ${preset}`);
@@ -7452,6 +7645,28 @@ window.resetarCamera3D = function() {
       </button>
     </div>
 
+    <div class="t3d-divider"></div>
+
+    <!-- Presets Backrooms -->
+    <div class="t3d-section-label">BACKROOMS — GERAR NÍVEL</div>
+    <div class="t3d-presets-grid">
+      <button class="t3d-preset" onclick="gerarBackrooms(0)" title="Salão Amarelo — papel de parede, carpete úmido, zumbido fluorescente">
+        <span class="t3d-preset-icon">🟡</span>NÍVEL 0
+      </button>
+      <button class="t3d-preset" onclick="gerarBackrooms(1)" title="Almoxarifados — concreto, prateleiras, corredores industriais">
+        <span class="t3d-preset-icon">📦</span>NÍVEL 1
+      </button>
+      <button class="t3d-preset" onclick="gerarBackrooms(2)" title="Túneis de Manutenção — ferro enferrujado, passagens estreitas">
+        <span class="t3d-preset-icon">🔧</span>NÍVEL 2
+      </button>
+      <button class="t3d-preset" onclick="gerarBackrooms(5)" title="Hub Habitável — azulejo, cômodos tipo apartamento">
+        <span class="t3d-preset-icon">🏠</span>NÍVEL 5
+      </button>
+      <button class="t3d-preset" onclick="gerarBackrooms(11)" title="Sub-nível Ritual — câmara circular escura, presença Entidade">
+        <span class="t3d-preset-icon">🌀</span>NÍVEL 11
+      </button>
+    </div>
+
     <button class="t3d-reset-btn" onclick="resetarTerreno()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8a5 5 0 105 5"/><polyline points="3,4 3,8 7,8"/></svg>
       RESETAR MAPA 3D COMPLETO
@@ -7603,6 +7818,10 @@ window.resetarCamera3D = function() {
       <button class="t3d-sky-btn" id="t3d-sky-dia" onclick="setSky('dia')">
         <div class="t3d-sky-dot" style="background:radial-gradient(#2060c0,#0a2050)"></div>
         DIA
+      </button>
+      <button class="t3d-sky-btn" id="t3d-sky-backrooms" onclick="setSky('backrooms')">
+        <div class="t3d-sky-dot" style="background:radial-gradient(#d4c050,#8a7a20)"></div>
+        BACK&shy;ROOMS
       </button>
     </div>
 
