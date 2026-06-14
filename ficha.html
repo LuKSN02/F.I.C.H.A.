@@ -1292,6 +1292,7 @@
               <button onclick="aplicarTema('energia');toggleNavbar()" style="background:rgba(155,48,217,0.15);border:1px solid #9b30d9;color:#d070ff;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Energia</button>
           </div>
           <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
+          <button onclick="abrirModalCompartilhar();toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid var(--green,#39d353);color:var(--green,#39d353);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;letter-spacing:1px;margin-bottom:8px;cursor:pointer;">🔗 Compartilhar Ficha</button>
           <a id="btn-portrait-mobile" href="portrait.html" target="_blank" onclick="toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid var(--purple,#9b30d9);color:var(--purple-neon,#d070ff);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:1px;margin-bottom:8px;">🎭 Portrait</a>
           <a href="index.html?view=agentes" onclick="toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid #333;color:#aaa;padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:1px;">← Voltar</a>
       </div>
@@ -1322,6 +1323,9 @@
      style="border-color:var(--purple);color:var(--purple-neon);" target="_blank">
     🎭 Portrait
   </a>
+  <button onclick="abrirModalCompartilhar()" class="btn-voltar" style="border-color:var(--green);color:var(--green);cursor:pointer;">
+    🔗 Compartilhar
+  </button>
   <a href="index.html?view=agentes" class="btn-voltar">← Voltar</a>
 </div>
   </div>
@@ -4336,6 +4340,7 @@ window.onload = function() {
         }
     }
     aguardarUsuarioECarregar();
+    verificarFichaCompartilhada();
     document.getElementById('foto-input').addEventListener('change', function(e) {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
@@ -7829,7 +7834,208 @@ function travarCampos() {
     mostrarToast('🔒 CAMPOS TRAVADOS');
 }
 
-  if ('serviceWorker' in navigator) {
+// ══════════════════════════════════════════════
+// COMPARTILHAR FICHA
+// ══════════════════════════════════════════════
+
+function abrirModalCompartilhar() {
+    if (!ficha) { mostrarToast('⚠️ Nenhuma ficha carregada'); return; }
+    const modal = document.getElementById('modal-compartilhar');
+    const loading  = document.getElementById('compartilhar-loading');
+    const resultado = document.getElementById('compartilhar-resultado');
+    loading.style.display = '';
+    resultado.style.display = 'none';
+    modal.style.display = 'flex';
+    gerarCompartilhamento();
+}
+
+function fecharModalCompartilhar() {
+    document.getElementById('modal-compartilhar').style.display = 'none';
+}
+
+async function gerarCompartilhamento() {
+    try {
+        const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+
+        // Monta uma cópia "snapshot" dos dados da ficha + estado para compartilhar
+        const estadoSemFoto = { ...estado };
+        // Evita estourar o tamanho do registro com fotos base64 grandes
+        delete estadoSemFoto.fotoCostum;
+
+        const dadosCompartilhados = {
+            ficha: ficha,
+            estado: estadoSemFoto,
+            compartilhadoPor: usuario,
+            ts: Date.now(),
+            expiraEm: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 dias
+        };
+
+        const shareId = 'sh_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+
+        if (window._firebaseDB) {
+            const shareRef = window._firebaseRef(window._firebaseDB, `compartilhamentos/${shareId}`);
+            await window._firebaseSet(shareRef, dadosCompartilhados);
+        } else {
+            // Fallback sem Firebase: guarda localmente para que o link funcione no mesmo navegador
+            try { localStorage.setItem('compartilhamento_' + shareId, JSON.stringify(dadosCompartilhados)); } catch(e) {}
+        }
+
+        const url = new URL(window.location.href);
+        url.search = '';
+        url.searchParams.set('compartilhado', shareId);
+        const link = url.toString();
+
+        document.getElementById('compartilhar-loading').style.display = 'none';
+        document.getElementById('compartilhar-resultado').style.display = '';
+        document.getElementById('compartilhar-link').value = link;
+        window._linkCompartilharAtual = link;
+
+        const btnNativo = document.getElementById('compartilhar-btn-nativo');
+        if (navigator.share) {
+            btnNativo.style.display = '';
+        } else {
+            btnNativo.style.display = 'none';
+        }
+    } catch(e) {
+        console.error('Erro ao gerar compartilhamento:', e);
+        document.getElementById('compartilhar-loading').textContent = '⚠️ Erro ao gerar link. Tente novamente.';
+    }
+}
+
+function copiarLinkCompartilhar() {
+    const input = document.getElementById('compartilhar-link');
+    input.select();
+    if (navigator.clipboard && window._linkCompartilharAtual) {
+        navigator.clipboard.writeText(window._linkCompartilharAtual)
+            .then(() => mostrarToast('📋 LINK COPIADO'))
+            .catch(() => document.execCommand('copy') && mostrarToast('📋 LINK COPIADO'));
+    } else {
+        document.execCommand('copy');
+        mostrarToast('📋 LINK COPIADO');
+    }
+}
+
+function compartilharNativo() {
+    if (!navigator.share || !window._linkCompartilharAtual) return;
+    navigator.share({
+        title: 'F.I.C.H.A. — Ficha de Agente',
+        text: `${ficha?.nome || 'Agente'} compartilhou uma ficha com você!`,
+        url: window._linkCompartilharAtual
+    }).catch(() => {});
+}
+
+// ══════════════════════════════════════════════
+// RECEBER FICHA COMPARTILHADA
+// ══════════════════════════════════════════════
+
+let _fichaRecebidaPendente = null;
+
+async function verificarFichaCompartilhada() {
+    const params = new URLSearchParams(window.location.search);
+    const shareId = params.get('compartilhado');
+    if (!shareId) return;
+
+    let dados = null;
+    try {
+        if (window._firebaseDB) {
+            const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `compartilhamentos/${shareId}`));
+            if (snap.exists()) dados = snap.val();
+        }
+        if (!dados) {
+            const local = localStorage.getItem('compartilhamento_' + shareId);
+            if (local) dados = JSON.parse(local);
+        }
+    } catch(e) { console.error('Erro ao buscar ficha compartilhada:', e); }
+
+    if (!dados || !dados.ficha) {
+        mostrarToast('⚠️ LINK DE COMPARTILHAMENTO INVÁLIDO OU EXPIRADO');
+        return;
+    }
+    if (dados.expiraEm && Date.now() > dados.expiraEm) {
+        mostrarToast('⚠️ ESTE LINK DE COMPARTILHAMENTO EXPIROU');
+        return;
+    }
+
+    _fichaRecebidaPendente = dados;
+
+    const nome = dados.ficha.nome || 'Agente sem nome';
+    const codinome = dados.ficha.codinome ? ` "${dados.ficha.codinome}"` : '';
+    const classe = dados.ficha.classe || '—';
+    const origem = dados.ficha.origem || '—';
+    const nivel  = dados.ficha.nivel  || 1;
+
+    document.getElementById('receber-ficha-nome').textContent = nome + codinome;
+    document.getElementById('receber-ficha-info').textContent = `Nível ${nivel} • ${classe} • ${origem}`;
+    document.getElementById('modal-receber-ficha').style.display = 'flex';
+}
+
+function fecharModalReceberFicha(limparUrl) {
+    document.getElementById('modal-receber-ficha').style.display = 'none';
+    _fichaRecebidaPendente = null;
+    if (limparUrl !== false) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('compartilhado');
+        window.history.replaceState({}, '', url.toString());
+    } else {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('compartilhado');
+        window.history.replaceState({}, '', url.toString());
+    }
+}
+
+async function aceitarFichaCompartilhada() {
+    if (!_fichaRecebidaPendente) return;
+    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+
+    // Cria uma cópia da ficha com novo id, para não conflitar com a do usuário original
+    const novaFicha = { ..._fichaRecebidaPendente.ficha };
+    const novoId = 'ag_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+    novaFicha.id = novoId;
+
+    // Salva no cache local do usuário atual
+    const chaveAgentes = getPrefix() + 'lista_agentes';
+    const agentes = JSON.parse(localStorage.getItem(chaveAgentes)) || [];
+    agentes.push(novaFicha);
+    localStorage.setItem(chaveAgentes, JSON.stringify(agentes));
+
+    // Salva o estado correspondente
+    const novoEstado = { ..._fichaRecebidaPendente.estado };
+    try {
+        localStorage.setItem(getPrefix() + `estado_ficha_${novoId}`, JSON.stringify(novoEstado));
+    } catch(e) { console.warn('Erro ao salvar estado da ficha recebida:', e); }
+
+    // Sincroniza com Firebase, se disponível
+    if (window._firebaseDB && usuario) {
+        try {
+            const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${novoId}`);
+            await window._firebaseSet(agenteRef, {
+                id:        novaFicha.id,
+                nome:      novaFicha.nome,
+                codinome:  novaFicha.codinome  || '',
+                classe:    novaFicha.classe    || '',
+                origem:    novaFicha.origem    || '',
+                nivel:     novaFicha.nivel     || 1,
+                atributos: novaFicha.atributos || {},
+                fotoCostum: '',
+            });
+            const estadoRef = window._firebaseRef(window._firebaseDB, `fichas/${novoId}/estado`);
+            await window._firebaseSet(estadoRef, novoEstado);
+        } catch(e) { console.warn('Erro ao sincronizar ficha recebida no Firebase:', e); }
+    }
+
+    mostrarToast('✅ FICHA ADICIONADA À SUA CONTA');
+    fecharModalReceberFicha(true);
+
+    // Redireciona para a nova ficha adicionada
+    setTimeout(() => {
+        const url = new URL(window.location.href);
+        url.search = '';
+        url.searchParams.set('id', novoId);
+        window.location.href = url.toString();
+    }, 1200);
+}
+
+if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then(reg => console.log('[PWA] Service Worker registrado:', reg.scope))
@@ -7876,6 +8082,86 @@ function travarCampos() {
       <div style="display:flex;gap:8px;">
         <button onclick="gerarNovoEnigma()" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:1px;padding:10px;border-radius:8px;cursor:pointer;transition:0.2s;" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--purple-neon)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">↻ Outro</button>
         <button onclick="verificarEnigma()" style="flex:2;background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:2px;padding:10px;border-radius:8px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='var(--purple)';this.style.boxShadow='0 0 14px var(--purple-glow)'" onmouseout="this.style.background='var(--purple-dark)';this.style.boxShadow='none'">✓ CONFIRMAR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL COMPARTILHAR FICHA ══ -->
+<div id="modal-compartilhar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(6px);z-index:10002;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:linear-gradient(160deg,#0d0018 0%,#060010 100%);border:1px solid var(--purple);border-radius:16px;max-width:420px;width:100%;box-shadow:0 0 60px var(--purple-glow);overflow:hidden;animation:mritIn 0.25s cubic-bezier(.22,.68,0,1.1) both;">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(90deg,rgba(var(--tema-glow-rgb),0.12) 0%,transparent 70%);border-bottom:1px solid rgba(var(--tema-glow-rgb),0.15);padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:0.6rem;letter-spacing:4px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:4px;">Compartilhamento</div>
+        <div style="font-size:1.05rem;font-weight:700;letter-spacing:2px;color:white;">🔗 COMPARTILHAR FICHA</div>
+      </div>
+      <button onclick="fecharModalCompartilhar()" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#555;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:0.2s;" onmouseover="this.style.color='#ff6666';this.style.borderColor='rgba(255,60,60,0.3)'" onmouseout="this.style.color='#555';this.style.borderColor='rgba(255,255,255,0.08)'">✕</button>
+    </div>
+
+    <!-- Corpo -->
+    <div style="padding:24px;">
+      <div style="font-size:0.75rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:1.6;margin-bottom:16px;">
+        Gere um link de compartilhamento desta ficha. Quem abrir o link poderá escolher adicionar uma cópia desta ficha à própria conta.
+      </div>
+
+      <div id="compartilhar-loading" style="text-align:center;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:0.85rem;padding:10px 0;">⏳ Gerando link...</div>
+
+      <div id="compartilhar-resultado" style="display:none;">
+        <div style="background:#080010;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+          <div style="font-size:0.55rem;letter-spacing:3px;color:#444;font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:8px;">Link de compartilhamento</div>
+          <input id="compartilhar-link" type="text" readonly
+            style="background:#0d0010;border:1px solid var(--border);color:white;font-family:'Share Tech Mono',monospace;font-size:0.78rem;width:100%;padding:10px 12px;border-radius:8px;outline:none;letter-spacing:0.5px;"
+            onclick="this.select()">
+        </div>
+
+        <div style="display:flex;gap:8px;">
+          <button onclick="copiarLinkCompartilhar()" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:1px;padding:10px;border-radius:8px;cursor:pointer;transition:0.2s;" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--purple-neon)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">📋 Copiar Link</button>
+          <button id="compartilhar-btn-nativo" onclick="compartilharNativo()" style="flex:1;background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:1px;padding:10px;border-radius:8px;cursor:pointer;transition:0.2s;display:none;" onmouseover="this.style.background='var(--purple)';this.style.boxShadow='0 0 14px var(--purple-glow)'" onmouseout="this.style.background='var(--purple-dark)';this.style.boxShadow='none'">📤 Compartilhar</button>
+        </div>
+
+        <div style="font-size:0.68rem;color:#555;font-family:'Share Tech Mono',monospace;line-height:1.5;margin-top:14px;text-align:center;">
+          O link expira em 7 dias e pode ser usado apenas uma vez.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL RECEBER FICHA COMPARTILHADA ══ -->
+<div id="modal-receber-ficha" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(6px);z-index:10003;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:linear-gradient(160deg,#0d0018 0%,#060010 100%);border:1px solid var(--green,#39d353);border-radius:16px;max-width:420px;width:100%;box-shadow:0 0 60px rgba(57,211,83,0.35);overflow:hidden;animation:mritIn 0.25s cubic-bezier(.22,.68,0,1.1) both;">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(90deg,rgba(57,211,83,0.12) 0%,transparent 70%);border-bottom:1px solid rgba(57,211,83,0.15);padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:0.6rem;letter-spacing:4px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:4px;">Ficha Recebida</div>
+        <div style="font-size:1.05rem;font-weight:700;letter-spacing:2px;color:white;">📨 FICHA COMPARTILHADA</div>
+      </div>
+      <button onclick="fecharModalReceberFicha(false)" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#555;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:0.2s;" onmouseover="this.style.color='#ff6666';this.style.borderColor='rgba(255,60,60,0.3)'" onmouseout="this.style.color='#555';this.style.borderColor='rgba(255,255,255,0.08)'">✕</button>
+    </div>
+
+    <!-- Corpo -->
+    <div style="padding:24px;">
+      <div style="font-size:0.75rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:1.6;margin-bottom:16px;">
+        Alguém compartilhou a ficha do agente abaixo com você.
+      </div>
+
+      <div style="background:#080010;border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:20px;text-align:center;">
+        <div style="font-size:0.55rem;letter-spacing:3px;color:#444;font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:8px;">Agente</div>
+        <div id="receber-ficha-nome" style="font-size:1.15rem;font-weight:700;color:white;letter-spacing:1px;font-family:'Oswald',sans-serif;margin-bottom:4px;"></div>
+        <div id="receber-ficha-info" style="font-size:0.78rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;"></div>
+      </div>
+
+      <div style="font-size:0.75rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:1.6;margin-bottom:18px;">
+        Deseja adicionar uma cópia desta ficha à sua conta?
+      </div>
+
+      <!-- Botões -->
+      <div style="display:flex;gap:8px;">
+        <button onclick="fecharModalReceberFicha(false)" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:1px;padding:10px;border-radius:8px;cursor:pointer;transition:0.2s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">✕ Não, ignorar</button>
+        <button onclick="aceitarFichaCompartilhada()" style="flex:2;background:rgba(57,211,83,0.15);border:1px solid var(--green,#39d353);color:var(--green,#39d353);font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:2px;padding:10px;border-radius:8px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='var(--green,#39d353)';this.style.color='#06120a'" onmouseout="this.style.background='rgba(57,211,83,0.15)';this.style.color='var(--green,#39d353)'">✓ SIM, ADICIONAR</button>
       </div>
     </div>
   </div>
