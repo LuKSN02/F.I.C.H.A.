@@ -654,25 +654,30 @@
     /* ===== PAINEL DE PERFIL ESTILO DISCORD ===== */
     #perfil-overlay {
         display: none; position: fixed; inset: 0;
-        background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+        background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
         z-index: 9998; align-items: center; justify-content: center;
+        padding: 16px;
     }
     #perfil-overlay.show { display: flex; }
 
+    /* ===== CARD ESTILO DISCORD ===== */
     .perfil-card {
         background: #111115;
-        border-radius: 14px;
-        width: min(340px, 95vw);
+        border-radius: 10px;
+        width: min(360px, 95vw);
         overflow: hidden;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        box-shadow: 0 24px 70px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.06);
         position: relative;
         font-family: 'Oswald', sans-serif;
+        /* Accent color propagada via CSS var */
+        --perfil-accent: var(--tema-primary);
+        --perfil-accent-glow: var(--tema-glow-rgb);
     }
 
-    /* Banner */
+    /* Banner maior */
     .perfil-banner {
-        width: 100%; height: 110px;
-        background: linear-gradient(135deg, var(--tema-primary-dark), #000);
+        width: 100%; height: 150px;
+        background: linear-gradient(135deg, var(--tema-primary-dark) 0%, #000 100%);
         background-size: cover; background-position: center;
         position: relative; cursor: pointer;
         transition: filter 0.2s;
@@ -688,28 +693,36 @@
         font-family: 'Share Tech Mono', monospace;
         z-index: 1;
     }
-    /* Imagem animada (GIF/WebP) usada como banner */
     .banner-img-animado {
-        position: absolute;
-        inset: 0;
+        position: absolute; inset: 0;
         width: 100%; height: 100%;
-        object-fit: cover;
-        z-index: 0;
+        object-fit: cover; z-index: 0;
     }
 
-    /* Avatar sobre o banner */
+    /* Avatar maior e sobreposição estilo Discord */
     .perfil-avatar-wrap {
         position: absolute;
-        top: 72px; left: 18px;
-        cursor: pointer;
-        z-index: 10;
+        top: 105px; left: 18px;
+        cursor: pointer; z-index: 10;
     }
+    /* Anel decorativo externo (como o status ring do Discord) */
+    .perfil-avatar-wrap::before {
+        content: '';
+        position: absolute; inset: -4px;
+        border-radius: 50%;
+        background: var(--perfil-accent, var(--tema-primary));
+        opacity: 0;
+        transition: opacity 0.25s;
+        z-index: -1;
+    }
+    .perfil-avatar-wrap.borda-ativa::before { opacity: 1; }
+
     .perfil-avatar {
-        width: 76px; height: 76px; border-radius: 50%;
-        border: 4px solid #111115;
+        width: 90px; height: 90px; border-radius: 50%;
+        border: 5px solid #111115;
         background: #222; overflow: hidden;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.6rem; font-weight: 700;
+        font-size: 1.9rem; font-weight: 700;
         color: var(--tema-primary-light);
         position: relative; transition: filter 0.2s;
     }
@@ -719,145 +732,405 @@
         background: rgba(0,0,0,0.55);
         display: flex; align-items: center; justify-content: center;
         opacity: 0; transition: 0.2s;
-        font-size: 1.2rem;
+        font-size: 1.4rem;
     }
     .perfil-avatar-wrap:hover .perfil-avatar-edit { opacity: 1; }
 
-    /* Borda colorida do avatar */
+    /* Borda colorida do avatar — usa glow + anel externo */
     .perfil-avatar-wrap.borda-ativa .perfil-avatar {
         border-color: var(--perfil-borda, var(--tema-primary));
-        box-shadow: 0 0 12px var(--perfil-borda, var(--tema-primary));
+        box-shadow: 0 0 18px var(--perfil-borda, var(--tema-primary)), 0 0 6px var(--perfil-borda, var(--tema-primary));
+    }
+
+    /* Badge de status online (ponto verde) */
+    .perfil-status-dot {
+        position: absolute;
+        bottom: 4px; right: 4px;
+        width: 16px; height: 16px; border-radius: 50%;
+        background: #3ba55d;
+        border: 3px solid #111115;
+        z-index: 11;
     }
 
     /* Botões de ação topo direito */
     .perfil-top-actions {
-        position: absolute; top: 8px; right: 8px;
-        display: flex; gap: 6px;
-        z-index: 2;
+        position: absolute; top: 10px; right: 10px;
+        display: flex; gap: 6px; z-index: 2;
     }
     .perfil-top-btn {
-        background: rgba(0,0,0,0.6); border: 1px solid #333;
-        color: #aaa; font-size: 0.7rem; padding: 4px 10px;
-        border-radius: 4px; cursor: pointer; transition: 0.2s;
+        background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.12);
+        color: #aaa; font-size: 0.68rem; padding: 5px 12px;
+        border-radius: 5px; cursor: pointer; transition: 0.2s;
         font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px;
+        backdrop-filter: blur(4px);
     }
     .perfil-top-btn:hover { background: rgba(0,0,0,0.9); color: white; border-color: #555; }
     .perfil-top-btn.danger:hover { border-color: #aa2222; color: #ff6666; }
 
     /* Body do card */
-    .perfil-body { padding: 50px 18px 18px; }
+    .perfil-body { padding: 58px 18px 18px; }
+
+    /* Accent color stripe no topo do body */
+    .perfil-body::before {
+        content: '';
+        position: absolute;
+        top: 150px; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--perfil-accent, var(--tema-primary)) 0%, transparent 100%);
+        opacity: 0.6;
+    }
 
     .perfil-username {
-        font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 2px;
+        font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 1px;
     }
     .perfil-handle {
-        font-size: 0.75rem; color: #666; margin-bottom: 10px;
+        font-size: 0.72rem; color: #555; margin-bottom: 6px;
         font-family: 'Share Tech Mono', monospace;
     }
+    .perfil-pronomes {
+        display: inline-block;
+        font-size: 0.65rem; color: #666; margin-bottom: 8px;
+        font-family: 'Share Tech Mono', monospace;
+        background: rgba(255,255,255,0.04);
+        padding: 2px 8px; border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.06);
+        cursor: pointer;
+    }
+    .perfil-pronomes:empty { display: none; }
 
     /* Status/recado */
     .perfil-status {
-        background: #1a1a1f; border-radius: 6px; padding: 8px 12px;
-        font-size: 0.82rem; color: #aaa; margin-bottom: 10px;
-        border-left: 3px solid var(--tema-primary);
-        min-height: 34px; cursor: pointer; transition: border-color 0.2s;
+        background: rgba(255,255,255,0.04); border-radius: 6px; padding: 8px 12px;
+        font-size: 0.82rem; color: #aaa; margin-bottom: 12px;
+        border-left: 3px solid var(--perfil-accent, var(--tema-primary));
+        min-height: 34px; cursor: pointer; transition: border-color 0.2s, background 0.2s;
         font-style: italic;
     }
-    .perfil-status:hover { border-left-color: var(--tema-primary-light); color: #ccc; }
+    .perfil-status:hover { border-left-color: var(--tema-primary-light); color: #ccc; background: rgba(255,255,255,0.06); }
     .perfil-status.vazio { color: #444; font-style: italic; }
 
     /* Divisor */
-    .perfil-divider { border: none; border-top: 1px solid #222; margin: 10px 0; }
+    .perfil-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 12px 0; }
 
     /* Bio */
     .perfil-bio-label {
-        font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase;
-        color: #555; margin-bottom: 4px;
+        font-size: 0.58rem; letter-spacing: 2.5px; text-transform: uppercase;
+        color: var(--perfil-accent, #555); margin-bottom: 6px;
         font-family: 'Share Tech Mono', monospace;
+        opacity: 0.8;
     }
     .perfil-bio {
-        font-size: 0.82rem; color: #999; line-height: 1.5;
+        font-size: 0.82rem; color: #999; line-height: 1.55;
         cursor: pointer; min-height: 20px; transition: color 0.2s;
     }
     .perfil-bio:hover { color: #ccc; }
-    .perfil-bio.vazio { color: #444; font-style: italic; }
+    .perfil-bio.vazio { color: #333; font-style: italic; }
+
+    /* Seção "Membro desde" estilo Discord */
+    .perfil-membro-section {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 6px; padding: 8px 12px;
+        margin-top: 10px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+    .perfil-membro-icon {
+        font-size: 1.2rem; opacity: 0.7; flex-shrink: 0;
+    }
+    .perfil-membro-info { flex: 1; }
+    .perfil-membro-label {
+        font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase;
+        color: var(--perfil-accent, #555); font-family: 'Share Tech Mono', monospace;
+        margin-bottom: 1px;
+    }
+    .perfil-membro-desde {
+        font-size: 0.78rem; color: #ccc;
+        font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* Atividade recente */
+    .perfil-atividade {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 6px; padding: 8px 12px;
+        margin-top: 6px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+    .perfil-atividade-icone { font-size: 1.1rem; flex-shrink: 0; }
+    .perfil-atividade-info { flex: 1; }
+    .perfil-atividade-label {
+        font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase;
+        color: var(--perfil-accent, #555); font-family: 'Share Tech Mono', monospace;
+        margin-bottom: 1px;
+    }
+    .perfil-atividade-texto { font-size: 0.78rem; color: #999; }
 
     /* Badges */
     .perfil-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
     .perfil-badge {
         display: flex; align-items: center; gap: 5px;
         padding: 4px 10px; border-radius: 20px;
-        font-size: 0.7rem; font-weight: 700; letter-spacing: 1px;
-        text-transform: uppercase;
+        font-size: 0.68rem; font-weight: 700; letter-spacing: 1px;
+        text-transform: uppercase; transition: transform 0.15s;
+        cursor: default;
     }
+    .perfil-badge:hover { transform: scale(1.06); }
     .badge-mestre  { background: rgba(200,150,12,0.15); border: 1px solid #c8960c; color: #f5c842; }
-    .badge-novato  { background: rgba(80,80,100,0.2);   border: 1px solid #555;    color: #888; }
+    .badge-novato  { background: rgba(80,80,100,0.15);  border: 1px solid #444;    color: #777; }
     .badge-membro  { background: rgba(58,123,213,0.15); border: 1px solid #3a7bd5; color: #7ab3f5; }
+    .badge-veterano { background: rgba(155,48,217,0.15); border: 1px solid #9b30d9; color: #d070ff; }
 
-    /* Pronomes */
-    .perfil-pronomes {
-        font-size: 0.72rem; color: #555; margin-top: 4px;
-        font-family: 'Share Tech Mono', monospace;
-    }
-
-    /* Data de entrada */
-    .perfil-membro-desde {
-        font-size: 0.65rem; color: #444; margin-top: 8px;
-        font-family: 'Share Tech Mono', monospace; letter-spacing: 1px;
-    }
-
-    /* Cor de destaque picker */
+    /* Cor de destaque picker no card de visualização */
     .perfil-cor-row {
-        display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap;
+        display: flex; gap: 6px; align-items: center; margin-top: 10px; flex-wrap: wrap;
     }
     .perfil-cor-label {
-        font-size: 0.58rem; letter-spacing: 2px; color: #555;
+        font-size: 0.55rem; letter-spacing: 2px; color: #555;
         text-transform: uppercase; font-family: 'Share Tech Mono', monospace;
         margin-right: 4px;
     }
     .cor-btn {
-        width: 18px; height: 18px; border-radius: 50%; cursor: pointer;
+        width: 20px; height: 20px; border-radius: 50%; cursor: pointer;
         border: 2px solid transparent; transition: 0.15s; flex-shrink: 0;
     }
-    .cor-btn:hover, .cor-btn.ativa { border-color: white; transform: scale(1.2); }
+    .cor-btn:hover, .cor-btn.ativa { border-color: white; transform: scale(1.25); }
 
-    /* Modal de edição inline */
+    /* ===== MODAL DE EDIÇÃO DE PERFIL (com abas estilo Discord) ===== */
+    @keyframes perfilEditOverlayIn {
+        from { opacity: 0; backdrop-filter: blur(0px); background: rgba(0,0,0,0); }
+        to   { opacity: 1; backdrop-filter: blur(8px); background: rgba(0,0,0,0.82); }
+    }
+    @keyframes perfilEditOverlayOut {
+        from { opacity: 1; backdrop-filter: blur(8px); background: rgba(0,0,0,0.82); }
+        to   { opacity: 0; backdrop-filter: blur(0px); background: rgba(0,0,0,0); }
+    }
     .perfil-edit-overlay {
         display: none; position: fixed; inset: 0;
-        background: rgba(0,0,0,0.6);
+        background: rgba(0,0,0,0.82);
+        backdrop-filter: blur(8px);
         z-index: 10000; align-items: center; justify-content: center;
+        padding: 16px;
     }
-    .perfil-edit-overlay.show { display: flex; }
+    .perfil-edit-overlay.show {
+        display: flex;
+        animation: perfilEditOverlayIn 0.22s ease both;
+    }
+    .perfil-edit-overlay.closing {
+        display: flex;
+        animation: perfilEditOverlayOut 0.18s ease both;
+    }
+
+    @keyframes perfilEditIn {
+        from { opacity: 0; transform: translateY(18px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes perfilEditOut {
+        from { opacity: 1; transform: translateY(0) scale(1); }
+        to   { opacity: 0; transform: translateY(14px) scale(0.96); }
+    }
     .perfil-edit-box {
-        background: #0d0d0d; border: 1px solid var(--tema-primary-dark);
-        border-radius: 12px; padding: 24px; width: min(320px, 92vw);
-        box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3);
+        background: #111115;
+        border: 1px solid rgba(var(--tema-glow-rgb), 0.2);
+        border-radius: 10px; padding: 0;
+        width: min(460px, 100%);
+        max-height: 90vh;
+        box-shadow: 0 0 60px rgba(var(--tema-glow-rgb),0.15), 0 24px 70px rgba(0,0,0,0.8);
+        animation: perfilEditIn 0.28s cubic-bezier(.22,1,.36,1) both;
+        position: relative;
+        display: flex; flex-direction: column;
+    }
+    .perfil-edit-overlay.closing .perfil-edit-box {
+        animation: perfilEditOut 0.18s cubic-bezier(.4,0,1,1) both;
+    }
+
+    /* Preview do perfil no topo do modal */
+    .perfil-edit-preview {
+        position: relative; height: 90px; overflow: hidden;
+        border-radius: 10px 10px 0 0; flex-shrink: 0;
+        background: linear-gradient(135deg, var(--tema-primary-dark) 0%, #000 100%);
+        background-size: cover; background-position: center;
+    }
+    .perfil-edit-preview-banner { position: absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .perfil-edit-preview-avatar {
+        position: absolute; bottom: -22px; left: 20px;
+        width: 54px; height: 54px; border-radius: 50%;
+        border: 4px solid #111115;
+        background: #222; overflow: hidden;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; font-weight: 700;
+        color: var(--tema-primary-light);
+    }
+    .perfil-edit-preview-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Header com nome */
+    .perfil-edit-header {
+        padding: 30px 20px 0 20px;
+        position: relative; flex-shrink: 0;
     }
     .perfil-edit-title {
-        font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
-        color: #666; margin-bottom: 14px;
+        font-size: 1.05rem; font-weight: 700; letter-spacing: 0.5px;
+        color: #fff; font-family: 'Oswald', sans-serif;
+    }
+
+    /* Abas estilo Discord */
+    .perfil-edit-abas {
+        display: flex; gap: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        margin: 10px 0 0 0; flex-shrink: 0;
+        overflow-x: auto;
+    }
+    .perfil-edit-aba {
+        padding: 10px 18px; font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+        color: #555; border-bottom: 2px solid transparent;
+        font-family: 'Oswald', sans-serif;
+        transition: color 0.15s, border-color 0.15s;
+        white-space: nowrap; user-select: none;
+    }
+    .perfil-edit-aba:hover { color: #999; }
+    .perfil-edit-aba.ativa {
+        color: var(--tema-primary-light);
+        border-bottom-color: var(--tema-primary);
+    }
+
+    /* Conteúdo das abas */
+    .perfil-edit-body { padding: 20px 20px; overflow-y: auto; flex: 1; }
+    .perfil-edit-painel { display: none; }
+    .perfil-edit-painel.ativo { display: block; }
+
+    .perfil-edit-field { margin-bottom: 16px; }
+    .perfil-edit-field:last-child { margin-bottom: 0; }
+    .perfil-edit-label {
+        font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase;
+        color: #666; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
         font-family: 'Share Tech Mono', monospace;
     }
     .perfil-edit-input, .perfil-edit-textarea {
-        width: 100%; background: #1a1a1f; border: 1px solid #333;
+        width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
         color: white; font-family: 'Oswald', sans-serif; font-size: 0.95rem;
-        padding: 9px 12px; border-radius: 6px; outline: none;
-        transition: border-color 0.2s; resize: vertical;
+        padding: 10px 14px; border-radius: 7px; outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; resize: vertical;
+        box-sizing: border-box;
     }
-    .perfil-edit-input:focus, .perfil-edit-textarea:focus { border-color: var(--tema-primary); }
-    .perfil-edit-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+    .perfil-edit-input:focus, .perfil-edit-textarea:focus {
+        border-color: var(--tema-primary);
+        background: rgba(255,255,255,0.06);
+        box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb), 0.14);
+    }
+    .perfil-edit-textarea { min-height: 90px; line-height: 1.5; }
+    .perfil-edit-counter {
+        font-size: 0.62rem; color: #444; text-align: right; margin-top: 4px;
+        font-family: 'Share Tech Mono', monospace; letter-spacing: 1px;
+    }
+
+    /* Seletor de cor de destaque — grade 2×N */
+    .perfil-edit-cor-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .perfil-edit-cor-btn {
+        width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+        border: 2px solid transparent; transition: 0.2s; flex-shrink: 0;
+        position: relative;
+    }
+    .perfil-edit-cor-btn:hover { transform: scale(1.18); }
+    .perfil-edit-cor-btn.ativa {
+        border-color: white;
+        box-shadow: 0 0 0 2px #111115, 0 0 12px currentColor;
+    }
+    .perfil-edit-cor-btn.ativa::after {
+        content: '✓'; position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; color: #fff; text-shadow: 0 0 4px rgba(0,0,0,0.9);
+    }
+
+    /* Painel Aparência — tema de cor do card inteiro */
+    .perfil-edit-tema-label {
+        font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase;
+        color: #666; margin-bottom: 10px;
+        font-family: 'Share Tech Mono', monospace;
+    }
+    .perfil-edit-tema-row {
+        display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;
+    }
+    .perfil-edit-tema-btn {
+        width: 34px; height: 34px; border-radius: 8px; cursor: pointer;
+        border: 2px solid transparent; transition: 0.2s; flex-shrink: 0;
+        position: relative;
+    }
+    .perfil-edit-tema-btn:hover { transform: scale(1.12); }
+    .perfil-edit-tema-btn.ativa {
+        border-color: white;
+        box-shadow: 0 0 0 2px #111115, 0 0 10px currentColor;
+    }
+    .perfil-edit-tema-btn.ativa::after {
+        content: '✓'; position: absolute; inset: 0; border-radius: 6px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.72rem; color: #fff; text-shadow: 0 0 4px rgba(0,0,0,0.9);
+    }
+
+    /* Painel Conta — info somente leitura */
+    .perfil-edit-conta-info {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 8px; padding: 14px 16px;
+        margin-bottom: 12px;
+    }
+    .perfil-edit-conta-linha {
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 0.8rem; padding: 5px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .perfil-edit-conta-linha:last-child { border-bottom: none; }
+    .perfil-edit-conta-chave { color: #555; font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; }
+    .perfil-edit-conta-valor { color: #ccc; font-family: 'Oswald', sans-serif; }
+
+    /* Danger zone */
+    .perfil-edit-danger-btn {
+        width: 100%; padding: 10px; border-radius: 6px;
+        background: rgba(180,0,0,0.1); border: 1px solid rgba(200,0,0,0.25);
+        color: #ff6666; font-family: 'Oswald', sans-serif; font-size: 0.8rem;
+        letter-spacing: 1px; cursor: pointer; transition: 0.2s; font-weight: 700;
+    }
+    .perfil-edit-danger-btn:hover { background: rgba(200,0,0,0.2); border-color: #aa2222; }
+
+    .perfil-edit-footer {
+        display: flex; gap: 10px; justify-content: flex-end;
+        padding: 14px 20px 18px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        flex-shrink: 0;
+    }
     .perfil-edit-btn-ok {
-        background: var(--tema-primary-dark); border: 1px solid var(--tema-primary);
+        background: var(--tema-primary); border: 1px solid var(--tema-primary);
         color: white; font-family: 'Oswald', sans-serif; font-size: 0.85rem;
-        font-weight: 700; padding: 7px 18px; border-radius: 5px; cursor: pointer; transition: 0.2s;
+        font-weight: 700; letter-spacing: 1px; padding: 9px 24px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+        position: relative; overflow: hidden;
     }
-    .perfil-edit-btn-ok:hover { background: var(--tema-primary); }
+    .perfil-edit-btn-ok::before {
+        content: ''; position: absolute; inset: 0;
+        background: rgba(255,255,255,0.15); transform: scaleX(0); transform-origin: left;
+        transition: transform 0.2s ease;
+    }
+    .perfil-edit-btn-ok:hover::before { transform: scaleX(1); }
+    .perfil-edit-btn-ok:hover { box-shadow: 0 0 16px rgba(var(--tema-glow-rgb),0.5); }
     .perfil-edit-btn-cancel {
-        background: transparent; border: 1px solid #333; color: #555;
-        font-family: 'Oswald', sans-serif; font-size: 0.85rem;
-        padding: 7px 18px; border-radius: 5px; cursor: pointer; transition: 0.2s;
+        background: transparent; border: 1px solid #2a2a2a; color: #777;
+        font-family: 'Oswald', sans-serif; font-size: 0.85rem; letter-spacing: 1px;
+        padding: 9px 22px; border-radius: 6px; cursor: pointer; transition: 0.2s;
     }
-    .perfil-edit-btn-cancel:hover { border-color: #666; color: #888; }
+    .perfil-edit-btn-cancel:hover { border-color: #555; color: #aaa; }
+
+    /* Botão "Editar Perfil" no card */
+    .btn-editar-perfil {
+        background: transparent; border: 1px solid rgba(var(--tema-glow-rgb), 0.35);
+        color: var(--tema-primary-light); font-size: 0.7rem;
+        font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px;
+        padding: 5px 14px; border-radius: 5px; cursor: pointer; transition: 0.2s;
+        text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-editar-perfil:hover {
+        background: rgba(var(--tema-glow-rgb), 0.15);
+        border-color: var(--tema-primary-light);
+        box-shadow: 0 0 10px rgba(var(--tema-glow-rgb),0.3);
+        color: #fff;
+    }
 
     /* Crop banner */
     .banner-crop-overlay {
@@ -1509,6 +1782,361 @@ body { transition: background 0.6s ease; }
    ATUALIZA CONTADOR DE AGENTES NA HERO
 ═══════════════════════════════════════════ */
 
+/* ═══════════════════════════════════════════
+   SEÇÃO "DOSSIÊS" — LISTA DE AGENTES
+═══════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+.dossie-header {
+    position: relative;
+    margin-bottom: 44px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(var(--tema-glow-rgb),0.15);
+}
+.dossie-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    color: var(--tema-primary-light);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    opacity: 0.85;
+}
+.dossie-title {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    letter-spacing: 4px;
+    color: #fff;
+    text-shadow: 0 0 30px rgba(var(--tema-glow-rgb),0.25);
+    margin: 0;
+    line-height: 1.05;
+}
+.dossie-title .num {
+    color: var(--tema-primary-light);
+    text-shadow: 0 0 18px rgba(var(--tema-glow-light-rgb),0.6);
+}
+.dossie-sub {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 300;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 8px;
+}
+.dossie-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Botão "Novo Agente" — alinhado ao btn-cta-primary da hero */
+.btn-novo-agente {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 30px;
+    background: transparent;
+    border: 2px solid var(--tema-primary);
+    color: #fff;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: all 0.3s cubic-bezier(.22,1,.36,1);
+    position: relative;
+    overflow: hidden;
+}
+.btn-novo-agente::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(var(--tema-glow-rgb),0.12);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+.btn-novo-agente:hover::before { transform: scaleX(1); }
+.btn-novo-agente:hover {
+    border-color: var(--tema-primary-light);
+    box-shadow: 0 0 24px rgba(var(--tema-glow-rgb),0.4);
+}
+
+/* Barra de busca/filtro */
+.dossie-toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+.dossie-search {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+}
+.dossie-search input {
+    width: 100%;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(var(--tema-glow-rgb),0.18);
+    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 11px 16px 11px 40px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+.dossie-search input::placeholder { color: rgba(255,255,255,0.25); }
+.dossie-search input:focus {
+    border-color: var(--tema-primary);
+    box-shadow: 0 0 18px rgba(var(--tema-glow-rgb),0.2);
+}
+.dossie-search-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.3);
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+/* ── Grid de dossiês ── */
+.dossie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+}
+
+/* ── Card "dossiê" ── */
+.dossie-card {
+    position: relative;
+    background: linear-gradient(165deg, rgba(255,255,255,0.025) 0%, rgba(0,0,0,0.3) 100%);
+    border: 1px solid rgba(var(--tema-glow-rgb),0.14);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(.22,1,.36,1), border-color 0.35s, box-shadow 0.35s;
+    display: flex;
+    flex-direction: column;
+}
+.dossie-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(var(--tema-glow-rgb),0.45);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.5), 0 0 40px rgba(var(--tema-glow-rgb),0.12);
+}
+
+/* Imagem com overlay + scanlines */
+.dossie-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+    background: #0a0a0a;
+}
+.dossie-media img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.9) contrast(1.05);
+    transition: transform 0.6s cubic-bezier(.22,1,.36,1), filter 0.4s;
+}
+.dossie-card:hover .dossie-media img {
+    transform: scale(1.06);
+    filter: saturate(1.05) contrast(1.1);
+}
+.dossie-media::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.85) 100%),
+                repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.12) 3px, rgba(0,0,0,0.12) 4px);
+    pointer-events: none;
+}
+
+/* Selo de nível, canto superior */
+.dossie-level {
+    position: absolute;
+    top: 12px; right: 12px;
+    z-index: 2;
+    background: rgba(0,0,0,0.75);
+    border: 1px solid rgba(var(--tema-glow-rgb),0.4);
+    border-radius: 99px;
+    padding: 5px 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: var(--tema-primary-light);
+    backdrop-filter: blur(6px);
+    text-transform: uppercase;
+}
+
+/* Status / nº de arquivo, canto superior esquerdo */
+.dossie-tag {
+    position: absolute;
+    top: 12px; left: 12px;
+    z-index: 2;
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(0,0,0,0.75);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 99px;
+    padding: 5px 12px 5px 9px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.6);
+    backdrop-filter: blur(6px);
+    text-transform: uppercase;
+}
+.dossie-tag-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: badgeBlink 1.4s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+/* Nome sobre a imagem */
+.dossie-name-wrap {
+    position: absolute;
+    bottom: 12px; left: 16px; right: 16px;
+    z-index: 2;
+}
+.dossie-name {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+    margin: 0;
+    line-height: 1.2;
+}
+.dossie-codename {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    color: var(--tema-primary-light);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+/* Corpo do card */
+.dossie-body {
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+.dossie-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.dossie-chip {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 4px;
+    padding: 4px 9px;
+}
+.dossie-chip-accent {
+    color: var(--tema-primary-light);
+    border-color: rgba(var(--tema-glow-rgb),0.3);
+    background: rgba(var(--tema-glow-rgb),0.07);
+}
+
+/* Rodapé com ações */
+.dossie-actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+.btn-dossie-acessar {
+    flex: 1;
+    text-align: center;
+    background: var(--tema-primary);
+    color: #fff;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 9px 14px;
+    border-radius: 4px;
+    transition: background 0.25s, box-shadow 0.25s;
+}
+.btn-dossie-acessar:hover {
+    background: var(--tema-primary-light);
+    color: #06090f;
+    box-shadow: 0 0 18px rgba(var(--tema-glow-rgb),0.45);
+}
+.dossie-icon-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.45);
+    width: 36px; height: 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+.dossie-icon-btn:hover {
+    border-color: var(--tema-primary);
+    color: var(--tema-primary-light);
+    background: rgba(var(--tema-glow-rgb),0.08);
+}
+.dossie-icon-btn.danger:hover {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(232,64,64,0.08);
+}
+
+/* Estado vazio */
+.dossie-empty {
+    text-align: center;
+    padding: 70px 20px;
+    border: 1px dashed rgba(var(--tema-glow-rgb),0.2);
+    border-radius: 8px;
+    background: rgba(var(--tema-glow-rgb),0.02);
+}
+.dossie-empty-icon {
+    font-size: 2.4rem;
+    margin-bottom: 14px;
+    opacity: 0.5;
+    filter: drop-shadow(0 0 12px rgba(var(--tema-glow-rgb),0.4));
+}
+.dossie-empty-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 18px;
+}
+
+@media (max-width: 576px) {
+    .dossie-header { display: block; }
+    .dossie-title { font-size: 2rem; }
+    .dossie-grid { grid-template-columns: 1fr; }
+}
+
 </style>
 
 <body>
@@ -1809,11 +2437,30 @@ body { transition: background 0.6s ease; }
 
     <!-- SEÇÃO AGENTES -->
     <section id="secao-agentes" class="container my-5 d-none">
-        <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
-            <h2 class="text-white display-5 fw-bold mb-0">Agentes: <span id="contador" class="text-purple-neon">0</span></h2>
-            <a href="criar.html" class="btn btn-outline-light px-4 py-2">Novo Agente</a>
+        <div class="dossie-header">
+            <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
+                <div>
+                    <div class="dossie-eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        ARQUIVO CONFIDENCIAL · ORDEM PARANORMAL
+                    </div>
+                    <h2 class="dossie-title">AGENTES <span class="num">[<span id="contador">0</span>]</span></h2>
+                    <p class="dossie-sub">Registro de agentes vinculados à sua credencial de acesso.</p>
+                </div>
+                <div class="dossie-actions">
+                    <a href="criar.html" class="btn-novo-agente">
+                        <span class="cta-icon">+</span> Novo Agente
+                    </a>
+                </div>
+            </div>
+            <div class="dossie-toolbar">
+                <div class="dossie-search">
+                    <span class="dossie-search-icon">🔍</span>
+                    <input type="text" id="busca-agentes" placeholder="Buscar por nome, codinome, classe ou origem..." oninput="filtrarAgentes(this.value)">
+                </div>
+            </div>
         </div>
-        <div id="lista-agentes" class="row g-4"></div>
+        <div id="lista-agentes" class="dossie-grid"></div>
     </section>
 
     <footer class="custom-footer mt-5 py-5" style="background:black;border-top:2px solid #333;">
@@ -1850,6 +2497,7 @@ body { transition: background 0.6s ease; }
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { getDatabase, ref, set, get, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws",
@@ -1864,6 +2512,7 @@ body { transition: background 0.6s ease; }
         const app  = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db   = getDatabase(app);
+        const dbFirestore = getFirestore(app);
 
         // Expõe Firebase Database para scripts globais
         window._firebaseDB     = db;
@@ -1872,6 +2521,13 @@ body { transition: background 0.6s ease; }
         window._firebaseGet    = get;
         window._firebaseRemove = remove;
         window._firebaseOnValue = onValue;
+
+        // Expõe Firestore (usado por campanhas.html) para contagem de campanhas no perfil
+        window._firestoreDB      = dbFirestore;
+        window._firestoreCollection = collection;
+        window._firestoreQuery   = query;
+        window._firestoreWhere   = where;
+        window._firestoreGetDocs = getDocs;
 
         // Converte nome de usuário em email interno do Firebase
         function toEmail(usuario) {
@@ -2143,10 +2799,10 @@ body { transition: background 0.6s ease; }
 
             if (agentes.length === 0) {
                 lista.innerHTML = `
-                    <div class="col-12">
-                        <p class="text-secondary" style="font-family:monospace;letter-spacing:1px;">
-                            ▸ Nenhum agente registrado ainda. <a href="criar.html" class="text-purple-neon">Crie o primeiro!</a>
-                        </p>
+                    <div class="dossie-empty" style="grid-column:1/-1;">
+                        <div class="dossie-empty-icon">📁</div>
+                        <p class="dossie-empty-text">▸ Nenhum agente registrado nesta credencial.</p>
+                        <a href="criar.html" class="btn-novo-agente"><span class="cta-icon">+</span> Criar primeiro agente</a>
                     </div>`;
                 return;
             }
@@ -2174,26 +2830,60 @@ body { transition: background 0.6s ease; }
 
                 if (!fotoSrc) fotoSrc = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(agente.nome)}`;
 
+                const numeroArquivo = String(index + 1).padStart(3, '0');
+                const buscaTermo = `${agente.nome||''} ${agente.codinome||''} ${agente.classe||''} ${agente.origem||''}`.toLowerCase();
+
                 lista.innerHTML += `
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card-agente">
-                            <img src="${fotoSrc}" class="img-agente" alt="${agente.nome}">
-                            <div class="card-body p-3">
-                                <h5 class="mb-0 fw-bold">${agente.nome}${agente.codinome ? ` <span style="color:#555;font-size:0.8rem">"${agente.codinome}"</span>` : ''}</h5>
-                                <p class="text-secondary small mb-1">${agente.classe} • Nível ${agente.nivel}</p>
-                                <p class="text-secondary small mb-2">${agente.origem}</p>
-                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <a href="ficha.html?id=${agente.id}" class="btn-acessar">Acessar Ficha</a>
-                                    <div class="d-flex align-items-center gap-1">
-                                        <button onclick="abrirModalCompartilhar(${index})" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem;" title="Compartilhar ficha">🔗</button>
-                                        <button onclick="deletarAgente(${index})" style="background:none;border:none;color:#555;cursor:pointer;font-size:1rem;" title="Remover agente">🗑</button>
-                                    </div>
-                                </div>
+                    <div class="dossie-card" data-busca="${buscaTermo.replace(/"/g,'')}">
+                        <div class="dossie-media">
+                            <img src="${fotoSrc}" alt="${agente.nome}" loading="lazy">
+                            <div class="dossie-tag"><span class="dossie-tag-dot"></span> FILE Nº ${numeroArquivo}</div>
+                            <div class="dossie-level">NÍVEL ${agente.nivel}</div>
+                            <div class="dossie-name-wrap">
+                                <h3 class="dossie-name">${agente.nome}</h3>
+                                ${agente.codinome ? `<div class="dossie-codename">"${agente.codinome}"</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="dossie-body">
+                            <div class="dossie-meta">
+                                <span class="dossie-chip dossie-chip-accent">${agente.classe || '—'}</span>
+                                <span class="dossie-chip">${agente.origem || '—'}</span>
+                            </div>
+                            <div class="dossie-actions-row">
+                                <a href="ficha.html?id=${agente.id}" class="btn-dossie-acessar">Acessar Ficha</a>
+                                <button onclick="abrirModalCompartilhar(${index})" class="dossie-icon-btn" title="Compartilhar ficha">🔗</button>
+                                <button onclick="deletarAgente(${index})" class="dossie-icon-btn danger" title="Remover agente">🗑</button>
                             </div>
                         </div>
                     </div>`;
             });
         }
+
+        function filtrarAgentes(termo) {
+            const t = (termo || '').toLowerCase().trim();
+            const cards = document.querySelectorAll('#lista-agentes .dossie-card');
+            let visiveis = 0;
+            cards.forEach(card => {
+                const match = !t || (card.dataset.busca || '').includes(t);
+                card.style.display = match ? '' : 'none';
+                if (match) visiveis++;
+            });
+
+            let aviso = document.getElementById('dossie-sem-resultado');
+            if (visiveis === 0 && cards.length > 0) {
+                if (!aviso) {
+                    aviso = document.createElement('div');
+                    aviso.id = 'dossie-sem-resultado';
+                    aviso.style.gridColumn = '1/-1';
+                    aviso.className = 'dossie-empty';
+                    aviso.innerHTML = `<div class="dossie-empty-icon">🔎</div><p class="dossie-empty-text">▸ Nenhum agente corresponde à busca.</p>`;
+                    document.getElementById('lista-agentes').appendChild(aviso);
+                }
+            } else if (aviso) {
+                aviso.remove();
+            }
+        }
+
 
         async function deletarAgente(index) {
             if (!confirm('Remover este agente? Esta ação não pode ser desfeita.')) return;
@@ -2655,9 +3345,45 @@ async function renderPainelPerfil(usuario, perfil) {
     }
     membroEl.textContent = '▸ Membro desde ' + dataEntrada;
 
+    // Accent color personalizada do card
+    const cardEl = document.getElementById('perfil-card');
+    if (perfil.accent) {
+        cardEl.style.setProperty('--perfil-accent', perfil.accent);
+        cardEl.style.setProperty('--perfil-accent-glow', _hexParaRgb(perfil.accent));
+    } else {
+        cardEl.style.removeProperty('--perfil-accent');
+        cardEl.style.removeProperty('--perfil-accent-glow');
+    }
+
     // Badges — verifica se tem campanha no Firebase
     await renderBadges(usuario);
 }
+
+// Converte #rrggbb para "r,g,b" (para usar em rgba())
+function _hexParaRgb(hex) {
+    hex = (hex || '').replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    const r = parseInt(hex.substring(0,2), 16) || 0;
+    const g = parseInt(hex.substring(2,4), 16) || 0;
+    const b = parseInt(hex.substring(4,6), 16) || 0;
+    return `${r},${g},${b}`;
+}
+
+// Conta quantas campanhas o usuário criou (mestreUid no Firestore)
+async function contarCampanhasCriadas() {
+    if (!window._firestoreDB) return 0;
+    try {
+        const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
+        if (!uid) return 0;
+        const q = window._firestoreQuery(
+            window._firestoreCollection(window._firestoreDB, 'campanhas'),
+            window._firestoreWhere('mestreUid', '==', uid)
+        );
+        const snap = await window._firestoreGetDocs(q);
+        return snap.size || 0;
+    } catch(e) { return 0; }
+}
+window.contarCampanhasCriadas = contarCampanhasCriadas;
 
 async function renderBadges(usuario) {
     const badgesEl = document.getElementById('perfil-badges');
@@ -2667,19 +3393,8 @@ async function renderBadges(usuario) {
     badgesEl.innerHTML += `<span class="perfil-badge badge-membro">⚡ Membro</span>`;
 
     // Verifica se tem campanha criada → badge Mestre
-    let temCampanha = false;
-    if (window._firebaseDB) {
-        try {
-            const uid = localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase');
-            if (uid) {
-                const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `campanhas`));
-                if (snap.exists()) {
-                    const cams = snap.val();
-                    temCampanha = Object.values(cams).some(c => c && (c.criadorUid === uid || c.dono === uid || c.criador === usuario));
-                }
-            }
-        } catch(e) {}
-    }
+    const totalCampanhas = await contarCampanhasCriadas();
+    const temCampanha = totalCampanhas > 0;
 
     if (temCampanha) {
         badgesEl.innerHTML += `<span class="perfil-badge badge-mestre">👑 Mestre</span>`;
@@ -2694,59 +3409,135 @@ function fecharPainelPerfil(e) {
 }
 window.fecharPainelPerfil = fecharPainelPerfil;
 
-function abrirEditPerfil(campo) {
-    _perfilCampoAtual = campo;
+function abrirEditPerfil(campoFoco) {
     const overlay  = document.getElementById('perfil-edit-overlay');
-    const titleEl  = document.getElementById('perfil-edit-title');
-    const inputEl  = document.getElementById('perfil-edit-input');
-    const textaEl  = document.getElementById('perfil-edit-textarea');
+    const statusEl = document.getElementById('perfil-edit-status');
+    const pronEl   = document.getElementById('perfil-edit-pronomes');
+    const bioEl    = document.getElementById('perfil-edit-bio');
+    const counter  = document.getElementById('perfil-edit-bio-counter');
     const perfil   = getPerfilLocal();
 
-    inputEl.style.display = 'none';
-    textaEl.style.display = 'none';
+    statusEl.value = perfil.status   || '';
+    pronEl.value   = perfil.pronomes || '';
+    bioEl.value    = perfil.bio      || '';
+    counter.textContent = bioEl.value.length + '/280';
 
-    if (campo === 'status') {
-        titleEl.textContent  = '▸ EDITAR RECADO';
-        inputEl.value        = perfil.status || '';
-        inputEl.placeholder  = 'Ex: O medo é real...';
-        inputEl.style.display = '';
-        overlay.classList.add('show');
-        setTimeout(() => { inputEl.focus(); inputEl.select(); }, 50);
-    } else if (campo === 'bio') {
-        titleEl.textContent   = '▸ EDITAR BIO';
-        textaEl.value         = perfil.bio || '';
-        textaEl.placeholder   = 'Fale um pouco sobre você...';
-        textaEl.style.display = '';
-        overlay.classList.add('show');
-        setTimeout(() => textaEl.focus(), 50);
-    } else if (campo === 'pronomes') {
-        titleEl.textContent  = '▸ PRONOMES';
-        inputEl.value        = perfil.pronomes || '';
-        inputEl.placeholder  = 'Ex: ele/dele';
-        inputEl.style.display = '';
-        overlay.classList.add('show');
-        setTimeout(() => { inputEl.focus(); inputEl.select(); }, 50);
-    }
+    // Marca a cor de destaque ativa (borda do avatar)
+    const corAtual = perfil.corBorda || '';
+    document.querySelectorAll('#perfil-edit-cor-row .perfil-edit-cor-btn').forEach(b => {
+        b.classList.toggle('ativa', b.dataset.cor === corAtual);
+    });
+
+    // Marca a accent color ativa (Aparência)
+    const accentAtual = perfil.accent || '';
+    document.querySelectorAll('#perfil-edit-tema-row .perfil-edit-tema-btn').forEach(b => {
+        b.classList.toggle('ativa', b.dataset.accent === accentAtual);
+    });
+
+    // Preenche a aba Conta
+    preencherAbaConta();
+
+    // Volta para a primeira aba
+    mudarAbaEdit('perfil');
+
+    overlay.classList.add('show');
+
+    // Foca o campo relevante (se indicado), senão o status
+    const focoMap = { status: statusEl, pronomes: pronEl, bio: bioEl };
+    const elFoco  = focoMap[campoFoco] || statusEl;
+    setTimeout(() => {
+        elFoco.focus();
+        if (elFoco.select) elFoco.select();
+    }, 60);
 }
 
+function mudarAbaEdit(aba) {
+    document.querySelectorAll('.perfil-edit-aba').forEach(el => {
+        el.classList.toggle('ativa', el.dataset.aba === aba);
+    });
+    document.querySelectorAll('.perfil-edit-painel').forEach(el => {
+        el.classList.toggle('ativo', el.id === 'perfil-edit-painel-' + aba);
+    });
+}
+window.mudarAbaEdit = mudarAbaEdit;
+
+function selecionarAccentEdit(el) {
+    document.querySelectorAll('#perfil-edit-tema-row .perfil-edit-tema-btn').forEach(b => b.classList.remove('ativa'));
+    el.classList.add('ativa');
+}
+window.selecionarAccentEdit = selecionarAccentEdit;
+
+async function preencherAbaConta() {
+    const usuario = getUsuarioLogado() || '—';
+    const perfil  = getPerfilLocal();
+
+    document.getElementById('conta-usuario-display').textContent = usuario;
+    document.getElementById('conta-membro-display').textContent  = perfil.dataEntrada || '—';
+
+    // Conta fichas criadas
+    let totalFichas = '0';
+    try {
+        const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+        totalFichas = String(agentes.length);
+    } catch(e) {}
+    document.getElementById('conta-fichas-display').textContent = totalFichas;
+
+    // Conta campanhas criadas
+    const totalCampanhas = await contarCampanhasCriadas();
+    document.getElementById('conta-campanha-display').textContent = String(totalCampanhas);
+}
+window.preencherAbaConta = preencherAbaConta;
+
 function fecharEditPerfil() {
-    document.getElementById('perfil-edit-overlay').classList.remove('show');
-    _perfilCampoAtual = null;
+    const overlay = document.getElementById('perfil-edit-overlay');
+    if (!overlay.classList.contains('show')) return;
+    overlay.classList.remove('show');
+    overlay.classList.add('closing');
+    setTimeout(() => {
+        overlay.classList.remove('closing');
+    }, 180);
 }
 window.abrirEditPerfil   = abrirEditPerfil;
 window.fecharEditPerfil  = fecharEditPerfil;
 
+function selecionarCorEdit(el) {
+    document.querySelectorAll('#perfil-edit-cor-row .perfil-edit-cor-btn').forEach(b => b.classList.remove('ativa'));
+    el.classList.add('ativa');
+}
+window.selecionarCorEdit = selecionarCorEdit;
+
 async function salvarEditPerfil() {
-    const campo  = _perfilCampoAtual;
-    const inputEl = document.getElementById('perfil-edit-input');
-    const textaEl = document.getElementById('perfil-edit-textarea');
-    const valor  = (campo === 'bio' ? textaEl.value : inputEl.value).trim();
     const perfil = getPerfilLocal();
-    perfil[campo] = valor;
+
+    perfil.status   = document.getElementById('perfil-edit-status').value.trim();
+    perfil.pronomes = document.getElementById('perfil-edit-pronomes').value.trim();
+    perfil.bio      = document.getElementById('perfil-edit-bio').value.trim();
+
+    const corAtiva = document.querySelector('#perfil-edit-cor-row .perfil-edit-cor-btn.ativa');
+    perfil.corBorda = corAtiva ? corAtiva.dataset.cor : '';
+
+    const accentAtivo = document.querySelector('#perfil-edit-tema-row .perfil-edit-tema-btn.ativa');
+    perfil.accent = accentAtivo ? accentAtivo.dataset.accent : '';
+
     setPerfilLocal(perfil);
     await salvarPerfilFirebase(perfil);
     fecharEditPerfil();
     renderPainelPerfil(getUsuarioLogado(), perfil);
+
+    // Atualiza a borda do avatar imediatamente
+    const wrap = document.getElementById('perfil-avatar-wrap');
+    const circle = document.getElementById('avatar-circle');
+    if (perfil.corBorda) {
+        wrap.classList.add('borda-ativa');
+        wrap.style.setProperty('--perfil-borda', perfil.corBorda);
+        if (circle) { circle.style.borderColor = perfil.corBorda; circle.style.boxShadow = `0 0 8px ${perfil.corBorda}`; }
+        document.querySelectorAll('.cor-btn').forEach(b => b.classList.toggle('ativa', b.dataset.cor === perfil.corBorda));
+    } else {
+        wrap.classList.remove('borda-ativa');
+        wrap.style.removeProperty('--perfil-borda');
+        if (circle) { circle.style.borderColor = ''; circle.style.boxShadow = ''; }
+        document.querySelectorAll('.cor-btn').forEach(b => b.classList.remove('ativa'));
+    }
 }
 window.salvarEditPerfil = salvarEditPerfil;
 
@@ -2960,7 +3751,7 @@ confirmarCrop = async function() {
 
     /* ── Anima cards de agente ao aparecerem ── */
     function animarCards() {
-        document.querySelectorAll('.card-agente').forEach((card, i) => {
+        document.querySelectorAll('.dossie-card').forEach((card, i) => {
             card.style.opacity = '0';
             card.style.animation = 'none';
             // force reflow
@@ -3004,30 +3795,33 @@ confirmarCrop = async function() {
     <div class="perfil-banner" id="perfil-banner" onclick="perfilClicarBanner()">
       <div class="perfil-banner-edit">📷 Alterar banner</div>
       <div class="perfil-top-actions">
-        <button class="perfil-top-btn" onclick="event.stopPropagation();abrirEditPerfil('status')">✎ Status</button>
+        <button class="perfil-top-btn" onclick="event.stopPropagation();abrirEditPerfil('bio')">✎ Editar Perfil</button>
         <button class="perfil-top-btn danger" onclick="event.stopPropagation();fazerLogout()">✕ Sair</button>
       </div>
     </div>
+
+    <!-- Avatar com status dot -->
     <div class="perfil-avatar-wrap" id="perfil-avatar-wrap" onclick="event.stopPropagation();perfilClicarAvatar()">
       <div class="perfil-avatar" id="perfil-avatar-img">
         <span id="perfil-avatar-iniciais"></span>
         <div class="perfil-avatar-edit">📷</div>
       </div>
     </div>
+    <div class="perfil-status-dot" id="perfil-status-dot" title="Online"></div>
 
     <!-- Body -->
     <div class="perfil-body">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
         <div>
           <div class="perfil-username" id="perfil-username">—</div>
           <div class="perfil-handle" id="perfil-handle">@—</div>
-          <div class="perfil-pronomes" id="perfil-pronomes-display" onclick="abrirEditPerfil('pronomes')" title="Editar pronomes"></div>
+          <div class="perfil-pronomes" id="perfil-pronomes-display" onclick="abrirEditPerfil('bio')" title="Editar pronomes"></div>
         </div>
-        <button onclick="abrirEditPerfil('bio')" style="background:transparent;border:1px solid #333;color:#555;font-size:0.7rem;font-family:'Oswald',sans-serif;padding:4px 10px;border-radius:4px;cursor:pointer;transition:0.2s;margin-top:4px;" onmouseover="this.style.borderColor='var(--tema-primary)';this.style.color='var(--tema-primary-light)'" onmouseout="this.style.borderColor='#333';this.style.color='#555'">✎ Editar</button>
+        <button class="btn-editar-perfil" onclick="abrirEditPerfil('bio')">✎ Editar</button>
       </div>
 
       <!-- Status/recado -->
-      <div class="perfil-status vazio" id="perfil-status-display" onclick="abrirEditPerfil('status')">
+      <div class="perfil-status vazio" id="perfil-status-display" onclick="abrirEditPerfil('bio')">
         Clique para adicionar um recado...
       </div>
 
@@ -3045,8 +3839,23 @@ confirmarCrop = async function() {
       <div class="perfil-bio-label">Cargos</div>
       <div class="perfil-badges" id="perfil-badges"></div>
 
-      <!-- Data de entrada -->
-      <div class="perfil-membro-desde" id="perfil-membro-desde"></div>
+      <!-- Membro desde — seção destacada -->
+      <div class="perfil-membro-section" id="perfil-membro-section">
+        <div class="perfil-membro-icon">📅</div>
+        <div class="perfil-membro-info">
+          <div class="perfil-membro-label">Membro desde</div>
+          <div class="perfil-membro-desde" id="perfil-membro-desde">—</div>
+        </div>
+      </div>
+
+      <!-- Atividade recente -->
+      <div class="perfil-atividade" id="perfil-atividade" style="display:none;">
+        <div class="perfil-atividade-icone" id="perfil-atividade-icone">🎲</div>
+        <div class="perfil-atividade-info">
+          <div class="perfil-atividade-label">Atividade</div>
+          <div class="perfil-atividade-texto" id="perfil-atividade-texto">—</div>
+        </div>
+      </div>
 
       <!-- Cor de destaque da borda do avatar -->
       <hr class="perfil-divider">
@@ -3065,17 +3874,110 @@ confirmarCrop = async function() {
   </div>
 </div>
 
-<!-- Modal de edição de campo -->
+<!-- Modal de edição de perfil — estilo Discord com abas -->
 <div class="perfil-edit-overlay" id="perfil-edit-overlay" onclick="fecharEditPerfil()">
   <div class="perfil-edit-box" onclick="event.stopPropagation()">
-    <div class="perfil-edit-title" id="perfil-edit-title">Editar</div>
-    <input type="text" class="perfil-edit-input" id="perfil-edit-input" style="display:none"
-      onkeydown="if(event.key==='Enter')salvarEditPerfil();if(event.key==='Escape')fecharEditPerfil();">
-    <textarea class="perfil-edit-textarea" id="perfil-edit-textarea" rows="4" style="display:none"
-      onkeydown="if(event.key==='Escape')fecharEditPerfil();"></textarea>
-    <div class="perfil-edit-btns">
+
+    <!-- Preview do perfil no topo -->
+    <div class="perfil-edit-preview" id="perfil-edit-preview">
+      <div class="perfil-edit-preview-avatar" id="perfil-edit-preview-avatar"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="perfil-edit-header">
+      <div class="perfil-edit-title" id="perfil-edit-title-nome">Editar Perfil</div>
+
+      <!-- Abas -->
+      <div class="perfil-edit-abas">
+        <div class="perfil-edit-aba ativa" data-aba="perfil" onclick="mudarAbaEdit('perfil')">Perfil</div>
+        <div class="perfil-edit-aba" data-aba="aparencia" onclick="mudarAbaEdit('aparencia')">Aparência</div>
+        <div class="perfil-edit-aba" data-aba="conta" onclick="mudarAbaEdit('conta')">Conta</div>
+      </div>
+    </div>
+
+    <!-- Corpo com paineis por aba -->
+    <div class="perfil-edit-body">
+
+      <!-- ABA: Perfil -->
+      <div class="perfil-edit-painel ativo" id="perfil-edit-painel-perfil">
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-label">💬 Recado / Status</div>
+          <input type="text" class="perfil-edit-input" id="perfil-edit-status" maxlength="60" placeholder="Ex: O medo é real..."
+            onkeydown="if(event.key==='Enter')salvarEditPerfil();if(event.key==='Escape')fecharEditPerfil();">
+        </div>
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-label">⚑ Pronomes</div>
+          <input type="text" class="perfil-edit-input" id="perfil-edit-pronomes" maxlength="30" placeholder="Ex: ele/dele"
+            onkeydown="if(event.key==='Enter')salvarEditPerfil();if(event.key==='Escape')fecharEditPerfil();">
+        </div>
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-label">▸ Sobre mim</div>
+          <textarea class="perfil-edit-textarea" id="perfil-edit-bio" maxlength="280" placeholder="Fale um pouco sobre você..."
+            oninput="document.getElementById('perfil-edit-bio-counter').textContent = this.value.length + '/280'"
+            onkeydown="if(event.key==='Escape')fecharEditPerfil();"></textarea>
+          <div class="perfil-edit-counter" id="perfil-edit-bio-counter">0/280</div>
+        </div>
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-label">◐ Cor da borda do avatar</div>
+          <div class="perfil-edit-cor-row" id="perfil-edit-cor-row">
+            <div class="perfil-edit-cor-btn" data-cor="#3a7bd5" style="background:#3a7bd5" onclick="selecionarCorEdit(this)" title="Azul"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#cc1111" style="background:#cc1111" onclick="selecionarCorEdit(this)" title="Vermelho"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#9b30d9" style="background:#9b30d9" onclick="selecionarCorEdit(this)" title="Roxo"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#c8960c" style="background:#c8960c" onclick="selecionarCorEdit(this)" title="Dourado"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#39d353" style="background:#39d353" onclick="selecionarCorEdit(this)" title="Verde"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#ff6ec7" style="background:#ff6ec7" onclick="selecionarCorEdit(this)" title="Rosa"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#888888" style="background:#888888" onclick="selecionarCorEdit(this)" title="Cinza"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#ffffff" style="background:#ffffff" onclick="selecionarCorEdit(this)" title="Branco"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA: Aparência -->
+      <div class="perfil-edit-painel" id="perfil-edit-painel-aparencia">
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-tema-label">◈ Cor de destaque do card</div>
+          <p style="font-size:0.72rem;color:#555;margin-bottom:10px;font-family:'Share Tech Mono',monospace;">Personaliza a accent color do seu perfil — afeta status, labels e divisores.</p>
+          <div class="perfil-edit-tema-row" id="perfil-edit-tema-row">
+            <div class="perfil-edit-tema-btn" data-accent="#3a7bd5" style="background:linear-gradient(135deg,#3a7bd5,#0d2a5e)" onclick="selecionarAccentEdit(this)" title="Medo (Azul)"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#cc1111" style="background:linear-gradient(135deg,#cc1111,#5a0000)" onclick="selecionarAccentEdit(this)" title="Sangue (Vermelho)"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#9b30d9" style="background:linear-gradient(135deg,#9b30d9,#3a0063)" onclick="selecionarAccentEdit(this)" title="Energia (Roxo)"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#c8960c" style="background:linear-gradient(135deg,#c8960c,#5a4000)" onclick="selecionarAccentEdit(this)" title="Conhecimento (Dourado)"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#888888" style="background:linear-gradient(135deg,#888,#333)" onclick="selecionarAccentEdit(this)" title="Morte (Cinza)"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#39d353" style="background:linear-gradient(135deg,#39d353,#0a4a1a)" onclick="selecionarAccentEdit(this)" title="Verde"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#ff6ec7" style="background:linear-gradient(135deg,#ff6ec7,#7a0050)" onclick="selecionarAccentEdit(this)" title="Rosa"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#e8d5a3" style="background:linear-gradient(135deg,#e8d5a3,#6a5010)" onclick="selecionarAccentEdit(this)" title="Pergaminho"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA: Conta -->
+      <div class="perfil-edit-painel" id="perfil-edit-painel-conta">
+        <div class="perfil-edit-conta-info" id="perfil-edit-conta-info">
+          <div class="perfil-edit-conta-linha">
+            <span class="perfil-edit-conta-chave">Usuário</span>
+            <span class="perfil-edit-conta-valor" id="conta-usuario-display">—</span>
+          </div>
+          <div class="perfil-edit-conta-linha">
+            <span class="perfil-edit-conta-chave">Membro desde</span>
+            <span class="perfil-edit-conta-valor" id="conta-membro-display">—</span>
+          </div>
+          <div class="perfil-edit-conta-linha">
+            <span class="perfil-edit-conta-chave">Fichas criadas</span>
+            <span class="perfil-edit-conta-valor" id="conta-fichas-display">—</span>
+          </div>
+          <div class="perfil-edit-conta-linha">
+            <span class="perfil-edit-conta-chave">Campanhas criadas</span>
+            <span class="perfil-edit-conta-valor" id="conta-campanha-display">—</span>
+          </div>
+        </div>
+        <button class="perfil-edit-danger-btn" onclick="event.stopPropagation();fecharEditPerfil();fazerLogout();">⚠ Sair da conta</button>
+      </div>
+
+    </div>
+
+    <div class="perfil-edit-footer">
       <button class="perfil-edit-btn-cancel" onclick="fecharEditPerfil()">Cancelar</button>
-      <button class="perfil-edit-btn-ok" onclick="salvarEditPerfil()">✔ Salvar</button>
+      <button class="perfil-edit-btn-ok" onclick="salvarEditPerfil()">✔ Salvar Alterações</button>
     </div>
   </div>
 </div>
