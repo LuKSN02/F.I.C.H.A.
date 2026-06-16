@@ -36,6 +36,10 @@
         --bg:          #050d1a;
         --card:        #091628;
         --border:      #1a3a6e;
+        --border2:     #2a1a4e;
+        --text-mid:    #9aaabb;
+        --white:       #ffffff;
+        --tema-bg-dark: #050d1a;
         --text-dim:    #6a8aaa;
     }
     /* SANGUE — Vermelho */
@@ -126,6 +130,10 @@
         --bg:          #050d1a;
         --card:        #091628;
         --border:      #1a3a6e;
+        --border2:     #2a1a4e;
+        --text-mid:    #9aaabb;
+        --white:       #ffffff;
+        --tema-bg-dark: #050d1a;
         --text-dim:    #6a8aaa;
         --red:         #e84040;
         --red-dark:    #7a0000;
@@ -147,29 +155,29 @@
         background: var(--tema-primary); color: white;
         box-shadow: 0 0 12px rgba(var(--tema-glow-rgb),0.4);
     }
-    .temas-wrapper { position: relative; display: inline-block; z-index: 1050; }
+    .temas-wrapper { position: relative; display: inline-block; margin-right: 12px; z-index: 1050; }
     .temas-dropdown {
-        position: absolute; right: 0; top: 46px;
+        position: absolute; right: 0; top: 42px;
         background: #0d0d0d;
         border: 1px solid var(--tema-primary-dark);
-        border-radius: 10px; min-width: 210px;
+        border-radius: 10px; min-width: 200px;
         padding: 8px 0;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.6);
         z-index: 1051; display: none;
     }
     .temas-dropdown.open { display: block; }
     .temas-dropdown .td-header {
-        padding: 6px 16px 8px; color: #555;
-        font-size: 0.68rem; letter-spacing: 2px;
+        padding: 6px 16px 8px; color: #666;
+        font-size: 0.7rem; letter-spacing: 2px;
         text-transform: uppercase;
         border-bottom: 1px solid #1a1a1a; margin-bottom: 4px;
         font-family: 'Share Tech Mono', monospace;
     }
     .temas-dropdown .td-item {
-        padding: 9px 16px; color: #bbb; font-size: 0.88rem;
+        padding: 9px 16px; color: #ccc; font-size: 0.9rem;
         cursor: pointer; transition: 0.15s;
         display: flex; align-items: center; gap: 10px; font-weight: 600;
-        font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;
+        font-family: 'Oswald', sans-serif;
     }
     .temas-dropdown .td-item:hover { background: #1a1a1a; color: white; }
     .temas-dropdown .td-item.ativo { color: white; }
@@ -220,8 +228,8 @@ body {
 /* ── MAIN TABS (AMEAÇAS / HABILIDADES / RITUAIS / ITENS) ── */
 .main-tabs {
   display: flex;
-  border-bottom: 2px solid var(--border2);
-  background: #0a000f;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg);
   padding: 0 24px;
   gap: 0;
 }
@@ -444,9 +452,9 @@ body {
 .modal-overlay.show { display: flex; align-items: flex-start; justify-content: center; }
 
 .modal-box {
-  background: #111115;
-  border: 1px solid var(--border2);
-  border-radius: 12px;
+  background: linear-gradient(160deg, #0d0018 0%, #07000f 100%);
+  border: 1px solid var(--purple);
+  border-radius: 16px;
   padding: 28px;
   width: 100%;
   max-width: 700px;
@@ -487,7 +495,7 @@ body {
 
 .field-input, .field-select, .field-textarea {
   width: 100%;
-  background: #1a1a1e;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 5px;
   color: var(--white);
@@ -503,7 +511,7 @@ body {
   box-shadow: 0 0 0 2px rgba(138,43,226,0.15);
 }
 
-.field-select option { background: #1a0033; }
+.field-select option { background: var(--bg); }
 
 .field-textarea {
   min-height: 100px;
@@ -524,7 +532,7 @@ body {
   display: flex;
   gap: 6px;
   padding: 6px 10px;
-  background: #1a0033;
+  background: var(--card);
   border: 1px solid var(--border);
   border-bottom: none;
   border-radius: 5px 5px 0 0;
@@ -546,7 +554,7 @@ body {
 
 .editor-area {
   min-height: 100px;
-  background: #0d000e;
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 0 0 5px 5px;
   padding: 10px 12px;
@@ -568,7 +576,7 @@ body {
   cursor: pointer;
   transition: 0.2s;
   overflow: hidden;
-  background: #0d000e;
+  background: var(--bg);
 }
 
 .img-upload-box:hover { border-color: var(--purple); }
@@ -605,7 +613,7 @@ body {
 
 .resist-item input {
   width: 100%;
-  background: #0d000e;
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--white);
@@ -665,7 +673,7 @@ body {
 
 .dyn-item input {
   flex: 1;
-  background: #0d000e;
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--white);
@@ -704,28 +712,6 @@ body {
 .btn-dyn-add:hover { border-color: var(--purple); color: var(--purple-neon); }
 
 /* ── AVATAR ── */
-.avatar-wrapper { position: relative; display: inline-block; cursor: pointer; }
-.avatar-circle {
-  width: 46px; height: 46px; border-radius: 50%;
-  border: 2px solid #8a2be2; background: #1a0033;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.2rem; font-weight: 700; color: #bc6ff1;
-  overflow: hidden; transition: 0.2s; user-select: none;
-}
-.avatar-circle:hover { border-color: #bc6ff1; box-shadow: 0 0 10px rgba(138,43,226,0.5); }
-.avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
-.avatar-dropdown {
-  position: absolute; right: 0; top: 54px;
-  background: #0d0d0d; border: 1px solid #3a0063;
-  border-radius: 10px; min-width: 180px; padding: 10px 0;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 1000; display: none;
-}
-.avatar-dropdown.open { display: block; }
-.avatar-dropdown .dd-username { padding: 8px 16px 6px; color: #bc6ff1; font-weight: 700; font-size: 0.95rem; border-bottom: 1px solid #222; margin-bottom: 6px; }
-.avatar-dropdown .dd-item { padding: 8px 16px; color: #ccc; font-size: 0.9rem; cursor: pointer; transition: 0.15s; display: flex; align-items: center; gap: 8px; }
-.avatar-dropdown .dd-item:hover { background: #1a0033; color: #bc6ff1; }
-.avatar-dropdown .dd-item.danger { color: #ff6666; }
-.avatar-dropdown .dd-item.danger:hover { background: #2a0000; color: #ff4444; }
 
 /* ===== SISTEMA DE COMPARTILHAMENTO ===== */
 
@@ -807,7 +793,7 @@ body {
 }
 .share-code-box {
   display: flex; align-items: center; gap: 10px;
-  background: #08001a; border: 1px solid var(--border);
+  background: var(--bg); border: 1px solid var(--border);
   border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
 }
 .share-code-text {
@@ -835,7 +821,7 @@ body {
   display: flex; gap: 10px; margin-bottom: 20px;
 }
 .community-search-input {
-  flex: 1; background: #0d000e; border: 1px solid var(--border);
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
   border-radius: 5px; color: white; padding: 8px 12px;
   font-family: 'Oswald', sans-serif; font-size: 0.95rem;
   transition: border-color 0.2s;
@@ -930,8 +916,8 @@ body {
 }
 #modal-editar-comunidade.show { display: flex; }
 .modal-editar-box {
-  background: #0a000f; border: 1px solid var(--purple);
-  border-radius: 12px; padding: 28px;
+  background: linear-gradient(160deg, #0d0018 0%, #07000f 100%); border: 1px solid var(--purple);
+  border-radius: 16px; padding: 28px;
   max-width: 560px; width: 94%;
   max-height: 85vh; overflow-y: auto;
   box-shadow: 0 0 40px rgba(var(--tema-glow-rgb), 0.3);
@@ -1027,30 +1013,45 @@ body {
 /* ===== AVATAR DE PERFIL ===== */
 .avatar-wrapper { position: relative; display: inline-block; cursor: pointer; }
 .avatar-circle {
-    width: 38px; height: 38px; border-radius: 50%;
-    border: 2px solid var(--tema-primary); background: var(--tema-primary-dark);
+    width: 46px; height: 46px; border-radius: 50%;
+    border: 2px solid var(--tema-primary); background: var(--tema-bg-dark);
     display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; font-weight: 700; color: var(--tema-primary-light);
+    font-size: 1.2rem; font-weight: 700; color: var(--tema-primary-light);
     overflow: hidden; transition: 0.2s; user-select: none;
 }
 .avatar-circle:hover { border-color: var(--tema-primary-light); box-shadow: 0 0 10px rgba(var(--tema-glow-rgb),0.5); }
 .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-dropdown {
+    position: absolute; right: 0; top: 54px;
+    background: #0d0d0d; border: 1px solid var(--tema-primary-dark);
+    border-radius: 10px; min-width: 180px; padding: 10px 0;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 1052; display: none;
+}
+.avatar-dropdown.open { display: block; }
+.avatar-dropdown .dd-username { padding: 8px 16px 6px; color: var(--tema-primary-light); font-weight: 700; font-size: 0.95rem; border-bottom: 1px solid #222; margin-bottom: 6px; }
+.avatar-dropdown .dd-item { padding: 8px 16px; color: #ccc; font-size: 0.9rem; cursor: pointer; transition: 0.15s; display: flex; align-items: center; gap: 8px; }
+.avatar-dropdown .dd-item:hover { background: var(--tema-bg-dark); color: var(--tema-primary-light); }
+.avatar-dropdown .dd-item.danger { color: #ff6666; }
+.avatar-dropdown .dd-item.danger:hover { background: #2a0000; color: #ff4444; }
 
 /* ===== PAINEL DE PERFIL ===== */
 #perfil-overlay {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-    z-index: 9998; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+    z-index: 9998; align-items: center; justify-content: center; padding: 16px;
 }
 #perfil-overlay.show { display: flex; }
 .perfil-card {
-    background: #111115; border-radius: 14px; width: min(340px, 95vw);
-    overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    background: #111115;
+    border-radius: 10px; width: min(360px, 95vw);
+    overflow: hidden; box-shadow: 0 24px 70px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.06);
     position: relative; font-family: 'Oswald', sans-serif;
+    --perfil-accent: var(--tema-primary);
+    --perfil-accent-glow: var(--tema-glow-rgb);
 }
 .perfil-banner {
-    width: 100%; height: 110px;
-    background: linear-gradient(135deg, var(--tema-primary-dark), #000);
+    width: 100%; height: 150px;
+    background: linear-gradient(135deg, var(--tema-primary-dark) 0%, #000 100%);
     background-size: cover; background-position: center;
     position: relative; cursor: pointer; transition: filter 0.2s;
     overflow: hidden;
@@ -1067,11 +1068,11 @@ body {
     position: absolute; inset: 0;
     width: 100%; height: 100%; object-fit: cover; z-index: 0;
 }
-.perfil-avatar-wrap { position: absolute; top: 72px; left: 18px; cursor: pointer; z-index: 10; }
+.perfil-avatar-wrap { position: absolute; top: 105px; left: 18px; cursor: pointer; z-index: 10; }
 .perfil-avatar {
-    width: 76px; height: 76px; border-radius: 50%; border: 4px solid #111115;
+    width: 90px; height: 90px; border-radius: 50%; border: 5px solid #111115;
     background: #222; overflow: hidden; display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem; font-weight: 700; color: var(--tema-primary-light);
+    font-size: 1.9rem; font-weight: 700; color: var(--tema-primary-light);
     position: relative; transition: filter 0.2s;
 }
 .perfil-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -1084,47 +1085,50 @@ body {
     border-color: var(--perfil-borda, var(--tema-primary));
     box-shadow: 0 0 12px var(--perfil-borda, var(--tema-primary));
 }
-.perfil-top-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 2; }
+.perfil-top-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 2; }
 .perfil-top-btn {
-    background: rgba(0,0,0,0.6); border: 1px solid #333; color: #aaa;
-    font-size: 0.7rem; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: 0.2s;
+    background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.12); color: #aaa;
+    font-size: 0.68rem; padding: 5px 12px; border-radius: 5px; cursor: pointer; transition: 0.2s;
     font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px;
+    backdrop-filter: blur(4px);
 }
 .perfil-top-btn:hover { background: rgba(0,0,0,0.9); color: white; border-color: #555; }
 .perfil-top-btn.danger:hover { border-color: #aa2222; color: #ff6666; }
-.perfil-body { padding: 50px 18px 18px; }
-.perfil-username { font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 2px; }
-.perfil-handle { font-size: 0.75rem; color: #666; margin-bottom: 10px; font-family: 'Share Tech Mono', monospace; }
+.perfil-body { padding: 58px 18px 18px; }
+.perfil-username { font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 1px; }
+.perfil-handle { font-size: 0.72rem; color: #555; margin-bottom: 6px; font-family: 'Share Tech Mono', monospace; }
 .perfil-status {
-    background: #1a1a1f; border-radius: 6px; padding: 8px 12px;
-    font-size: 0.82rem; color: #aaa; margin-bottom: 10px;
+    background: rgba(255,255,255,0.04); border-radius: 6px; padding: 8px 12px;
+    font-size: 0.82rem; color: #aaa; margin-bottom: 12px;
     border-left: 3px solid var(--tema-primary); min-height: 34px;
-    cursor: pointer; transition: border-color 0.2s; font-style: italic;
+    cursor: pointer; transition: border-color 0.2s, background 0.2s; font-style: italic;
 }
-.perfil-status:hover { border-left-color: var(--tema-primary-light); color: #ccc; }
-.perfil-status.vazio { color: #444; }
-.perfil-divider { border: none; border-top: 1px solid #222; margin: 10px 0; }
-.perfil-bio-label { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: #555; margin-bottom: 4px; font-family: 'Share Tech Mono', monospace; }
-.perfil-bio { font-size: 0.82rem; color: #999; line-height: 1.5; cursor: pointer; min-height: 20px; transition: color 0.2s; }
+.perfil-status:hover { border-left-color: var(--tema-primary-light); color: #ccc; background: rgba(255,255,255,0.06); }
+.perfil-status.vazio { color: #444; font-style: italic; }
+.perfil-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 12px 0; }
+.perfil-bio-label { font-size: 0.58rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--tema-primary); opacity: 0.8; margin-bottom: 6px; font-family: 'Share Tech Mono', monospace; }
+.perfil-bio { font-size: 0.82rem; color: #999; line-height: 1.55; cursor: pointer; min-height: 20px; transition: color 0.2s; }
 .perfil-bio:hover { color: #ccc; }
-.perfil-bio.vazio { color: #444; font-style: italic; }
+.perfil-bio.vazio { color: #333; font-style: italic; }
 .perfil-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-.perfil-badge { display: flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.perfil-badge { display: flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; transition: transform 0.15s; cursor: default; }
+.perfil-badge:hover { transform: scale(1.06); }
 .badge-mestre  { background: rgba(200,150,12,0.15); border: 1px solid #c8960c; color: #f5c842; }
-.badge-novato  { background: rgba(80,80,100,0.2);   border: 1px solid #555;    color: #888; }
+.badge-novato  { background: rgba(80,80,100,0.15);  border: 1px solid #444;    color: #777; }
 .badge-membro  { background: rgba(58,123,213,0.15); border: 1px solid #3a7bd5; color: #7ab3f5; }
 .perfil-pronomes { font-size: 0.72rem; color: #555; margin-top: 4px; font-family: 'Share Tech Mono', monospace; }
 .perfil-membro-desde { font-size: 0.65rem; color: #444; margin-top: 8px; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
 .perfil-cor-row { display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
-.perfil-cor-label { font-size: 0.58rem; letter-spacing: 2px; color: #555; text-transform: uppercase; font-family: 'Share Tech Mono', monospace; margin-right: 4px; }
-.cor-btn { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.15s; flex-shrink: 0; }
-.cor-btn:hover, .cor-btn.ativa { border-color: white; transform: scale(1.2); }
+.perfil-cor-label { font-size: 0.55rem; letter-spacing: 2px; color: #555; text-transform: uppercase; font-family: 'Share Tech Mono', monospace; margin-right: 4px; }
+.cor-btn { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.15s; flex-shrink: 0; }
+.cor-btn:hover, .cor-btn.ativa { border-color: white; transform: scale(1.25); }
 .perfil-edit-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-    z-index: 10000; align-items: center; justify-content: center;
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(8px);
+    z-index: 10000; align-items: center; justify-content: center; padding: 16px;
 }
 .perfil-edit-overlay.show { display: flex; }
-.perfil-edit-box { background: #0d0d0d; border: 1px solid var(--tema-primary-dark); border-radius: 12px; padding: 24px; width: min(320px, 92vw); box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3); }
+.perfil-edit-box { background: #0d0d0d; border: 1px solid var(--tema-primary-dark); border-radius: 12px; padding: 24px; width: min(380px, 94vw); box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3); }
 .perfil-edit-title { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #666; margin-bottom: 14px; font-family: 'Share Tech Mono', monospace; }
 .perfil-edit-input, .perfil-edit-textarea { width: 100%; background: #1a1a1f; border: 1px solid #333; color: white; font-family: 'Oswald', sans-serif; font-size: 0.95rem; padding: 9px 12px; border-radius: 6px; outline: none; transition: border-color 0.2s; resize: vertical; }
 .perfil-edit-input:focus, .perfil-edit-textarea:focus { border-color: var(--tema-primary); }
