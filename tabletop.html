@@ -5494,6 +5494,8 @@ const BLOCK_TYPES = {
   rust:       { color: 0x5a3018, roughness: 0.88, metalness: 0.3, name: 'METAL ENFERRUJADO' },
   tile:       { color: 0x9aa68c, roughness: 0.55, metalness: 0.05, name: 'AZULEJO' },
   voidblack:  { color: 0x05050a, roughness: 1.0,  metalness: 0.0, emissive: 0x000000, emissiveIntensity: 0, name: 'VAZIO' },
+  tilewhite:  { color: 0xe8e6df, roughness: 0.25, metalness: 0.1, name: 'AZULEJO BRANCO' },
+  poolwater:  { color: 0x1e6b6b, roughness: 0.1,  metalness: 0.0, transparent: true, opacity: 0.82, emissive: 0x0a3030, emissiveIntensity: 0.15, name: 'ÁGUA' },
 };
 
 // _blocos3D: chave única por posição de célula → dados
@@ -5570,34 +5572,64 @@ function _getBackroomsTexture(type) {
 
   switch (type) {
     case 'wallpaper': {
-      // Papel de parede amarelo Level 0 — listras verticais sutis + manchas de umidade
-      ctx.fillStyle = '#c9b54a'; ctx.fillRect(0,0,size,size);
-      // Listras verticais
-      ctx.fillStyle = 'rgba(160,140,40,0.35)';
-      for (let x = 0; x < size; x += 16) ctx.fillRect(x, 0, 8, size);
-      // Padrão de losango sutil
-      ctx.strokeStyle = 'rgba(110,95,30,0.25)'; ctx.lineWidth = 1;
-      for (let y = -size; y < size*2; y += 32) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(size, y+size); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(size, y); ctx.lineTo(0, y+size); ctx.stroke();
+      // Papel de parede amarelo Level 0 — padrão chevron/zigzag clássico do Backrooms
+      ctx.fillStyle = '#bfa83f'; ctx.fillRect(0,0,size,size);
+      // Ruído fino de base (textura de papel)
+      for (let i = 0; i < 3500; i++) {
+        const x = Math.random()*size, y = Math.random()*size;
+        ctx.fillStyle = Math.random() < 0.5 ? 'rgba(150,130,40,0.12)' : 'rgba(90,75,20,0.12)';
+        ctx.fillRect(x, y, 1, 1);
       }
-      // Manchas de umidade/mofo
-      for (let i = 0; i < 14; i++) {
-        const x = Math.random()*size, y = Math.random()*size, r = 6 + Math.random()*22;
+      // Faixas verticais alternadas (base do padrão de colunas)
+      const colW = 22;
+      for (let x = 0; x < size; x += colW) {
+        ctx.fillStyle = 'rgba(140,120,35,0.22)';
+        ctx.fillRect(x, 0, colW * 0.5, size);
+      }
+      // Padrão chevron (zigue-zague em "V") repetido — marca visual do Level 0
+      ctx.strokeStyle = 'rgba(95,78,22,0.55)';
+      ctx.lineWidth = 2.2;
+      const chevH = 18;
+      for (let x = -colW; x < size + colW; x += colW) {
+        for (let y = -chevH; y < size + chevH; y += chevH) {
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + colW/2, y + chevH/2);
+          ctx.lineTo(x + colW, y);
+          ctx.stroke();
+        }
+      }
+      // Linha de sombra fina entre colunas (relevo têxtil)
+      ctx.strokeStyle = 'rgba(60,48,10,0.3)'; ctx.lineWidth = 1;
+      for (let x = 0; x < size; x += colW) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,size); ctx.stroke(); }
+      // Manchas de umidade/mofo concentradas perto da base
+      for (let i = 0; i < 10; i++) {
+        const x = Math.random()*size, y = size*0.6 + Math.random()*size*0.4, r = 8 + Math.random()*26;
         const grad = ctx.createRadialGradient(x,y,0,x,y,r);
-        grad.addColorStop(0, 'rgba(70,60,15,0.55)');
-        grad.addColorStop(1, 'rgba(70,60,15,0)');
+        grad.addColorStop(0, 'rgba(65,55,14,0.5)');
+        grad.addColorStop(0.6, 'rgba(65,55,14,0.22)');
+        grad.addColorStop(1, 'rgba(65,55,14,0)');
         ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
       }
+      // Vinheta sutil nos cantos (sujeira acumulada)
+      const vgn = ctx.createRadialGradient(size/2,size/2,size*0.3,size/2,size/2,size*0.75);
+      vgn.addColorStop(0, 'rgba(0,0,0,0)'); vgn.addColorStop(1, 'rgba(30,24,5,0.25)');
+      ctx.fillStyle = vgn; ctx.fillRect(0,0,size,size);
       break;
     }
     case 'carpetmold': {
-      // Carpete úmido/mofado Level 0 — textura granulada laranja-amarronzada
-      ctx.fillStyle = '#6e5a1f'; ctx.fillRect(0,0,size,size);
-      for (let i = 0; i < 4000; i++) {
+      // Carpete úmido/mofado Level 0 — base quente alaranjada + textura de fibra direcional
+      ctx.fillStyle = '#8a7332'; ctx.fillRect(0,0,size,size);
+      // Fibras direcionais finas (simula trama do carpete)
+      for (let y = 0; y < size; y += 2) {
+        ctx.fillStyle = `rgba(${Math.random()<0.5?60:110},${Math.random()<0.5?48:90},${Math.random()<0.5?14:28},0.10)`;
+        ctx.fillRect(0, y, size, 1);
+      }
+      // Ruído granulado fino
+      for (let i = 0; i < 5000; i++) {
         const x = Math.random()*size, y = Math.random()*size;
         const v = Math.random();
-        ctx.fillStyle = v < 0.5 ? 'rgba(90,75,30,0.5)' : 'rgba(50,40,12,0.5)';
+        ctx.fillStyle = v < 0.5 ? 'rgba(110,92,38,0.45)' : 'rgba(55,44,14,0.45)';
         ctx.fillRect(x, y, 1.5, 1.5);
       }
       // Grandes manchas de mofo escuro
@@ -5679,6 +5711,65 @@ function _getBackroomsTexture(type) {
             ctx.fillRect(gx+1, gy+1, cell-2, cell-2);
           }
         }
+      }
+      break;
+    }
+    case 'tilewhite': {
+      // Azulejo branco Poolrooms — grandes lajotas brilhantes, rejunte fino cinza-claro
+      ctx.fillStyle = '#e8e6df'; ctx.fillRect(0,0,size,size);
+      const cell = 64; // azulejos grandes, estilo piscina coberta
+      ctx.strokeStyle = 'rgba(170,170,160,0.7)'; ctx.lineWidth = 2.5;
+      for (let x = 0; x <= size; x += cell) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,size); ctx.stroke(); }
+      for (let y = 0; y <= size; y += cell) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(size,y); ctx.stroke(); }
+      // Brilho/reflexo sutil (azulejo polido)
+      for (let gy = 0; gy < size; gy += cell) {
+        for (let gx = 0; gx < size; gx += cell) {
+          const grad = ctx.createLinearGradient(gx, gy, gx+cell, gy+cell);
+          grad.addColorStop(0, 'rgba(255,255,255,0.18)');
+          grad.addColorStop(0.5, 'rgba(255,255,255,0)');
+          grad.addColorStop(1, 'rgba(0,0,0,0.05)');
+          ctx.fillStyle = grad; ctx.fillRect(gx+2, gy+2, cell-4, cell-4);
+          // leve variação de tom por azulejo
+          if (Math.random() < 0.25) {
+            ctx.fillStyle = `rgba(180,185,190,${0.05 + Math.random()*0.05})`;
+            ctx.fillRect(gx+2, gy+2, cell-4, cell-4);
+          }
+        }
+      }
+      // Manchas de umidade muito sutis (típico das Poolrooms)
+      for (let i = 0; i < 4; i++) {
+        const x = Math.random()*size, y = Math.random()*size, r = 16 + Math.random()*30;
+        const grad = ctx.createRadialGradient(x,y,0,x,y,r);
+        grad.addColorStop(0, 'rgba(170,185,180,0.18)');
+        grad.addColorStop(1, 'rgba(170,185,180,0)');
+        ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+      }
+      break;
+    }
+    case 'poolwater': {
+      // Água rasa azul-turquesa das Poolrooms — superfície lisa com ondulações claras
+      ctx.fillStyle = '#1e6b6b'; ctx.fillRect(0,0,size,size);
+      const grad1 = ctx.createLinearGradient(0,0,size,size);
+      grad1.addColorStop(0, 'rgba(40,140,140,0.6)');
+      grad1.addColorStop(0.5, 'rgba(20,100,110,0.5)');
+      grad1.addColorStop(1, 'rgba(10,70,80,0.6)');
+      ctx.fillStyle = grad1; ctx.fillRect(0,0,size,size);
+      // Ondulações (linhas curvas claras simulando caustics)
+      ctx.strokeStyle = 'rgba(180,230,225,0.25)'; ctx.lineWidth = 2;
+      for (let i = 0; i < 10; i++) {
+        const y = Math.random()*size;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        for (let x = 0; x <= size; x += 16) {
+          ctx.lineTo(x, y + Math.sin(x*0.05 + i)*6);
+        }
+        ctx.stroke();
+      }
+      // Pontos de brilho (reflexo de luz na água)
+      for (let i = 0; i < 18; i++) {
+        const x = Math.random()*size, y = Math.random()*size, r = 2 + Math.random()*4;
+        ctx.fillStyle = 'rgba(220,250,245,0.35)';
+        ctx.beginPath(); ctx.ellipse(x,y,r,r*0.4,Math.random()*Math.PI,0,Math.PI*2); ctx.fill();
       }
       break;
     }
@@ -6361,13 +6452,15 @@ const BACKROOMS_LEVELS = {
     parede: 'wallpaper',
     alturaSteps: 12,
     fogDensity: 35,
-    mapSize: 40,
+    mapSize: 60,
     objetos: [
       { tipo: 'pilar', peso: 0.6 },
       { tipo: 'lampbuzz', peso: 2.0 },
       { tipo: 'portamadeira', peso: 0.8 },
       { tipo: 'caboeletrico', peso: 0.6 },
       { tipo: 'colchao', peso: 0.4 },
+      { tipo: 'portalarco', peso: 0.25 },
+      { tipo: 'entidade', peso: 0.12 },
     ],
     layout: (cx, cz, W, H) => {
       // Salas amplas irregulares separadas por paredes finas — labirinto orgânico
@@ -6383,7 +6476,7 @@ const BACKROOMS_LEVELS = {
     parede: 'concrete',
     alturaSteps: 16,
     fogDensity: 45,
-    mapSize: 40,
+    mapSize: 60,
     objetos: [
       { tipo: 'pilar', peso: 1 },
       { tipo: 'barril', peso: 2 },
@@ -6403,7 +6496,7 @@ const BACKROOMS_LEVELS = {
     parede: 'rust',
     alturaSteps: 8,
     fogDensity: 60,
-    mapSize: 40,
+    mapSize: 60,
     objetos: [
       { tipo: 'parede', peso: 1 },
       { tipo: 'tocha', peso: 0.8 },
@@ -6423,7 +6516,7 @@ const BACKROOMS_LEVELS = {
     parede: 'wood',
     alturaSteps: 14,
     fogDensity: 20,
-    mapSize: 40,
+    mapSize: 60,
     objetos: [
       { tipo: 'pilar', peso: 0.6 },
       { tipo: 'altar', peso: 0.3 },
@@ -6439,6 +6532,31 @@ const BACKROOMS_LEVELS = {
       return onWall && !isDoor;
     }
   },
+  6: { // LEVEL "POOLROOMS" — salões de azulejo branco infinito com piscinas rasas
+       // (referência icônica: corredores brilhantes, luz difusa de teto, água
+       //  turquesa parada, colunas brancas grandes — visual calmo porém vazio/eerie)
+    nome: 'Poolrooms — Salões de Azulejo',
+    sky: 'poolrooms',
+    chao: 'tilewhite',
+    parede: 'tilewhite',
+    alturaSteps: 20,
+    fogDensity: 12,
+    mapSize: 66,
+    objetos: [
+      { tipo: 'pilarpoolroom', peso: 1.4 },
+      { tipo: 'lampbuzz', peso: 0.5 },
+    ],
+    layout: (cx, cz, W, H) => {
+      // Grandes colunas quadradas espaçadas em grade larga + corredores amplos —
+      // sensação de salão contínuo, sem labirinto apertado
+      return (cx % 7 === 0 && cz % 7 === 0);
+    },
+    // Marca células de piscina (água rasa) — usado pelo gerador para "afundar" o piso
+    poolCell: (cx, cz, W, H) => {
+      const n = _noise2D(cx * 0.22 + 30, cz * 0.22 - 14);
+      return n > 0.32 && !((cx % 7 === 0 && cz % 7 === 0));
+    }
+  },
   11: { // LEVEL 11 — Sub-nível Inundado / Ritualístico (água escura, círculos, presença Entidade)
     nome: 'Level 11 — Sub-nível Ritual',
     sky: 'paranormal',
@@ -6446,13 +6564,14 @@ const BACKROOMS_LEVELS = {
     parede: 'dark',
     alturaSteps: 10,
     fogDensity: 70,
-    mapSize: 40,
+    mapSize: 60,
     objetos: [
       { tipo: 'circulo', peso: 1.2 },
       { tipo: 'nexus', peso: 0.5 },
       { tipo: 'altar', peso: 0.5 },
       { tipo: 'agente', peso: 0.3 },
       { tipo: 'lampbuzz', peso: 0.6 },
+      { tipo: 'entidade', peso: 0.5 },
     ],
     layout: (cx, cz, W, H) => {
       // Câmara circular central com pilares ao redor — salão ritual
@@ -6534,11 +6653,32 @@ window.gerarBackrooms = function(nivel) {
 
   // 5) Espalha objetos temáticos nas células livres (probabilidade baseada em peso)
   //    Densidade reduzida para manter o frame rate estável em mapas grandes.
+  // 5a) Piscinas (se o nível define poolCell): spawna em densidade própria, mais
+  //     alta que objetos comuns, pois são uma característica central do visual.
+  let totalPiscinas = 0;
+  if (typeof lv.poolCell === 'function') {
+    for (let cz = 1; cz < H; cz++) {
+      for (let cx = 1; cx < W; cx++) {
+        if (lv.layout(cx, cz, W, H)) continue;
+        if (!lv.poolCell(cx, cz, W, H)) continue;
+        if (Math.random() > 0.4) continue; // suaviza borda das poças
+        const wx = (cx + 0.5) * sc, wz = (cz + 0.5) * sc;
+        const terrainY = _sampleTerrainHeight(wx, wz);
+        const mesh = _criarObjMesh('piscina', wx, wz, terrainY, 0.9 + Math.random()*0.3);
+        const id = `obj_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
+        mesh.userData.objId = id;
+        three.scene.add(mesh);
+        _objetos3D[id] = { type: 'piscina', mesh, wx, wz, escala: 1 };
+        totalPiscinas++;
+      }
+    }
+  }
   const pesoTotal = lv.objetos.reduce((s, o) => s + o.peso, 0);
   let totalObjetos = 0;
   for (let cz = 1; cz < H; cz++) {
     for (let cx = 1; cx < W; cx++) {
       if (lv.layout(cx, cz, W, H)) continue;
+      if (typeof lv.poolCell === 'function' && lv.poolCell(cx, cz, W, H)) continue; // evita objeto sobre piscina
       // densidade ~3% das células livres recebem objeto
       if (Math.random() > 0.03) continue;
       let r = Math.random() * pesoTotal;
@@ -6576,7 +6716,8 @@ window.gerarBackrooms = function(nivel) {
 
   _biomeEnabled = false; // biome coloring sobrescreveria a cor do chão temático
   _debouncedSaveTerrain();
-  window.mostrarToast(`🌀 ${lv.nome} gerado! (${totalParedes} paredes, ${totalObjetos} objetos)`);
+  const piscinaMsg = totalPiscinas ? `, ${totalPiscinas} piscinas` : '';
+  window.mostrarToast(`🌀 ${lv.nome} gerado! (${totalParedes} paredes, ${totalObjetos} objetos${piscinaMsg})`);
 };
 
 // Noise 2D simples (baseado em gradientes)
@@ -6686,6 +6827,7 @@ const _skyPresets = {
   crepusculo: { bg: 0x180408, fog: 0x1a0408, fogNear: 6, fogFar: 35, ambient: 0x180808, ambIntensity: 0.7, dirColor: 0xff6622, dirIntensity: 1.5 },
   dia:        { bg: 0x0c1a30, fog: 0x0a1828, fogNear: 15, fogFar: 80, ambient: 0x101828, ambIntensity: 1.1, dirColor: 0xfff0cc, dirIntensity: 2.0 },
   backrooms:  { bg: 0x9c8f3a, fog: 0xa89a40, fogNear: 12, fogFar: 45, ambient: 0x6e6020, ambIntensity: 1.3, dirColor: 0xfff2b0, dirIntensity: 1.6 },
+  poolrooms:  { bg: 0xd8d4c0, fog: 0xdfdccc, fogNear: 16, fogFar: 60, ambient: 0xc8c4ac, ambIntensity: 1.5, dirColor: 0xfffaf0, dirIntensity: 1.8 },
 };
 window.setSky = function(preset) {
   const p = _skyPresets[preset];
@@ -6695,7 +6837,7 @@ window.setSky = function(preset) {
   if (three.ambientLight) { three.ambientLight.color.setHex(p.ambient); three.ambientLight.intensity = p.ambIntensity; }
   if (three.dirLight) { three.dirLight.color.setHex(p.dirColor); three.dirLight.intensity = p.dirIntensity; }
   // Atualiza botões
-  ['paranormal','noite','crepusculo','dia','backrooms'].forEach(k => {
+  ['paranormal','noite','crepusculo','dia','backrooms','poolrooms'].forEach(k => {
     document.getElementById(`t3d-sky-${k}`)?.classList.toggle('active', k === preset);
   });
   mostrarToast(`🌌 Céu: ${preset}`);
@@ -7406,6 +7548,168 @@ function _criarObjMesh(tipo, wx, wz, terrainY, escala) {
         panel.position.set(0, dh*y + dh*h*0.25, sc*sz*0.033); group.add(panel);
       });
       group.userData.isDoor = true;
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // ENTIDADE — massa tentacular preta escorrendo pela parede
+    // (referência icônica: "a coisa" que aparece grudada em cantos/paredes)
+    // ─────────────────────────────────────────────
+    case 'entidade': {
+      const eh = sc * sz * 1.6;
+      const tentColor = 0x070707;
+      const tentMat = mat(tentColor, 0.85, 0.1, 0x020202, 0.15);
+      // Massa central na base (poça de tentáculos amontoados no chão)
+      const poolGeo = new THREE.SphereGeometry(sc*sz*0.42, 10, 6);
+      poolGeo.scale(1, 0.18, 0.85);
+      const pool = new THREE.Mesh(poolGeo, tentMat);
+      pool.position.y = sc*sz*0.04; pool.castShadow = true; group.add(pool);
+      // Tentáculos subindo pela parede (tubos curvos via segmentos)
+      const nTent = 9;
+      for (let t = 0; t < nTent; t++) {
+        const baseAng = (t / nTent) * Math.PI * 2 + Math.random()*0.3;
+        const segs = 6;
+        let curX = Math.cos(baseAng)*sc*sz*0.18, curZ = Math.sin(baseAng)*sc*sz*0.18, curY = 0;
+        const segLen = eh / segs;
+        for (let s = 0; s < segs; s++) {
+          const rTaper = sc*sz*(0.045 - s*0.005);
+          const tube = new THREE.Mesh(
+            new THREE.CylinderGeometry(Math.max(0.004, rTaper*0.7), Math.max(0.006, rTaper), segLen*1.05, 6),
+            tentMat
+          );
+          const driftX = (Math.sin(s*1.7 + t) ) * sc*sz*0.05;
+          const driftZ = (Math.cos(s*1.3 + t*2)) * sc*sz*0.05;
+          tube.position.set(curX + driftX*0.5, curY + segLen/2, curZ + driftZ*0.5);
+          tube.rotation.set(driftZ*0.6, Math.random()*Math.PI, driftX*0.6);
+          tube.castShadow = true; group.add(tube);
+          curX += driftX; curZ += driftZ; curY += segLen;
+        }
+        // Pontas finas curvadas no topo de alguns tentáculos
+        if (Math.random() < 0.6) {
+          const tip = new THREE.Mesh(
+            new THREE.ConeGeometry(sc*sz*0.012, sc*sz*0.12, 5),
+            tentMat
+          );
+          tip.position.set(curX, curY + sc*sz*0.05, curZ);
+          tip.rotation.set((Math.random()-0.5)*0.8, 0, (Math.random()-0.5)*0.8);
+          group.add(tip);
+        }
+      }
+      // Manchas escuras escorrendo pela parede (planos finos verticais)
+      for (let d = 0; d < 6; d++) {
+        const drip = new THREE.Mesh(
+          new THREE.PlaneGeometry(sc*sz*(0.03+Math.random()*0.05), eh*(0.5+Math.random()*0.5)),
+          mat(0x050505, 0.9, 0, 0, 0, true, 0.7)
+        );
+        const ang = Math.random()*Math.PI*2;
+        drip.position.set(Math.cos(ang)*sc*sz*0.3, eh*0.4, Math.sin(ang)*sc*sz*0.3);
+        drip.rotation.y = ang;
+        group.add(drip);
+      }
+      group.userData.isEntidade = true;
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // PORTAL ARCO — arco escuro icônico, passagem para nível desconhecido
+    // (referência icônica: arco de alvenaria com interior absolutamente negro)
+    // ─────────────────────────────────────────────
+    case 'portalarco': {
+      const ah = sc * sz * 1.3;
+      const aw = sc * sz * 0.75;
+      const wallMat = mat(0xb8a85a, 0.92, 0.0);
+      const archThick = sc*sz*0.12;
+      // Moldura do arco: duas colunas + topo curvo (segmentos de toro/cilindro)
+      [-1, 1].forEach(side => {
+        const col = new THREE.Mesh(
+          new THREE.BoxGeometry(archThick, ah*0.62, archThick*1.4),
+          wallMat
+        );
+        col.position.set(side * aw/2, ah*0.31, 0); col.castShadow = true; group.add(col);
+      });
+      // Topo em arco (meio-toro)
+      const archTop = new THREE.Mesh(
+        new THREE.TorusGeometry(aw/2, archThick*0.7, 8, 16, Math.PI),
+        wallMat
+      );
+      archTop.rotation.z = Math.PI;
+      archTop.position.set(0, ah*0.62, 0);
+      archTop.castShadow = true; group.add(archTop);
+      // Vazio interior: plano completamente negro (sem luz, sem textura) —
+      // cria a sensação de "passagem para o nada" típica das referências icônicas
+      const voidPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(aw*0.82, ah*0.95),
+        new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide })
+      );
+      voidPlane.position.set(0, ah*0.48, archThick*0.1);
+      group.add(voidPlane);
+      // Leve névoa escura saindo da passagem (camadas translúcidas)
+      for (let f = 0; f < 3; f++) {
+        const fog = new THREE.Mesh(
+          new THREE.PlaneGeometry(aw*(0.6 - f*0.12), ah*(0.3 - f*0.05)),
+          mat(0x0a0a0a, 1, 0, 0, 0, true, 0.35 - f*0.08)
+        );
+        fog.position.set(0, ah*0.2 + f*sc*sz*0.05, archThick*0.3 + f*sc*sz*0.08);
+        group.add(fog);
+      }
+      // Luz pontual fraca e fria apenas na borda do arco (contraste com o vazio)
+      const archLight = new THREE.PointLight(0x8899aa, 0.4, sc*sz*3);
+      archLight.position.set(0, ah*0.7, archThick);
+      group.add(archLight);
+      group.userData.isPortalArco = true;
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // PILAR POOLROOM — coluna quadrada branca grande, estilo "salão infinito"
+    // ─────────────────────────────────────────────
+    case 'pilarpoolroom': {
+      const ph = sc * sz * 1.8;
+      const pw = sc * sz * 0.5;
+      const col = new THREE.Mesh(
+        new THREE.BoxGeometry(pw, ph, pw),
+        mat(0xe8e6df, 0.3, 0.05)
+      );
+      col.position.y = ph/2; col.castShadow = true; group.add(col);
+      // Rodapé/base levemente mais larga
+      const base = new THREE.Mesh(
+        new THREE.BoxGeometry(pw*1.12, sc*sz*0.06, pw*1.12),
+        mat(0xd8d6cc, 0.4, 0.05)
+      );
+      base.position.y = sc*sz*0.03; group.add(base);
+      // Linhas de rejunte verticais sutis (sugere blocos de azulejo na coluna)
+      for (let f = 0; f < 4; f++) {
+        const ang = (f/4) * Math.PI * 2;
+        const seam = new THREE.Mesh(
+          new THREE.BoxGeometry(sc*sz*0.004, ph*0.96, sc*sz*0.004),
+          mat(0xb0ada0, 0.5, 0)
+        );
+        seam.position.set(Math.cos(ang)*pw/2, ph/2, Math.sin(ang)*pw/2);
+        group.add(seam);
+      }
+      break;
+    }
+    // ─────────────────────────────────────────────
+    // PISCINA — água rasa turquesa, característica das Poolrooms
+    // ─────────────────────────────────────────────
+    case 'piscina': {
+      const pr = sc * sz * 0.85;
+      // Borda de azulejo branco ligeiramente elevada
+      const rim = new THREE.Mesh(
+        new THREE.CylinderGeometry(pr*1.08, pr*1.12, sc*sz*0.04, 16),
+        mat(0xe8e6df, 0.3, 0.05)
+      );
+      rim.position.y = sc*sz*0.02; group.add(rim);
+      // Cavidade da piscina (parede interna mais escura)
+      const basin = new THREE.Mesh(
+        new THREE.CylinderGeometry(pr, pr*0.95, sc*sz*0.18, 16, 1, true),
+        mat(0xcfd6d0, 0.4, 0.05)
+      );
+      basin.position.y = -sc*sz*0.07; group.add(basin);
+      // Superfície de água translúcida turquesa
+      const water = new THREE.Mesh(
+        new THREE.CylinderGeometry(pr*0.98, pr*0.98, sc*sz*0.02, 16),
+        mat(0x1e6b6b, 0.1, 0, 0x0a3030, 0.3, true, 0.78)
+      );
+      water.position.y = sc*sz*0.0; group.add(water);
+      group.userData.isPool = true;
       break;
     }
   }
@@ -8130,6 +8434,9 @@ window.resetarCamera3D = function() {
       <button class="t3d-preset" onclick="gerarBackrooms(5)" title="Hub Habitável — azulejo, cômodos tipo apartamento">
         <span class="t3d-preset-icon">🏠</span>NÍVEL 5
       </button>
+      <button class="t3d-preset" onclick="gerarBackrooms(6)" title="Poolrooms — salões de azulejo branco infinito, piscinas rasas, luz difusa">
+        <span class="t3d-preset-icon">💠</span>POOLROOMS
+      </button>
       <button class="t3d-preset" onclick="gerarBackrooms(11)" title="Sub-nível Ritual — câmara circular escura, presença Entidade">
         <span class="t3d-preset-icon">🌀</span>NÍVEL 11
       </button>
@@ -8290,6 +8597,10 @@ window.resetarCamera3D = function() {
       <button class="t3d-sky-btn" id="t3d-sky-backrooms" onclick="setSky('backrooms')">
         <div class="t3d-sky-dot" style="background:radial-gradient(#d4c050,#8a7a20)"></div>
         BACK&shy;ROOMS
+      </button>
+      <button class="t3d-sky-btn" id="t3d-sky-poolrooms" onclick="setSky('poolrooms')">
+        <div class="t3d-sky-dot" style="background:radial-gradient(#f0ede0,#c8c4ac)"></div>
+        POOL&shy;ROOMS
       </button>
     </div>
 
