@@ -2714,7 +2714,7 @@
     <div class="modal-atrib-title">✦ Editar Progressão</div>
     <div class="nex-edit-grid">
       <div class="nex-edit-item" style="grid-column:1/-1;">
-        <div class="nex-edit-label">NEX</div>
+        <div class="nex-edit-label" id="ne-nex-label">NEX</div>
         <select class="nex-edit-input" id="ne-nex" onchange="atualizarPreviewNex()" style="cursor:pointer;">
           <option>5%</option><option>10%</option><option>15%</option><option>20%</option>
           <option>25%</option><option>30%</option><option>35%</option><option>40%</option>
@@ -2726,6 +2726,10 @@
           <option>Estágio 1</option><option>Estágio 2</option><option>Estágio 3</option>
           <option>Estágio 4</option><option>Estágio 5</option>
         </select>
+      </div>
+      <div class="nex-edit-item" id="ne-xp-wrap" style="grid-column:1/-1;display:none;">
+        <div class="nex-edit-label">Experiência (XP)</div>
+        <input type="number" class="nex-edit-input" id="ne-xp" min="0" step="1" placeholder="0">
       </div>
       <div class="nex-edit-item">
         <div class="nex-edit-label">PE / turno</div>
@@ -6260,6 +6264,18 @@ function _getRegraCfg() {
     return estado.regraOpc;
 }
 
+// Converte o valor de NEX ("5%".."99%") ou Sobrevivente ("Estágio N") em um
+// número de Nível (1–20, ou 1–5 para Sobrevivente) para a regra opcional
+// "NEX & Experiência".
+function _nexParaNivel(nexStr) {
+    if (!nexStr) return 1;
+    if (/Estágio/i.test(nexStr)) {
+        return parseInt(nexStr.replace(/\D/g, '')) || 1;
+    }
+    const idx = NEX_TABELA.findIndex(n => n.nex === nexStr);
+    return (idx >= 0 ? idx : 0) + 1;
+}
+
 function abrirModalRegraOpc() {
     _renderToggleUI();
     document.getElementById('modal-regra-opc').style.display = 'flex';
@@ -6329,9 +6345,10 @@ function _aplicarRegraOpcUI() {
     if (nexRow) {
         if (cfg.nexExp) {
             // Mostra 4 boxes: Nível, XP, PE/turno, Deslocamento
+            const nivelAtual = _nexParaNivel(estado.progressao?.nex);
             nexRow.innerHTML = `
-                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="nex-nivel-val">${estado.regraOpc?.nivelVal || '1'}</div><div class="lbl">Nível</div></div>
-                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="nex-xp-val">${estado.regraOpc?.xpVal || '0'} XP</div><div class="lbl">Experiência</div></div>
+                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="nex-nivel-val">${nivelAtual}</div><div class="lbl">Nível</div></div>
+                <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="nex-xp-val">${estado.regraOpc?.xpVal || 0} XP</div><div class="lbl">Experiência</div></div>
                 <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="pe-val">${document.getElementById('pe-val')?.textContent || '3'}</div><div class="lbl">PE/turno</div></div>
                 <div class="nex-box nex-box-edit" onclick="abrirModalNex()"><div class="val" id="desl-val">${document.getElementById('desl-val')?.textContent || '9m'}</div><div class="lbl">Deslocamento</div></div>`;
             nexRow.style.gridTemplateColumns = 'repeat(4, 1fr)';
@@ -7231,7 +7248,9 @@ function escolherPericiasGratis(nome) {
 // PATCH — MODAL NEX / PROGRESSÃO
 // ══════════════════════════════════════════════
 function abrirModalNex() {
-    const nexAtual = (document.getElementById('nex-val')?.textContent || '5%').trim();
+    const cfg = _getRegraCfg();
+    // Lê o NEX atual a partir do estado (fonte confiável independente de qual UI está visível)
+    const nexAtual = (estado.progressao?.nex || document.getElementById('nex-val')?.textContent || '5%').trim();
     const selectNex = document.getElementById('ne-nex');
     // Percorre as options e seleciona a que bater com o valor atual
     let encontrado = false;
@@ -7243,8 +7262,18 @@ function abrirModalNex() {
         }
     }
     if (!encontrado) selectNex.selectedIndex = 0; // fallback para 5%
-    document.getElementById('ne-pe').value    = document.getElementById('pe-val')?.textContent || '3';
-    document.getElementById('ne-desl').value  = document.getElementById('desl-val')?.textContent || '9m';
+    document.getElementById('ne-pe').value    = estado.progressao?.pe   || document.getElementById('pe-val')?.textContent   || '3';
+    document.getElementById('ne-desl').value  = estado.progressao?.desl || document.getElementById('desl-val')?.textContent || '9m';
+
+    // Alterna label e campo de XP conforme a regra opcional "NEX & Experiência"
+    const labelNex = document.getElementById('ne-nex-label');
+    const xpWrap   = document.getElementById('ne-xp-wrap');
+    if (labelNex) labelNex.textContent = cfg.nexExp ? 'NEX (define o Nível)' : 'NEX';
+    if (xpWrap) xpWrap.style.display = cfg.nexExp ? '' : 'none';
+    if (cfg.nexExp) {
+        const xpEl = document.getElementById('ne-xp');
+        if (xpEl) xpEl.value = estado.regraOpc?.xpVal || 0;
+    }
 
     // Mostra os valores calculados automaticamente
     atualizarPreviewNex();
@@ -7279,6 +7308,7 @@ function fecharModalNex() {
 
 function salvarNex() {
     if (!estado.progressao) estado.progressao = {};
+    const cfg = _getRegraCfg();
 
     const nex  = document.getElementById('ne-nex').value.trim() || '5%';
     const desl = document.getElementById('ne-desl').value.trim() || '9m';
@@ -7300,12 +7330,28 @@ function salvarNex() {
     estado.esf.max    = calc.peMax;
     estado.esf.atual  = calc.peMax;
 
+    // Atualiza a UI de acordo com a regra opcional "NEX & Experiência" ativa ou não
+    // (evita erro ao tentar atualizar um elemento que não existe na UI atual)
+    if (cfg.nexExp) {
+        const xpManual = parseInt(document.getElementById('ne-xp')?.value);
+        const xp = (!isNaN(xpManual) && xpManual >= 0) ? xpManual : (cfg.xpVal || 0);
+        cfg.xpVal = xp;
+        estado.regraOpc = cfg;
+        const nivelEl = document.getElementById('nex-nivel-val');
+        const xpEl    = document.getElementById('nex-xp-val');
+        if (nivelEl) nivelEl.textContent = _nexParaNivel(nex);
+        if (xpEl)    xpEl.textContent    = xp + ' XP';
+    } else {
+        const nexEl = document.getElementById('nex-val');
+        if (nexEl) nexEl.textContent = nex;
+    }
+    const peEl   = document.getElementById('pe-val');
+    const deslEl = document.getElementById('desl-val');
+    if (peEl)   peEl.textContent   = pe;
+    if (deslEl) deslEl.textContent = desl;
+
     salvarEstado();
     fecharModalNex();
-
-    document.getElementById('nex-val').textContent  = nex;
-    document.getElementById('pe-val').textContent   = pe;
-    document.getElementById('desl-val').textContent = desl;
 
     atualizarBarras();
     mostrarToast('✦ NEX ATUALIZADO — RECURSOS RECALCULADOS');
