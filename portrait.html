@@ -3193,11 +3193,38 @@ function aplicarAgente(ficha, est) {
       cartSerial.textContent = 'OP-' + String(seed % 9000 + 1000) + '-' + String((seed * 7) % 9000 + 1000);
     }
     if (est) {
-        const v = est.vida || {}, s = est.san || {}, e = est.esf || {};
+        const v = est.vida || {};
+        const semSan = !!(est.regraOpc && est.regraOpc.semSan);
+        aplicarModoDeterminacao(semSan);
         atualizarStat('vida', v.atual ?? 0, v.max ?? 20);
-        atualizarStat('san',  s.atual ?? 0, s.max ?? 20);
-        atualizarStat('esf',  e.atual ?? 0, e.max ?? 10);
+        if (semSan) {
+            // Regra opcional "Jogando sem Sanidade": Sanidade + Esforço
+            // são substituídos por uma única barra de Determinação.
+            const d = est.det || {};
+            atualizarStat('san', d.atual ?? 0, d.max ?? 0);
+        } else {
+            const s = est.san || {}, e = est.esf || {};
+            atualizarStat('san', s.atual ?? 0, s.max ?? 20);
+            atualizarStat('esf', e.atual ?? 0, e.max ?? 10);
+        }
     }
+}
+
+// Alterna a exibição das barras de Sanidade/Esforço para a barra única de
+// Determinação, espelhando a regra opcional "Jogando sem Sanidade" da ficha.
+function aplicarModoDeterminacao(semSan) {
+    document.querySelectorAll('#bar-san .stat-label, #cart-bar-san .stat-label').forEach(el => {
+        el.textContent = semSan ? 'DET' : 'PS';
+    });
+    document.querySelectorAll('#bar-esf, #cart-bar-esf').forEach(el => {
+        el.style.display = semSan ? 'none' : '';
+    });
+    document.querySelectorAll('#bar-san, #cart-bar-san').forEach(el => {
+        el.style.background = semSan ? 'rgba(0,90,100,0.45)' : '';
+    });
+    document.querySelectorAll('#fill-san, #cart-fill-san').forEach(el => {
+        el.style.background = semSan ? 'linear-gradient(90deg,#006070,#00bcd4)' : '';
+    });
 }
 
 function atualizarStat(tipo, atual, max) {
