@@ -755,8 +755,8 @@
         <div class="pontos-display">PONTOS RESTANTES: <span id="pontos-restantes">4</span></div>
     </div>
     <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:8px;letter-spacing:1px;">
-        ▸ CADA ATRIBUTO COMEÇA EM 1. VOCÊ TEM 5 PONTOS PARA DISTRIBUIR.<br>
-        ▸ CADA PONTO AUMENTA UM ATRIBUTO EM 1. MÁXIMO DE 5 POR ATRIBUTO.
+        ▸ CADA ATRIBUTO COMEÇA EM 0. VOCÊ TEM 4 PONTOS PARA DISTRIBUIR.<br>
+        ▸ CADA PONTO AUMENTA UM ATRIBUTO EM 1. MÁXIMO DE 3 POR ATRIBUTO.
     </p>
     <div class="sem-pontos" id="aviso-pontos">⚠ PONTOS INSUFICIENTES</div>
     <br>
@@ -884,7 +884,7 @@ const ATRIBUTOS = [
     { id:'VIG', nome:'Vigor',     abrev:'VIG' },
 ];
 
-const BASE_ATRIB  = 1;  // atributos começam em 0
+const BASE_ATRIB  = 0;  // atributos começam em 0
 const MAX_ATRIB   = 3;  // máximo de atributo na criação
 const TOTAL_PONTOS = 4; // pontos totais para distribuir
 
