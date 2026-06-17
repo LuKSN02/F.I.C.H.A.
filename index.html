@@ -4342,11 +4342,11 @@ if (animado) {
         document.getElementById('banner-crop-overlay').classList.add('show');
         cropImg.onload = function() {
             _bannerCropperInstance = new Cropper(cropImg, {
-                aspectRatio: 600/110,
+                aspectRatio: 720/300,
                 viewMode: 1, dragMode: 'move',
                 autoCropArea: 1, guides: false, center: false,
                 cropBoxMovable: true, cropBoxResizable: true,
-                minContainerWidth: 400, minContainerHeight: 150,
+                minContainerWidth: 400, minContainerHeight: 167,
             });
         };
     };
@@ -4355,7 +4355,7 @@ if (animado) {
 
 function confirmarBannerCrop() {
     if (!_bannerCropperInstance) return;
-    const canvas = _bannerCropperInstance.getCroppedCanvas({ width: 680, height: 140 });
+    const canvas = _bannerCropperInstance.getCroppedCanvas({ width: 720, height: 300 });
     if (!canvas) return;
     _salvarBannerBase64(canvas.toDataURL('image/jpeg', 0.9), false);
     cancelarBannerCrop();
@@ -4940,7 +4940,7 @@ confirmarCrop = async function() {
     await _ensureGifLibs();
     _criarGifCropUI();
 
-    const ratio = (mode === 'banner') ? (680/140) : 1;
+    const ratio = (mode === 'banner') ? (720/300) : 1;
 
     // Decodifica frames
     let frames = [];
@@ -4999,8 +4999,8 @@ confirmarCrop = async function() {
     const sl = box.offsetLeft, st = box.offsetTop;
     const bw = box.offsetWidth, bh = box.offsetHeight;
     const sw = stage.offsetWidth,  sh = stage.offsetHeight;
-    const outW = (mode === 'banner') ? 680 : 300;
-    const outH = (mode === 'banner') ? 140 : 300;
+    const outW = (mode === 'banner') ? 720 : 300;
+    const outH = (mode === 'banner') ? 300 : 300;
 
     // Fallback: sem frames decodificados — crop estático
     if (!frames || frames.length === 0) {
