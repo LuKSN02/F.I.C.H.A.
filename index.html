@@ -2429,101 +2429,13 @@ body { transition: background 0.6s ease; }
 }
 #social-perfil-overlay.show { display: flex; }
 
-.social-perfil-card {
-    background: #111115;
-    border-radius: 10px;
-    width: min(360px, 95vw);
-    overflow: hidden;
-    box-shadow: 0 24px 70px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.06);
-    position: relative;
-    font-family: 'Oswald', sans-serif;
-    --perfil-accent: var(--tema-primary);
+/* O card de outro usuário agora reaproveita 1:1 as classes .perfil-* do seu
+   próprio perfil (mesmo banner, avatar com anel/glow, badges, etc.) — só
+   desativamos o cursor de "editar" já que aqui é somente leitura. */
+#social-perfil-card .perfil-banner,
+#social-perfil-card .perfil-avatar-wrap {
+    cursor: default;
 }
-.social-perfil-banner {
-    width: 100%; height: 110px;
-    background: linear-gradient(135deg, var(--tema-primary-dark) 0%, #000 100%);
-    background-size: cover; background-position: center;
-    position: relative; overflow: hidden;
-}
-.social-perfil-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.social-perfil-close {
-    position: absolute; top: 10px; right: 10px; z-index: 2;
-    background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.12);
-    color: #aaa; font-size: 0.75rem; padding: 5px 12px;
-    border-radius: 5px; cursor: pointer; transition: 0.2s;
-    font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px;
-    backdrop-filter: blur(4px);
-}
-.social-perfil-close:hover { background: rgba(0,0,0,0.9); color: white; border-color: #555; }
-.social-perfil-avatar-wrap {
-    position: absolute; top: 72px; left: 18px;
-}
-.social-perfil-avatar {
-    width: 78px; height: 78px; border-radius: 50%;
-    border: 5px solid #111115;
-    background: #222; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.6rem; font-weight: 700;
-    color: var(--tema-primary-light);
-}
-.social-perfil-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.social-perfil-body {
-    padding: 52px 18px 18px;
-    position: relative;
-}
-.social-perfil-body::before {
-    content: '';
-    position: absolute; top: 110px; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, var(--perfil-accent, var(--tema-primary)) 0%, transparent 100%);
-    opacity: 0.6;
-}
-.social-perfil-username {
-    font-size: 1.2rem; font-weight: 700; color: white; margin-bottom: 2px;
-}
-.social-perfil-handle {
-    font-size: 0.7rem; color: #555; margin-bottom: 8px;
-    font-family: 'Share Tech Mono', monospace;
-}
-.social-perfil-pronomes {
-    display: inline-block;
-    font-size: 0.62rem; color: #666; margin-bottom: 8px;
-    font-family: 'Share Tech Mono', monospace;
-    background: rgba(255,255,255,0.04);
-    padding: 2px 8px; border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.06);
-}
-.social-perfil-pronomes:empty { display: none; }
-.social-perfil-status {
-    background: rgba(255,255,255,0.04); border-radius: 6px; padding: 7px 10px;
-    font-size: 0.8rem; color: #aaa; margin-bottom: 10px;
-    border-left: 3px solid var(--perfil-accent, var(--tema-primary));
-    font-style: italic;
-}
-.social-perfil-status.vazio { color: #444; }
-.social-perfil-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 10px 0; }
-.social-perfil-bio-label {
-    font-size: 0.55rem; letter-spacing: 2.5px; text-transform: uppercase;
-    color: var(--perfil-accent, #555); margin-bottom: 5px;
-    font-family: 'Share Tech Mono', monospace; opacity: 0.8;
-}
-.social-perfil-bio {
-    font-size: 0.82rem; color: #999; line-height: 1.55;
-}
-.social-perfil-bio.vazio { color: #444; font-style: italic; }
-.social-perfil-membro {
-    display: flex; align-items: center; gap: 10px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 6px; padding: 8px 12px;
-    margin-top: 10px;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-.social-perfil-membro-label {
-    font-size: 0.52rem; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--perfil-accent, #555); font-family: 'Share Tech Mono', monospace;
-    margin-bottom: 1px;
-}
-.social-perfil-membro-desde { font-size: 0.76rem; color: #ccc; font-family: 'Share Tech Mono', monospace; }
-.social-perfil-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
 
 </style>
 
@@ -2913,30 +2825,40 @@ body { transition: background 0.6s ease; }
 
     <!-- ===== MODAL PERFIL DE OUTRO USUÁRIO (Social) ===== -->
     <div id="social-perfil-overlay" onclick="fecharSocialPerfil(event)">
-        <div class="social-perfil-card" id="social-perfil-card">
-            <div class="social-perfil-banner" id="social-perfil-banner">
+        <div class="perfil-card" id="social-perfil-card" onclick="event.stopPropagation()">
+            <div class="perfil-banner" id="social-perfil-banner">
                 <img id="social-perfil-banner-img" src="" alt="" style="display:none">
+                <div class="perfil-top-actions">
+                    <button class="perfil-top-btn" onclick="document.getElementById('social-perfil-overlay').classList.remove('show')">✕ Fechar</button>
+                </div>
             </div>
-            <div class="social-perfil-avatar-wrap">
-                <div class="social-perfil-avatar" id="social-perfil-avatar-el"></div>
+            <div class="perfil-avatar-wrap" id="social-perfil-avatar-wrap">
+                <div class="perfil-avatar" id="social-perfil-avatar-el"></div>
             </div>
-            <button class="social-perfil-close" onclick="document.getElementById('social-perfil-overlay').classList.remove('show')">✕ Fechar</button>
-            <div class="social-perfil-body">
-                <div class="social-perfil-username" id="social-perfil-username"></div>
-                <div class="social-perfil-handle" id="social-perfil-handle"></div>
-                <div class="social-perfil-pronomes" id="social-perfil-pronomes"></div>
-                <div class="social-perfil-status" id="social-perfil-status"></div>
-                <hr class="social-perfil-divider">
-                <div class="social-perfil-bio-label">Sobre mim</div>
-                <div class="social-perfil-bio" id="social-perfil-bio"></div>
-                <div class="social-perfil-membro" id="social-perfil-membro">
-                    <span style="font-size:1.1rem;opacity:0.7">🕒</span>
-                    <div>
-                        <div class="social-perfil-membro-label">Membro desde</div>
-                        <div class="social-perfil-membro-desde" id="social-perfil-membro-desde"></div>
+            <div class="perfil-body">
+                <div class="perfil-username" id="social-perfil-username"></div>
+                <div class="perfil-handle" id="social-perfil-handle"></div>
+                <div class="perfil-pronomes" id="social-perfil-pronomes"></div>
+
+                <div class="perfil-status" id="social-perfil-status"></div>
+
+                <hr class="perfil-divider">
+
+                <div class="perfil-bio-label">Sobre mim</div>
+                <div class="perfil-bio" id="social-perfil-bio"></div>
+
+                <hr class="perfil-divider">
+
+                <div class="perfil-bio-label">Cargos</div>
+                <div class="perfil-badges" id="social-perfil-badges"></div>
+
+                <div class="perfil-membro-section" id="social-perfil-membro">
+                    <div class="perfil-membro-icon">📅</div>
+                    <div class="perfil-membro-info">
+                        <div class="perfil-membro-label">Membro desde</div>
+                        <div class="perfil-membro-desde" id="social-perfil-membro-desde"></div>
                     </div>
                 </div>
-                <div class="social-perfil-badges" id="social-perfil-badges"></div>
             </div>
         </div>
     </div>
@@ -5431,19 +5353,29 @@ async function abrirPerfilSocial(usuario) {
         return;
     }
 
-    const overlay = document.getElementById('social-perfil-overlay');
+    const overlay   = document.getElementById('social-perfil-overlay');
+    const card      = document.getElementById('social-perfil-card');
+    const wrap      = document.getElementById('social-perfil-avatar-wrap');
+    const avatarEl  = document.getElementById('social-perfil-avatar-el');
+    const bannerImg = document.getElementById('social-perfil-banner-img');
     overlay.classList.add('show');
 
-    // Zera enquanto carrega
+    // Zera enquanto carrega (evita herdar borda/accent/avatar do perfil visto antes)
     document.getElementById('social-perfil-username').textContent = usuario;
     document.getElementById('social-perfil-handle').textContent   = '@' + usuario;
     document.getElementById('social-perfil-pronomes').textContent  = '';
-    document.getElementById('social-perfil-status').textContent    = '...';
+    const statusElInit = document.getElementById('social-perfil-status');
+    statusElInit.textContent = '...';
+    statusElInit.classList.remove('vazio');
     document.getElementById('social-perfil-bio').textContent       = '';
     document.getElementById('social-perfil-membro-desde').textContent = '';
     document.getElementById('social-perfil-badges').innerHTML      = '';
-    document.getElementById('social-perfil-avatar-el').innerHTML   = usuario.substring(0,2).toUpperCase();
-    document.getElementById('social-perfil-banner-img').style.display = 'none';
+    avatarEl.innerHTML = usuario.substring(0,2).toUpperCase();
+    bannerImg.style.display = 'none';
+    wrap.classList.remove('borda-ativa');
+    wrap.style.removeProperty('--perfil-borda');
+    card.style.removeProperty('--perfil-accent');
+    card.style.removeProperty('--perfil-accent-glow');
 
     if (!window._firebaseDB) return;
 
@@ -5462,31 +5394,26 @@ async function abrirPerfilSocial(usuario) {
         if (foto) _socialFotoCache[usuario] = foto;
 
         // Avatar
-        const avatarEl = document.getElementById('social-perfil-avatar-el');
         if (foto) {
             avatarEl.innerHTML = `<img src="${foto}" alt="${usuario.substring(0,2).toUpperCase()}">`;
         } else {
             avatarEl.textContent = usuario.substring(0,2).toUpperCase();
         }
 
-        // Borda colorida do avatar
+        // Borda colorida do avatar — mesmo anel + glow do próprio perfil
         if (perfil.corBorda) {
-            avatarEl.parentElement.style.setProperty('--perfil-borda', perfil.corBorda);
-            avatarEl.style.border = `4px solid ${perfil.corBorda}`;
-            avatarEl.style.boxShadow = `0 0 14px ${perfil.corBorda}`;
+            wrap.classList.add('borda-ativa');
+            wrap.style.setProperty('--perfil-borda', perfil.corBorda);
         }
 
         // Accent color
-        const card = document.getElementById('social-perfil-card');
         if (perfil.accent) {
             card.style.setProperty('--perfil-accent', perfil.accent);
-        } else {
-            card.style.removeProperty('--perfil-accent');
+            card.style.setProperty('--perfil-accent-glow', _hexParaRgb(perfil.accent));
         }
 
         // Banner
         if (banner) {
-            const bannerImg = document.getElementById('social-perfil-banner-img');
             bannerImg.src = banner;
             bannerImg.style.display = '';
         }
@@ -5516,7 +5443,7 @@ async function abrirPerfilSocial(usuario) {
 
         // Membro desde
         document.getElementById('social-perfil-membro-desde').textContent =
-            perfil.dataEntrada || '—';
+            perfil.dataEntrada ? ('▸ Membro desde ' + perfil.dataEntrada) : '—';
 
         // Badges
         const badgesEl = document.getElementById('social-perfil-badges');
