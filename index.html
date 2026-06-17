@@ -2284,6 +2284,69 @@ body { transition: background 0.6s ease; }
 .social-send-btn:hover { background: var(--tema-primary-light); box-shadow: 0 0 16px rgba(var(--tema-glow-rgb),0.5); }
 .social-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* ── Botão e painel de GIFs (estilo Discord) ── */
+.social-input-row { position: relative; }
+.social-gif-btn {
+    flex-shrink: 0; height: 40px; padding: 0 14px; border-radius: 20px;
+    background: #1a1a1a; border: 1px solid #333; color: #999;
+    font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 1px; cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.social-gif-btn:hover { border-color: var(--tema-primary); color: var(--tema-primary-light); }
+.social-gif-btn.active { background: var(--tema-primary); border-color: var(--tema-primary); color: white; }
+
+.gif-picker {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 20px; right: 20px;
+    max-width: 420px;
+    max-height: 360px;
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+    overflow: hidden;
+    z-index: 60;
+}
+.gif-picker.open { display: flex; }
+.gif-picker-search { padding: 10px; border-bottom: 1px solid #2a2a2a; flex-shrink: 0; }
+.gif-picker-search input {
+    width: 100%; background: #0d0d0d; border: 1px solid #333; color: white;
+    border-radius: 16px; padding: 8px 14px; font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem; outline: none; transition: 0.2s;
+}
+.gif-picker-search input:focus { border-color: var(--tema-primary); box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb),0.15); }
+.gif-picker-search input::placeholder { color: #555; }
+.gif-picker-grid {
+    display: flex; flex-wrap: wrap; gap: 6px; padding: 10px;
+    overflow-y: auto; align-content: flex-start; flex: 1;
+}
+.gif-picker-grid img {
+    height: 88px; border-radius: 6px; cursor: pointer; object-fit: cover;
+    flex-grow: 1; transition: transform 0.15s, opacity 0.15s;
+}
+.gif-picker-grid img:hover { transform: scale(1.04); opacity: 0.85; }
+.gif-picker-status {
+    width: 100%; text-align: center; padding: 30px 10px; color: #555;
+    font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; letter-spacing: 0.5px;
+}
+.gif-picker-footer {
+    text-align: center; padding: 6px; font-size: 0.6rem; letter-spacing: 3px;
+    color: #444; border-top: 1px solid #2a2a2a; font-family: 'Share Tech Mono', monospace;
+    flex-shrink: 0;
+}
+
+/* ── Bolha de GIF dentro da mensagem ── */
+.msg-gif {
+    max-width: 260px; max-height: 220px;
+    border-radius: 10px; display: block;
+    margin-top: 2px; cursor: pointer;
+    border: 1px solid #2a2a2a;
+}
+
 @media (max-width: 768px) {
     .social-shell { height: 78vh; flex-direction: column; }
     .social-sidebar {
@@ -2293,6 +2356,8 @@ body { transition: background 0.6s ease; }
     .social-sidebar-label { display: none; }
     .social-canal { flex-shrink: 0; margin-bottom: 0; white-space: nowrap; }
     .social-sidebar-perfil { display: none; }
+    .gif-picker { left: 10px; right: 10px; max-width: none; }
+    .msg-gif { max-width: 200px; max-height: 180px; }
 }
 
 /* ── Perfil do usuário no rodapé da sidebar ── */
@@ -2825,10 +2890,22 @@ body { transition: background 0.6s ease; }
                     <div class="social-vazio">▸ Carregando mensagens...</div>
                 </div>
                 <div class="social-input-row">
+                    <button class="social-gif-btn" id="social-gif-btn" onclick="toggleGifPicker(event)" title="Enviar GIF">GIF</button>
                     <input type="text" id="social-input" class="social-input"
                            placeholder="Mensagem em #geral..." maxlength="500"
                            onkeydown="if(event.key==='Enter'){event.preventDefault();enviarMensagemSocial();}">
                     <button class="social-send-btn" id="social-send-btn" onclick="enviarMensagemSocial()" title="Enviar">➤</button>
+
+                    <!-- Painel seletor de GIFs (estilo Discord) -->
+                    <div class="gif-picker" id="gif-picker" onclick="event.stopPropagation()">
+                        <div class="gif-picker-search">
+                            <input type="text" id="gif-picker-input" placeholder="Buscar GIFs..." oninput="_gifBuscarDebounced(this.value)">
+                        </div>
+                        <div class="gif-picker-grid" id="gif-picker-grid">
+                            <div class="gif-picker-status">▸ Carregando GIFs em alta...</div>
+                        </div>
+                        <div class="gif-picker-footer">Powered by GIPHY</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3283,6 +3360,9 @@ body { transition: background 0.6s ease; }
                         ? `<img src="${foto}" alt="${_socialEscapeHtml(iniciais)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
                         : _socialEscapeHtml(iniciais);
                     const avatarStyle = foto ? '' : `background:${cor};`;
+                    const conteudoHTML = m.gifUrl
+                        ? `<img class="msg-gif" src="${_socialEscapeHtml(m.gifUrl)}" alt="GIF" loading="lazy">`
+                        : `<div class="msg-texto">${_socialEscapeHtml(m.texto || '')}</div>`;
                     return `
                         <div class="msg-row">
                             <div class="msg-avatar" style="${avatarStyle}" onclick="abrirPerfilSocial('${_socialEscapeHtml(usuario)}')" title="Ver perfil de ${_socialEscapeHtml(usuario)}">${avatarHTML}</div>
@@ -3291,7 +3371,7 @@ body { transition: background 0.6s ease; }
                                     <span class="msg-usuario" style="color:${cor};" onclick="abrirPerfilSocial('${_socialEscapeHtml(usuario)}')">${_socialEscapeHtml(usuario)}</span>
                                     <span class="msg-hora">${_socialFormatarHora(m.ts || Date.now())}</span>
                                 </div>
-                                <div class="msg-texto">${_socialEscapeHtml(m.texto || '')}</div>
+                                ${conteudoHTML}
                             </div>
                         </div>`;
                 }).join('');
@@ -3321,6 +3401,116 @@ body { transition: background 0.6s ease; }
 
             input.value = '';
             input.focus();
+        }
+
+        /* =============================================
+           GIFs no chat Social (estilo Discord) — via GIPHY API
+           ⚠️ A chave abaixo é a chave pública de testes da GIPHY,
+           compartilhada por todo mundo e limitada a 100 chamadas/hora.
+           Para uso sério, crie a sua de graça em developers.giphy.com
+           (Create an App → API) e troque o valor de GIPHY_API_KEY.
+        ============================================= */
+        const GIPHY_API_KEY = 'dc6zaTOxFJmzC';
+        let _gifPickerAberto = false;
+        let _gifBuscaTimeout = null;
+
+        function toggleGifPicker(e) {
+            if (e) e.stopPropagation();
+            const picker = document.getElementById('gif-picker');
+            const btn = document.getElementById('social-gif-btn');
+            if (!picker || !btn) return;
+            _gifPickerAberto = !_gifPickerAberto;
+            picker.classList.toggle('open', _gifPickerAberto);
+            btn.classList.toggle('active', _gifPickerAberto);
+            if (_gifPickerAberto) {
+                const buscaInput = document.getElementById('gif-picker-input');
+                buscaInput.value = '';
+                buscaInput.focus();
+                _gifCarregarTrending();
+            }
+        }
+
+        function _gifFecharPicker() {
+            _gifPickerAberto = false;
+            const picker = document.getElementById('gif-picker');
+            const btn = document.getElementById('social-gif-btn');
+            if (picker) picker.classList.remove('open');
+            if (btn) btn.classList.remove('active');
+        }
+
+        // Fecha o painel ao clicar fora dele
+        document.addEventListener('click', function(e) {
+            const picker = document.getElementById('gif-picker');
+            const btn = document.getElementById('social-gif-btn');
+            if (!picker || !btn || !_gifPickerAberto) return;
+            if (!picker.contains(e.target) && !btn.contains(e.target)) {
+                _gifFecharPicker();
+            }
+        });
+
+        async function _gifCarregarTrending() {
+            const grid = document.getElementById('gif-picker-grid');
+            grid.innerHTML = '<div class="gif-picker-status">▸ Carregando GIFs em alta...</div>';
+            try {
+                const resp = await fetch(`https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=24&rating=pg-13`);
+                const data = await resp.json();
+                _gifRenderizarGrid(data.data || []);
+            } catch (e) {
+                console.error('Erro ao carregar GIFs em alta:', e);
+                grid.innerHTML = '<div class="gif-picker-status">⚠️ Erro ao carregar GIFs</div>';
+            }
+        }
+
+        function _gifBuscarDebounced(query) {
+            clearTimeout(_gifBuscaTimeout);
+            _gifBuscaTimeout = setTimeout(() => _gifBuscar(query), 350);
+        }
+
+        async function _gifBuscar(query) {
+            const grid = document.getElementById('gif-picker-grid');
+            if (!query || !query.trim()) { _gifCarregarTrending(); return; }
+            grid.innerHTML = '<div class="gif-picker-status">▸ Buscando...</div>';
+            try {
+                const resp = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(query)}&limit=24&rating=pg-13`);
+                const data = await resp.json();
+                _gifRenderizarGrid(data.data || []);
+            } catch (e) {
+                console.error('Erro ao buscar GIFs:', e);
+                grid.innerHTML = '<div class="gif-picker-status">⚠️ Erro ao buscar GIFs</div>';
+            }
+        }
+
+        function _gifRenderizarGrid(gifs) {
+            const grid = document.getElementById('gif-picker-grid');
+            if (!grid) return;
+            if (!gifs || !gifs.length) {
+                grid.innerHTML = '<div class="gif-picker-status">Nenhum GIF encontrado</div>';
+                return;
+            }
+            grid.innerHTML = gifs.map(g => {
+                const thumb = g.images?.fixed_height_small?.url || g.images?.fixed_height?.url;
+                const full  = g.images?.fixed_height?.url || g.images?.original?.url;
+                if (!thumb || !full) return '';
+                return `<img src="${thumb}" data-full="${full}" loading="lazy" alt="GIF" onclick="enviarGifSocial(this.dataset.full)">`;
+            }).join('');
+        }
+
+        function enviarGifSocial(url) {
+            if (!url) return;
+            const usuario = getUsuarioLogado();
+            if (!usuario) return;
+            if (!window._firebaseDB) { mostrarToast('⚠️ Sem conexão com o servidor'); return; }
+            _gifFecharPicker();
+            const baseRef = window._firebaseRef(window._firebaseDB, `chat/${_socialCanalAtivo}/mensagens`);
+            window._firebasePush(baseRef, {
+                usuario: usuario,
+                texto:   '',
+                gifUrl:  url,
+                ts:      Date.now()
+            }).catch(err => {
+                console.error('Erro ao enviar GIF:', err);
+                mostrarToast('⚠️ Erro ao enviar GIF');
+            });
         }
 
         /* =============================================
