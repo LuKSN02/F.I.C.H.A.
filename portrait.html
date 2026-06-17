@@ -517,6 +517,10 @@ body.layout-banner .nome-ghost {
   position: absolute;
   top: 6px;
   right: 10px;
+  max-width: calc(100% - 20px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: 'Bebas Neue', 'Oswald', sans-serif;
   font-size: 3.2rem;
   color: var(--green-dark);
@@ -639,6 +643,11 @@ body.layout-vertical .nome-ghost {
   position: absolute;
   bottom: 8px;
   left: 10px;
+  right: 10px;
+  max-width: calc(100% - 20px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: 'Bebas Neue', 'Oswald', sans-serif;
   font-size: 1.5rem;
   color: #fff;
@@ -857,6 +866,10 @@ body.layout-ritual .nome-ghost {
   display: block;
   position: relative;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
   font-family: 'Bebas Neue', 'Oswald', sans-serif;
   font-size: 1.4rem;
   color: rgba(160,60,220,0.25);
@@ -1358,6 +1371,9 @@ body.layout-taro .nome-ghost {
   bottom: 6px;
   left: 0; right: 0;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: 'Bebas Neue', 'Oswald', sans-serif;
   font-size: 0.95rem;
   color: #fff;
@@ -1684,6 +1700,12 @@ body.layout-rpg .nome-ghost {
   display: block;
   position: absolute;
   top: 4px; right: 10px;
+  left: 10px;
+  max-width: calc(100% - 20px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
   font-family: 'Bebas Neue', 'Oswald', sans-serif;
   font-size: 3rem;
   color: rgba(100,60,0,0.12);
@@ -3116,11 +3138,14 @@ function confirmarLoginPortrait() {
 function fitNome() {
     const el = document.getElementById('nome-txt');
     if (!el) return;
-    el.style.fontSize = '1.3rem';
-    let size = 1.3;
-    while (el.scrollWidth > el.offsetWidth && size > 0.6) {
-        size -= 0.05;
-        el.style.fontSize = size + 'rem';
+    // Limpa qualquer ajuste anterior para reler o tamanho de fonte definido
+    // pelo CSS do layout atualmente ativo (cada layout tem seu próprio tamanho).
+    el.style.fontSize = '';
+    let size = parseFloat(getComputedStyle(el).fontSize) || 15.2; // px
+    el.style.fontSize = size + 'px';
+    while (el.scrollWidth > el.offsetWidth && size > 9) {
+        size -= 0.8;
+        el.style.fontSize = size + 'px';
     }
 }
 
@@ -3443,6 +3468,7 @@ else window.addEventListener('load', tentarIniciar);
     });
     document.getElementById('layout-panel').classList.remove('open');
     document.getElementById('layout-label-btn').textContent = (layoutLabels[layout] || 'LAYOUT').toUpperCase();
+    if (typeof fitNome === 'function') requestAnimationFrame(fitNome);
   };
 
   document.getElementById('layout-label-btn').textContent = (layoutLabels[layoutAtivo] || 'LAYOUT').toUpperCase();
