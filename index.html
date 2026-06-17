@@ -3333,14 +3333,11 @@ body { transition: background 0.6s ease; }
 
         /* =============================================
            GIFs no chat Social (estilo Discord) — via GIPHY API
-           ⚠️ A chave abaixo é a chave pública de testes da GIPHY,
-           compartilhada por todo mundo e limitada a 100 chamadas/hora —
-           como é usada por milhares de sites, é comum ela ficar sem cota
-           e os GIFs simplesmente não carregarem.
-           Para uso sério, crie a sua de graça em developers.giphy.com
-           (Create an App → API) e troque o valor de GIPHY_API_KEY.
+           Chave própria criada em developers.giphy.com (app "F.I.C.H.A.",
+           tipo API beta key — 100 chamadas/hora, mas só pra esse app, sem
+           competir com o resto da internet como a chave pública antiga.
         ============================================= */
-        const GIPHY_API_KEY = 'dc6zaTOxFJmzC';
+        const GIPHY_API_KEY = 'bTqCsMVsI4IYN5uV6jf9aSRsumdhogzn';
         let _gifPickerAberto = false;
         let _gifBuscaTimeout = null;
         let _gifUltimaQuery  = ''; // guarda a última busca, usado pelo botão "Tentar novamente"
