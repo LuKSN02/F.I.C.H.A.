@@ -2333,6 +2333,12 @@ body { transition: background 0.6s ease; }
     width: 100%; text-align: center; padding: 30px 10px; color: #555;
     font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; letter-spacing: 0.5px;
 }
+.gif-picker-retry {
+    display: inline-block; margin-top: 10px; cursor: pointer;
+    color: var(--tema-primary-light); text-decoration: underline;
+    font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; letter-spacing: 1px;
+}
+.gif-picker-retry:hover { color: white; }
 .gif-picker-footer {
     text-align: center; padding: 6px; font-size: 0.6rem; letter-spacing: 3px;
     color: #444; border-top: 1px solid #2a2a2a; font-family: 'Share Tech Mono', monospace;
@@ -3328,13 +3334,16 @@ body { transition: background 0.6s ease; }
         /* =============================================
            GIFs no chat Social (estilo Discord) — via GIPHY API
            ⚠️ A chave abaixo é a chave pública de testes da GIPHY,
-           compartilhada por todo mundo e limitada a 100 chamadas/hora.
+           compartilhada por todo mundo e limitada a 100 chamadas/hora —
+           como é usada por milhares de sites, é comum ela ficar sem cota
+           e os GIFs simplesmente não carregarem.
            Para uso sério, crie a sua de graça em developers.giphy.com
            (Create an App → API) e troque o valor de GIPHY_API_KEY.
         ============================================= */
         const GIPHY_API_KEY = 'dc6zaTOxFJmzC';
         let _gifPickerAberto = false;
         let _gifBuscaTimeout = null;
+        let _gifUltimaQuery  = ''; // guarda a última busca, usado pelo botão "Tentar novamente"
 
         function toggleGifPicker(e) {
             if (e) e.stopPropagation();
@@ -3370,16 +3379,57 @@ body { transition: background 0.6s ease; }
             }
         });
 
+        // Busca com timeout (8s) — sem isso, se a requisição travar (rede lenta,
+        // extensão/firewall bloqueando api.giphy.com etc.) o painel fica preso em
+        // "Carregando..." pra sempre, sem nunca cair no catch.
+        async function _gifFetch(url) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            try {
+                const resp = await fetch(url, { signal: controller.signal });
+                if (!resp.ok) {
+                    const erro = new Error('HTTP ' + resp.status);
+                    erro.status = resp.status;
+                    throw erro;
+                }
+                return await resp.json();
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        }
+
+        function _gifMostrarErro(e) {
+            const grid = document.getElementById('gif-picker-grid');
+            if (!grid) return;
+            let msg = '⚠️ Erro ao carregar GIFs';
+            if (e && e.name === 'AbortError') {
+                msg = '⚠️ Demorou demais pra responder (conexão lenta ou bloqueada)';
+            } else if (e && e.status === 429) {
+                msg = '⚠️ Limite de uso da GIPHY atingido, tente em alguns minutos';
+            } else if (e && (e.status === 403 || e.status === 401)) {
+                msg = '⚠️ Chave da GIPHY inválida ou expirada';
+            }
+            grid.innerHTML = `<div class="gif-picker-status">${msg}<br><span class="gif-picker-retry" onclick="_gifTentarNovamente()">🔄 Tentar novamente</span></div>`;
+        }
+
+        function _gifTentarNovamente() {
+            if (_gifUltimaQuery) {
+                _gifBuscar(_gifUltimaQuery);
+            } else {
+                _gifCarregarTrending();
+            }
+        }
+
         async function _gifCarregarTrending() {
+            _gifUltimaQuery = '';
             const grid = document.getElementById('gif-picker-grid');
             grid.innerHTML = '<div class="gif-picker-status">▸ Carregando GIFs em alta...</div>';
             try {
-                const resp = await fetch(`https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=24&rating=pg-13`);
-                const data = await resp.json();
+                const data = await _gifFetch(`https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=24&rating=pg-13`);
                 _gifRenderizarGrid(data.data || []);
             } catch (e) {
                 console.error('Erro ao carregar GIFs em alta:', e);
-                grid.innerHTML = '<div class="gif-picker-status">⚠️ Erro ao carregar GIFs</div>';
+                _gifMostrarErro(e);
             }
         }
 
@@ -3391,14 +3441,14 @@ body { transition: background 0.6s ease; }
         async function _gifBuscar(query) {
             const grid = document.getElementById('gif-picker-grid');
             if (!query || !query.trim()) { _gifCarregarTrending(); return; }
+            _gifUltimaQuery = query;
             grid.innerHTML = '<div class="gif-picker-status">▸ Buscando...</div>';
             try {
-                const resp = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(query)}&limit=24&rating=pg-13`);
-                const data = await resp.json();
+                const data = await _gifFetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${encodeURIComponent(query)}&limit=24&rating=pg-13`);
                 _gifRenderizarGrid(data.data || []);
             } catch (e) {
                 console.error('Erro ao buscar GIFs:', e);
-                grid.innerHTML = '<div class="gif-picker-status">⚠️ Erro ao buscar GIFs</div>';
+                _gifMostrarErro(e);
             }
         }
 
