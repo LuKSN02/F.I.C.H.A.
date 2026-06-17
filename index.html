@@ -2137,6 +2137,329 @@ body { transition: background 0.6s ease; }
     .dossie-grid { grid-template-columns: 1fr; }
 }
 
+/* ============================================================
+   SOCIAL — Chat entre agentes (estilo Discord)
+   ============================================================ */
+.social-shell {
+    display: flex;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0c0c0c;
+    height: 68vh;
+    min-height: 460px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.social-sidebar {
+    width: 230px;
+    flex-shrink: 0;
+    background: #111111;
+    border-right: 1px solid #2a2a2a;
+    padding: 16px 10px;
+    overflow-y: auto;
+}
+
+.social-sidebar-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    color: #555;
+    text-transform: uppercase;
+    padding: 0 8px 10px;
+}
+
+.social-canal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    color: #999;
+    cursor: pointer;
+    font-size: 0.92rem;
+    font-weight: 600;
+    transition: 0.15s;
+    margin-bottom: 2px;
+}
+.social-canal:hover { background: rgba(255,255,255,0.05); color: #ddd; }
+.social-canal.active {
+    background: rgba(var(--tema-glow-rgb), 0.16);
+    color: var(--tema-primary-light);
+}
+.social-canal-hash { opacity: 0.5; font-weight: 400; }
+
+.social-chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.social-chat-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid #2a2a2a;
+    background: rgba(255,255,255,0.02);
+    flex-shrink: 0;
+}
+.social-canal-nome {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: white;
+}
+.social-canal-desc {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: #666;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.social-mensagens {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.social-vazio {
+    text-align: center;
+    margin: auto;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: #555;
+    letter-spacing: 0.5px;
+}
+
+.msg-row { display: flex; gap: 12px; align-items: flex-start; }
+.msg-avatar {
+    width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 700; color: white;
+    font-family: 'Oswald', sans-serif;
+}
+.msg-content { flex: 1; min-width: 0; }
+.msg-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+.msg-usuario { font-weight: 700; font-size: 0.9rem; }
+.msg-hora { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: #555; }
+.msg-texto {
+    font-size: 0.92rem;
+    color: #ddd;
+    line-height: 1.4;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.social-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid #2a2a2a;
+    background: rgba(255,255,255,0.02);
+    flex-shrink: 0;
+}
+.social-input {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 20px;
+    padding: 10px 18px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.92rem;
+    outline: none;
+    transition: 0.2s;
+}
+.social-input:focus { border-color: var(--tema-primary); box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb),0.15); }
+.social-input::placeholder { color: #555; }
+.social-send-btn {
+    width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%;
+    background: var(--tema-primary); border: none; color: white;
+    font-size: 1.05rem; cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.social-send-btn:hover { background: var(--tema-primary-light); box-shadow: 0 0 16px rgba(var(--tema-glow-rgb),0.5); }
+.social-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+@media (max-width: 768px) {
+    .social-shell { height: 78vh; flex-direction: column; }
+    .social-sidebar {
+        width: 100%; border-right: none; border-bottom: 1px solid #2a2a2a;
+        padding: 10px; display: flex; gap: 6px; overflow-x: auto; overflow-y: hidden;
+    }
+    .social-sidebar-label { display: none; }
+    .social-canal { flex-shrink: 0; margin-bottom: 0; white-space: nowrap; }
+    .social-sidebar-perfil { display: none; }
+}
+
+/* ── Perfil do usuário no rodapé da sidebar ── */
+.social-sidebar-perfil {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 230px;
+    background: #0d0d0d;
+    border-top: 1px solid #2a2a2a;
+    border-right: 1px solid #2a2a2a;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    z-index: 2;
+}
+.social-sidebar-perfil:hover { background: #161616; }
+.social-sidebar-perfil-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: white;
+    overflow: hidden;
+    background: var(--tema-primary-dark);
+    border: 2px solid rgba(var(--tema-glow-rgb), 0.3);
+}
+.social-sidebar-perfil-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.social-sidebar-perfil-info { flex: 1; min-width: 0; }
+.social-sidebar-perfil-nome {
+    font-size: 0.82rem; font-weight: 700; color: #e0e0e0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.social-sidebar-perfil-status {
+    font-size: 0.65rem; color: #666;
+    font-family: 'Share Tech Mono', monospace;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 1px;
+}
+.social-sidebar-perfil-status.online::before {
+    content: '● '; color: #3ba55d; font-size: 0.55rem;
+}
+
+/* ── Padding extra na lista de canais para não cobrir o rodapé ── */
+.social-sidebar { padding-bottom: 68px; position: relative; }
+
+/* ── Avatar clicável nas mensagens ── */
+.msg-avatar {
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.msg-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(var(--tema-glow-rgb), 0.5);
+}
+.msg-usuario {
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+.msg-usuario:hover { opacity: 0.75; text-decoration: underline; }
+
+/* ── Modal de perfil de outro usuário (somente leitura) ── */
+#social-perfil-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+    z-index: 9997; align-items: center; justify-content: center;
+    padding: 16px;
+}
+#social-perfil-overlay.show { display: flex; }
+
+.social-perfil-card {
+    background: #111115;
+    border-radius: 10px;
+    width: min(360px, 95vw);
+    overflow: hidden;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.06);
+    position: relative;
+    font-family: 'Oswald', sans-serif;
+    --perfil-accent: var(--tema-primary);
+}
+.social-perfil-banner {
+    width: 100%; height: 110px;
+    background: linear-gradient(135deg, var(--tema-primary-dark) 0%, #000 100%);
+    background-size: cover; background-position: center;
+    position: relative; overflow: hidden;
+}
+.social-perfil-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.social-perfil-close {
+    position: absolute; top: 10px; right: 10px; z-index: 2;
+    background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.12);
+    color: #aaa; font-size: 0.75rem; padding: 5px 12px;
+    border-radius: 5px; cursor: pointer; transition: 0.2s;
+    font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px;
+    backdrop-filter: blur(4px);
+}
+.social-perfil-close:hover { background: rgba(0,0,0,0.9); color: white; border-color: #555; }
+.social-perfil-avatar-wrap {
+    position: absolute; top: 72px; left: 18px;
+}
+.social-perfil-avatar {
+    width: 78px; height: 78px; border-radius: 50%;
+    border: 5px solid #111115;
+    background: #222; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; font-weight: 700;
+    color: var(--tema-primary-light);
+}
+.social-perfil-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.social-perfil-body {
+    padding: 52px 18px 18px;
+    position: relative;
+}
+.social-perfil-body::before {
+    content: '';
+    position: absolute; top: 110px; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--perfil-accent, var(--tema-primary)) 0%, transparent 100%);
+    opacity: 0.6;
+}
+.social-perfil-username {
+    font-size: 1.2rem; font-weight: 700; color: white; margin-bottom: 2px;
+}
+.social-perfil-handle {
+    font-size: 0.7rem; color: #555; margin-bottom: 8px;
+    font-family: 'Share Tech Mono', monospace;
+}
+.social-perfil-pronomes {
+    display: inline-block;
+    font-size: 0.62rem; color: #666; margin-bottom: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    background: rgba(255,255,255,0.04);
+    padding: 2px 8px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+.social-perfil-pronomes:empty { display: none; }
+.social-perfil-status {
+    background: rgba(255,255,255,0.04); border-radius: 6px; padding: 7px 10px;
+    font-size: 0.8rem; color: #aaa; margin-bottom: 10px;
+    border-left: 3px solid var(--perfil-accent, var(--tema-primary));
+    font-style: italic;
+}
+.social-perfil-status.vazio { color: #444; }
+.social-perfil-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 10px 0; }
+.social-perfil-bio-label {
+    font-size: 0.55rem; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--perfil-accent, #555); margin-bottom: 5px;
+    font-family: 'Share Tech Mono', monospace; opacity: 0.8;
+}
+.social-perfil-bio {
+    font-size: 0.82rem; color: #999; line-height: 1.55;
+}
+.social-perfil-bio.vazio { color: #444; font-style: italic; }
+.social-perfil-membro {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px; padding: 8px 12px;
+    margin-top: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.social-perfil-membro-label {
+    font-size: 0.52rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--perfil-accent, #555); font-family: 'Share Tech Mono', monospace;
+    margin-bottom: 1px;
+}
+.social-perfil-membro-desde { font-size: 0.76rem; color: #ccc; font-family: 'Share Tech Mono', monospace; }
+.social-perfil-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+
 </style>
 
 <body>
@@ -2244,6 +2567,7 @@ body { transition: background 0.6s ease; }
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav mx-auto">
                     <a class="nav-link px-3" href="#" onclick="mostrarAgentes()">Agentes</a>
+                    <a class="nav-link px-3" href="#" onclick="mostrarSocial()">Social</a>
                     <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
                     <a class="nav-link px-3" href="homebrew.html">Homebrew</a>
                 </div>
@@ -2463,6 +2787,83 @@ body { transition: background 0.6s ease; }
         <div id="lista-agentes" class="dossie-grid"></div>
     </section>
 
+    <!-- ===== SOCIAL (chat entre agentes) ===== -->
+    <section id="secao-social" class="container my-5 d-none">
+        <div class="dossie-header">
+            <div class="d-flex justify-content-between align-items-end flex-wrap gap-3">
+                <div>
+                    <div class="dossie-eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        CANAL DE COMUNICAÇÃO · ORDEM PARANORMAL
+                    </div>
+                    <h2 class="dossie-title">SOCIAL</h2>
+                    <p class="dossie-sub">Converse com outros agentes em tempo real.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="social-shell">
+            <aside class="social-sidebar">
+                <div class="social-sidebar-label">Canais</div>
+                <div id="social-lista-canais"></div>
+                <!-- Perfil do usuário logado no rodapé da sidebar -->
+                <div class="social-sidebar-perfil" id="social-sidebar-perfil" onclick="abrirPainelPerfil(event)" title="Ver meu perfil">
+                    <div class="social-sidebar-perfil-avatar" id="social-sidebar-avatar"></div>
+                    <div class="social-sidebar-perfil-info">
+                        <div class="social-sidebar-perfil-nome" id="social-sidebar-nome"></div>
+                        <div class="social-sidebar-perfil-status online" id="social-sidebar-status">Online</div>
+                    </div>
+                    <span style="color:#555;font-size:0.9rem;flex-shrink:0">⚙</span>
+                </div>
+            </aside>
+            <div class="social-chat">
+                <div class="social-chat-header">
+                    <div class="social-canal-nome" id="social-canal-nome"># geral</div>
+                    <div class="social-canal-desc" id="social-canal-desc">Chat geral da Ordem</div>
+                </div>
+                <div class="social-mensagens" id="social-mensagens">
+                    <div class="social-vazio">▸ Carregando mensagens...</div>
+                </div>
+                <div class="social-input-row">
+                    <input type="text" id="social-input" class="social-input"
+                           placeholder="Mensagem em #geral..." maxlength="500"
+                           onkeydown="if(event.key==='Enter'){event.preventDefault();enviarMensagemSocial();}">
+                    <button class="social-send-btn" id="social-send-btn" onclick="enviarMensagemSocial()" title="Enviar">➤</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== MODAL PERFIL DE OUTRO USUÁRIO (Social) ===== -->
+    <div id="social-perfil-overlay" onclick="fecharSocialPerfil(event)">
+        <div class="social-perfil-card" id="social-perfil-card">
+            <div class="social-perfil-banner" id="social-perfil-banner">
+                <img id="social-perfil-banner-img" src="" alt="" style="display:none">
+            </div>
+            <div class="social-perfil-avatar-wrap">
+                <div class="social-perfil-avatar" id="social-perfil-avatar-el"></div>
+            </div>
+            <button class="social-perfil-close" onclick="document.getElementById('social-perfil-overlay').classList.remove('show')">✕ Fechar</button>
+            <div class="social-perfil-body">
+                <div class="social-perfil-username" id="social-perfil-username"></div>
+                <div class="social-perfil-handle" id="social-perfil-handle"></div>
+                <div class="social-perfil-pronomes" id="social-perfil-pronomes"></div>
+                <div class="social-perfil-status" id="social-perfil-status"></div>
+                <hr class="social-perfil-divider">
+                <div class="social-perfil-bio-label">Sobre mim</div>
+                <div class="social-perfil-bio" id="social-perfil-bio"></div>
+                <div class="social-perfil-membro" id="social-perfil-membro">
+                    <span style="font-size:1.1rem;opacity:0.7">🕒</span>
+                    <div>
+                        <div class="social-perfil-membro-label">Membro desde</div>
+                        <div class="social-perfil-membro-desde" id="social-perfil-membro-desde"></div>
+                    </div>
+                </div>
+                <div class="social-perfil-badges" id="social-perfil-badges"></div>
+            </div>
+        </div>
+    </div>
+
     <footer class="custom-footer mt-5 py-5" style="background:black;border-top:2px solid #333;">
         <div class="container">
             <div class="row align-items-center">
@@ -2496,7 +2897,7 @@ body { transition: background 0.6s ease; }
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getDatabase, ref, set, get, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, set, get, remove, onValue, push, query as dbQuery, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -2521,6 +2922,9 @@ body { transition: background 0.6s ease; }
         window._firebaseGet    = get;
         window._firebaseRemove = remove;
         window._firebaseOnValue = onValue;
+        window._firebasePush    = push;
+        window._firebaseQuery   = dbQuery;
+        window._firebaseLimitToLast = limitToLast;
 
         // Expõe Firestore (usado por campanhas.html) para contagem de campanhas no perfil
         window._firestoreDB      = dbFirestore;
@@ -2569,6 +2973,7 @@ body { transition: background 0.6s ease; }
                 carregarAgentes(); // busca do Firebase com fallback local
                 const params = new URLSearchParams(window.location.search);
                 if (params.get('view') === 'agentes') mostrarAgentes();
+                else if (params.get('view') === 'social') mostrarSocial();
                 else mostrarInicio();
             } else {
                 // Usuário deslogou — limpa tudo
@@ -2690,6 +3095,7 @@ body { transition: background 0.6s ease; }
             if (!confirmado) return;
             // Cancela listener em tempo real antes de deslogar
             if (_agentesListener) { _agentesListener(); _agentesListener = null; }
+            if (_socialListener)  { _socialListener();  _socialListener  = null; }
             const usuario = getUsuarioLogado();
             await window._fbLogout();
             // Limpa sessionStorage completamente
@@ -2723,13 +3129,198 @@ body { transition: background 0.6s ease; }
         function mostrarAgentes() {
             if (!getUsuarioLogado()) return;
             document.getElementById('secao-inicio').classList.add('d-none');
+            document.getElementById('secao-social').classList.add('d-none');
             document.getElementById('secao-agentes').classList.remove('d-none');
             carregarAgentes();
         }
 
         function mostrarInicio() {
             document.getElementById('secao-agentes').classList.add('d-none');
+            document.getElementById('secao-social').classList.add('d-none');
             document.getElementById('secao-inicio').classList.remove('d-none');
+        }
+
+        function mostrarSocial() {
+            if (!getUsuarioLogado()) return;
+            document.getElementById('secao-inicio').classList.add('d-none');
+            document.getElementById('secao-agentes').classList.add('d-none');
+            document.getElementById('secao-social').classList.remove('d-none');
+            iniciarChatSocial();
+        }
+
+        /* =============================================
+           SOCIAL — Chat em tempo real entre agentes
+        ============================================= */
+        const SOCIAL_CANAIS = [
+            { id: 'geral',     nome: 'geral',           desc: 'Chat geral da Ordem Paranormal' },
+            { id: 'mesa',      nome: 'mesa-e-rolagens', desc: 'Combine sessões e fale sobre suas mesas' },
+            { id: 'fora-jogo', nome: 'fora-do-jogo',    desc: 'Conversa livre entre agentes' },
+        ];
+
+        let _socialCanalAtivo = 'geral';
+        let _socialListener   = null; // unsubscribe do listener do canal atual
+
+        function _socialCorUsuario(usuario) {
+            const cores = ['#e84040','#3a7bd5','#39d353','#c8960c','#9b30d9','#1abc9c','#e67e22','#e91e63'];
+            let hash = 0;
+            for (let i = 0; i < usuario.length; i++) hash = (hash * 31 + usuario.charCodeAt(i)) >>> 0;
+            return cores[hash % cores.length];
+        }
+
+        function _socialEscapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str == null ? '' : String(str);
+            return div.innerHTML;
+        }
+
+        function _socialFormatarHora(ts) {
+            const d = new Date(ts);
+            const hoje = new Date();
+            const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            if (d.toDateString() === hoje.toDateString()) return hora;
+            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + hora;
+        }
+
+        function _socialRenderCanais() {
+            const lista = document.getElementById('social-lista-canais');
+            if (!lista) return;
+            lista.innerHTML = SOCIAL_CANAIS.map(c => `
+                <div class="social-canal ${c.id === _socialCanalAtivo ? 'active' : ''}" onclick="trocarCanalSocial('${c.id}')">
+                    <span class="social-canal-hash">#</span> ${c.nome}
+                </div>
+            `).join('');
+        }
+
+        function trocarCanalSocial(canalId) {
+            if (canalId === _socialCanalAtivo) return;
+            _socialCanalAtivo = canalId;
+            _socialRenderCanais();
+            const canal = SOCIAL_CANAIS.find(c => c.id === canalId);
+            document.getElementById('social-canal-nome').textContent = '# ' + (canal?.nome || canalId);
+            document.getElementById('social-canal-desc').textContent = canal?.desc || '';
+            document.getElementById('social-input').placeholder = `Mensagem em #${canal?.nome || canalId}...`;
+            document.getElementById('social-mensagens').innerHTML = '<div class="social-vazio">▸ Carregando mensagens...</div>';
+            _socialEscutarMensagens(canalId);
+        }
+
+        function iniciarChatSocial() {
+            _socialRenderCanais();
+            _socialEscutarMensagens(_socialCanalAtivo);
+            _socialAtualizarSidebarPerfil();
+        }
+
+        async function _socialAtualizarSidebarPerfil() {
+            const usuario = getUsuarioLogado();
+            if (!usuario) return;
+
+            const nomeEl   = document.getElementById('social-sidebar-nome');
+            const avatarEl = document.getElementById('social-sidebar-avatar');
+            const statusEl = document.getElementById('social-sidebar-status');
+            if (!nomeEl) return;
+
+            nomeEl.textContent = usuario;
+
+            // Foto: tenta IndexedDB primeiro, depois Firebase
+            let foto = await _imgDB.get(getAvatarKey());
+            if (!foto) {
+                foto = await _socialGetFoto(usuario);
+            }
+            if (foto) {
+                avatarEl.innerHTML = `<img src="${foto}" alt="${usuario.substring(0,2).toUpperCase()}">`;
+            } else {
+                avatarEl.textContent = usuario.substring(0, 2).toUpperCase();
+            }
+
+            // Status do perfil (recado)
+            const perfilLocal = getPerfilLocal();
+            if (perfilLocal && perfilLocal.status) {
+                statusEl.textContent = perfilLocal.status;
+                statusEl.className = 'social-sidebar-perfil-status';
+            } else {
+                statusEl.textContent = 'Online';
+                statusEl.className = 'social-sidebar-perfil-status online';
+            }
+        }
+
+        // Cache de fotos de perfil para não buscar toda hora no Firebase
+        const _socialFotoCache = {};
+
+        async function _socialGetFoto(usuario) {
+            if (_socialFotoCache[usuario] !== undefined) return _socialFotoCache[usuario];
+            try {
+                const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `fotos_perfil/${usuario}`));
+                _socialFotoCache[usuario] = snap.exists() ? snap.val() : null;
+            } catch(e) { _socialFotoCache[usuario] = null; }
+            return _socialFotoCache[usuario];
+        }
+
+        function _socialEscutarMensagens(canalId) {
+            if (!window._firebaseDB) return;
+            if (_socialListener) { _socialListener(); _socialListener = null; }
+            const baseRef = window._firebaseRef(window._firebaseDB, `chat/${canalId}/mensagens`);
+            const q = window._firebaseQuery(baseRef, window._firebaseLimitToLast(150));
+            _socialListener = window._firebaseOnValue(q, async snap => {
+                if (canalId !== _socialCanalAtivo) return;
+                const cont = document.getElementById('social-mensagens');
+                if (!cont) return;
+                if (!snap.exists()) {
+                    cont.innerHTML = '<div class="social-vazio">▸ Nenhuma mensagem ainda. Seja o primeiro a falar!</div>';
+                    return;
+                }
+                const mensagens = Object.values(snap.val()).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+                const estavaNoFim = (cont.scrollTop + cont.clientHeight) >= (cont.scrollHeight - 60);
+
+                // Busca fotos de usuários únicos em paralelo
+                const usuariosUnicos = [...new Set(mensagens.map(m => m.usuario).filter(Boolean))];
+                await Promise.all(usuariosUnicos.map(u => _socialGetFoto(u)));
+
+                cont.innerHTML = mensagens.map(m => {
+                    const usuario  = m.usuario || 'Agente';
+                    const iniciais = usuario.substring(0, 2).toUpperCase();
+                    const cor      = _socialCorUsuario(usuario);
+                    const foto     = _socialFotoCache[usuario];
+                    const avatarHTML = foto
+                        ? `<img src="${foto}" alt="${_socialEscapeHtml(iniciais)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                        : _socialEscapeHtml(iniciais);
+                    const avatarStyle = foto ? '' : `background:${cor};`;
+                    return `
+                        <div class="msg-row">
+                            <div class="msg-avatar" style="${avatarStyle}" onclick="abrirPerfilSocial('${_socialEscapeHtml(usuario)}')" title="Ver perfil de ${_socialEscapeHtml(usuario)}">${avatarHTML}</div>
+                            <div class="msg-content">
+                                <div class="msg-top">
+                                    <span class="msg-usuario" style="color:${cor};" onclick="abrirPerfilSocial('${_socialEscapeHtml(usuario)}')">${_socialEscapeHtml(usuario)}</span>
+                                    <span class="msg-hora">${_socialFormatarHora(m.ts || Date.now())}</span>
+                                </div>
+                                <div class="msg-texto">${_socialEscapeHtml(m.texto || '')}</div>
+                            </div>
+                        </div>`;
+                }).join('');
+                if (estavaNoFim || mensagens.length <= 1) cont.scrollTop = cont.scrollHeight;
+            });
+        }
+
+        function enviarMensagemSocial() {
+            const input = document.getElementById('social-input');
+            const texto = input.value.trim();
+            if (!texto) return;
+            const usuario = getUsuarioLogado();
+            if (!usuario) return;
+            if (!window._firebaseDB) { mostrarToast('⚠️ Sem conexão com o servidor'); return; }
+
+            const btn = document.getElementById('social-send-btn');
+            btn.disabled = true;
+            const baseRef = window._firebaseRef(window._firebaseDB, `chat/${_socialCanalAtivo}/mensagens`);
+            window._firebasePush(baseRef, {
+                usuario: usuario,
+                texto:   texto.slice(0, 500),
+                ts:      Date.now()
+            }).catch(err => {
+                console.error('Erro ao enviar mensagem:', err);
+                mostrarToast('⚠️ Erro ao enviar mensagem');
+            }).finally(() => { btn.disabled = false; });
+
+            input.value = '';
+            input.focus();
         }
 
         /* =============================================
@@ -3523,6 +4114,9 @@ async function salvarEditPerfil() {
     await salvarPerfilFirebase(perfil);
     fecharEditPerfil();
     renderPainelPerfil(getUsuarioLogado(), perfil);
+
+    // Atualiza sidebar do social com novo status
+    if (typeof _socialAtualizarSidebarPerfil === 'function') _socialAtualizarSidebarPerfil();
 
     // Atualiza a borda do avatar imediatamente
     const wrap = document.getElementById('perfil-avatar-wrap');
@@ -4633,6 +5227,150 @@ async function aceitarFichaCompartilhada() {
 }
 
 verificarFichaCompartilhada();
+
+/* =============================================
+   PERFIL DE OUTRO USUÁRIO (Social)
+============================================= */
+async function abrirPerfilSocial(usuario) {
+    if (!usuario) return;
+    const meUsuario = getUsuarioLogado();
+
+    // Se clicar no próprio perfil, abre o painel normal
+    if (usuario === meUsuario) {
+        abrirPainelPerfil(null);
+        return;
+    }
+
+    const overlay = document.getElementById('social-perfil-overlay');
+    overlay.classList.add('show');
+
+    // Zera enquanto carrega
+    document.getElementById('social-perfil-username').textContent = usuario;
+    document.getElementById('social-perfil-handle').textContent   = '@' + usuario;
+    document.getElementById('social-perfil-pronomes').textContent  = '';
+    document.getElementById('social-perfil-status').textContent    = '...';
+    document.getElementById('social-perfil-bio').textContent       = '';
+    document.getElementById('social-perfil-membro-desde').textContent = '';
+    document.getElementById('social-perfil-badges').innerHTML      = '';
+    document.getElementById('social-perfil-avatar-el').innerHTML   = usuario.substring(0,2).toUpperCase();
+    document.getElementById('social-perfil-banner-img').style.display = 'none';
+
+    if (!window._firebaseDB) return;
+
+    try {
+        const [snapPerfil, snapFoto, snapBanner] = await Promise.all([
+            window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis/${usuario}`)),
+            window._firebaseGet(window._firebaseRef(window._firebaseDB, `fotos_perfil/${usuario}`)),
+            window._firebaseGet(window._firebaseRef(window._firebaseDB, `banners_perfil/${usuario}`))
+        ]);
+
+        const perfil = snapPerfil.exists() ? snapPerfil.val() : {};
+        const foto   = snapFoto.exists()   ? snapFoto.val()   : null;
+        const banner = snapBanner.exists() ? snapBanner.val() : null;
+
+        // Atualiza cache de fotos
+        if (foto) _socialFotoCache[usuario] = foto;
+
+        // Avatar
+        const avatarEl = document.getElementById('social-perfil-avatar-el');
+        if (foto) {
+            avatarEl.innerHTML = `<img src="${foto}" alt="${usuario.substring(0,2).toUpperCase()}">`;
+        } else {
+            avatarEl.textContent = usuario.substring(0,2).toUpperCase();
+        }
+
+        // Borda colorida do avatar
+        if (perfil.corBorda) {
+            avatarEl.parentElement.style.setProperty('--perfil-borda', perfil.corBorda);
+            avatarEl.style.border = `4px solid ${perfil.corBorda}`;
+            avatarEl.style.boxShadow = `0 0 14px ${perfil.corBorda}`;
+        }
+
+        // Accent color
+        const card = document.getElementById('social-perfil-card');
+        if (perfil.accent) {
+            card.style.setProperty('--perfil-accent', perfil.accent);
+        } else {
+            card.style.removeProperty('--perfil-accent');
+        }
+
+        // Banner
+        if (banner) {
+            const bannerImg = document.getElementById('social-perfil-banner-img');
+            bannerImg.src = banner;
+            bannerImg.style.display = '';
+        }
+
+        // Pronomes
+        document.getElementById('social-perfil-pronomes').textContent = perfil.pronomes || '';
+
+        // Status
+        const statusEl = document.getElementById('social-perfil-status');
+        if (perfil.status) {
+            statusEl.textContent = '💬 ' + perfil.status;
+            statusEl.classList.remove('vazio');
+        } else {
+            statusEl.textContent = 'Sem recado definido.';
+            statusEl.classList.add('vazio');
+        }
+
+        // Bio
+        const bioEl = document.getElementById('social-perfil-bio');
+        if (perfil.bio) {
+            bioEl.textContent = perfil.bio;
+            bioEl.classList.remove('vazio');
+        } else {
+            bioEl.textContent = 'Nenhuma descrição ainda...';
+            bioEl.classList.add('vazio');
+        }
+
+        // Membro desde
+        document.getElementById('social-perfil-membro-desde').textContent =
+            perfil.dataEntrada || '—';
+
+        // Badges
+        const badgesEl = document.getElementById('social-perfil-badges');
+        badgesEl.innerHTML = `<span class="perfil-badge badge-membro">⚡ Membro</span>`;
+        // Verifica se é mestre (tem campanha criada)
+        if (window._firestoreDB) {
+            try {
+                const uid = await _socialGetUidDoUsuario(usuario);
+                if (uid) {
+                    const q = window._firestoreQuery(
+                        window._firestoreCollection(window._firestoreDB, 'campanhas'),
+                        window._firestoreWhere('mestreUid', '==', uid)
+                    );
+                    const snap = await window._firestoreGetDocs(q);
+                    if (snap.size > 0) {
+                        badgesEl.innerHTML += `<span class="perfil-badge badge-mestre">👑 Mestre</span>`;
+                    } else {
+                        badgesEl.innerHTML += `<span class="perfil-badge badge-novato">🌑 Novato</span>`;
+                    }
+                }
+            } catch(e) {}
+        }
+
+    } catch(e) {
+        console.warn('Erro ao carregar perfil social:', e);
+    }
+}
+window.abrirPerfilSocial = abrirPerfilSocial;
+
+// Busca o UID do Firebase de um usuário pelo username (via RTDB)
+async function _socialGetUidDoUsuario(usuario) {
+    // Tenta ler do nó perfis/{usuario}._uid se existir
+    try {
+        const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `perfis/${usuario}/_uid`));
+        if (snap.exists()) return snap.val();
+    } catch(e) {}
+    return null;
+}
+
+function fecharSocialPerfil(e) {
+    if (e && e.target !== document.getElementById('social-perfil-overlay')) return;
+    document.getElementById('social-perfil-overlay').classList.remove('show');
+}
+window.fecharSocialPerfil = fecharSocialPerfil;
 </script>
 
 </body>
