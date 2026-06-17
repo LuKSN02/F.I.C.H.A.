@@ -4537,6 +4537,8 @@ async function carregarFicha() {
 function sincronizarAgenteFirebase() {
   const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
   if (!window._firebaseDB || !ficha || !usuario) return;
+  // Garante que a ficha sempre tenha uma data de criação — preenche se já tiver sido perdida antes desta correção
+  if (!ficha.criadoEm) ficha.criadoEm = new Date().toLocaleDateString('pt-BR');
   try {
     // Path com usuário: agentes/{usuario}/{id} — evita mistura entre jogadores
     const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${ficha.id}`);
@@ -4549,6 +4551,7 @@ function sincronizarAgenteFirebase() {
       nivel:     ficha.nivel     || 1,
       atributos: ficha.atributos || {},
       fotoCostum: estado.fotoCostum || ficha.fotoCostum || '',
+      criadoEm:  ficha.criadoEm,
     }).catch(err => console.warn('sincronizarAgenteFirebase erro:', err));
   } catch(e) { console.warn('sincronizarAgenteFirebase:', e); }
 }
