@@ -2214,6 +2214,7 @@ body { transition: background 0.6s ease; }
     display: flex;
     flex-direction: column;
     min-width: 0;
+    min-height: 0;
 }
 
 .social-chat-header {
@@ -2248,7 +2249,9 @@ body { transition: background 0.6s ease; }
 
 .social-mensagens {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     padding: 16px 20px;
     display: flex;
     flex-direction: column;
@@ -2434,7 +2437,6 @@ body { transition: background 0.6s ease; }
     .social-mensagens {
         padding: 12px 14px;
         gap: 12px;
-        -webkit-overflow-scrolling: touch;
     }
     .msg-avatar { width: 32px; height: 32px; font-size: 0.7rem; }
     .msg-texto { font-size: 0.9rem; }
