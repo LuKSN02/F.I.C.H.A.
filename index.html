@@ -2471,6 +2471,138 @@ body { transition: background 0.6s ease; }
 }
 .msg-acao-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
 .msg-acao-apagar:hover { background: rgba(232,64,64,0.18); color: #ff6b6b; }
+
+/* ── Card de rolagem de dados ── */
+.msg-rolagem {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(var(--tema-glow-rgb), 0.08);
+    border: 1px solid rgba(var(--tema-glow-rgb), 0.25);
+    border-radius: 8px;
+    padding: 7px 14px 7px 10px;
+    margin: 2px 0;
+    position: relative;
+    overflow: hidden;
+    max-width: 100%;
+}
+.msg-rolagem::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(var(--tema-glow-rgb), 0.05) 0%, transparent 60%);
+    pointer-events: none;
+}
+.msg-rolagem-icone {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 6px rgba(var(--tema-glow-light-rgb), 0.6));
+    animation: dadoGiro 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes dadoGiro {
+    from { transform: rotate(-30deg) scale(0.7); opacity: 0; }
+    to   { transform: rotate(0deg)  scale(1);   opacity: 1; }
+}
+.msg-rolagem-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+.msg-rolagem-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(var(--tema-glow-light-rgb), 0.6);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.msg-rolagem-resultado {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--tema-primary-light);
+    text-shadow: 0 0 12px rgba(var(--tema-glow-light-rgb), 0.5);
+    line-height: 1;
+}
+.msg-rolagem-resultado.critico {
+    color: #ffd700;
+    text-shadow: 0 0 16px rgba(255, 215, 0, 0.7);
+    animation: criticoPulse 0.6s ease both;
+}
+.msg-rolagem-resultado.falha-critica {
+    color: var(--red);
+    text-shadow: 0 0 16px rgba(232,64,64,0.7);
+    animation: criticoPulse 0.6s ease both;
+}
+@keyframes criticoPulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.25); }
+    100% { transform: scale(1); }
+}
+.msg-rolagem-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 1px;
+    font-weight: 700;
+}
+.msg-rolagem-tag.critico    { color: #ffd700; }
+.msg-rolagem-tag.falha      { color: var(--red); }
+
+/* dados individuais (2d6 → mostra cada dado + total) */
+.msg-rolagem-dados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 4px;
+    max-width: 420px;
+}
+.msg-rolagem-dado-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 6px;
+    background: rgba(var(--tema-glow-rgb), 0.12);
+    border: 1px solid rgba(var(--tema-glow-rgb), 0.3);
+    border-radius: 5px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--tema-primary-light);
+}
+.msg-rolagem-dado-chip.chip-max {
+    border-color: #ffd700;
+    color: #ffd700;
+    box-shadow: 0 0 6px rgba(255,215,0,0.3);
+}
+.msg-rolagem-dado-chip.chip-min {
+    border-color: var(--red);
+    color: var(--red);
+    box-shadow: 0 0 6px rgba(232,64,64,0.25);
+}
+.msg-rolagem-total-linha {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 2px;
+}
+.msg-rolagem-total-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(var(--tema-glow-light-rgb), 0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.msg-rolagem-total-valor {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--tema-primary-light);
+    text-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb), 0.4);
+    line-height: 1;
+}
+
 /* Em telas touch não há :hover — mostra as ações sempre, discretas */
 @media (hover: none) {
     .msg-acoes { display: flex; opacity: 0.7; }
@@ -4123,7 +4255,7 @@ body { transition: background 0.6s ease; }
         // Botões de "editar"/"apagar" — só aparecem nas próprias mensagens
         function _socialMontarAcoesHTML(m) {
             if (!m._key || m.usuario !== getUsuarioLogado()) return '';
-            const botaoEditar = (m.gifUrl || m.fotoBase64)
+            const botaoEditar = (m.gifUrl || m.fotoBase64 || m.rolagem)
                 ? ''
                 : `<button class="msg-acao-btn" onclick="_socialEditarMensagem('${m._key}')" title="Editar mensagem">✎</button>`;
             return `
@@ -4152,20 +4284,93 @@ body { transition: background 0.6s ease; }
                 const podeAgrupar = !!anterior
                     && anterior.usuario === usuario
                     && _socialMesmoDia(anterior.ts, ts)
-                    && (ts - anterior.ts) <= JANELA_AGRUPAMENTO_MS;
+                    && (ts - anterior.ts) <= JANELA_AGRUPAMENTO_MS
+                    && !m.rolagem          // rolagens nunca agrupam — cada dado é uma jogada
+                    && !anterior.rolagem;  // nem agrupa com a rolagem anterior
 
-                const tagEditado = (m.editado && !m.gifUrl && !m.fotoBase64) ? ` <span class="msg-editado-tag">(editado)</span>` : '';
-                const conteudoHTML = m.gifUrl
-                    ? `<img class="msg-gif" src="${_socialEscapeHtml(m.gifUrl)}" alt="GIF" loading="lazy" onclick="abrirGifLightbox(this.src)">`
-                    : m.fotoBase64
-                    ? `<img class="msg-foto" src="${_socialEscapeHtml(m.fotoBase64)}" alt="Foto" loading="lazy" onclick="abrirGifLightbox(this.src)">`
-                    : `<div class="msg-texto">${_socialEscapeHtml(m.texto || '')}${tagEditado}</div>`;
+                const tagEditado = (m.editado && !m.gifUrl && !m.fotoBase64 && !m.rolagem) ? ` <span class="msg-editado-tag">(editado)</span>` : '';
+
+                // --- Renderização do conteúdo ---
+                let conteudoHTML;
+                if (m.rolagem) {
+                    const { quantidade, lados, resultados, total } = m.rolagem;
+                    // Compatibilidade com mensagens antigas (campo resultado singular)
+                    const resArr  = resultados || [m.rolagem.resultado];
+                    const qtd     = quantidade  || 1;
+                    const tot     = total       || resArr[0];
+                    const maxVal  = lados;
+                    const minVal  = 1;
+                    const todosCritico    = resArr.every(v => v === maxVal);
+                    const todosFalha      = resArr.every(v => v === minVal) && lados > 1;
+                    const algumCritico    = resArr.some(v => v === maxVal);
+                    const algumFalha      = resArr.some(v => v === minVal) && lados > 1;
+
+                    // Label do dado — "D10", "2D6", etc.
+                    const labelDado = qtd > 1 ? `${qtd}D${lados}` : `D${lados}`;
+
+                    // Card de dado único (visual simples com resultado grande)
+                    if (qtd === 1) {
+                        const classeRes = todosCritico ? 'critico' : todosFalha ? 'falha-critica' : '';
+                        const tagExtra  = todosCritico
+                            ? `<div class="msg-rolagem-tag critico">✦ Crítico!</div>`
+                            : todosFalha
+                            ? `<div class="msg-rolagem-tag falha">✕ Falha Crítica</div>`
+                            : '';
+                        conteudoHTML = `
+                            <div class="msg-rolagem" data-roll-id="${m._key}">
+                                <div class="msg-rolagem-icone">🎲</div>
+                                <div class="msg-rolagem-info">
+                                    <div class="msg-rolagem-label">Rolou um ${labelDado}</div>
+                                    <div class="msg-rolagem-resultado ${classeRes}">${tot}</div>
+                                    ${tagExtra}
+                                </div>
+                            </div>`;
+                    } else {
+                        // Múltiplos dados — chips individuais + total
+                        const LIMITE_CHIPS = 20; // acima disso omite chips pra não explodir o layout
+                        const mostrarChips = resArr.length <= LIMITE_CHIPS;
+                        const chipsHTML = mostrarChips
+                            ? `<div class="msg-rolagem-dados">${resArr.map(v => {
+                                const cls = v === maxVal ? 'chip-max' : (v === minVal && lados > 1 ? 'chip-min' : '');
+                                return `<span class="msg-rolagem-dado-chip ${cls}">${v}</span>`;
+                              }).join('')}</div>`
+                            : `<div class="msg-rolagem-dados" style="font-family:monospace;font-size:0.72rem;color:#666;margin-top:4px;">${resArr.length} dados (omitidos)</div>`;
+
+                        const tagTotal = (todosCritico || algumCritico)
+                            ? `<div class="msg-rolagem-tag critico" style="margin-top:3px;">✦ ${todosCritico ? 'Todos Críticos!' : 'Crítico!'}</div>`
+                            : (todosFalha || algumFalha)
+                            ? `<div class="msg-rolagem-tag falha" style="margin-top:3px;">✕ ${todosFalha ? 'Todos Falharam!' : 'Falha Crítica!'}</div>`
+                            : '';
+
+                        conteudoHTML = `
+                            <div class="msg-rolagem" data-roll-id="${m._key}" style="flex-direction:column;align-items:flex-start;gap:4px;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <div class="msg-rolagem-icone">🎲</div>
+                                    <div class="msg-rolagem-info">
+                                        <div class="msg-rolagem-label">Rolou ${labelDado}</div>
+                                        <div class="msg-rolagem-total-linha">
+                                            <span class="msg-rolagem-total-label">Total</span>
+                                            <span class="msg-rolagem-total-valor">${tot}</span>
+                                        </div>
+                                        ${tagTotal}
+                                    </div>
+                                </div>
+                                ${chipsHTML}
+                            </div>`;
+                    } // fim else (múltiplos dados)
+                } else if (m.gifUrl) {
+                    conteudoHTML = `<img class="msg-gif" src="${_socialEscapeHtml(m.gifUrl)}" alt="GIF" loading="lazy" onclick="abrirGifLightbox(this.src)">`;
+                } else if (m.fotoBase64) {
+                    conteudoHTML = `<img class="msg-foto" src="${_socialEscapeHtml(m.fotoBase64)}" alt="Foto" loading="lazy" onclick="abrirGifLightbox(this.src)">`;
+                } else {
+                    conteudoHTML = `<div class="msg-texto">${_socialEscapeHtml(m.texto || '')}${tagEditado}</div>`;
+                }
 
                 html += podeAgrupar
                     ? _socialMontarLinhaAgrupada(m, conteudoHTML)
                     : _socialMontarLinhaCompleta(m, usuario, conteudoHTML);
 
-                anterior = { ts, usuario };
+                anterior = { ts, usuario, rolagem: !!m.rolagem };
             });
 
             return html;
@@ -4254,6 +4459,27 @@ body { transition: background 0.6s ease; }
             });
         }
 
+        /* =============================================
+           ROLAGEM DE DADOS — 1d1 até 1000d1000
+        ============================================= */
+        function _rolarDado(lados) {
+            return Math.floor(Math.random() * lados) + 1;
+        }
+
+        // Retorna { quantidade, lados, resultados, total } ou null
+        function _parsearComandoDado(texto) {
+            // Aceita: d10, /d10, D10, !d10, 1d10, 2d6, 1000d1000
+            const m = /^[/!]?(\d+)?[dD](\d+)$/.exec(texto.trim());
+            if (!m) return null;
+            const quantidade = m[1] ? parseInt(m[1], 10) : 1;
+            const lados      = parseInt(m[2], 10);
+            if (quantidade < 1 || quantidade > 1000) return null;
+            if (lados      < 1 || lados      > 1000) return null;
+            const resultados = Array.from({ length: quantidade }, () => _rolarDado(lados));
+            const total      = resultados.reduce((s, v) => s + v, 0);
+            return { quantidade, lados, resultados, total };
+        }
+
         function enviarMensagemSocial() {
             const input = document.getElementById('social-input');
             const texto = input.value.trim();
@@ -4265,12 +4491,16 @@ body { transition: background 0.6s ease; }
             const btn = document.getElementById('social-send-btn');
             btn.disabled = true;
             _socialEnviandoProprio = true;
-            const baseRef = window._firebaseRef(window._firebaseDB, `chat/${_socialCanalAtivo}/mensagens`);
-            window._firebasePush(baseRef, {
-                usuario: usuario,
-                texto:   texto.slice(0, 500),
-                ts:      Date.now()
-            }).catch(err => {
+
+            // Detecta comando de dado
+            const dadoInfo = _parsearComandoDado(texto);
+            const baseRef  = window._firebaseRef(window._firebaseDB, `chat/${_socialCanalAtivo}/mensagens`);
+
+            const payload = dadoInfo
+                ? { usuario, ts: Date.now(), rolagem: { quantidade: dadoInfo.quantidade, lados: dadoInfo.lados, resultados: dadoInfo.resultados, total: dadoInfo.total } }
+                : { usuario, texto: texto.slice(0, 500), ts: Date.now() };
+
+            window._firebasePush(baseRef, payload).catch(err => {
                 console.error('Erro ao enviar mensagem:', err);
                 mostrarToast('⚠️ Erro ao enviar mensagem');
             }).finally(() => { btn.disabled = false; });
