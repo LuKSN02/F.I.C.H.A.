@@ -2401,7 +2401,8 @@ body { transition: background 0.6s ease; }
         flex-direction: column;
     }
 
-    /* Lista de canais vira uma barra horizontal de "pills" rolável */
+    /* Lista de canais vira uma fileira de "pills" que quebra linha
+       (mais confiável no touch do que depender de scroll horizontal) */
     .social-sidebar {
         width: 100%;
         flex-shrink: 0;
@@ -2409,22 +2410,18 @@ body { transition: background 0.6s ease; }
         border-bottom: 1px solid #2a2a2a;
         padding: 8px 10px;
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: 6px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        overflow: visible;
     }
-    .social-sidebar::-webkit-scrollbar { display: none; }
-    #social-lista-canais { display: flex; gap: 6px; }
+    #social-lista-canais { display: flex; flex-wrap: wrap; gap: 6px; }
     .social-sidebar-label { display: none; }
     .social-canal {
         flex-shrink: 0;
         margin-bottom: 0;
         white-space: nowrap;
         padding: 8px 14px;
-        scroll-snap-align: start;
     }
     /* Perfil fixo do rodapé só faz sentido na sidebar vertical (desktop) */
     .social-sidebar-perfil { display: none; }
