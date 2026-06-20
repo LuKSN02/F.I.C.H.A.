@@ -233,6 +233,22 @@
         .nav-link { font-weight: 700; }
         .nav-link:hover { color: #ff0000 !important; }
 
+        /* Centraliza os links de fato no meio da navbar, independente da
+           largura da logo (esquerda) e do botão de Temas (direita) — antes
+           o mx-auto centralizava só no espaço sobrando após a logo, o que
+           deixava o menu deslocado para a direita. */
+        @media (min-width: 992px) {
+            .custom-nav .container-fluid { position: relative; }
+            .custom-nav .navbar-nav.mx-auto {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+        }
+
         .form-hero {
             border-bottom: 2px solid #1e0040;
             padding: 48px 0 32px;
