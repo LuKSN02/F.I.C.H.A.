@@ -395,6 +395,18 @@
     #confirm-logout-overlay.show {
         opacity: 1; pointer-events: all;
     }
+    #confirm-apagar-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.75);
+        backdrop-filter: blur(8px);
+        z-index: 99999;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.18s;
+    }
+    #confirm-apagar-overlay.show {
+        opacity: 1; pointer-events: all;
+    }
     @keyframes confirmSlideIn {
         from { opacity: 0; transform: translateY(16px) scale(0.97); }
         to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -2160,7 +2172,9 @@ body { transition: background 0.6s ease; }
     padding: 16px 10px 78px;
     overflow-y: auto;
     position: relative;
+    scrollbar-width: none;
 }
+.social-sidebar::-webkit-scrollbar { display: none; }
 
 /* Botão de perfil compacto — só aparece no header do chat em telas mobile */
 .social-mobile-perfil {
@@ -2212,6 +2226,54 @@ body { transition: background 0.6s ease; }
 /* Select nativo de canais — fica oculto no desktop, só aparece no mobile */
 .social-canal-select { display: none; }
 
+/* ── Lista de membros online (sidebar) ── */
+.social-online-label {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.social-online-label::before {
+    content: '●';
+    color: #3ba55d;
+    font-size: 0.6rem;
+}
+.social-lista-online { margin-bottom: 4px; }
+.social-online-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.social-online-item:hover { background: rgba(255,255,255,0.06); }
+.social-online-avatar {
+    position: relative;
+    width: 25px; height: 25px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; font-weight: 700; color: white;
+    font-family: 'Oswald', sans-serif;
+}
+.social-online-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.social-online-dot {
+    position: absolute; right: -1px; bottom: -1px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #3ba55d; border: 2px solid #111111;
+}
+.social-online-nome {
+    font-size: 0.82rem; color: #bbb;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.social-online-vazio {
+    padding: 6px 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: #4a4a4a;
+    letter-spacing: 0.5px;
+}
+
 .social-chat {
     flex: 1;
     display: flex;
@@ -2250,27 +2312,115 @@ body { transition: background 0.6s ease; }
     text-overflow: ellipsis;
 }
 
-.social-mensagens {
+/* Wrapper relativo: segura o painel de mensagens + botão flutuante "novas mensagens" */
+.social-mensagens-wrap {
+    position: relative;
     flex: 1;
     min-height: 0;
+}
+
+.social-mensagens {
+    position: absolute;
+    inset: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 16px 20px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
 }
+.social-mensagens::-webkit-scrollbar { width: 8px; }
+.social-mensagens::-webkit-scrollbar-track { background: transparent; }
+.social-mensagens::-webkit-scrollbar-thumb { background: #2c2c2c; border-radius: 8px; }
+.social-mensagens::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
 
+/* ── Estado vazio / carregando ── */
 .social-vazio {
     text-align: center;
     margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+.social-vazio-icon {
+    font-size: 1.9rem;
+    opacity: 0.35;
+    filter: grayscale(1);
+}
+.social-vazio-titulo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #888;
+}
+.social-vazio-sub {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    color: #555;
+    font-size: 0.72rem;
+    color: #4a4a4a;
     letter-spacing: 0.5px;
 }
 
-.msg-row { display: flex; gap: 12px; align-items: flex-start; }
+/* ── Separador de data (Hoje / Ontem / DD de mês) ── */
+.social-data-sep {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 12px;
+    color: #666;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    user-select: none;
+}
+.social-data-sep::before,
+.social-data-sep::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #262626;
+}
+.social-data-sep:first-child { margin-top: 0; }
+
+/* ── Linha de mensagem (com hover sutil e área de clique estendida) ── */
+.msg-row {
+    position: relative;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-top: 16px;
+    padding: 3px 10px;
+    margin-left: -10px;
+    margin-right: -10px;
+    border-radius: 6px;
+    transition: background 0.12s;
+}
+.msg-row:hover { background: rgba(255,255,255,0.035); }
+.msg-row:first-child { margin-top: 0; }
+
+/* Mensagens agrupadas (mesmo autor, < 5min, estilo Discord):
+   sem avatar/nome repetido — só o horário aparece ao passar o mouse */
+.msg-row.agrupada { margin-top: 2px; }
+.msg-gutter {
+    width: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.msg-hora-flutuante {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: #555;
+    opacity: 0;
+    transition: opacity 0.12s;
+    white-space: nowrap;
+}
+.msg-row.agrupada:hover .msg-hora-flutuante { opacity: 1; }
+
 .msg-avatar {
     width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
@@ -2288,6 +2438,129 @@ body { transition: background 0.6s ease; }
     word-break: break-word;
     white-space: pre-wrap;
 }
+.msg-editado-tag {
+    font-size: 0.65rem;
+    color: #555;
+    font-style: italic;
+    margin-left: 3px;
+}
+
+/* ── Ações de mensagem própria (editar / apagar), estilo Discord ── */
+.msg-acoes {
+    position: absolute;
+    top: -14px;
+    right: 8px;
+    display: none;
+    gap: 2px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 2px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+    z-index: 5;
+}
+.msg-row:hover .msg-acoes,
+.msg-row:focus-within .msg-acoes { display: flex; }
+.msg-acao-btn {
+    width: 26px; height: 26px;
+    border: none; background: transparent;
+    color: #999; border-radius: 4px; cursor: pointer;
+    font-size: 0.78rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s, color 0.12s;
+}
+.msg-acao-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.msg-acao-apagar:hover { background: rgba(232,64,64,0.18); color: #ff6b6b; }
+/* Em telas touch não há :hover — mostra as ações sempre, discretas */
+@media (hover: none) {
+    .msg-acoes { display: flex; opacity: 0.7; }
+}
+
+/* ── Formulário de edição inline ── */
+.msg-editar-form { display: flex; flex-direction: column; gap: 4px; margin: 1px 0 2px; }
+.msg-editar-input {
+    width: 100%;
+    background: #1a1a1a;
+    border: 1px solid var(--tema-primary);
+    color: #eee;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.92rem;
+    line-height: 1.4;
+    resize: none;
+    outline: none;
+    min-height: 38px;
+}
+.msg-editar-dicas {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: #555;
+    letter-spacing: 0.3px;
+}
+
+/* ── Botão flutuante "novas mensagens" (aparece ao rolar pra cima) ── */
+.social-novas-msgs-btn {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%) translateY(8px);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--tema-primary);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.45), 0 0 18px rgba(var(--tema-glow-rgb),0.4);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease, background 0.2s;
+    z-index: 15;
+}
+.social-novas-msgs-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+.social-novas-msgs-btn:hover { background: var(--tema-primary-light); }
+.social-novas-msgs-btn .seta { font-size: 0.9rem; line-height: 1; animation: novasMsgsSeta 1.4s ease-in-out infinite; }
+@keyframes novasMsgsSeta {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(2px); }
+}
+
+/* ── Indicador "Fulano está digitando..." ── */
+.social-typing-row {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 20px 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    color: #888;
+    flex-shrink: 0;
+}
+.social-typing-row.show { display: flex; }
+.social-typing-dots { display: flex; gap: 3px; flex-shrink: 0; }
+.social-typing-dots span {
+    width: 4px; height: 4px; border-radius: 50%; background: #888;
+    animation: socialTypingBlink 1.2s infinite ease-in-out;
+}
+.social-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.social-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes socialTypingBlink {
+    0%, 80%, 100% { opacity: 0.25; }
+    40% { opacity: 1; }
+}
+.social-typing-texto { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .social-input-row {
     display: flex;
@@ -2384,12 +2657,204 @@ body { transition: background 0.6s ease; }
     flex-shrink: 0;
 }
 
+/* ── Botão e painel de Emojis ── */
+.social-emoji-btn {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+    background: #1a1a1a; border: 1px solid #333; color: #999;
+    font-size: 1.05rem; cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.social-emoji-btn:hover { border-color: var(--tema-primary); color: var(--tema-primary-light); }
+.social-emoji-btn.active { background: var(--tema-primary); border-color: var(--tema-primary); color: white; }
+
+/* ── Botão de foto ── */
+.social-foto-btn {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+    background: #1a1a1a; border: 1px solid #333; color: #999;
+    cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+}
+.social-foto-btn svg { width: 17px; height: 17px; stroke: currentColor; }
+.social-foto-btn:hover { border-color: var(--tema-primary); color: var(--tema-primary-light); }
+.social-foto-btn.loading { opacity: 0.5; pointer-events: none; animation: fotoBtnSpin 0.9s linear infinite; }
+@keyframes fotoBtnSpin { to { transform: rotate(360deg); } }
+
+/* ── Foto enviada no chat ── */
+.msg-foto {
+    max-width: 300px; max-height: 260px;
+    border-radius: 10px; display: block;
+    margin-top: 4px; cursor: zoom-in;
+    border: 1px solid #2a2a2a;
+    object-fit: cover;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.msg-foto:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* ── Preview de upload ── */
+.social-foto-preview {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 20px;
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+    z-index: 60;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 280px;
+}
+.social-foto-preview.show { display: flex; }
+.social-foto-preview img {
+    max-width: 100%; max-height: 180px;
+    border-radius: 7px; object-fit: cover;
+    border: 1px solid #333;
+}
+.social-foto-preview-actions {
+    display: flex; gap: 8px;
+}
+.social-foto-preview-btn {
+    flex: 1; padding: 8px;
+    border-radius: 6px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer; transition: 0.18s; border: 1px solid;
+}
+.social-foto-preview-enviar {
+    background: rgba(var(--tema-glow-rgb),0.12);
+    border-color: var(--tema-primary);
+    color: var(--tema-primary-light);
+}
+.social-foto-preview-enviar:hover {
+    background: var(--tema-primary);
+    color: white;
+}
+.social-foto-preview-cancelar {
+    background: transparent;
+    border-color: #333;
+    color: #555;
+}
+.social-foto-preview-cancelar:hover { border-color: #555; color: #888; }
+
+.emoji-picker {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 20px;
+    width: 290px;
+    max-height: 320px;
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.55);
+    overflow: hidden;
+    z-index: 60;
+}
+.emoji-picker.open { display: flex; }
+.emoji-picker-categoria {
+    padding: 8px 12px 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #666;
+    flex-shrink: 0;
+}
+.emoji-picker-grid {
+    display: flex; flex-wrap: wrap; padding: 2px 6px 8px;
+    overflow-y: auto; align-content: flex-start; flex: 1;
+}
+.emoji-picker-grid button {
+    width: 38px; height: 38px; border: none; background: transparent;
+    border-radius: 6px; font-size: 1.25rem; cursor: pointer; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s, transform 0.1s;
+}
+.emoji-picker-grid button:hover { background: rgba(255,255,255,0.08); transform: scale(1.12); }
+.emoji-picker-vazio {
+    width: 100%; text-align: center; padding: 4px 10px 10px;
+    font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: #4a4a4a;
+}
+
 /* ── Bolha de GIF dentro da mensagem ── */
 .msg-gif {
     max-width: 260px; max-height: 220px;
     border-radius: 10px; display: block;
-    margin-top: 2px; cursor: pointer;
+    margin-top: 2px; cursor: zoom-in;
     border: 1px solid #2a2a2a;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.msg-gif:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* ── GIF Lightbox ── */
+#gif-lightbox {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.88);
+    backdrop-filter: blur(12px);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+    padding: 20px;
+}
+#gif-lightbox.show { display: flex; }
+@keyframes gifLightboxIn {
+    from { opacity: 0; transform: scale(0.88); }
+    to   { opacity: 1; transform: scale(1); }
+}
+#gif-lightbox-img {
+    max-width: min(90vw, 860px);
+    max-height: 85vh;
+    border-radius: 10px;
+    border: 1px solid rgba(var(--tema-glow-rgb), 0.3);
+    box-shadow:
+        0 0 0 1px rgba(var(--tema-glow-rgb), 0.15),
+        0 30px 80px rgba(0,0,0,0.7),
+        0 0 60px rgba(var(--tema-glow-rgb), 0.12);
+    display: block;
+    cursor: default;
+    animation: gifLightboxIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+    object-fit: contain;
+}
+#gif-lightbox-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.65);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #aaa;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.18s;
+    backdrop-filter: blur(4px);
+    z-index: 1;
+}
+#gif-lightbox-close:hover { background: rgba(255,255,255,0.1); color: white; border-color: #555; }
+#gif-lightbox-hint {
+    position: absolute;
+    bottom: 18px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+    pointer-events: none;
+    user-select: none;
 }
 
 @media (max-width: 768px) {
@@ -2417,6 +2882,7 @@ body { transition: background 0.6s ease; }
     }
     #social-lista-canais { display: none; }
     .social-sidebar-label { display: none; }
+    .social-lista-online { display: none; }
     .social-canal-select {
         display: block;
         width: 100%;
@@ -2447,10 +2913,14 @@ body { transition: background 0.6s ease; }
 
     .social-mensagens {
         padding: 12px 14px;
-        gap: 12px;
     }
+    .msg-row { margin-top: 13px; }
+    .msg-row.agrupada { margin-top: 2px; }
     .msg-avatar { width: 32px; height: 32px; font-size: 0.7rem; }
+    .msg-gutter { width: 32px; }
     .msg-texto { font-size: 0.9rem; }
+    .social-novas-msgs-btn { bottom: 10px; padding: 7px 14px; font-size: 0.68rem; }
+    .social-typing-row { padding: 5px 14px 0; font-size: 0.68rem; }
 
     .social-input-row { padding: 10px 12px; gap: 8px; }
     .social-input {
@@ -2463,6 +2933,9 @@ body { transition: background 0.6s ease; }
         padding: 0 10px;
         font-size: 0.66rem;
     }
+    .social-emoji-btn { width: 38px; height: 38px; font-size: 0.98rem; }
+    .social-foto-btn { width: 38px; height: 38px; }
+    .msg-foto { max-width: min(240px, 60vw); max-height: 200px; }
     .social-send-btn { width: 38px; height: 38px; }
 
     .gif-picker {
@@ -2473,6 +2946,13 @@ body { transition: background 0.6s ease; }
     }
     .gif-picker-search input { font-size: 16px; }
     .gif-picker-grid img { height: 76px; }
+
+    .emoji-picker {
+        left: 8px; right: 8px;
+        bottom: calc(100% + 8px);
+        width: auto;
+        max-height: min(45vh, 320px);
+    }
 
     .msg-gif { max-width: min(220px, 60vw); max-height: 180px; }
 }
@@ -2626,6 +3106,26 @@ body { transition: background 0.6s ease; }
             <div class="confirm-actions">
                 <button class="confirm-btn confirm-btn-cancel" id="confirm-logout-cancel">Cancelar</button>
                 <button class="confirm-btn confirm-btn-ok" id="confirm-logout-ok">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL CONFIRMAR APAGAR MENSAGEM ===== -->
+    <div id="confirm-apagar-overlay" onclick="_confirmarApagarBackdrop(event)">
+        <div class="confirm-box" id="confirm-apagar-box">
+            <div class="confirm-icon" style="border-color:rgba(232,64,64,0.3);background:rgba(232,64,64,0.07);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ff6666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <path d="M10 11v6M14 11v6"/>
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+            </div>
+            <p class="confirm-title">Apagar mensagem</p>
+            <p class="confirm-desc">Esta ação é permanente e não pode ser desfeita.</p>
+            <div class="confirm-actions">
+                <button class="confirm-btn confirm-btn-cancel" id="confirm-apagar-cancel">Cancelar</button>
+                <button class="confirm-btn confirm-btn-ok" id="confirm-apagar-ok">🗑 Apagar</button>
             </div>
         </div>
     </div>
@@ -2899,6 +3399,9 @@ body { transition: background 0.6s ease; }
                 <!-- Seletor nativo, usado apenas no mobile (mais confiável que pills/scroll em touch) -->
                 <select id="social-canal-select" class="social-canal-select" onchange="trocarCanalSocial(this.value)"></select>
                 <div id="social-lista-canais"></div>
+                <!-- Membros online -->
+                <div class="social-sidebar-label social-online-label">Online — <span id="social-online-count">0</span></div>
+                <div id="social-lista-online" class="social-lista-online"></div>
                 <!-- Perfil do usuário logado no rodapé da sidebar -->
                 <div class="social-sidebar-perfil" id="social-sidebar-perfil" onclick="abrirPainelPerfil(event)" title="Ver meu perfil">
                     <div class="social-sidebar-perfil-avatar" id="social-sidebar-avatar"></div>
@@ -2917,15 +3420,43 @@ body { transition: background 0.6s ease; }
                     </div>
                     <div class="social-mobile-perfil" onclick="abrirPainelPerfil(event)" title="Ver meu perfil">👤</div>
                 </div>
-                <div class="social-mensagens" id="social-mensagens">
-                    <div class="social-vazio">▸ Carregando mensagens...</div>
+                <div class="social-mensagens-wrap">
+                    <div class="social-mensagens" id="social-mensagens">
+                        <div class="social-vazio">
+                            <div class="social-vazio-icon">▸</div>
+                            <div class="social-vazio-titulo">Carregando mensagens...</div>
+                        </div>
+                    </div>
+                    <button class="social-novas-msgs-btn" id="social-novas-msgs-btn" onclick="_socialIrParaFim()">
+                        <span class="seta">↓</span> <span id="social-novas-msgs-texto">Novas mensagens</span>
+                    </button>
+                </div>
+                <!-- Indicador "Fulano está digitando..." -->
+                <div class="social-typing-row" id="social-typing-row">
+                    <span class="social-typing-dots"><span></span><span></span><span></span></span>
+                    <span class="social-typing-texto" id="social-typing-texto"></span>
                 </div>
                 <div class="social-input-row">
                     <button class="social-gif-btn" id="social-gif-btn" onclick="toggleGifPicker(event)" title="Enviar GIF">GIF</button>
+                    <button class="social-emoji-btn" id="social-emoji-btn" onclick="toggleEmojiPicker(event)" title="Inserir emoji">🙂</button>
+                    <button class="social-foto-btn" id="social-foto-btn" onclick="document.getElementById('social-foto-input').click()" title="Enviar foto">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    </button>
+                    <input type="file" id="social-foto-input" accept="image/*" style="display:none" onchange="_socialEnviarFoto(this)">
                     <input type="text" id="social-input" class="social-input"
                            placeholder="Mensagem em #geral..." maxlength="500"
+                           oninput="_socialNotificarDigitando()"
                            onkeydown="if(event.key==='Enter'){event.preventDefault();enviarMensagemSocial();}">
                     <button class="social-send-btn" id="social-send-btn" onclick="enviarMensagemSocial()" title="Enviar">➤</button>
+
+                    <!-- Preview de foto antes de enviar -->
+                    <div class="social-foto-preview" id="social-foto-preview" onclick="event.stopPropagation()">
+                        <img id="social-foto-preview-img" src="" alt="Preview">
+                        <div class="social-foto-preview-actions">
+                            <button class="social-foto-preview-btn social-foto-preview-enviar" onclick="_socialConfirmarFoto()">➤ Enviar</button>
+                            <button class="social-foto-preview-btn social-foto-preview-cancelar" onclick="_socialCancelarFoto()">✕ Cancelar</button>
+                        </div>
+                    </div>
 
                     <!-- Painel seletor de GIFs (estilo Discord) -->
                     <div class="gif-picker" id="gif-picker" onclick="event.stopPropagation()">
@@ -2936,6 +3467,11 @@ body { transition: background 0.6s ease; }
                             <div class="gif-picker-status">▸ Carregando GIFs em alta...</div>
                         </div>
                         <div class="gif-picker-footer">Powered by GIPHY</div>
+                    </div>
+
+                    <!-- Painel seletor de Emojis -->
+                    <div class="emoji-picker" id="emoji-picker" onclick="event.stopPropagation()">
+                        <div class="emoji-picker-grid" id="emoji-picker-grid"></div>
                     </div>
                 </div>
             </div>
@@ -3015,7 +3551,7 @@ body { transition: background 0.6s ease; }
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getDatabase, ref, set, get, remove, onValue, push, query as dbQuery, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { getDatabase, ref, set, get, remove, update, onValue, push, onDisconnect, query as dbQuery, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -3039,8 +3575,10 @@ body { transition: background 0.6s ease; }
         window._firebaseSet    = set;
         window._firebaseGet    = get;
         window._firebaseRemove = remove;
+        window._firebaseUpdate = update;
         window._firebaseOnValue = onValue;
         window._firebasePush    = push;
+        window._firebaseOnDisconnect = onDisconnect;
         window._firebaseQuery   = dbQuery;
         window._firebaseLimitToLast = limitToLast;
 
@@ -3211,10 +3749,17 @@ body { transition: background 0.6s ease; }
         async function fazerLogout() {
             const confirmado = await mostrarConfirmLogout();
             if (!confirmado) return;
-            // Cancela listener em tempo real antes de deslogar
-            if (_agentesListener) { _agentesListener(); _agentesListener = null; }
-            if (_socialListener)  { _socialListener();  _socialListener  = null; }
             const usuario = getUsuarioLogado();
+            // Cancela listeners em tempo real antes de deslogar
+            if (_agentesListener)        { _agentesListener();        _agentesListener        = null; }
+            if (_socialListener)         { _socialListener();         _socialListener         = null; }
+            if (_socialPresenceListener) { _socialPresenceListener(); _socialPresenceListener = null; }
+            if (_socialTypingListener)   { _socialTypingListener();   _socialTypingListener   = null; }
+            _socialPararDigitando();
+            if (usuario && window._firebaseDB) {
+                try { await window._firebaseRemove(window._firebaseRef(window._firebaseDB, `presence/${usuario}`)); }
+                catch(e) { /* sem internet ou já desconectado — sem problema */ }
+            }
             await window._fbLogout();
             // Limpa sessionStorage completamente
             sessionStorage.clear();
@@ -3278,6 +3823,18 @@ body { transition: background 0.6s ease; }
         let _socialCanalAtivo = 'geral';
         let _socialListener   = null; // unsubscribe do listener do canal atual
 
+        // Controle de leitura/scroll do chat (pro botão "novas mensagens")
+        let _socialQtdVista      = {};   // canalId -> nº de mensagens já vistas (rolado até o fim)
+        let _socialContagemTotal = {};   // canalId -> nº total de mensagens carregadas no momento
+        let _socialEnviandoProprio = false; // força ida ao fim quando o próprio usuário envia algo
+
+        // Presença online (sidebar) e indicador de "digitando..."
+        let _socialPresenceListener  = null;
+        let _socialPresencaAtiva     = false;
+        let _socialTypingListener    = null;
+        let _socialTypingTimeout     = null;
+        let _socialTypingAtivo       = false; // se EU estou marcado como "digitando" agora
+
         function _socialCorUsuario(usuario) {
             const cores = ['#e84040','#3a7bd5','#39d353','#c8960c','#9b30d9','#1abc9c','#e67e22','#e91e63'];
             let hash = 0;
@@ -3299,6 +3856,24 @@ body { transition: background 0.6s ease; }
             return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + hora;
         }
 
+        // Rótulo do separador de data: "Hoje", "Ontem" ou "DD de mês [de AAAA]"
+        function _socialLabelData(ts) {
+            const d = new Date(ts);
+            const hoje = new Date();
+            const ontem = new Date(hoje);
+            ontem.setDate(hoje.getDate() - 1);
+            if (d.toDateString() === hoje.toDateString()) return 'Hoje';
+            if (d.toDateString() === ontem.toDateString()) return 'Ontem';
+            return d.toLocaleDateString('pt-BR', {
+                day: '2-digit', month: 'long',
+                year: d.getFullYear() !== hoje.getFullYear() ? 'numeric' : undefined
+            });
+        }
+
+        function _socialMesmoDia(tsA, tsB) {
+            return new Date(tsA).toDateString() === new Date(tsB).toDateString();
+        }
+
         function _socialRenderCanais() {
             const lista = document.getElementById('social-lista-canais');
             if (lista) {
@@ -3318,20 +3893,33 @@ body { transition: background 0.6s ease; }
 
         function trocarCanalSocial(canalId) {
             if (canalId === _socialCanalAtivo) return;
+            _socialPararDigitando(); // não deixa "fantasma" de digitando no canal antigo
             _socialCanalAtivo = canalId;
             _socialRenderCanais();
             const canal = SOCIAL_CANAIS.find(c => c.id === canalId);
             document.getElementById('social-canal-nome').textContent = '# ' + (canal?.nome || canalId);
             document.getElementById('social-canal-desc').textContent = canal?.desc || '';
             document.getElementById('social-input').placeholder = `Mensagem em #${canal?.nome || canalId}...`;
-            document.getElementById('social-mensagens').innerHTML = '<div class="social-vazio">▸ Carregando mensagens...</div>';
+            document.getElementById('social-mensagens').innerHTML = `
+                <div class="social-vazio">
+                    <div class="social-vazio-icon">▸</div>
+                    <div class="social-vazio-titulo">Carregando mensagens...</div>
+                </div>`;
+            // Trocar de canal sempre deve cair no fim do histórico, sem "fantasma" de não-lidas do canal anterior
+            delete _socialQtdVista[canalId];
+            _socialEsconderBotaoNovasMsgs();
             _socialEscutarMensagens(canalId);
+            _socialEscutarDigitando(canalId);
         }
 
         function iniciarChatSocial() {
             _socialRenderCanais();
             _socialEscutarMensagens(_socialCanalAtivo);
+            _socialEscutarDigitando(_socialCanalAtivo);
             _socialAtualizarSidebarPerfil();
+            _socialBindScroll();
+            _socialIniciarPresenca();
+            _socialEscutarPresenca();
         }
 
         async function _socialAtualizarSidebarPerfil() {
@@ -3379,6 +3967,249 @@ body { transition: background 0.6s ease; }
             return _socialFotoCache[usuario];
         }
 
+        /* =============================================
+           PRESENÇA — Lista de membros online (sidebar)
+        ============================================= */
+        function _socialIniciarPresenca() {
+            if (_socialPresencaAtiva) return;
+            const usuario = getUsuarioLogado();
+            if (!usuario || !window._firebaseDB) return;
+            const meuRef = window._firebaseRef(window._firebaseDB, `presence/${usuario}`);
+            window._firebaseSet(meuRef, true).catch(() => {});
+            // Limpa automaticamente se a conexão cair (fechar aba, perder internet etc.)
+            if (window._firebaseOnDisconnect) {
+                window._firebaseOnDisconnect(meuRef).remove().catch(() => {});
+            }
+            _socialPresencaAtiva = true;
+        }
+
+        function _socialEscutarPresenca() {
+            if (_socialPresenceListener || !window._firebaseDB) return;
+            const presRef = window._firebaseRef(window._firebaseDB, 'presence');
+            _socialPresenceListener = window._firebaseOnValue(presRef, async snap => {
+                const dados = snap.exists() ? snap.val() : {};
+                const usuarios = Object.keys(dados).filter(u => dados[u]);
+                await Promise.all(usuarios.map(u => _socialGetFoto(u)));
+                _socialRenderOnline(usuarios);
+            });
+        }
+
+        function _socialRenderOnline(usuarios) {
+            const lista   = document.getElementById('social-lista-online');
+            const countEl = document.getElementById('social-online-count');
+            if (!lista) return;
+            if (countEl) countEl.textContent = usuarios.length;
+            if (usuarios.length === 0) {
+                lista.innerHTML = '<div class="social-online-vazio">▸ Ninguém online agora</div>';
+                return;
+            }
+            const meuUsuario = getUsuarioLogado();
+            const ordenados = [...usuarios].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+            lista.innerHTML = ordenados.map(u => {
+                const iniciais = u.substring(0, 2).toUpperCase();
+                const cor      = _socialCorUsuario(u);
+                const foto     = _socialFotoCache[u];
+                const avatarHTML = foto
+                    ? `<img src="${foto}" alt="${_socialEscapeHtml(iniciais)}">`
+                    : _socialEscapeHtml(iniciais);
+                const avatarStyle = foto ? '' : `background:${cor};`;
+                return `
+                    <div class="social-online-item" onclick="abrirPerfilSocial('${_socialEscapeHtml(u)}')" title="Ver perfil de ${_socialEscapeHtml(u)}">
+                        <div class="social-online-avatar" style="${avatarStyle}">${avatarHTML}<span class="social-online-dot"></span></div>
+                        <span class="social-online-nome">${_socialEscapeHtml(u)}${u === meuUsuario ? ' (você)' : ''}</span>
+                    </div>`;
+            }).join('');
+        }
+
+        /* =============================================
+           INDICADOR "DIGITANDO..." — em tempo real
+        ============================================= */
+        // Chamada a cada tecla digitada no input — marca "eu estou digitando" no Firebase
+        // (com debounce: só reseta o marcador, não reenvia a cada tecla)
+        function _socialNotificarDigitando() {
+            const usuario = getUsuarioLogado();
+            if (!usuario || !window._firebaseDB) return;
+            const typingRef = window._firebaseRef(window._firebaseDB, `typing/${_socialCanalAtivo}/${usuario}`);
+            if (!_socialTypingAtivo) {
+                _socialTypingAtivo = true;
+                window._firebaseSet(typingRef, Date.now()).catch(() => {});
+                if (window._firebaseOnDisconnect) {
+                    window._firebaseOnDisconnect(typingRef).remove().catch(() => {});
+                }
+            }
+            clearTimeout(_socialTypingTimeout);
+            _socialTypingTimeout = setTimeout(() => {
+                _socialTypingAtivo = false;
+                window._firebaseRemove(typingRef).catch(() => {});
+            }, 2500); // some sozinho 2.5s depois da última tecla
+        }
+
+        // Some imediatamente (ao enviar a mensagem ou trocar de canal)
+        function _socialPararDigitando() {
+            clearTimeout(_socialTypingTimeout);
+            if (!_socialTypingAtivo) return;
+            _socialTypingAtivo = false;
+            const usuario = getUsuarioLogado();
+            if (usuario && window._firebaseDB) {
+                window._firebaseRemove(window._firebaseRef(window._firebaseDB, `typing/${_socialCanalAtivo}/${usuario}`)).catch(() => {});
+            }
+        }
+
+        function _socialEscutarDigitando(canalId) {
+            if (_socialTypingListener) { _socialTypingListener(); _socialTypingListener = null; }
+            if (!window._firebaseDB) return;
+            const typingRef = window._firebaseRef(window._firebaseDB, `typing/${canalId}`);
+            _socialTypingListener = window._firebaseOnValue(typingRef, snap => {
+                if (canalId !== _socialCanalAtivo) return;
+                const dados   = snap.exists() ? snap.val() : {};
+                const agora   = Date.now();
+                const usuario = getUsuarioLogado();
+                // Ignora o próprio usuário e marcadores velhos (>6s — provável "fantasma" de desconexão)
+                const outros = Object.keys(dados).filter(u => u !== usuario && (agora - dados[u]) < 6000);
+                _socialRenderDigitando(outros);
+            });
+        }
+
+        function _socialRenderDigitando(usuarios) {
+            const row   = document.getElementById('social-typing-row');
+            const texto = document.getElementById('social-typing-texto');
+            if (!row || !texto) return;
+            if (usuarios.length === 0) {
+                row.classList.remove('show');
+                texto.textContent = '';
+                return;
+            }
+            let msg;
+            if (usuarios.length === 1) msg = `${usuarios[0]} está digitando`;
+            else if (usuarios.length === 2) msg = `${usuarios[0]} e ${usuarios[1]} estão digitando`;
+            else msg = `${usuarios.length} pessoas estão digitando`;
+            texto.textContent = msg;
+            row.classList.add('show');
+        }
+
+        // Monta o HTML de uma linha de mensagem "completa" (com avatar/nome/hora)
+        function _socialMontarLinhaCompleta(m, usuario, conteudoHTML) {
+            const iniciais = usuario.substring(0, 2).toUpperCase();
+            const cor      = _socialCorUsuario(usuario);
+            const foto     = _socialFotoCache[usuario];
+            const avatarHTML = foto
+                ? `<img src="${foto}" alt="${_socialEscapeHtml(iniciais)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                : _socialEscapeHtml(iniciais);
+            const avatarStyle = foto ? '' : `background:${cor};`;
+            return `
+                <div class="msg-row" data-msg-key="${m._key}">
+                    <div class="msg-avatar" style="${avatarStyle}" onclick="abrirPerfilSocial('${_socialEscapeHtml(usuario)}')" title="Ver perfil de ${_socialEscapeHtml(usuario)}">${avatarHTML}</div>
+                    <div class="msg-content">
+                        <div class="msg-top">
+                            <span class="msg-usuario" style="color:${cor};" onclick="abrirPerfilSocial('${_socialEscapeHtml(usuario)}')">${_socialEscapeHtml(usuario)}</span>
+                            <span class="msg-hora">${_socialFormatarHora(m.ts || Date.now())}</span>
+                        </div>
+                        ${conteudoHTML}
+                    </div>
+                    ${_socialMontarAcoesHTML(m)}
+                </div>`;
+        }
+
+        // Monta o HTML de uma linha "agrupada" (mesmo autor, sem repetir avatar/nome)
+        function _socialMontarLinhaAgrupada(m, conteudoHTML) {
+            return `
+                <div class="msg-row agrupada" data-msg-key="${m._key}">
+                    <div class="msg-gutter"><span class="msg-hora-flutuante">${_socialFormatarHora(m.ts || Date.now())}</span></div>
+                    <div class="msg-content">${conteudoHTML}</div>
+                    ${_socialMontarAcoesHTML(m)}
+                </div>`;
+        }
+
+        // Botões de "editar"/"apagar" — só aparecem nas próprias mensagens
+        function _socialMontarAcoesHTML(m) {
+            if (!m._key || m.usuario !== getUsuarioLogado()) return '';
+            const botaoEditar = (m.gifUrl || m.fotoBase64)
+                ? ''
+                : `<button class="msg-acao-btn" onclick="_socialEditarMensagem('${m._key}')" title="Editar mensagem">✎</button>`;
+            return `
+                <div class="msg-acoes">
+                    ${botaoEditar}
+                    <button class="msg-acao-btn msg-acao-apagar" onclick="_socialApagarMensagem('${m._key}')" title="Apagar mensagem">🗑</button>
+                </div>`;
+        }
+
+        // Renderiza a lista de mensagens já ordenada, agrupando mensagens seguidas do
+        // mesmo autor (janela de 5min, estilo Discord) e inserindo separadores de data.
+        const JANELA_AGRUPAMENTO_MS = 5 * 60 * 1000;
+
+        function _socialRenderizarMensagens(mensagens) {
+            let html = '';
+            let anterior = null; // { ts, usuario }
+
+            mensagens.forEach(m => {
+                const ts = m.ts || Date.now();
+                const usuario = m.usuario || 'Agente';
+
+                if (!anterior || !_socialMesmoDia(anterior.ts, ts)) {
+                    html += `<div class="social-data-sep">${_socialLabelData(ts)}</div>`;
+                }
+
+                const podeAgrupar = !!anterior
+                    && anterior.usuario === usuario
+                    && _socialMesmoDia(anterior.ts, ts)
+                    && (ts - anterior.ts) <= JANELA_AGRUPAMENTO_MS;
+
+                const tagEditado = (m.editado && !m.gifUrl && !m.fotoBase64) ? ` <span class="msg-editado-tag">(editado)</span>` : '';
+                const conteudoHTML = m.gifUrl
+                    ? `<img class="msg-gif" src="${_socialEscapeHtml(m.gifUrl)}" alt="GIF" loading="lazy" onclick="abrirGifLightbox(this.src)">`
+                    : m.fotoBase64
+                    ? `<img class="msg-foto" src="${_socialEscapeHtml(m.fotoBase64)}" alt="Foto" loading="lazy" onclick="abrirGifLightbox(this.src)">`
+                    : `<div class="msg-texto">${_socialEscapeHtml(m.texto || '')}${tagEditado}</div>`;
+
+                html += podeAgrupar
+                    ? _socialMontarLinhaAgrupada(m, conteudoHTML)
+                    : _socialMontarLinhaCompleta(m, usuario, conteudoHTML);
+
+                anterior = { ts, usuario };
+            });
+
+            return html;
+        }
+
+        function _socialEstaNoFim(cont) {
+            return (cont.scrollTop + cont.clientHeight) >= (cont.scrollHeight - 60);
+        }
+
+        function _socialEsconderBotaoNovasMsgs() {
+            const btn = document.getElementById('social-novas-msgs-btn');
+            if (btn) btn.classList.remove('show');
+        }
+
+        function _socialMostrarBotaoNovasMsgs(qtd) {
+            const btn   = document.getElementById('social-novas-msgs-btn');
+            const texto = document.getElementById('social-novas-msgs-texto');
+            if (!btn || !texto) return;
+            texto.textContent = qtd === 1 ? '1 nova mensagem' : `${qtd} novas mensagens`;
+            btn.classList.add('show');
+        }
+
+        // Clique no botão flutuante: rola suavemente até o fim e marca tudo como lido
+        function _socialIrParaFim() {
+            const cont = document.getElementById('social-mensagens');
+            if (!cont) return;
+            cont.scrollTo({ top: cont.scrollHeight, behavior: 'smooth' });
+            _socialQtdVista[_socialCanalAtivo] = _socialContagemTotal[_socialCanalAtivo] || 0;
+            _socialEsconderBotaoNovasMsgs();
+        }
+
+        // Vincula o listener de scroll uma única vez (o container é reaproveitado entre canais)
+        function _socialBindScroll() {
+            const cont = document.getElementById('social-mensagens');
+            if (!cont || cont.dataset.scrollBound) return;
+            cont.dataset.scrollBound = '1';
+            cont.addEventListener('scroll', () => {
+                if (_socialEstaNoFim(cont)) {
+                    _socialQtdVista[_socialCanalAtivo] = _socialContagemTotal[_socialCanalAtivo] || 0;
+                    _socialEsconderBotaoNovasMsgs();
+                }
+            });
+        }
+
         function _socialEscutarMensagens(canalId) {
             if (!window._firebaseDB) return;
             if (_socialListener) { _socialListener(); _socialListener = null; }
@@ -3389,41 +4220,37 @@ body { transition: background 0.6s ease; }
                 const cont = document.getElementById('social-mensagens');
                 if (!cont) return;
                 if (!snap.exists()) {
-                    cont.innerHTML = '<div class="social-vazio">▸ Nenhuma mensagem ainda. Seja o primeiro a falar!</div>';
+                    cont.innerHTML = `
+                        <div class="social-vazio">
+                            <div class="social-vazio-icon">💬</div>
+                            <div class="social-vazio-titulo">Nenhuma mensagem ainda</div>
+                            <div class="social-vazio-sub">▸ Seja o primeiro a falar por aqui</div>
+                        </div>`;
+                    _socialQtdVista[canalId] = 0;
+                    _socialContagemTotal[canalId] = 0;
+                    _socialEsconderBotaoNovasMsgs();
                     return;
                 }
-                const mensagens = Object.values(snap.val()).sort((a, b) => (a.ts || 0) - (b.ts || 0));
-                const estavaNoFim = (cont.scrollTop + cont.clientHeight) >= (cont.scrollHeight - 60);
+                const mensagens = Object.entries(snap.val()).map(([k, v]) => ({ ...v, _key: k })).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+                const estavaNoFim   = _socialEstaNoFim(cont);
+                const primeiraCarga = _socialQtdVista[canalId] === undefined;
 
                 // Busca fotos de usuários únicos em paralelo
                 const usuariosUnicos = [...new Set(mensagens.map(m => m.usuario).filter(Boolean))];
                 await Promise.all(usuariosUnicos.map(u => _socialGetFoto(u)));
 
-                cont.innerHTML = mensagens.map(m => {
-                    const usuario  = m.usuario || 'Agente';
-                    const iniciais = usuario.substring(0, 2).toUpperCase();
-                    const cor      = _socialCorUsuario(usuario);
-                    const foto     = _socialFotoCache[usuario];
-                    const avatarHTML = foto
-                        ? `<img src="${foto}" alt="${_socialEscapeHtml(iniciais)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
-                        : _socialEscapeHtml(iniciais);
-                    const avatarStyle = foto ? '' : `background:${cor};`;
-                    const conteudoHTML = m.gifUrl
-                        ? `<img class="msg-gif" src="${_socialEscapeHtml(m.gifUrl)}" alt="GIF" loading="lazy">`
-                        : `<div class="msg-texto">${_socialEscapeHtml(m.texto || '')}</div>`;
-                    return `
-                        <div class="msg-row">
-                            <div class="msg-avatar" style="${avatarStyle}" onclick="abrirPerfilSocial('${_socialEscapeHtml(usuario)}')" title="Ver perfil de ${_socialEscapeHtml(usuario)}">${avatarHTML}</div>
-                            <div class="msg-content">
-                                <div class="msg-top">
-                                    <span class="msg-usuario" style="color:${cor};" onclick="abrirPerfilSocial('${_socialEscapeHtml(usuario)}')">${_socialEscapeHtml(usuario)}</span>
-                                    <span class="msg-hora">${_socialFormatarHora(m.ts || Date.now())}</span>
-                                </div>
-                                ${conteudoHTML}
-                            </div>
-                        </div>`;
-                }).join('');
-                if (estavaNoFim || mensagens.length <= 1) cont.scrollTop = cont.scrollHeight;
+                cont.innerHTML = _socialRenderizarMensagens(mensagens);
+                _socialContagemTotal[canalId] = mensagens.length;
+
+                if (estavaNoFim || primeiraCarga || _socialEnviandoProprio) {
+                    cont.scrollTop = cont.scrollHeight;
+                    _socialQtdVista[canalId] = mensagens.length;
+                    _socialEsconderBotaoNovasMsgs();
+                    _socialEnviandoProprio = false;
+                } else {
+                    const novas = mensagens.length - (_socialQtdVista[canalId] || 0);
+                    if (novas > 0) _socialMostrarBotaoNovasMsgs(novas);
+                }
             });
         }
 
@@ -3437,6 +4264,7 @@ body { transition: background 0.6s ease; }
 
             const btn = document.getElementById('social-send-btn');
             btn.disabled = true;
+            _socialEnviandoProprio = true;
             const baseRef = window._firebaseRef(window._firebaseDB, `chat/${_socialCanalAtivo}/mensagens`);
             window._firebasePush(baseRef, {
                 usuario: usuario,
@@ -3447,9 +4275,177 @@ body { transition: background 0.6s ease; }
                 mostrarToast('⚠️ Erro ao enviar mensagem');
             }).finally(() => { btn.disabled = false; });
 
+            _socialPararDigitando();
             input.value = '';
             input.focus();
         }
+
+        /* =============================================
+           EDITAR / APAGAR MENSAGENS — estilo Discord
+        ============================================= */
+
+        // Abre o formulário de edição inline na linha da mensagem
+        function _socialEditarMensagem(key) {
+            const row = document.querySelector(`.msg-row[data-msg-key="${CSS.escape(key)}"]`);
+            if (!row) return;
+            const textoEl = row.querySelector('.msg-texto');
+            if (!textoEl) return;
+            const textoAtual = textoEl.firstChild ? textoEl.firstChild.textContent : '';
+
+            // Se já está editando, cancela
+            if (row.querySelector('.msg-editar-form')) {
+                _socialCancelarEdicao(row, textoAtual);
+                return;
+            }
+
+            const form = document.createElement('div');
+            form.className = 'msg-editar-form';
+            form.innerHTML = `
+                <textarea class="msg-editar-input" maxlength="500">${_socialEscapeHtml(textoAtual)}</textarea>
+                <div class="msg-editar-dicas">Enter para salvar · Esc para cancelar</div>`;
+            textoEl.replaceWith(form);
+
+            const ta = form.querySelector('textarea');
+            ta.value = textoAtual; // valor real sem escape
+            ta.focus();
+            ta.selectionStart = ta.selectionEnd = ta.value.length;
+
+            ta.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    _socialSalvarEdicao(key, ta.value.trim(), form);
+                } else if (e.key === 'Escape') {
+                    _socialCancelarEdicao(row, textoAtual);
+                }
+            });
+        }
+        window._socialEditarMensagem = _socialEditarMensagem;
+
+        function _socialSalvarEdicao(key, novoTexto, form) {
+            if (!novoTexto) return;
+            const msgRef = window._firebaseRef(window._firebaseDB, `chat/${_socialCanalAtivo}/mensagens/${key}`);
+            window._firebaseUpdate(msgRef, { texto: novoTexto.slice(0, 500), editado: true })
+                .catch(err => { console.error('Erro ao editar:', err); mostrarToast('⚠️ Erro ao editar mensagem'); });
+        }
+
+        function _socialCancelarEdicao(row, textoOriginal) {
+            const form = row.querySelector('.msg-editar-form');
+            if (!form) return;
+            const tagEditado = row.dataset.editado === 'true' ? ` <span class="msg-editado-tag">(editado)</span>` : '';
+            const novoEl = document.createElement('div');
+            novoEl.className = 'msg-texto';
+            novoEl.innerHTML = _socialEscapeHtml(textoOriginal) + tagEditado;
+            form.replaceWith(novoEl);
+        }
+
+        async function _socialApagarMensagem(key) {
+            const confirmado = await _mostrarConfirmApagar();
+            if (!confirmado) return;
+            const msgRef = window._firebaseRef(window._firebaseDB, `chat/${_socialCanalAtivo}/mensagens/${key}`);
+            try {
+                await window._firebaseRemove(msgRef);
+            } catch(err) {
+                console.error('Erro ao apagar:', err);
+                mostrarToast('⚠️ Erro ao apagar mensagem');
+            }
+        }
+        window._socialApagarMensagem = _socialApagarMensagem;
+
+        function _mostrarConfirmApagar() {
+            return new Promise(resolve => {
+                const overlay  = document.getElementById('confirm-apagar-overlay');
+                const btnOk    = document.getElementById('confirm-apagar-ok');
+                const btnCancel= document.getElementById('confirm-apagar-cancel');
+                overlay.classList.add('show');
+                function fechar(res) {
+                    overlay.classList.remove('show');
+                    btnOk.removeEventListener('click', onOk);
+                    btnCancel.removeEventListener('click', onCancel);
+                    resolve(res);
+                }
+                function onOk()     { fechar(true);  }
+                function onCancel() { fechar(false); }
+                btnOk.addEventListener('click', onOk);
+                btnCancel.addEventListener('click', onCancel);
+            });
+        }
+
+        function _confirmarApagarBackdrop(e) {
+            if (e.target === document.getElementById('confirm-apagar-overlay')) {
+                document.getElementById('confirm-apagar-overlay').classList.remove('show');
+                // resolve false — nenhum listener pendente vai receber, mas overlay fecha
+            }
+        }
+        window._confirmarApagarBackdrop = _confirmarApagarBackdrop;
+
+        /* =============================================
+           EMOJI PICKER — categorizado, sem dependência
+        ============================================= */
+        const _EMOJIS = {
+            '😀 Expressões': ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','🥲','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','💫','🤯','🤠','🥳','🥸','😎','🤓','🧐','😕','😟','🙁','☹️','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👹','👺','👻','👽','👾','🤖'],
+            '👋 Gestos': ['👋','🤚','🖐','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏','✍️','💅','🤳','💪','🦾','🦿','🦵','🦶','👂','🦻','👃','🧠','🫀','🫁','🦷','🦴','👀','👁','👅','👄'],
+            '❤️ Símbolos': ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☯️','♾️','💢','💥','💫','💦','💨','🕳️','💬','💭','💤','‼️','⁉️','❓','❗','💯','🔅','🔆','⭐','🌟','✨','🎉','🎊','🎈','🔥','🌈','⚡','☄️','🌊'],
+            '🎲 RPG/Jogo': ['🎲','⚔️','🛡️','🗡️','🏹','🔮','📜','📚','🗺️','🏺','💎','🔑','🗝️','🚪','🕯️','⚗️','🔭','📡','🎭','🎪','🎠','🌀','🌑','🌒','🌓','🌔','🌕','🌖','🌗','🌘','🌚','🌝','🌛','🌜','🌞','🌙','⭐','🌟','💫','✨','☄️','🔥','💀','☠️','👻','👁','🕵️','🦇','🐍','🕷️','🦂','🐲','🐉'],
+        };
+
+        let _emojiPickerAberto = false;
+
+        function toggleEmojiPicker(e) {
+            if (e) e.stopPropagation();
+            const picker = document.getElementById('emoji-picker');
+            const btn    = document.getElementById('social-emoji-btn');
+            if (!picker || !btn) return;
+            _emojiPickerAberto = !_emojiPickerAberto;
+            picker.classList.toggle('open', _emojiPickerAberto);
+            btn.classList.toggle('active', _emojiPickerAberto);
+            if (_emojiPickerAberto) _emojiPopularGrid();
+        }
+        window.toggleEmojiPicker = toggleEmojiPicker;
+
+        function _emojiPopularGrid() {
+            const grid = document.getElementById('emoji-picker-grid');
+            if (!grid || grid.dataset.populado) return;
+            grid.dataset.populado = '1';
+            let html = '';
+            for (const [cat, emojis] of Object.entries(_EMOJIS)) {
+                html += `<div class="emoji-picker-categoria">${cat}</div>`;
+                html += emojis.map(em =>
+                    `<button onclick="_emojiInserir('${em}')" title="${em}">${em}</button>`
+                ).join('');
+            }
+            if (!html) html = '<div class="emoji-picker-vazio">Nenhum emoji disponível</div>';
+            grid.innerHTML = html;
+        }
+
+        function _emojiInserir(emoji) {
+            const input = document.getElementById('social-input');
+            if (!input) return;
+            const start = input.selectionStart;
+            const end   = input.selectionEnd;
+            const val   = input.value;
+            input.value = val.slice(0, start) + emoji + val.slice(end);
+            input.selectionStart = input.selectionEnd = start + emoji.length;
+            input.focus();
+            // Fecha picker
+            _emojiPickerAberto = false;
+            const picker = document.getElementById('emoji-picker');
+            const btn    = document.getElementById('social-emoji-btn');
+            if (picker) picker.classList.remove('open');
+            if (btn) btn.classList.remove('active');
+        }
+        window._emojiInserir = _emojiInserir;
+
+        // Fecha emoji picker ao clicar fora
+        document.addEventListener('click', function(e) {
+            const picker = document.getElementById('emoji-picker');
+            const btn    = document.getElementById('social-emoji-btn');
+            if (!picker || !btn || !_emojiPickerAberto) return;
+            if (!picker.contains(e.target) && !btn.contains(e.target)) {
+                _emojiPickerAberto = false;
+                picker.classList.remove('open');
+                btn.classList.remove('active');
+            }
+        });
 
         /* =============================================
            GIFs no chat Social (estilo Discord) — via GIPHY API
@@ -3590,6 +4586,7 @@ body { transition: background 0.6s ease; }
             if (!usuario) return;
             if (!window._firebaseDB) { mostrarToast('⚠️ Sem conexão com o servidor'); return; }
             _gifFecharPicker();
+            _socialEnviandoProprio = true;
             const baseRef = window._firebaseRef(window._firebaseDB, `chat/${_socialCanalAtivo}/mensagens`);
             window._firebasePush(baseRef, {
                 usuario: usuario,
@@ -3601,6 +4598,113 @@ body { transition: background 0.6s ease; }
                 mostrarToast('⚠️ Erro ao enviar GIF');
             });
         }
+
+        /* =============================================
+           FOTO NO CHAT — comprime e salva como base64
+        ============================================= */
+        let _socialFotoPendente = null; // base64 comprimido aguardando confirmação
+
+        function _socialEnviarFoto(input) {
+            const file = input.files[0];
+            if (!file) return;
+            // Reseta o input para permitir reenviar o mesmo arquivo
+            input.value = '';
+
+            if (!file.type.startsWith('image/')) {
+                mostrarToast('⚠️ Apenas imagens são permitidas');
+                return;
+            }
+            if (file.size > 20 * 1024 * 1024) {
+                mostrarToast('⚠️ Imagem muito grande (máx 20MB)');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                _socialComprimirFoto(e.target.result, function(base64) {
+                    _socialFotoPendente = base64;
+                    const preview = document.getElementById('social-foto-preview');
+                    const previewImg = document.getElementById('social-foto-preview-img');
+                    previewImg.src = base64;
+                    preview.classList.add('show');
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+        window._socialEnviarFoto = _socialEnviarFoto;
+
+        // Comprime a imagem para max 1000px e ~80% de qualidade
+        function _socialComprimirFoto(dataUrl, callback) {
+            const img = new Image();
+            img.onload = function() {
+                const MAX = 1000;
+                let w = img.width, h = img.height;
+                if (w > MAX || h > MAX) {
+                    if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+                    else       { w = Math.round(w * MAX / h); h = MAX; }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                callback(canvas.toDataURL('image/jpeg', 0.82));
+            };
+            img.src = dataUrl;
+        }
+
+        function _socialConfirmarFoto() {
+            if (!_socialFotoPendente) return;
+            const usuario = getUsuarioLogado();
+            if (!usuario) return;
+            if (!window._firebaseDB) { mostrarToast('⚠️ Sem conexão com o servidor'); return; }
+
+            // Verifica tamanho final (Firebase RTDB aceita até ~10MB por nó)
+            const bytes = Math.round(_socialFotoPendente.length * 0.75);
+            if (bytes > 9 * 1024 * 1024) {
+                mostrarToast('⚠️ Foto ainda muito grande após compressão');
+                _socialCancelarFoto();
+                return;
+            }
+
+            const btn = document.querySelector('.social-foto-preview-enviar');
+            if (btn) { btn.disabled = true; btn.textContent = '⏳ Enviando...'; }
+
+            _socialEnviandoProprio = true;
+            const baseRef = window._firebaseRef(window._firebaseDB, `chat/${_socialCanalAtivo}/mensagens`);
+            window._firebasePush(baseRef, {
+                usuario:  usuario,
+                texto:    '',
+                fotoBase64: _socialFotoPendente,
+                ts:       Date.now()
+            }).then(() => {
+                _socialCancelarFoto();
+            }).catch(err => {
+                console.error('Erro ao enviar foto:', err);
+                mostrarToast('⚠️ Erro ao enviar foto');
+                if (btn) { btn.disabled = false; btn.textContent = '➤ Enviar'; }
+            });
+        }
+        window._socialConfirmarFoto = _socialConfirmarFoto;
+
+        function _socialCancelarFoto() {
+            _socialFotoPendente = null;
+            const preview = document.getElementById('social-foto-preview');
+            const previewImg = document.getElementById('social-foto-preview-img');
+            if (preview) preview.classList.remove('show');
+            if (previewImg) previewImg.src = '';
+            const btn = document.querySelector('.social-foto-preview-enviar');
+            if (btn) { btn.disabled = false; btn.textContent = '➤ Enviar'; }
+        }
+        window._socialCancelarFoto = _socialCancelarFoto;
+
+        // Fecha preview ao clicar fora
+        document.addEventListener('click', function(e) {
+            const preview = document.getElementById('social-foto-preview');
+            const fotoBtn = document.getElementById('social-foto-btn');
+            if (!preview || !preview.classList.contains('show')) return;
+            if (!preview.contains(e.target) && e.target !== fotoBtn) {
+                _socialCancelarFoto();
+            }
+        });
 
         /* =============================================
            AGENTES — dados sempre do Firebase, localStorage como cache offline
@@ -5655,6 +6759,44 @@ function fecharSocialPerfil(e) {
     document.getElementById('social-perfil-overlay').classList.remove('show');
 }
 window.fecharSocialPerfil = fecharSocialPerfil;
+</script>
+
+<!-- ===== GIF LIGHTBOX ===== -->
+<div id="gif-lightbox" onclick="fecharGifLightbox(event)">
+    <button id="gif-lightbox-close" onclick="fecharGifLightbox()" title="Fechar">✕</button>
+    <img id="gif-lightbox-img" src="" alt="GIF">
+    <div id="gif-lightbox-hint">ESC ou clique fora para fechar</div>
+</div>
+
+<script>
+function abrirGifLightbox(src) {
+    const lightbox = document.getElementById('gif-lightbox');
+    const img      = document.getElementById('gif-lightbox-img');
+    if (!lightbox || !img) return;
+    img.src = src;
+    lightbox.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function fecharGifLightbox(e) {
+    // Fecha ao clicar no backdrop ou no botão X — não fecha ao clicar na imagem
+    if (e && e.target === document.getElementById('gif-lightbox-img')) return;
+    const lightbox = document.getElementById('gif-lightbox');
+    if (!lightbox) return;
+    lightbox.classList.remove('show');
+    document.getElementById('gif-lightbox-img').src = '';
+    document.body.style.overflow = '';
+}
+
+// Fechar com ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('gif-lightbox')?.classList.contains('show')) {
+        fecharGifLightbox();
+    }
+});
+
+window.abrirGifLightbox  = abrirGifLightbox;
+window.fecharGifLightbox = fecharGifLightbox;
 </script>
 
 </body>
