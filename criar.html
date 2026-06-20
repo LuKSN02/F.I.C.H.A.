@@ -280,6 +280,17 @@
         .step-item.done .step-circle { background: #2a0050; border-color: var(--purple); color: var(--purple-neon); }
         .step-item.done .step-label { color: var(--purple); }
 
+        .rascunho-toast {
+            position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+            background: #1a0033; border: 1px solid var(--purple);
+            color: var(--purple-neon); font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem; letter-spacing: 1px; padding: 10px 16px;
+            border-radius: 6px; box-shadow: 0 0 15px var(--purple-glow);
+            opacity: 0; transform: translateY(10px); pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .rascunho-toast.show { opacity: 1; transform: translateY(0); }
+
         .etapa-panel { display: none; animation: fadeIn 0.4s ease; }
         .etapa-panel.active { display: block; }
 
@@ -617,6 +628,8 @@
         <div class="step-label">Antecedente</div>
     </div>
 </div>
+
+<div class="rascunho-toast" id="rascunho-toast">✓ PROGRESSO SALVO</div>
 
 <div class="container" style="max-width:860px;padding-bottom:80px;">
 
@@ -1112,10 +1125,128 @@ function getPrefix() {
 }
 
 // ══════════════════════════════════════════════
+// RASCUNHO — salva o progresso de criação em
+// localStorage para não perder nada ao trocar de
+// etapa, fechar a aba ou recarregar a página.
+// ══════════════════════════════════════════════
+function chaveRascunho() {
+    return getPrefix() + 'rascunho_ficha';
+}
+
+function salvarRascunho() {
+    const classeCard = document.querySelector('.classe-card.selected');
+    const rascunho = {
+        nome:          val('input-nome'),
+        codinome:      val('input-codinome'),
+        idade:         val('input-idade'),
+        nivel:         val('input-nivel'),
+        origem:        val('input-origem'),
+        classe:        classeCard ? classeCard.dataset.classe : '',
+        atributos:     { ...atributosValores },
+        pericias:      [...periciasSelected],
+        personalidade: val('input-personalidade'),
+        ideal:         val('input-ideal'),
+        vinculo:       val('input-vinculo'),
+        fraqueza:      val('input-fraqueza'),
+        historia:      val('input-historia'),
+        etapaAtual,
+        etapasVisitadas: [...etapasVisitadas],
+        salvoEm:       Date.now(),
+    };
+    try {
+        localStorage.setItem(chaveRascunho(), JSON.stringify(rascunho));
+        mostrarToastRascunho();
+    } catch (e) {
+        console.warn('Não foi possível salvar o rascunho:', e);
+    }
+}
+
+function val(id) {
+    const el = document.getElementById(id);
+    return el ? el.value : '';
+}
+
+function restaurarRascunho() {
+    let rascunho;
+    try {
+        rascunho = JSON.parse(localStorage.getItem(chaveRascunho()));
+    } catch (e) {
+        rascunho = null;
+    }
+    if (!rascunho) return;
+
+    setVal('input-nome',          rascunho.nome);
+    setVal('input-codinome',      rascunho.codinome);
+    setVal('input-idade',         rascunho.idade);
+    setVal('input-nivel',         rascunho.nivel);
+    setVal('input-origem',        rascunho.origem);
+    setVal('input-personalidade', rascunho.personalidade);
+    setVal('input-ideal',         rascunho.ideal);
+    setVal('input-vinculo',       rascunho.vinculo);
+    setVal('input-fraqueza',      rascunho.fraqueza);
+    setVal('input-historia',      rascunho.historia);
+
+    if (rascunho.classe) {
+        const card = document.querySelector(`.classe-card[data-classe="${rascunho.classe}"]`);
+        if (card) {
+            document.querySelectorAll('.classe-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            renderClasseInfo(rascunho.classe);
+        }
+    }
+
+    if (rascunho.atributos) {
+        atributosValores = { ...atributosValores, ...rascunho.atributos };
+        const usados = Object.values(atributosValores).reduce((s, v) => s + (v - BASE_ATRIB), 0);
+        pontosRestantes = Math.max(0, TOTAL_PONTOS - usados);
+        const elPontos = document.getElementById('pontos-restantes');
+        if (elPontos) elPontos.textContent = pontosRestantes;
+    }
+
+    if (Array.isArray(rascunho.pericias)) {
+        periciasSelected = new Set(rascunho.pericias);
+        const elCount = document.getElementById('pericias-count');
+        if (elCount) elCount.textContent = periciasSelected.size;
+    }
+
+    if (Array.isArray(rascunho.etapasVisitadas) && rascunho.etapasVisitadas.length) {
+        etapasVisitadas = new Set(rascunho.etapasVisitadas);
+    }
+
+    if (Number.isInteger(rascunho.etapaAtual) && rascunho.etapaAtual >= 0 && rascunho.etapaAtual < totalEtapas) {
+        document.getElementById(`etapa-${etapaAtual}`).classList.remove('active');
+        etapaAtual = rascunho.etapaAtual;
+        etapasVisitadas.add(etapaAtual);
+        document.getElementById(`etapa-${etapaAtual}`).classList.add('active');
+        if (etapaAtual === 2) atualizarHabilidades();
+        if (etapaAtual === 3) renderResumo();
+    }
+}
+
+function setVal(id, valor) {
+    const el = document.getElementById(id);
+    if (el && valor !== undefined && valor !== null) el.value = valor;
+}
+
+function limparRascunho() {
+    localStorage.removeItem(chaveRascunho());
+}
+
+let toastTimer = null;
+function mostrarToastRascunho() {
+    const toast = document.getElementById('rascunho-toast');
+    if (!toast) return;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1500);
+}
+
+// ══════════════════════════════════════════════
 // ESTADO
 // ══════════════════════════════════════════════
 let etapaAtual = 0;
 const totalEtapas = 4;
+let etapasVisitadas = new Set([0]);
 
 let atributosValores = { FOR: BASE_ATRIB, AGI: BASE_ATRIB, INT: BASE_ATRIB, PRE: BASE_ATRIB, VIG: BASE_ATRIB };
 let pontosRestantes  = TOTAL_PONTOS;
@@ -1126,9 +1257,25 @@ let fichaIdCriada    = null;
 // INICIALIZAÇÃO
 // ══════════════════════════════════════════════
 window.onload = function() {
+    restaurarRascunho();
     renderAtributos();
     renderPericias();
+    atualizarStepper();
+    atualizarBotoes();
+
+    // Autosave: qualquer digitação ou seleção em campos de texto/select/textarea
+    // dispara o salvamento do rascunho (com debounce para não exagerar nas escritas).
+    document.addEventListener('input', debounce(salvarRascunho, 500));
+    document.addEventListener('change', salvarRascunho);
 };
+
+function debounce(fn, delay) {
+    let timer = null;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
 
 // ══════════════════════════════════════════════
 // STEPPER
@@ -1136,18 +1283,24 @@ window.onload = function() {
 function atualizarStepper() {
     document.querySelectorAll('.step-item').forEach((s, i) => {
         s.classList.remove('active', 'done');
-        if (i < etapaAtual)  s.classList.add('done');
+        if (etapasVisitadas.has(i) && i !== etapaAtual) s.classList.add('done');
         if (i === etapaAtual) s.classList.add('active');
     });
 }
 
 function irParaEtapa(n) {
-    if (n >= etapaAtual) return;
+    if (n === etapaAtual) return;
     document.getElementById(`etapa-${etapaAtual}`).classList.remove('active');
     etapaAtual = n;
+    etapasVisitadas.add(n);
     document.getElementById(`etapa-${etapaAtual}`).classList.add('active');
     atualizarStepper();
     atualizarBotoes();
+
+    if (etapaAtual === 2) atualizarHabilidades();
+    if (etapaAtual === 3) renderResumo();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    salvarRascunho();
 }
 
 function proximaEtapa() {
@@ -1156,6 +1309,7 @@ function proximaEtapa() {
 
     document.getElementById(`etapa-${etapaAtual}`).classList.remove('active');
     etapaAtual++;
+    etapasVisitadas.add(etapaAtual);
     document.getElementById(`etapa-${etapaAtual}`).classList.add('active');
     atualizarStepper();
     atualizarBotoes();
@@ -1163,6 +1317,7 @@ function proximaEtapa() {
     if (etapaAtual === 2) atualizarHabilidades();
     if (etapaAtual === 3) renderResumo();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    salvarRascunho();
 }
 
 function etapaAnterior() {
@@ -1173,6 +1328,7 @@ function etapaAnterior() {
     atualizarStepper();
     atualizarBotoes();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    salvarRascunho();
 }
 
 function atualizarBotoes() {
@@ -1221,6 +1377,7 @@ function selecionarClasse(card) {
     card.classList.add('selected');
     document.getElementById('alerta-classe').style.display = 'none';
     renderClasseInfo(card.dataset.classe);
+    salvarRascunho();
 }
 
 function renderClasseInfo(classe) {
@@ -1333,6 +1490,7 @@ function ajustarAtributo(id, delta) {
     atributosValores[id] = novo;
     document.getElementById('pontos-restantes').textContent = pontosRestantes;
     renderAtributos();
+    salvarRascunho();
 }
 
 // ══════════════════════════════════════════════
@@ -1368,6 +1526,7 @@ function togglePericia(el, nome) {
     }
     document.getElementById('pericias-count').textContent = periciasSelected.size;
     renderPericias();
+    salvarRascunho();
 }
 
 // ══════════════════════════════════════════════
@@ -1492,6 +1651,9 @@ async function finalizarFicha() {
     // Evita duplicatas (re-criação após erro)
     if (!agentes.find(a => String(a.id) === String(id))) agentes.push(ficha);
     localStorage.setItem(chave, JSON.stringify(agentes));
+
+    // Ficha registrada com sucesso: o rascunho de criação não é mais necessário.
+    limparRascunho();
 
     document.getElementById('modal-nome').textContent   = nome + (codinome ? ` "${codinome}"` : '');
     document.getElementById('modal-classe').textContent = `${classe} • Nível ${nivel} • ${origem}`;
