@@ -497,14 +497,28 @@
     /* Perícias: esconde colunas menos importantes */
     .pericias-header,
     .pericia-row {
-        grid-template-columns: 1fr 50px 60px;
+        grid-template-columns: 1fr 80px 62px;
     }
-    /* Esconde coluna de bônus e dado em mobile */
+    /* Esconde coluna de treino e outros em mobile — mantém bônus e rolar */
     .pericias-header div:nth-child(3),
     .pericias-header div:nth-child(4),
     .pericia-row .pericia-cell:nth-child(3),
     .pericia-row .pericia-cell:nth-child(4) {
         display: none;
+    }
+    /* Stepper de bônus menor em mobile para caber nos 80px */
+    .pb-btn {
+        width: 18px; height: 18px; font-size: 0.8rem;
+    }
+    .pb-val {
+        min-width: 26px; font-size: 0.75rem;
+    }
+    .pericia-bonus-stepper {
+        gap: 2px;
+    }
+    /* Botão rolar menor em mobile */
+    .btn-rolar-pericia {
+        font-size: 0.6rem; padding: 3px 4px; width: 56px;
     }
 
     /* Ataques: empilha verticalmente */
