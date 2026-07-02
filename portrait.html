@@ -2510,6 +2510,291 @@ body.layout-carteirinha #portrait { display: none !important; }
 body.layout-carteirinha #portrait-carteirinha { display: flex !important; flex-direction: column; }
 body.layout-carteirinha { width: 360px; }
 
+/* Preview miniatura: Desconjuração */
+.lp-desconjuracao .lp-desc-frame {
+  position: absolute;
+  left: 1px; top: 1px;
+  width: 10px; height: 10px;
+  border: 1px solid var(--accent1);
+  border-radius: 50%;
+  box-shadow: 0 0 3px var(--accent1);
+}
+.lp-desconjuracao .lp-desc-line {
+  position: absolute;
+  left: 13px; right: 2px;
+  height: 2px;
+  background: var(--accent1);
+  opacity: 0.85;
+  border-radius: 1px;
+}
+
+/* ============================================================
+   LAYOUT: DESCONJURAÇÃO (estilo overlay de stream)
+   ============================================================ */
+
+/* Mostrar/ocultar baseado no layout ativo */
+body:not(.layout-desconjuracao) #portrait-desconjuracao { display: none !important; }
+body.layout-desconjuracao #portrait { display: none !important; }
+body.layout-desconjuracao #portrait-carteirinha { display: none !important; }
+body.layout-desconjuracao {
+  width: 1800px;
+  background: transparent !important;
+  overflow: hidden !important;
+}
+body.layout-desconjuracao * {
+  font-family: "Segoe UI", serif;
+  box-sizing: border-box;
+}
+
+.character-stream-profile-container {
+  /*                FONTES (MUDE OS NOMES AQUI)                  */
+
+  /* Fonte para o NOME do personagem */
+  --font-name: "Pulse Sans virgin", "Courier New", serif;
+
+  /* Fonte para os NÚMEROS (PV, SAN e PE) */
+  --font-numbers: "Punk Typewriter", "Segoe UI", serif;
+
+
+  /*                 LAYOUT PRINCIPAL                            */
+
+  --canvas-width: 1800px;
+  --canvas-height: 900px;
+
+  --portrait-left: 120px;
+  --portrait-top: 120px;
+  --portrait-width: 620px;
+  --portrait-height: 620px;
+
+  --name-left: 560px;
+  --name-top: 420px;
+
+  /* PV (Pontos de Vida) */
+  --pv-left: 560px;
+  --pv-top: 515px;
+
+  /* SAN (Sanidade) */
+  --san-left: 560px;
+  --san-top: 590px;
+  --san-color: #ffffff;
+
+  /* PE (Pontos de Esforço) */
+  --pe-left: 50px;
+  --pe-top: 560px;
+  --pe-size: 115px;
+  --pe-color: #ffcc00;
+
+  /* O tamanho dos textos de PV, SAN e PE */
+  --text-width: 420px;
+  --text-size: 115px;
+
+  --text-rotation: -4deg;
+}
+
+body.layout-desconjuracao .portrait-desconjuracao {
+  position: relative !important;
+  width: var(--canvas-width) !important;
+  height: var(--canvas-height) !important;
+  min-width: var(--canvas-width) !important;
+  min-height: var(--canvas-height) !important;
+  background: transparent !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+
+/* Esse código é feito para ter um glow na silhueta do personagem */
+/* A COR ESTÁ MAIS EMBAIXO, NÃO MEXA AQUI SE NÃO SOUBER NADA */
+.character-stream-profile-picture {
+  position: absolute !important;
+  left: var(--portrait-left) !important;
+  top: var(--portrait-top) !important;
+  width: var(--portrait-width) !important;
+  height: var(--portrait-height) !important;
+  object-fit: contain !important;
+  border-radius: 0 !important;
+  z-index: 2 !important;
+  transform: none !important;
+  animation: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  /* AGORA SIM, A COR. Por padrão ela vem em cinza, mas tem algumas abaixos. */
+  /* Ela funciona em R G B A (ou seja, vermelho, verde, azul e alpha (transparência)) */
+  /* aumentando o "15px" você também pode aumentar o tamanho da silhueta */
+  /* VERMELHO: 255, 0, 0, 0.5 */
+  /* VERDE:  0, 255, 0, 0.5 */
+  /* AZUL: 0, 0, 255, 0.5 */
+  /* O restante das cores você pode pesquisar na internet! Se vira fiote */
+  -webkit-filter: drop-shadow(0px 0px 15px rgba(200, 200, 200, 0.5)) !important;
+  filter: drop-shadow(0px 0px 15px rgba(200, 200, 200, 0.5)) !important;
+}
+
+body.layout-desconjuracao #desc-death-overlay {
+  position: absolute !important;
+  left: var(--portrait-left) !important;
+  top: var(--portrait-top) !important;
+  width: var(--portrait-width) !important;
+  height: var(--portrait-height) !important;
+  background: #000 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: 3 !important;
+  transition: opacity 2s ease !important;
+}
+body.layout-desconjuracao #desc-death-overlay.morto { opacity: 0.85 !important; }
+
+.character-stream-profile-name,
+.character-stream-bar-value-pv,
+.character-stream-bar-value-san,
+.character-stream-pe-value {
+  position: absolute !important;
+  width: var(--text-width) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  text-align: left !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: rotate(var(--text-rotation)) !important;
+  transform-origin: left center !important;
+  animation: none !important;
+}
+
+/* APLICANDO A FONTE DO NOME E GLOW */
+/* Se você quiser mudar a cor do glow ao redor do nome, só seguir o mesmo esquema da silhueta */
+.character-stream-profile-name {
+  font-family: var(--font-name) !important; /* PUXANDO A FONTE DO NOME AQUI */
+  left: var(--name-left) !important;
+  top: var(--name-top) !important;
+  font-size: var(--text-size) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-synthesis: none !important;
+  z-index: 6 !important;
+  text-shadow:
+    0 0 12px rgba(255, 0, 0, 1),
+    0 0 28px rgba(255, 0, 0, 0.98),
+    0 0 52px rgba(255, 0, 0, 0.90),
+    0 0 84px rgba(255, 0, 0, 0.60),
+    5px 5px 0 rgba(90, 0, 0, 0.98) !important;
+}
+
+/* Glitch sutil no nome: a maior parte do tempo ele fica parado,      */
+/* e a cada ~7s dá uma leve "falha" rápida (deslocamento + separação  */
+/* de cor RGB). Para deixar mais forte, aumente os valores de         */
+/* translate() abaixo; para deixar mais raro, aumente a duração (7s). */
+.character-stream-profile-name {
+  animation: descNomeGlitch 7s ease-in-out infinite !important;
+}
+
+@keyframes descNomeGlitch {
+  0%, 95%, 100% {
+    transform: rotate(var(--text-rotation)) translate(0, 0) !important;
+    text-shadow:
+      0 0 12px rgba(255, 0, 0, 1),
+      0 0 28px rgba(255, 0, 0, 0.98),
+      0 0 52px rgba(255, 0, 0, 0.90),
+      0 0 84px rgba(255, 0, 0, 0.60),
+      5px 5px 0 rgba(90, 0, 0, 0.98) !important;
+  }
+  95.6% {
+    transform: rotate(var(--text-rotation)) translate(-1.5px, 0.5px) !important;
+    text-shadow:
+      -1px 0 0 rgba(0, 200, 255, 0.55),
+      1px 0 0 rgba(255, 0, 60, 0.55),
+      0 0 12px rgba(255, 0, 0, 1),
+      0 0 28px rgba(255, 0, 0, 0.98),
+      0 0 52px rgba(255, 0, 0, 0.90),
+      5px 5px 0 rgba(90, 0, 0, 0.98) !important;
+  }
+  96.2% {
+    transform: rotate(var(--text-rotation)) translate(1.5px, -0.5px) !important;
+    text-shadow:
+      1px 0 0 rgba(0, 200, 255, 0.55),
+      -1px 0 0 rgba(255, 0, 60, 0.55),
+      0 0 12px rgba(255, 0, 0, 1),
+      0 0 28px rgba(255, 0, 0, 0.98),
+      0 0 52px rgba(255, 0, 0, 0.90),
+      5px 5px 0 rgba(90, 0, 0, 0.98) !important;
+  }
+  96.8% {
+    transform: rotate(var(--text-rotation)) translate(-0.5px, 0) !important;
+    text-shadow:
+      0 0 12px rgba(255, 0, 0, 1),
+      0 0 28px rgba(255, 0, 0, 0.98),
+      0 0 52px rgba(255, 0, 0, 0.90),
+      0 0 84px rgba(255, 0, 0, 0.60),
+      5px 5px 0 rgba(90, 0, 0, 0.98) !important;
+  }
+}
+
+/* APLICANDO A FONTE DOS NÚMEROS E GLOW */
+/* Se você quiser mudar a cor do glow ao redor, só seguir o mesmo esquema da silhueta */
+.character-stream-bar-value-pv {
+  font-family: var(--font-numbers) !important; /* PUXANDO A FONTE DOS NÚMEROS AQUI */
+  left: var(--pv-left) !important;
+  top: var(--pv-top) !important;
+  font-size: var(--text-size) !important;
+  color: #ffffff !important;
+  font-weight: 400 !important;
+  font-synthesis: none !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 6 !important;
+  transition: none !important;
+  text-shadow:
+    0 0 12px rgba(255, 0, 0, 1),
+    0 0 28px rgba(255, 0, 0, 0.98),
+    0 0 52px rgba(255, 0, 0, 0.90),
+    0 0 84px rgba(255, 0, 0, 0.60),
+    5px 5px 0 rgba(90, 0, 0, 0.98) !important;
+}
+
+.character-stream-bar-value-san {
+  font-family: var(--font-numbers) !important; /* PUXANDO A FONTE DOS NÚMEROS AQUI */
+  left: var(--san-left) !important;
+  top: var(--san-top) !important;
+  font-size: var(--text-size) !important;
+  color: var(--san-color) !important;
+  font-weight: 400 !important;
+  font-synthesis: none !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 6 !important;
+  transition: none !important;
+  text-shadow:
+    0 0 12px rgba(0, 85, 255, 1),
+    0 0 28px rgba(0, 85, 255, 0.98),
+    0 0 52px rgba(0, 85, 255, 0.90),
+    0 0 84px rgba(0, 85, 255, 0.60),
+    5px 5px 0 rgba(0, 15, 90, 0.98) !important;
+}
+
+.character-stream-pe-value {
+  font-family: var(--font-numbers) !important; /* PUXANDO A FONTE DOS NÚMEROS AQUI */
+  position: absolute !important;
+  left: var(--pe-left) !important;
+  top: var(--pe-top) !important;
+  font-size: var(--pe-size) !important;
+  color: var(--pe-color) !important;
+  font-weight: 700 !important;
+  z-index: 6 !important;
+  display: block !important;
+  text-shadow:
+    0 0 12px rgba(255, 170, 0, 1),
+    0 0 28px rgba(255, 170, 0, 0.98),
+    0 0 52px rgba(255, 170, 0, 0.90),
+    5px 5px 0 rgba(90, 60, 0, 0.98) !important;
+}
+
+.character-stream-profile-container * {
+  box-shadow: none !important;
+}
+
 /* ============================================================
    SELETOR DE TEMA (idêntico ao original)
    ============================================================ */
@@ -2888,6 +3173,16 @@ body.layout-carteirinha { width: 360px; }
 
 </div>
 
+<!-- ====== DESCONJURAÇÃO LAYOUT (estrutura separada, estilo overlay de stream) ====== -->
+<div class="portrait-desconjuracao character-stream-profile-container" id="portrait-desconjuracao" style="display:none;">
+  <img class="character-stream-profile-picture" id="desc-foto-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Portrait">
+  <div id="desc-death-overlay"></div>
+  <div class="character-stream-profile-name" id="desc-nome-txt">AGENTE</div>
+  <div class="character-stream-bar-value-pv" id="desc-vida-txt">20/20</div>
+  <div class="character-stream-bar-value-san" id="desc-san-txt">20/20</div>
+  <div class="character-stream-pe-value" id="desc-esf-txt">10/10</div>
+</div>
+
 <!-- ====== SELETOR DE LAYOUT ====== -->
 <div class="layout-switcher" id="layout-switcher">
   <div class="layout-panel" id="layout-panel">
@@ -3021,6 +3316,16 @@ body.layout-carteirinha { width: 360px; }
         ▣ Carteirinha
       </div>
 
+      <div class="layout-opt" data-layout="desconjuracao" onclick="aplicarLayout('desconjuracao')">
+        <div class="layout-preview lp-desconjuracao">
+          <div class="lp-desc-frame"></div>
+          <div class="lp-desc-line" style="top:4px;"></div>
+          <div class="lp-desc-line" style="top:8px;width:60%;"></div>
+          <div class="lp-desc-line" style="top:12px;width:75%;"></div>
+        </div>
+        ✦ Desconjuração
+      </div>
+
     </div>
     <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.42rem;color:#334;letter-spacing:1px;line-height:1.8;">
       ▸ CLASSICO/BANNER/COMPACTO: 600px<br>
@@ -3028,7 +3333,8 @@ body.layout-carteirinha { width: 360px; }
       ▸ RITUAL: 340px · TERMINAL: 480px<br>
       ▸ PRONTUÁRIO: 560px · TARÔ: 300px<br>
       ▸ RADAR: 420px · RPG: 580px<br>
-      ▸ CARTEIRINHA: 360px
+      ▸ CARTEIRINHA: 360px<br>
+      ▸ DESCONJURAÇÃO: 1800×900px (fixo — use esse tamanho exato na Fonte de Navegador do OBS)
     </div>
   </div>
   <button class="layout-toggle-btn" onclick="toggleLayoutPanel()" title="Mudar layout">
@@ -3104,13 +3410,40 @@ body.layout-carteirinha { width: 360px; }
   <div class="obs-note">
     ▸ Dados sincronizados via <span>Firebase em tempo real</span><br>
     ▸ Funciona em qualquer navegador ou computador<br>
-    ▸ No OBS: Fonte de Navegador → URL desta página → Largura conforme layout
+    ▸ No OBS: Fonte de Navegador → URL desta página → Largura conforme layout<br>
+    ▸ Layout Desconjuração: use exatamente <span>1800×900px</span> na Fonte de Navegador
   </div>
 </div>
 
 <script>
 let agenteAtivo = null;
 let unsubEstado = null;
+let unsubAgente = null;
+let ultimoEstadoVivo = null; // último snapshot de fichas/{id}/estado (PV/SAN/PE), usado como fallback
+
+// ══════════════════════════════════════════════
+// FOTOS POR ESTADO DE VIDA (Ferido / Machucado / Morrendo)
+// Espelha a lógica de ficha.html: escolhe a foto da condição mais grave
+// cujo limite (% de PV) bate com o PV atual do agente.
+// ══════════════════════════════════════════════
+const CONDICOES_FOTO_PORTRAIT = [
+    { chave: 'ferido' },
+    { chave: 'machucado' },
+    { chave: 'morrendo' },
+];
+
+function _fotoPorCondicaoAgente(ficha, est) {
+    const cfg = ficha && ficha.fotosCondicao;
+    const v = (est && est.vida) || {};
+    if (!cfg || !v.max) return null;
+    const pct = Math.max(0, Math.min(100, (v.atual / v.max) * 100));
+    const tiers = CONDICOES_FOTO_PORTRAIT
+        .map(c => cfg[c.chave])
+        .filter(t => t && t.foto && typeof t.limite === 'number')
+        .sort((a, b) => a.limite - b.limite); // mais grave (menor limite) primeiro
+    for (const t of tiers) { if (pct <= t.limite) return t.foto; }
+    return null;
+}
 
 function getUsuario() {
     const params = new URLSearchParams(window.location.search);
@@ -3151,7 +3484,15 @@ function fitNome() {
 
 function aplicarAgente(ficha, est) {
     if (!ficha) return;
-    const fotoSrc = est?.fotoCostum || ficha.fotoCostum ||
+    // Guarda o último estado "vivo" (PV/SAN/PE) para poder recalcular a foto
+    // de condição mesmo quando aplicarAgente é chamado sem est (ex: ao receber
+    // uma atualização das fotos de condição vinda do nó "agentes/").
+    if (est) ultimoEstadoVivo = est;
+    else est = ultimoEstadoVivo;
+    // Foto por condição de vida (ferido/machucado/morrendo) tem prioridade
+    // sobre a foto normal, seguindo os limites de % de PV definidos na ficha.
+    const fotoCondicao = _fotoPorCondicaoAgente(ficha, est);
+    const fotoSrc = fotoCondicao || est?.fotoCostum || ficha.fotoCostum ||
         `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
     document.getElementById('foto-img').src = fotoSrc;
     const nomeExibir = ficha.codinome || ficha.nome || 'Agente';
@@ -3192,6 +3533,11 @@ function aplicarAgente(ficha, est) {
       const seed = nomeExibir.split('').reduce((a,c) => a + c.charCodeAt(0), 0);
       cartSerial.textContent = 'OP-' + String(seed % 9000 + 1000) + '-' + String((seed * 7) % 9000 + 1000);
     }
+    // Sincronizar Desconjuração
+    const descFoto = document.getElementById('desc-foto-img');
+    if (descFoto) descFoto.src = fotoSrc;
+    const descNome = document.getElementById('desc-nome-txt');
+    if (descNome) descNome.textContent = nomeExibir.toUpperCase();
     if (est) {
         const v = est.vida || {};
         const semSan = !!(est.regraOpc && est.regraOpc.semSan);
@@ -3279,6 +3625,17 @@ function atualizarStat(tipo, atual, max) {
         const m = document.getElementById(mId); if (m) m.textContent = max;
         const f = document.getElementById(fId); if (f) f.style.width = (max > 0 ? Math.max(0,Math.min(100,(atual/max)*100)) : 0) + '%';
     }
+
+    // Espelhar valores no layout Desconjuração (PV/SAN/PE em "atual/max")
+    const descMap = { vida: 'desc-vida-txt', san: 'desc-san-txt', esf: 'desc-esf-txt' };
+    if (descMap[tipo]) {
+        const el = document.getElementById(descMap[tipo]);
+        if (el) el.textContent = `${atual}/${max}`;
+    }
+    if (tipo === 'vida') {
+        const descOverlay = document.getElementById('desc-death-overlay');
+        if (descOverlay) descOverlay.classList.toggle('morto', atual <= 0);
+    }
 }
 
 function escutarEstado(fichaId) {
@@ -3290,6 +3647,22 @@ function escutarEstado(fichaId) {
         aplicarAgente(agenteAtivo, snap.val());
         const dot = document.getElementById('status-dot');
         if (dot) { dot.classList.remove('offline'); dot.style.background='#fff'; setTimeout(()=>{dot.style.background='';},200); }
+    });
+}
+
+// Escuta o nó "agentes/{usuario}/{id}" em tempo real. É onde ficam a foto
+// normal e as fotos por condição (ferido/machucado/morrendo) + limites,
+// para que trocas feitas na engrenagem da ficha reflitam aqui sem precisar
+// reabrir o seletor de agente.
+function escutarAgente(path) {
+    if (!window._firebaseDB) return;
+    if (unsubAgente) { unsubAgente(); unsubAgente = null; }
+    const agenteRef = window._firebaseRef(window._firebaseDB, path);
+    unsubAgente = window._firebaseOnValue(agenteRef, snap => {
+        if (!snap.exists()) return;
+        const id = agenteAtivo?.id;
+        agenteAtivo = { ...snap.val(), id };
+        aplicarAgente(agenteAtivo, null);
     });
 }
 
@@ -3369,6 +3742,7 @@ function selecionarAgente(usuario, id) {
         agenteAtivo = { ...snap.val(), id };
         aplicarAgente(agenteAtivo, null);
         escutarEstado(id);
+        escutarAgente(path);
         fecharOverlays();
     });
 }
@@ -3388,6 +3762,7 @@ function iniciarPortrait() {
                 agenteAtivo = { ...snap.val(), id: fichaId };
                 aplicarAgente(agenteAtivo, null);
                 escutarEstado(fichaId);
+                escutarAgente(path);
             } else if (path.includes(usuario)) {
                 tentarCarregar(`agentes/${fichaId}`);
             }
@@ -3438,7 +3813,8 @@ else window.addEventListener('load', tentarIniciar);
     taro:      'Tarô',
     radar:     'Radar',
     rpg:       'RPG',
-    carteirinha: 'Carteirinha'
+    carteirinha: 'Carteirinha',
+    desconjuracao: 'Desconjuração'
   };
 
   // ---- Tema ----
@@ -3485,7 +3861,7 @@ else window.addEventListener('load', tentarIniciar);
   };
 
   window.aplicarLayout = function(layout) {
-    ['classico','banner','compacto','vertical','hud','ritual','terminal','ficha','taro','radar','rpg','carteirinha'].forEach(l => {
+    ['classico','banner','compacto','vertical','hud','ritual','terminal','ficha','taro','radar','rpg','carteirinha','desconjuracao'].forEach(l => {
       document.body.classList.remove('layout-' + l);
     });
     document.body.classList.add('layout-' + layout);

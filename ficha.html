@@ -240,6 +240,24 @@
         .foto-wrapper:hover .foto-overlay { opacity: 1; }
         #foto-input { display: none; }
 
+        .foto-wrapper-outer { position: relative; flex-shrink: 0; }
+        .foto-gear-btn {
+            position: absolute; bottom: -6px; right: -6px; width: 22px; height: 22px;
+            border-radius: 50%; background: #1a0033; border: 1px solid var(--purple);
+            color: var(--purple-neon); font-size: 0.75rem; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; box-shadow: 0 0 6px rgba(138,43,226,0.5);
+            z-index: 2; transition: 0.2s; padding: 0;
+        }
+        .foto-gear-btn:hover { background: var(--purple); color: white; transform: rotate(45deg); }
+        .cond-foto-wrapper {
+            width: 56px; height: 56px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
+            cursor: pointer; position: relative; background: #0d0d14; display: flex;
+            align-items: center; justify-content: center; border: 2px solid var(--border);
+            transition: border-color 0.2s;
+        }
+        .cond-foto-wrapper:hover { border-color: var(--purple); }
+        .cond-foto-wrapper img { width: 100%; height: 100%; object-fit: cover; display: none; }
+
         .label-field { font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 2px; }
         .value-field { font-size: 0.95rem; font-weight: 600; color: white; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px; }
 
@@ -1365,9 +1383,12 @@
   <div class="col-esquerda">
     <div class="card-personagem">
       <div class="d-flex gap-3 mb-3">
-        <div class="foto-wrapper" onclick="document.getElementById('foto-input').click()" title="Clique para trocar a foto">
-          <img id="foto-agente" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Foto">
-          <div class="foto-overlay">📷</div>
+        <div class="foto-wrapper-outer">
+          <div class="foto-wrapper" onclick="fotoUploadTarget='principal'; document.getElementById('foto-input').click()" title="Clique para trocar a foto">
+            <img id="foto-agente" src="https://api.dicebear.com/7.x/bottts/svg?seed=agente" alt="Foto">
+            <div class="foto-overlay">📷</div>
+          </div>
+          <button class="foto-gear-btn" onclick="event.stopPropagation(); abrirModalFotosCondicao();" title="Fotos por estado de vida (ferido/machucado/morrendo)">⚙</button>
         </div>
         <div style="flex:1">
           <div class="label-field">Personagem</div>
@@ -2628,6 +2649,82 @@
       </div>
 
       <button onclick="fecharModalRegraOpc()" style="width:100%;background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:2px;padding:10px;border-radius:6px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">CONFIRMAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FOTOS POR ESTADO DE VIDA -->
+<div id="modal-fotos-condicao" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:10000;align-items:center;justify-content:center;">
+  <div style="background:#0d0010;border:1px solid var(--purple);border-radius:14px;padding:0;max-width:440px;width:92%;box-shadow:0 0 50px var(--purple-glow);overflow:hidden;">
+
+    <!-- Header com banner -->
+    <div style="position:relative;height:72px;overflow:hidden;background:#060010;">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0040 0%,#050010 100%);"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 20px;">
+        <div>
+          <div style="font-size:0.6rem;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;font-family:'Share Tech Mono',monospace;">Retrato Dinâmico</div>
+          <div style="font-size:1.1rem;font-weight:700;letter-spacing:2px;color:white;text-shadow:0 0 16px var(--purple-glow);">⚙ FOTOS POR ESTADO</div>
+        </div>
+        <button onclick="fecharModalFotosCondicao()" style="background:transparent;border:1px solid #333;color:#666;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:0.9rem;transition:0.2s;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.borderColor='#666';this.style.color='white'" onmouseout="this.style.borderColor='#333';this.style.color='#666'">✕</button>
+      </div>
+      <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.15) 3px,rgba(0,0,0,0.15) 4px);pointer-events:none;"></div>
+    </div>
+
+    <!-- Corpo -->
+    <div style="padding:20px;">
+      <div style="font-size:0.72rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;line-height:1.5;margin-bottom:16px;">
+        ▸ Defina até 3 fotos alternativas. Elas substituem automaticamente o retrato (aqui e no Portrait) quando o PV cair abaixo da porcentagem definida. Se mais de uma condição se aplicar, vale a mais grave.
+      </div>
+
+      <!-- Ferido -->
+      <div style="background:#080015;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
+        <div class="cond-foto-wrapper" style="border-color:#e8c000;" onclick="abrirUploadCondicao('ferido')" title="Clique para escolher a foto">
+          <img id="cond-foto-ferido" src="" alt="">
+          <span id="cond-foto-ferido-placeholder" style="font-size:1.2rem;color:#444;">📷</span>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:0.9rem;font-weight:700;color:white;margin-bottom:4px;">🩸 Ferido</div>
+          <div style="font-size:0.7rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;display:flex;align-items:center;gap:6px;">
+            Ativa quando PV ≤
+            <input type="number" id="cond-limite-ferido" value="75" min="0" max="100" style="width:52px;background:#111;border:1px solid var(--border);color:#e8c000;border-radius:4px;padding:2px 4px;text-align:center;font-family:'Share Tech Mono',monospace;" onchange="atualizarLimiteCondicao('ferido', this.value)">%
+          </div>
+        </div>
+        <button onclick="removerFotoCondicao('ferido')" title="Remover foto" style="background:transparent;border:1px solid #442222;color:#a55;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:0.75rem;flex-shrink:0;">✕</button>
+      </div>
+
+      <!-- Machucado -->
+      <div style="background:#080015;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;">
+        <div class="cond-foto-wrapper" style="border-color:#ff8c00;" onclick="abrirUploadCondicao('machucado')" title="Clique para escolher a foto">
+          <img id="cond-foto-machucado" src="" alt="">
+          <span id="cond-foto-machucado-placeholder" style="font-size:1.2rem;color:#444;">📷</span>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:0.9rem;font-weight:700;color:white;margin-bottom:4px;">⚠ Machucado</div>
+          <div style="font-size:0.7rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;display:flex;align-items:center;gap:6px;">
+            Ativa quando PV ≤
+            <input type="number" id="cond-limite-machucado" value="40" min="0" max="100" style="width:52px;background:#111;border:1px solid var(--border);color:#ff8c00;border-radius:4px;padding:2px 4px;text-align:center;font-family:'Share Tech Mono',monospace;" onchange="atualizarLimiteCondicao('machucado', this.value)">%
+          </div>
+        </div>
+        <button onclick="removerFotoCondicao('machucado')" title="Remover foto" style="background:transparent;border:1px solid #442222;color:#a55;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:0.75rem;flex-shrink:0;">✕</button>
+      </div>
+
+      <!-- Morrendo -->
+      <div style="background:#080015;border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+        <div class="cond-foto-wrapper" style="border-color:#e84040;" onclick="abrirUploadCondicao('morrendo')" title="Clique para escolher a foto">
+          <img id="cond-foto-morrendo" src="" alt="">
+          <span id="cond-foto-morrendo-placeholder" style="font-size:1.2rem;color:#444;">📷</span>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:0.9rem;font-weight:700;color:white;margin-bottom:4px;">☠ Morrendo</div>
+          <div style="font-size:0.7rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;display:flex;align-items:center;gap:6px;">
+            Ativa quando PV ≤
+            <input type="number" id="cond-limite-morrendo" value="15" min="0" max="100" style="width:52px;background:#111;border:1px solid var(--border);color:#e84040;border-radius:4px;padding:2px 4px;text-align:center;font-family:'Share Tech Mono',monospace;" onchange="atualizarLimiteCondicao('morrendo', this.value)">%
+          </div>
+        </div>
+        <button onclick="removerFotoCondicao('morrendo')" title="Remover foto" style="background:transparent;border:1px solid #442222;color:#a55;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:0.75rem;flex-shrink:0;">✕</button>
+      </div>
+
+      <button onclick="fecharModalFotosCondicao()" style="width:100%;background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:2px;padding:10px;border-radius:6px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">FECHAR</button>
     </div>
   </div>
 </div>
@@ -4322,7 +4419,7 @@ function getPrefix() {
 let ficha  = null;
 let estado = {
     vida:{ atual:20,max:20 }, san:{ atual:20,max:20 }, esf:{ atual:10,max:10 },
-    pericias:{}, ataques:[], inventario:[], descricao:{}, fotoCostum:null,
+    pericias:{}, ataques:[], inventario:[], descricao:{}, fotoCostum:null, fotosCondicao:{},
     logRolagens:[], rituaisPersonagem:[], habilidadesPersonagem:[], progressao:{}
 };
 let rituaisAbertos    = {};
@@ -4331,6 +4428,7 @@ let _rituaisCirculoFiltro = 0; // 0 = todos os círculos
 let habCatAtiva    = 'ficha';
 let habSubabaAtiva = 'todos';
 let habAbertos     = {};
+let fotoUploadTarget = 'principal'; // 'principal' | 'ferido' | 'machucado' | 'morrendo'
 
 function bonusAtrib(v) { return v || 0; }
 
@@ -4362,26 +4460,15 @@ window.onload = function() {
     verificarFichaCompartilhada();
     document.getElementById('foto-input').addEventListener('change', function(e) {
         const file = e.target.files[0]; if (!file) return;
+        const alvo = fotoUploadTarget;
         const reader = new FileReader();
         reader.onload = function(ev) {
             // GIF ou WebP animado: pula o cropper e salva direto para preservar a animação
             const isGif = file.type === 'image/gif';
             const isWebp = file.type === 'image/webp';
             if (isGif || isWebp) {
-                const base64 = ev.target.result;
-                document.getElementById('foto-agente').src = base64;
-                estado.fotoCostum = base64;
-                // Salva foto em chave separada (evita estourar quota com o estado)
-                try { localStorage.setItem(getPrefix() + `foto_ficha_${ficha?.id}`, base64); } catch(e) { console.warn('foto localStorage:', e); }
-                if (ficha) {
-                    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-                    const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-                    if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
-                }
-                salvarEstado();
-                sincronizarAgenteFirebase();
-                sincronizarFotoNasCampanhas(base64);
-                mostrarToast('📷 FOTO ATUALIZADA');
+                _salvarFotoProcessada(ev.target.result, alvo);
+                fotoUploadTarget = 'principal';
                 document.getElementById('foto-input').value = '';
                 return;
             }
@@ -4566,6 +4653,7 @@ function sincronizarAgenteFirebase() {
       nivel:     ficha.nivel     || 1,
       atributos: ficha.atributos || {},
       fotoCostum: estado.fotoCostum || ficha.fotoCostum || '',
+      fotosCondicao: estado.fotosCondicao || ficha.fotosCondicao || {},
       criadoEm:  ficha.criadoEm,
     }).catch(err => console.warn('sincronizarAgenteFirebase erro:', err));
   } catch(e) { console.warn('sincronizarAgenteFirebase:', e); }
@@ -4613,6 +4701,140 @@ async function sincronizarFotoNasCampanhas(novaFoto) {
   } catch(e) {
     console.warn('[FICHA] Erro ao sincronizar foto nas campanhas:', e);
   }
+}
+
+// ══════════════════════════════════════════════
+// FOTOS POR ESTADO DE VIDA (Ferido / Machucado / Morrendo)
+// ══════════════════════════════════════════════
+const CONDICOES_FOTO = [
+    { chave: 'ferido',    label: '🩸 Ferido',   limitePadrao: 75 },
+    { chave: 'machucado', label: '⚠ Machucado', limitePadrao: 40 },
+    { chave: 'morrendo',  label: '☠ Morrendo',  limitePadrao: 15 },
+];
+
+// Salva a foto processada (já em base64) no destino correto: 'principal' (foto normal
+// do agente) ou uma das chaves de CONDICOES_FOTO (ferido/machucado/morrendo).
+function _salvarFotoProcessada(base64, alvo) {
+    if (!alvo || alvo === 'principal') {
+        document.getElementById('foto-agente').src = base64;
+        estado.fotoCostum = base64;
+        try { localStorage.setItem(getPrefix() + `foto_ficha_${ficha?.id}`, base64); } catch(e) { console.warn('foto localStorage:', e); }
+        if (ficha) {
+            const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+            const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
+            if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
+        }
+        salvarEstado();
+        sincronizarAgenteFirebase();
+        sincronizarFotoNasCampanhas(base64);
+        atualizarFotoPorEstado();
+        mostrarToast('📷 FOTO ATUALIZADA');
+    } else {
+        const cfg = _getFotosCondicaoCfg();
+        if (!cfg[alvo]) return;
+        cfg[alvo].foto = base64;
+        salvarEstado();
+        sincronizarAgenteFirebase();
+        const img = document.getElementById(`cond-foto-${alvo}`);
+        const ph  = document.getElementById(`cond-foto-${alvo}-placeholder`);
+        if (img) { img.src = base64; img.style.display = 'block'; }
+        if (ph)  ph.style.display = 'none';
+        atualizarFotoPorEstado();
+        const info = CONDICOES_FOTO.find(c => c.chave === alvo);
+        mostrarToast(`📷 FOTO "${(info ? info.label : alvo).replace(/^\S+\s/,'').toUpperCase()}" ATUALIZADA`);
+    }
+}
+
+function _getFotosCondicaoCfg() {
+    if (!estado.fotosCondicao) estado.fotosCondicao = {};
+    CONDICOES_FOTO.forEach(c => {
+        if (!estado.fotosCondicao[c.chave]) {
+            estado.fotosCondicao[c.chave] = { foto: null, limite: c.limitePadrao };
+        }
+    });
+    return estado.fotosCondicao;
+}
+
+function abrirModalFotosCondicao() {
+    const cfg = _getFotosCondicaoCfg();
+    CONDICOES_FOTO.forEach(c => {
+        const info = cfg[c.chave];
+        const img  = document.getElementById(`cond-foto-${c.chave}`);
+        const ph   = document.getElementById(`cond-foto-${c.chave}-placeholder`);
+        const inp  = document.getElementById(`cond-limite-${c.chave}`);
+        if (inp) inp.value = info.limite;
+        if (info.foto) {
+            if (img) { img.src = info.foto; img.style.display = 'block'; }
+            if (ph)  ph.style.display = 'none';
+        } else {
+            if (img) { img.src = ''; img.style.display = 'none'; }
+            if (ph)  ph.style.display = 'flex';
+        }
+    });
+    document.getElementById('modal-fotos-condicao').style.display = 'flex';
+}
+
+function fecharModalFotosCondicao() {
+    document.getElementById('modal-fotos-condicao').style.display = 'none';
+}
+
+function abrirUploadCondicao(chave) {
+    fotoUploadTarget = chave;
+    document.getElementById('foto-input').click();
+}
+
+function removerFotoCondicao(chave) {
+    const cfg = _getFotosCondicaoCfg();
+    if (!cfg[chave]) return;
+    cfg[chave].foto = null;
+    salvarEstado();
+    sincronizarAgenteFirebase();
+    const img = document.getElementById(`cond-foto-${chave}`);
+    const ph  = document.getElementById(`cond-foto-${chave}-placeholder`);
+    if (img) { img.src = ''; img.style.display = 'none'; }
+    if (ph)  ph.style.display = 'flex';
+    atualizarFotoPorEstado();
+    mostrarToast('🗑 FOTO REMOVIDA');
+}
+
+function atualizarLimiteCondicao(chave, valor) {
+    const cfg = _getFotosCondicaoCfg();
+    if (!cfg[chave]) return;
+    let n = parseInt(valor);
+    if (isNaN(n)) n = cfg[chave].limite;
+    n = Math.max(0, Math.min(100, n));
+    cfg[chave].limite = n;
+    const inp = document.getElementById(`cond-limite-${chave}`);
+    if (inp) inp.value = n;
+    salvarEstado();
+    sincronizarAgenteFirebase();
+    atualizarFotoPorEstado();
+}
+
+// Retorna a foto (base64) da condição mais grave cujo limite bate com o % de PV atual,
+// ou null se nenhuma condição configurada se aplica (usa-se a foto normal nesse caso).
+function _fotoPorCondicaoAtual() {
+    const cfg = estado.fotosCondicao;
+    const v = estado.vida || {};
+    if (!cfg || !v.max) return null;
+    const pct = Math.max(0, Math.min(100, (v.atual / v.max) * 100));
+    const tiers = CONDICOES_FOTO
+        .map(c => cfg[c.chave])
+        .filter(t => t && t.foto && typeof t.limite === 'number')
+        .sort((a, b) => a.limite - b.limite); // mais grave (menor limite) primeiro
+    for (const t of tiers) { if (pct <= t.limite) return t.foto; }
+    return null;
+}
+
+// Atualiza a foto exibida em #foto-agente considerando as condições de vida configuradas.
+function atualizarFotoPorEstado() {
+    const img = document.getElementById('foto-agente');
+    if (!img || !ficha) return;
+    const fotoCondicao = _fotoPorCondicaoAtual();
+    const fotoNormal = estado.fotoCostum || ficha.fotoCostum ||
+        localStorage.getItem(getPrefix() + `foto_ficha_${ficha.id}`) ||
+        `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ficha.nome)}`;
+    img.src = fotoCondicao || fotoNormal;
 }
 
 // ══════════════════════════════════════════════
@@ -4854,6 +5076,7 @@ function atualizarBarras() {
         const bar = document.getElementById('barra-determinacao');
         if (bar) bar.style.width = pct + '%';
     }
+    atualizarFotoPorEstado();
 }
 
 function ajustarRecurso(tipo, delta) {
@@ -6223,7 +6446,7 @@ function salvarEstado() {
   // ── Separa a foto do estado para não estourar quota ──────────────────────
   // A foto (que pode ser um GIF de vários MB) é salva separadamente.
   // O estado principal nunca carrega a imagem em base64.
-  const { fotoCostum, ...estadoSemFoto } = estado;
+  const { fotoCostum, fotosCondicao, ...estadoSemFoto } = estado;
 
   // Salva estado sem foto no localStorage (evita QuotaExceededError)
   try {
@@ -6238,6 +6461,15 @@ function salvarEstado() {
       localStorage.setItem(getPrefix() + `foto_ficha_${ficha.id}`, fotoCostum);
     } catch(e) {
       console.warn('localStorage cheio ao salvar foto:', e);
+    }
+  }
+
+  // Salva as fotos por condição (ferido/machucado/morrendo) separadamente também
+  if (fotosCondicao) {
+    try {
+      localStorage.setItem(getPrefix() + `fotos_condicao_ficha_${ficha.id}`, JSON.stringify(fotosCondicao));
+    } catch(e) {
+      console.warn('localStorage cheio ao salvar fotos de condição:', e);
     }
   }
 
@@ -7385,19 +7617,8 @@ function salvarNex() {
             const canvas = fotoCropperInstance.getCroppedCanvas({ width: 300, height: 300 });
             if (!canvas) return;
             const base64 = canvas.toDataURL('image/jpeg', 0.92);
-            document.getElementById('foto-agente').src = base64;
-            estado.fotoCostum = base64;
-            // Salva foto em chave separada (evita estourar quota com o estado)
-            try { localStorage.setItem(getPrefix() + `foto_ficha_${ficha?.id}`, base64); } catch(e) { console.warn('foto localStorage:', e); }
-            if (ficha) {
-                const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
-                const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-                if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
-            }
-            salvarEstado();
-            sincronizarAgenteFirebase();
-            sincronizarFotoNasCampanhas(base64);
-            mostrarToast('📷 FOTO ATUALIZADA');
+            _salvarFotoProcessada(base64, fotoUploadTarget);
+            fotoUploadTarget = 'principal';
             cancelarFotoCrop();
         }
 
@@ -7405,6 +7626,7 @@ function salvarNex() {
             document.getElementById('foto-crop-overlay').classList.remove('show');
             if (fotoCropperInstance) { fotoCropperInstance.destroy(); fotoCropperInstance = null; }
             document.getElementById('foto-input').value = '';
+            fotoUploadTarget = 'principal';
         }
 
         /* ===== RENOMEAR PERSONAGEM ===== */
