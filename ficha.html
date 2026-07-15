@@ -1224,6 +1224,113 @@
     box-shadow: 0 0 40px var(--purple-glow);
 }
 
+/* Botão de atacar/rolar item do inventário */
+.inv-atacar-btn {
+    background: var(--red-dark);
+    border: none;
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.inv-atacar-btn:hover { background: var(--red); box-shadow: 0 0 8px rgba(232,64,64,0.5); }
+.inv-atacar-btn:active { transform: scale(0.94); }
+
+/* Modal de rolagem de ataque de item (arma) */
+#modal-rolagem-item {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+#modal-rolagem-item.show { display: flex; }
+.mri-box {
+    background: linear-gradient(160deg,#100018 0%,#080010 60%,#0a0008 100%);
+    border: 1px solid rgba(155,48,217,0.45);
+    border-radius: 12px;
+    padding: 26px 24px;
+    max-width: 340px;
+    width: 92%;
+    box-shadow: 0 0 40px var(--purple-glow);
+    text-align: center;
+    animation: mritIn 0.25s ease;
+}
+.mri-arma-nome {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--purple-neon);
+    margin-bottom: 16px;
+}
+.mri-secao { margin-bottom: 14px; }
+.mri-label {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+}
+.mri-dado-grande {
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1;
+    font-family: 'Oswald', sans-serif;
+}
+.mri-dado-grande.rolando { color: var(--purple-neon); animation: diceSpin 0.15s linear infinite; }
+.mri-dado-grande.critico { color: var(--green); text-shadow: 0 0 16px var(--green); }
+.mri-dado-grande.falha   { color: var(--red); text-shadow: 0 0 16px var(--red); }
+.mri-det { font-size: 0.68rem; color: var(--text-dim); margin-top: 5px; font-family: 'Share Tech Mono', monospace; }
+.mri-tag {
+    display: inline-block;
+    margin-top: 7px;
+    font-size: 0.62rem;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 1px;
+}
+.mri-tag.critico { background: #003300; color: var(--green); }
+.mri-tag.falha { background: #330000; color: var(--red); }
+.mri-dano-final {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #e84040;
+    line-height: 1;
+    font-family: 'Oswald', sans-serif;
+}
+.mri-dano-final.critico { color: var(--green); text-shadow: 0 0 16px var(--green); }
+.mri-fechar {
+    margin-top: 8px;
+    background: var(--purple-dark);
+    border: 1px solid var(--purple);
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    padding: 8px 22px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.mri-fechar:hover { background: var(--purple); }
+
 /* ===== RESPONSIVIDADE MOBILE ===== */
 @media (max-width: 576px) {
     /* Navbar: logo menor */
@@ -5349,12 +5456,18 @@ function renderInventario() {
             infoHtml = `<div style="font-size:0.72rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-top:3px;">${item.desc}</div>`;
         }
 
+        const armaStats = cat === 'ARMA' ? _getArmaRollStats(item) : null;
+        const atacarBtn = armaStats
+            ? `<button class="inv-atacar-btn" onclick="rolarAtaqueItem(${i})" title="Rolar ataque e dano">🎲 Atacar</button>`
+            : '';
+
         return `
         <div class="inv-item-card">
             <div>
                 <div class="inv-item-nome">${item.nome}${hbBadge}</div>
                 <span class="inv-item-cat inv-cat-${cat}">${catLbl}</span>
                 ${infoHtml}
+                ${atacarBtn}
             </div>
             <div class="inv-qtd-ctrl">
                 <button class="inv-qtd-btn" onclick="alterarQtdItem(${i},-1)">−</button>
@@ -5379,6 +5492,165 @@ function toggleHbDesc(btn) {
     const aberto = desc.classList.toggle('aberto');
     btn.querySelector('span').textContent = aberto ? 'ocultar descrição' : 'ver descrição';
     btn.firstChild.textContent = aberto ? '▾ ' : '▸ ';
+}
+
+// ══════════════════════════════════════════════
+// ROLAGEM DE ATAQUE/DANO DE ITENS (ARMAS)
+// ══════════════════════════════════════════════
+
+// Interpreta o campo "crit" de uma arma. Aceita "x2", "x3", "19", "19/x3" etc.
+// Retorna { threat, mult } — threat = valor mínimo no d20 que ameaça crítico,
+// mult = quantas vezes o dado de dano é rolado quando confirma o crítico.
+function _parseCritInfo(critStr) {
+    if (!critStr) return { threat: 20, mult: 2 };
+    const s = String(critStr).trim();
+    let m = s.match(/^(\d+)\s*\/\s*x(\d+)$/i);
+    if (m) return { threat: parseInt(m[1]), mult: parseInt(m[2]) };
+    m = s.match(/^x(\d+)$/i);
+    if (m) return { threat: 20, mult: parseInt(m[1]) };
+    m = s.match(/^(\d+)$/);
+    if (m) return { threat: parseInt(m[1]), mult: 2 };
+    return { threat: 20, mult: 2 };
+}
+
+// Extrai os dados de rolagem (dano/crítico/tipo) de um item do inventário.
+// Prioriza campos estruturados (homebrew/catálogo) e, se ausentes, tenta
+// extrair do texto da descrição (compatível com itens já salvos).
+function _getArmaRollStats(item) {
+    let dano = null, crit = null, tipoDano = '';
+    if (item.hbStats) {
+        dano = item.hbStats.dano || dano;
+        crit = item.hbStats.crit || crit;
+        tipoDano = item.hbStats.tipo || tipoDano;
+    }
+    if (item.armaStats) {
+        dano = item.armaStats.dano || dano;
+        crit = item.armaStats.crit || crit;
+        tipoDano = item.armaStats.tipoDano || tipoDano;
+    }
+    if (!dano && item.desc) {
+        const md = item.desc.match(/Dano:\s*([0-9dD]+(?:\s*[+\-]\s*\d+)?(?:\s*\/\s*[0-9dD]+(?:\s*[+\-]\s*\d+)?)?)/);
+        if (md) dano = md[1].replace(/\s+/g, '');
+        const mc = item.desc.match(/Cr[ií]t:\s*([0-9x\/]+)/i);
+        if (mc) crit = mc[1];
+        if (!tipoDano) {
+            const mt = /Perfuração|Corte|Impacto|Balístico|Fogo|Energia|Químico/i.exec(item.desc);
+            if (mt) tipoDano = mt[0];
+        }
+    }
+    if (!dano) return null;
+    const danoPrincipal = dano.split('/')[0].trim();
+    if (!/^\d+d\d+([+\-]\d+)?$/i.test(danoPrincipal)) return null;
+    return { dano: danoPrincipal, tipoDano, crit: _parseCritInfo(crit) };
+}
+
+// Chamado pelo botão "🎲 Atacar" no card do item do inventário
+function rolarAtaqueItem(i) {
+    const item = estado.inventario && estado.inventario[i];
+    if (!item) return;
+    const stats = _getArmaRollStats(item);
+    if (!stats) { mostrarToast('⚠ Este item não possui dados de dano definidos.'); return; }
+    _abrirModalRolagemItem(item.nome, stats);
+}
+
+function _garantirModalRolagemItem() {
+    let modal = document.getElementById('modal-rolagem-item');
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'modal-rolagem-item';
+    modal.innerHTML = `
+        <div class="mri-box">
+            <div class="mri-arma-nome" id="mri-nome">—</div>
+            <div class="mri-secao">
+                <div class="mri-label">🎲 Ataque</div>
+                <div class="mri-dado-grande rolando" id="mri-ataque-num">?</div>
+                <div class="mri-det" id="mri-ataque-det"></div>
+                <div id="mri-ataque-tag"></div>
+            </div>
+            <div class="mri-secao" id="mri-dano-secao" style="display:none;">
+                <div class="mri-label">💥 Dano</div>
+                <div class="mri-dano-final" id="mri-dano-num">–</div>
+                <div class="mri-det" id="mri-dano-det"></div>
+            </div>
+            <button class="mri-fechar" onclick="_fecharModalRolagemItem()">Fechar</button>
+        </div>`;
+    document.body.appendChild(modal);
+    return modal;
+}
+
+function _fecharModalRolagemItem() {
+    const modal = document.getElementById('modal-rolagem-item');
+    if (modal) modal.classList.remove('show');
+}
+
+function _abrirModalRolagemItem(nomeArma, stats) {
+    const modal = _garantirModalRolagemItem();
+    modal.classList.add('show');
+
+    const atkNum   = document.getElementById('mri-ataque-num');
+    const atkDet   = document.getElementById('mri-ataque-det');
+    const atkTag   = document.getElementById('mri-ataque-tag');
+    const danoSec  = document.getElementById('mri-dano-secao');
+    const danoNum  = document.getElementById('mri-dano-num');
+    const danoDet  = document.getElementById('mri-dano-det');
+
+    document.getElementById('mri-nome').textContent = nomeArma;
+    atkNum.className = 'mri-dado-grande rolando';
+    atkNum.textContent = '?';
+    atkDet.textContent = '';
+    atkTag.innerHTML = '';
+    danoSec.style.display = 'none';
+    danoNum.className = 'mri-dano-final';
+    danoNum.textContent = '–';
+    danoDet.textContent = '';
+
+    // Animação de "rolando" antes de revelar o resultado do ataque
+    const spin = setInterval(() => { atkNum.textContent = Math.floor(Math.random() * 20) + 1; }, 60);
+
+    setTimeout(() => {
+        clearInterval(spin);
+        const rollAtk = Math.floor(Math.random() * 20) + 1;
+        const isCrit  = rollAtk >= stats.crit.threat;
+        const isFalha = rollAtk === 1;
+
+        atkNum.classList.remove('rolando');
+        atkNum.textContent = rollAtk;
+        atkDet.textContent = `d20 [${rollAtk}]`;
+
+        let tipoAtaque = 'normal';
+        if (isCrit) {
+            atkNum.classList.add('critico');
+            atkTag.innerHTML = '<span class="mri-tag critico">AMEAÇA DE CRÍTICO!</span>';
+            tipoAtaque = 'critico';
+        } else if (isFalha) {
+            atkNum.classList.add('falha');
+            atkTag.innerHTML = '<span class="mri-tag falha">FALHA!</span>';
+            tipoAtaque = 'falha';
+        }
+
+        adicionarAoLog(`Ataque: ${nomeArma}`, `d20 [${rollAtk}]${isCrit ? ' (ameaça de crítico)' : ''}`, rollAtk, tipoAtaque);
+
+        // Em seguida, rola o dano automaticamente (multiplicado se confirmar crítico)
+        setTimeout(() => {
+            danoSec.style.display = 'block';
+            const mult = isCrit ? stats.crit.mult : 1;
+            const rolls = [];
+            let total = 0;
+            for (let k = 0; k < mult; k++) {
+                const r = rolarExpressao(stats.dano);
+                rolls.push(r.detalhe);
+                total += r.total;
+            }
+            danoNum.textContent = total;
+            if (isCrit) danoNum.classList.add('critico');
+            danoDet.textContent = mult > 1
+                ? `${stats.dano} ×${mult} (crítico) → ${rolls.join(' + ')} = ${total}`
+                : `${stats.dano} → ${rolls[0]}`;
+
+            const nomeLog = `Dano: ${nomeArma}${stats.tipoDano ? ` (${stats.tipoDano})` : ''}`;
+            adicionarAoLog(nomeLog, danoDet.textContent, total, isCrit ? 'critico' : 'normal');
+        }, 400);
+    }, 550);
 }
 
 // ── Estatísticas do inventário ───────────────────────────────────
@@ -6402,7 +6674,11 @@ function adicionarItemCatalogoOP(idx) {
     const desc = descParts.join(' · ');
 
     if (!estado.inventario) estado.inventario = [];
-    estado.inventario.push({ nome: item.nome, cat: catInv, qtd: 1, desc });
+    const novoItem = { nome: item.nome, cat: catInv, qtd: 1, desc };
+    if (catInv === 'ARMA' && item.dano) {
+        novoItem.armaStats = { dano: item.dano, crit: item.crit || null, tipoDano: item.tipoDano || '' };
+    }
+    estado.inventario.push(novoItem);
     salvarEstado();
     renderInventario();
 
