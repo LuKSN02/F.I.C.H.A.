@@ -1331,6 +1331,100 @@
 }
 .mri-fechar:hover { background: var(--purple); }
 
+/* Botões clonar/modificar no card do inventário */
+.inv-clonar-btn, .inv-modificar-btn {
+    border: none;
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.inv-clonar-btn { background: #241236; border: 1px solid var(--purple); color: var(--purple-neon); }
+.inv-clonar-btn:hover { background: var(--purple-dark); box-shadow: 0 0 8px var(--purple-glow); }
+.inv-clonar-btn:active, .inv-modificar-btn:active { transform: scale(0.94); }
+.inv-modificar-btn { background: #1a1400; border: 1px solid #f5c842; color: #f5c842; }
+.inv-modificar-btn:hover { background: #332800; box-shadow: 0 0 8px rgba(245,200,66,0.4); }
+
+/* Modal de modificar item (dano/crítico customizáveis, estilo homebrew) */
+#modal-modificar-item {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+#modal-modificar-item.show { display: flex; }
+.mod-item-box {
+    background: #0d0010;
+    border: 1px solid var(--purple);
+    border-radius: 12px;
+    padding: 24px 22px;
+    max-width: 420px;
+    width: 92%;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: 0 0 40px var(--purple-glow);
+    animation: mritIn 0.25s ease;
+}
+.mod-item-titulo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--purple-neon);
+    margin-bottom: 16px;
+}
+.mod-item-field { margin-bottom: 12px; }
+.mod-item-field label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 5px;
+    font-family: 'Share Tech Mono', monospace;
+}
+.mod-item-field input, .mod-item-field select, .mod-item-field textarea {
+    background: #000;
+    border: 1px solid var(--border);
+    color: white;
+    font-family: 'Oswald', sans-serif;
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+}
+.mod-item-field textarea { resize: vertical; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; }
+.mod-item-row { display: flex; gap: 10px; }
+.mod-item-row .mod-item-field { flex: 1; }
+.mod-item-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.mod-item-cancelar, .mod-item-salvar {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.mod-item-cancelar { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+.mod-item-cancelar:hover { border-color: var(--text-dim); color: white; }
+.mod-item-salvar { background: var(--purple-dark); border: 1px solid var(--purple); color: white; }
+.mod-item-salvar:hover { background: var(--purple); }
+
 /* ===== RESPONSIVIDADE MOBILE ===== */
 @media (max-width: 576px) {
     /* Navbar: logo menor */
@@ -5460,6 +5554,12 @@ function renderInventario() {
         const atacarBtn = armaStats
             ? `<button class="inv-atacar-btn" onclick="rolarAtaqueItem(${i})" title="Rolar ataque e dano">🎲 Atacar</button>`
             : '';
+        const clonarBtn = cat === 'ARMA'
+            ? `<button class="inv-clonar-btn" onclick="clonarItem(${i})" title="Criar uma cópia editável desta arma">📋 Clonar</button>`
+            : '';
+        const modificarBtn = (cat === 'ARMA' && item.custom)
+            ? `<button class="inv-modificar-btn" onclick="abrirModalModificarItem(${i})" title="Editar dano, crítico, etc.">✏ Modificar</button>`
+            : '';
 
         return `
         <div class="inv-item-card">
@@ -5467,7 +5567,7 @@ function renderInventario() {
                 <div class="inv-item-nome">${item.nome}${hbBadge}</div>
                 <span class="inv-item-cat inv-cat-${cat}">${catLbl}</span>
                 ${infoHtml}
-                ${atacarBtn}
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">${atacarBtn}${clonarBtn}${modificarBtn}</div>
             </div>
             <div class="inv-qtd-ctrl">
                 <button class="inv-qtd-btn" onclick="alterarQtdItem(${i},-1)">−</button>
@@ -5517,10 +5617,11 @@ function _parseCritInfo(critStr) {
 // Prioriza campos estruturados (homebrew/catálogo) e, se ausentes, tenta
 // extrair do texto da descrição (compatível com itens já salvos).
 function _getArmaRollStats(item) {
-    let dano = null, crit = null, tipoDano = '';
+    let dano = null, crit = null, mult = null, tipoDano = '';
     if (item.hbStats) {
         dano = item.hbStats.dano || dano;
         crit = item.hbStats.crit || crit;
+        mult = item.hbStats.mult || mult;
         tipoDano = item.hbStats.tipo || tipoDano;
     }
     if (item.armaStats) {
@@ -5541,7 +5642,19 @@ function _getArmaRollStats(item) {
     if (!dano) return null;
     const danoPrincipal = dano.split('/')[0].trim();
     if (!/^\d+d\d+([+\-]\d+)?$/i.test(danoPrincipal)) return null;
-    return { dano: danoPrincipal, tipoDano, crit: _parseCritInfo(crit) };
+
+    // Itens homebrew guardam a ameaça de crítico e o multiplicador em campos
+    // separados (ex: crit:"20", mult:"x3"); o catálogo oficial guarda tudo
+    // junto num único texto (ex: "19/x3"). Combina os dois formatos aqui.
+    let critInfo;
+    if (mult) {
+        const threatNum = parseInt(crit) || 20;
+        const multNum = parseInt(String(mult).replace(/[^\d]/g, '')) || 2;
+        critInfo = { threat: threatNum, mult: multNum };
+    } else {
+        critInfo = _parseCritInfo(crit);
+    }
+    return { dano: danoPrincipal, tipoDano, crit: critInfo };
 }
 
 // Chamado pelo botão "🎲 Atacar" no card do item do inventário
@@ -5551,6 +5664,168 @@ function rolarAtaqueItem(i) {
     const stats = _getArmaRollStats(item);
     if (!stats) { mostrarToast('⚠ Este item não possui dados de dano definidos.'); return; }
     _abrirModalRolagemItem(item.nome, stats);
+}
+
+// ══════════════════════════════════════════════
+// CLONAR / MODIFICAR ITEM (customização estilo homebrew)
+// ══════════════════════════════════════════════
+
+// Cria uma cópia editável do item, convertendo os dados (do catálogo ou
+// texto livre) em campos estruturados para poder alterar dano/crítico/etc.
+function clonarItem(i) {
+    const orig = estado.inventario && estado.inventario[i];
+    if (!orig) return;
+
+    const clone = JSON.parse(JSON.stringify(orig));
+    clone.nome = (orig.nome || 'Item') + ' (Cópia)';
+    clone.custom = true;
+
+    if (!clone.hbStats) clone.hbStats = {};
+    const stats = _getArmaRollStats(orig);
+    if (stats) {
+        clone.hbStats.dano = clone.hbStats.dano || stats.dano;
+        clone.hbStats.tipo = clone.hbStats.tipo || stats.tipoDano || '';
+        clone.hbStats.crit = clone.hbStats.crit || String(stats.crit.threat);
+        clone.hbStats.mult = clone.hbStats.mult || ('x' + stats.crit.mult);
+    }
+    if (Object.keys(clone.hbStats).length) clone.homebrew = true;
+
+    estado.inventario.splice(i + 1, 0, clone);
+    salvarEstado();
+    renderInventario();
+    mostrarToast('📋 Item clonado! Use "✏ Modificar" para editar os dados.');
+}
+
+const INV_TIPO_DANO_OPCOES = ['Corte','Perfuração','Impacto','Balístico','Fogo','Energia','Morte','Sangue','Conhecimento','Medo','Químico',''];
+
+function _garantirModalModificarItem() {
+    let modal = document.getElementById('modal-modificar-item');
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'modal-modificar-item';
+    modal.innerHTML = `
+        <div class="mod-item-box">
+            <div class="mod-item-titulo">✏ Modificar Item</div>
+            <div class="mod-item-field">
+                <label>Nome</label>
+                <input type="text" id="mod-item-nome">
+            </div>
+            <div class="mod-item-field">
+                <label>Categoria</label>
+                <select id="mod-item-cat" onchange="_toggleModItemArmaFields()">
+                    <option value="ARMA">Arma</option>
+                    <option value="MUNICAO">Munição</option>
+                    <option value="PROTECAO">Proteção</option>
+                    <option value="GERAL">Geral</option>
+                    <option value="ITEM_AMALD">Item Amaldiçoado</option>
+                </select>
+            </div>
+            <div id="mod-item-arma-fields">
+                <div class="mod-item-row">
+                    <div class="mod-item-field">
+                        <label>Dano</label>
+                        <input type="text" id="mod-item-dano" placeholder="ex: 8d8">
+                    </div>
+                    <div class="mod-item-field">
+                        <label>Tipo de dano</label>
+                        <select id="mod-item-tipo"></select>
+                    </div>
+                </div>
+                <div class="mod-item-row">
+                    <div class="mod-item-field">
+                        <label>Crítico (ameaça)</label>
+                        <input type="number" id="mod-item-crit" value="20" min="2" max="20">
+                    </div>
+                    <div class="mod-item-field">
+                        <label>Multiplicador</label>
+                        <input type="number" id="mod-item-mult" value="2" min="2" max="10">
+                    </div>
+                </div>
+            </div>
+            <div class="mod-item-field">
+                <label>Descrição</label>
+                <textarea id="mod-item-desc" rows="3"></textarea>
+            </div>
+            <div class="mod-item-btns">
+                <button class="mod-item-cancelar" onclick="_fecharModalModificarItem()">Cancelar</button>
+                <button class="mod-item-salvar" onclick="salvarModificacaoItem()">Salvar</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    document.getElementById('mod-item-tipo').innerHTML = INV_TIPO_DANO_OPCOES
+        .map(t => `<option value="${t}">${t || '—'}</option>`).join('');
+    return modal;
+}
+
+let _modItemIndexAtual = null;
+
+function _toggleModItemArmaFields() {
+    const cat = document.getElementById('mod-item-cat').value;
+    document.getElementById('mod-item-arma-fields').style.display = cat === 'ARMA' ? 'block' : 'none';
+}
+
+function abrirModalModificarItem(i) {
+    const item = estado.inventario && estado.inventario[i];
+    if (!item) return;
+    _garantirModalModificarItem();
+    _modItemIndexAtual = i;
+
+    const cat = item.cat || 'GERAL';
+    document.getElementById('mod-item-nome').value = item.nome || '';
+    document.getElementById('mod-item-cat').value = cat;
+    document.getElementById('mod-item-desc').value = item.desc || '';
+
+    const stats = _getArmaRollStats(item);
+    document.getElementById('mod-item-dano').value = (item.hbStats && item.hbStats.dano) || (stats ? stats.dano : '');
+    document.getElementById('mod-item-tipo').value = (item.hbStats && item.hbStats.tipo) || (stats ? stats.tipoDano : '') || '';
+    document.getElementById('mod-item-crit').value = (item.hbStats && item.hbStats.crit) || (stats ? stats.crit.threat : 20);
+    document.getElementById('mod-item-mult').value = (item.hbStats && item.hbStats.mult ? String(item.hbStats.mult).replace(/[^\d]/g,'') : null) || (stats ? stats.crit.mult : 2);
+
+    _toggleModItemArmaFields();
+    document.getElementById('modal-modificar-item').classList.add('show');
+}
+
+function _fecharModalModificarItem() {
+    const modal = document.getElementById('modal-modificar-item');
+    if (modal) modal.classList.remove('show');
+    _modItemIndexAtual = null;
+}
+
+function salvarModificacaoItem() {
+    if (_modItemIndexAtual === null) return;
+    const item = estado.inventario[_modItemIndexAtual];
+    if (!item) return;
+
+    const nome = document.getElementById('mod-item-nome').value.trim();
+    if (!nome) { mostrarToast('⚠ Informe o nome do item'); return; }
+    const cat  = document.getElementById('mod-item-cat').value;
+    const desc = document.getElementById('mod-item-desc').value.trim();
+
+    item.nome = nome;
+    item.cat  = cat;
+    item.desc = desc;
+    item.custom = true;
+    item.homebrew = true;
+
+    if (cat === 'ARMA') {
+        const dano = document.getElementById('mod-item-dano').value.trim();
+        const tipo = document.getElementById('mod-item-tipo').value;
+        const crit = document.getElementById('mod-item-crit').value.trim() || '20';
+        const mult = document.getElementById('mod-item-mult').value.trim() || '2';
+        if (!/^\d+d\d+([+\-]\d+)?(\/\d+d\d+([+\-]\d+)?)?$/i.test(dano)) {
+            mostrarToast('⚠ Formato de dano inválido. Use ex: 8d8 ou 2d6+2');
+            return;
+        }
+        item.hbStats = { dano, tipo, crit, mult: 'x' + mult.replace(/[^\d]/g,'') };
+        delete item.armaStats; // hbStats passa a ser a fonte única de verdade
+    } else {
+        delete item.hbStats;
+    }
+
+    salvarEstado();
+    renderInventario();
+    _fecharModalModificarItem();
+    mostrarToast('✦ ITEM MODIFICADO');
 }
 
 function _garantirModalRolagemItem() {
