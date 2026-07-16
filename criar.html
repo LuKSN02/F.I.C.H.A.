@@ -624,8 +624,8 @@
 
 <div class="form-hero">
     <p style="font-family:'Share Tech Mono',monospace;letter-spacing:4px;color:var(--purple-neon);font-size:0.8rem;margin-bottom:8px;">// PROTOCOLO DE REGISTRO //</p>
-    <h1>Criar <span>Agente</span></h1>
-    <p>PREENCHA AS INFORMAÇÕES DO NOVO AGENTE COM CUIDADO. O MEDO É REAL.</p>
+    <h1 id="criacao-h1">Criar <span>Agente</span></h1>
+    <p id="criacao-sub">PREENCHA AS INFORMAÇÕES DO NOVO AGENTE COM CUIDADO. O MEDO É REAL.</p>
 </div>
 
 <div class="stepper" id="stepper">
@@ -861,7 +861,7 @@
 <div class="modal-overlay" id="modal-sucesso">
     <div class="modal-box">
         <div class="modal-icon">👁️</div>
-        <div class="modal-title">Agente Registrado</div>
+        <div class="modal-title" id="modal-titulo-sucesso">Agente Registrado</div>
         <div class="modal-agente-nome" id="modal-nome">—</div>
         <div class="modal-agente-classe" id="modal-classe">—</div>
         <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:24px;">
@@ -869,7 +869,7 @@
         </p>
         <div>
             <button class="btn-modal" id="btn-ver-ficha" onclick="irParaFicha()">VER FICHA</button>
-            <button class="btn-modal" onclick="irParaAgentes()" style="background:#2a0050;">VER AGENTES</button>
+            <button class="btn-modal" id="btn-ver-agentes" onclick="irParaAgentes()" style="background:#2a0050;">VER AGENTES</button>
             <button class="btn-modal secondary" onclick="criarNovo()">CRIAR OUTRO</button>
         </div>
     </div>
@@ -1143,12 +1143,25 @@ function getPrefix() {
 }
 
 // ══════════════════════════════════════════════
+// TIPO DE FICHA — Agente (jogador) ou NPC de Campanha
+// Determinado pelo parâmetro ?tipo=npc na URL. Mantém a criação
+// de NPCs totalmente separada da criação de Agentes.
+// ══════════════════════════════════════════════
+function getTipoFicha() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('tipo') === 'npc' ? 'npc' : 'agente';
+}
+function isFichaNpc()      { return getTipoFicha() === 'npc'; }
+function getFirebaseNode() { return isFichaNpc() ? 'npcs' : 'agentes'; }
+function getListaChave()   { return isFichaNpc() ? 'lista_npcs' : 'lista_agentes'; }
+
+// ══════════════════════════════════════════════
 // RASCUNHO — salva o progresso de criação em
 // localStorage para não perder nada ao trocar de
 // etapa, fechar a aba ou recarregar a página.
 // ══════════════════════════════════════════════
 function chaveRascunho() {
-    return getPrefix() + 'rascunho_ficha';
+    return getPrefix() + (isFichaNpc() ? 'rascunho_npc' : 'rascunho_ficha');
 }
 
 function salvarRascunho() {
@@ -1275,6 +1288,15 @@ let fichaIdCriada    = null;
 // INICIALIZAÇÃO
 // ══════════════════════════════════════════════
 window.onload = function() {
+    // Ajusta textos da tela quando estamos criando um NPC de campanha
+    if (isFichaNpc()) {
+        document.title = 'F.I.C.H.A. – Criar NPC';
+        const h1  = document.getElementById('criacao-h1');
+        const sub = document.getElementById('criacao-sub');
+        if (h1)  h1.innerHTML  = 'Criar <span>NPC</span>';
+        if (sub) sub.textContent = 'PREENCHA AS INFORMAÇÕES DO NOVO NPC DE CAMPANHA COM CUIDADO. O MEDO É REAL.';
+    }
+
     restaurarRascunho();
     renderAtributos();
     renderPericias();
@@ -1626,6 +1648,7 @@ async function finalizarFicha() {
 
     const ficha = {
         id, nome, codinome, idade, nivel, origem, classe,
+        tipoFicha:         getTipoFicha(),
         atributos:         { ...atributosValores },
         pericias:          [...periciasSelected],
         habilidadesIniciais,
@@ -1654,7 +1677,7 @@ async function finalizarFicha() {
     if (window._firebaseDB && window._firebaseSet && window._firebaseRef && usuario) {
         try {
             await window._firebaseSet(
-                window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`),
+                window._firebaseRef(window._firebaseDB, `${getFirebaseNode()}/${usuario}/${id}`),
                 ficha
             );
             firebaseOk = true;
@@ -1664,7 +1687,7 @@ async function finalizarFicha() {
     }
 
     // ── 2. localStorage (cache offline / fallback) ───────────────────
-    const chave = getPrefix() + 'lista_agentes';
+    const chave = getPrefix() + getListaChave();
     const agentes = JSON.parse(localStorage.getItem(chave)) || [];
     // Evita duplicatas (re-criação após erro)
     if (!agentes.find(a => String(a.id) === String(id))) agentes.push(ficha);
@@ -1675,18 +1698,21 @@ async function finalizarFicha() {
 
     document.getElementById('modal-nome').textContent   = nome + (codinome ? ` "${codinome}"` : '');
     document.getElementById('modal-classe').textContent = `${classe} • Nível ${nivel} • ${origem}`;
+    document.getElementById('modal-titulo-sucesso').textContent = isFichaNpc() ? 'NPC Registrado' : 'Agente Registrado';
+    document.getElementById('btn-ver-agentes').textContent      = isFichaNpc() ? 'VER NPCS' : 'VER AGENTES';
     document.getElementById('modal-sucesso').classList.add('show');
 }
 
 function irParaFicha() {
-    const usuario = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const usuario  = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
+    const tipoParm = isFichaNpc() ? '&tipo=npc' : '';
     const url = usuario
-        ? `ficha.html?id=${fichaIdCriada}&usuario=${encodeURIComponent(usuario)}`
-        : `ficha.html?id=${fichaIdCriada}`;
+        ? `ficha.html?id=${fichaIdCriada}&usuario=${encodeURIComponent(usuario)}${tipoParm}`
+        : `ficha.html?id=${fichaIdCriada}${tipoParm}`;
     window.location.href = url;
 }
-function irParaAgentes()  { window.location.href = 'index.html?view=agentes'; }
-function criarNovo()      { window.location.reload(); }
+function irParaAgentes()  { window.location.href = isFichaNpc() ? 'index.html?view=agentes&sub=npcs' : 'index.html?view=agentes'; }
+function criarNovo()      { window.location.href = isFichaNpc() ? 'criar.html?tipo=npc' : 'criar.html'; }
 </script>
     <script>
 

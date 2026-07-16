@@ -3163,6 +3163,34 @@ body { transition: background 0.6s ease; }
     cursor: default;
 }
 
+/* ═══════════════════════════════════════════
+   SUBABAS: MEUS AGENTES / NPCS DE CAMPANHA
+═══════════════════════════════════════════ */
+.dossie-subtabs {
+    display: flex; gap: 8px; margin-top: 26px; flex-wrap: wrap;
+}
+.dossie-subtab {
+    background: transparent; border: 1px solid rgba(var(--tema-glow-rgb),0.25);
+    color: rgba(255,255,255,0.55); font-family: 'Oswald', sans-serif;
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    padding: 9px 20px; border-radius: 99px; cursor: pointer; transition: all 0.2s;
+}
+.dossie-subtab:hover { color: #fff; border-color: var(--tema-primary); }
+.dossie-subtab.active {
+    background: var(--tema-primary); border-color: var(--tema-primary);
+    color: #fff; box-shadow: 0 0 18px rgba(var(--tema-glow-rgb),0.35);
+}
+
+/* Botão "Criar NPC" — variante tracejada do btn-novo-agente */
+.btn-criar-npc {
+    background: transparent; border-style: dashed; cursor: pointer;
+}
+.dossie-chip-npc {
+    background: rgba(var(--tema-glow-rgb),0.16);
+    border: 1px solid rgba(var(--tema-glow-rgb),0.4);
+    color: var(--tema-primary-light);
+}
+
 </style>
 
 <body>
@@ -3491,23 +3519,41 @@ body { transition: background 0.6s ease; }
                         <span class="eyebrow-dot"></span>
                         ARQUIVO CONFIDENCIAL · ORDEM PARANORMAL
                     </div>
-                    <h2 class="dossie-title">AGENTES <span class="num">[<span id="contador">0</span>]</span></h2>
-                    <p class="dossie-sub">Registro de agentes vinculados à sua credencial de acesso.</p>
+                    <h2 class="dossie-title" id="agentes-titulo">AGENTES <span class="num">[<span id="contador">0</span>]</span></h2>
+                    <p class="dossie-sub" id="agentes-subtitulo">Registro de agentes vinculados à sua credencial de acesso.</p>
                 </div>
-                <div class="dossie-actions">
+                <div class="dossie-actions" id="agentes-acoes-agente">
                     <a href="criar.html" class="btn-novo-agente">
                         <span class="cta-icon">+</span> Novo Agente
                     </a>
                 </div>
+                <div class="dossie-actions d-none" id="agentes-acoes-npc">
+                    <a href="criar.html?tipo=npc" class="btn-novo-agente btn-criar-npc">
+                        <span class="cta-icon">+</span> Criar NPC
+                    </a>
+                </div>
             </div>
-            <div class="dossie-toolbar">
+
+            <div class="dossie-subtabs">
+                <button type="button" class="dossie-subtab active" id="subtab-agentes" onclick="mostrarSubAbaAgentes('agentes')">Meus Agentes</button>
+                <button type="button" class="dossie-subtab" id="subtab-npcs" onclick="mostrarSubAbaAgentes('npcs')">NPCs de Campanha</button>
+            </div>
+
+            <div class="dossie-toolbar" id="toolbar-agentes">
                 <div class="dossie-search">
                     <span class="dossie-search-icon">🔍</span>
                     <input type="text" id="busca-agentes" placeholder="Buscar por nome, codinome, classe ou origem..." oninput="filtrarAgentes(this.value)">
                 </div>
             </div>
+            <div class="dossie-toolbar d-none" id="toolbar-npcs">
+                <div class="dossie-search">
+                    <span class="dossie-search-icon">🔍</span>
+                    <input type="text" id="busca-npcs" placeholder="Buscar por nome, classe, origem ou campanha..." oninput="filtrarNpcs(this.value)">
+                </div>
+            </div>
         </div>
         <div id="lista-agentes" class="dossie-grid"></div>
+        <div id="lista-npcs" class="dossie-grid d-none"></div>
     </section>
 
     <!-- ===== SOCIAL (chat entre agentes) ===== -->
@@ -3760,7 +3806,7 @@ body { transition: background 0.6s ease; }
                 atualizarAvatar();
                 carregarAgentes(); // busca do Firebase com fallback local
                 const params = new URLSearchParams(window.location.search);
-                if (params.get('view') === 'agentes') mostrarAgentes();
+                if (params.get('view') === 'agentes') { mostrarAgentes(); if (params.get('sub') === 'npcs') mostrarSubAbaAgentes('npcs'); }
                 else if (params.get('view') === 'social') mostrarSocial();
                 else mostrarInicio();
             } else {
@@ -3884,6 +3930,7 @@ body { transition: background 0.6s ease; }
             const usuario = getUsuarioLogado();
             // Cancela listeners em tempo real antes de deslogar
             if (_agentesListener)        { _agentesListener();        _agentesListener        = null; }
+            if (_npcsListener)           { _npcsListener();           _npcsListener           = null; }
             if (_socialListener)         { _socialListener();         _socialListener         = null; }
             if (_socialPresenceListener) { _socialPresenceListener(); _socialPresenceListener = null; }
             if (_socialTypingListener)   { _socialTypingListener();   _socialTypingListener   = null; }
@@ -3898,6 +3945,7 @@ body { transition: background 0.6s ease; }
             // Limpa cache de agentes e perfil deste usuário do localStorage
             if (usuario) {
                 localStorage.removeItem(usuario + '_lista_agentes');
+                localStorage.removeItem(usuario + '_lista_npcs');
                 localStorage.removeItem('perfil_' + usuario);
             }
             localStorage.removeItem('ficha_user_ativo');
@@ -3911,6 +3959,7 @@ body { transition: background 0.6s ease; }
             document.getElementById('dd-username-label').textContent = '';
             document.getElementById('lista-agentes').innerHTML = '';
             document.getElementById('contador').textContent = '0';
+            document.getElementById('lista-npcs').innerHTML = '';
             mostrarInicio();
         }
 
@@ -3926,6 +3975,7 @@ body { transition: background 0.6s ease; }
             document.getElementById('secao-inicio').classList.add('d-none');
             document.getElementById('secao-social').classList.add('d-none');
             document.getElementById('secao-agentes').classList.remove('d-none');
+            mostrarSubAbaAgentes('agentes');
             carregarAgentes();
         }
 
@@ -5109,6 +5159,157 @@ body { transition: background 0.6s ease; }
             agentes.splice(index, 1);
             localStorage.setItem(chave, JSON.stringify(agentes));
             carregarAgentes();
+        }
+
+        /* =============================================
+           SUBABAS DA SEÇÃO AGENTES (Meus Agentes / NPCs)
+        ============================================= */
+        function mostrarSubAbaAgentes(tipo) {
+            const ehNpc = tipo === 'npcs';
+            document.getElementById('subtab-agentes').classList.toggle('active', !ehNpc);
+            document.getElementById('subtab-npcs').classList.toggle('active', ehNpc);
+            document.getElementById('agentes-acoes-agente').classList.toggle('d-none', ehNpc);
+            document.getElementById('agentes-acoes-npc').classList.toggle('d-none', !ehNpc);
+            document.getElementById('toolbar-agentes').classList.toggle('d-none', ehNpc);
+            document.getElementById('toolbar-npcs').classList.toggle('d-none', !ehNpc);
+            document.getElementById('lista-agentes').classList.toggle('d-none', ehNpc);
+            document.getElementById('lista-npcs').classList.toggle('d-none', !ehNpc);
+            document.getElementById('agentes-titulo').innerHTML = ehNpc
+                ? 'NPCS <span class="num">[<span id="contador-npcs">0</span>]</span>'
+                : 'AGENTES <span class="num">[<span id="contador">0</span>]</span>';
+            document.getElementById('agentes-subtitulo').textContent = ehNpc
+                ? 'Personagens não-jogáveis criados para suas campanhas.'
+                : 'Registro de agentes vinculados à sua credencial de acesso.';
+            if (ehNpc) carregarNpcs();
+        }
+
+        /* =============================================
+           NPCS DE CAMPANHA — usa o mesmo fluxo completo de
+           ficha do Ordem Paranormal (criar.html + ficha.html),
+           porém salvo separadamente em npcs/{usuario}/{id}
+        ============================================= */
+        let _npcsListener = null;
+
+        function carregarNpcs() {
+            const lista     = document.getElementById('lista-npcs');
+            const contador  = document.getElementById('contador-npcs');
+            const usuario   = getUsuarioLogado();
+            if (!usuario || !lista) return;
+
+            const chaveCache = getPrefix() + 'lista_npcs';
+            const cacheLocal = JSON.parse(localStorage.getItem(chaveCache)) || [];
+            if (cacheLocal.length > 0) _renderNpcs(cacheLocal, lista, contador);
+
+            if (_npcsListener) { _npcsListener(); _npcsListener = null; }
+
+            if (window._firebaseDB && window._firebaseOnValue && window._firebaseRef) {
+                const dbRef = window._firebaseRef(window._firebaseDB, `npcs/${usuario}`);
+                _npcsListener = window._firebaseOnValue(dbRef, snap => {
+                    if (snap.exists()) {
+                        const npcsFirebase = Object.values(snap.val());
+                        localStorage.setItem(chaveCache, JSON.stringify(npcsFirebase));
+                        _renderNpcs(npcsFirebase, lista, contador);
+                    } else {
+                        localStorage.removeItem(chaveCache);
+                        _renderNpcs([], lista, contador);
+                    }
+                }, err => {
+                    console.warn('Erro no listener de NPCs, usando cache local:', err);
+                    _renderNpcs(cacheLocal, lista, contador);
+                });
+            } else {
+                _renderNpcs(cacheLocal, lista, contador);
+            }
+        }
+
+        function _renderNpcs(npcs, lista, contador) {
+            window._npcsAtuais = npcs;
+            if (contador) contador.textContent = npcs.length;
+
+            if (npcs.length === 0) {
+                lista.innerHTML = `
+                    <div class="dossie-empty" style="grid-column:1/-1;">
+                        <div class="dossie-empty-icon">👤</div>
+                        <p class="dossie-empty-text">▸ Nenhum NPC criado ainda.</p>
+                        <a href="criar.html?tipo=npc" class="btn-novo-agente btn-criar-npc"><span class="cta-icon">+</span> Criar primeiro NPC</a>
+                    </div>`;
+                return;
+            }
+
+            lista.innerHTML = '';
+            npcs.forEach((npc, index) => {
+                // Prioridade: fotoCostum salvo pela ficha completa → avatar gerado
+                let fotoSrc = npc.fotoCostum || null;
+                if (!fotoSrc) fotoSrc = localStorage.getItem(getPrefix() + 'foto_ficha_' + npc.id) || null;
+                if (!fotoSrc) fotoSrc = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(npc.nome)}`;
+
+                const buscaTermo = `${npc.nome || ''} ${npc.classe || ''} ${npc.origem || ''} ${npc.campanhaNome || ''} ${npc.papel || ''}`.toLowerCase();
+
+                lista.innerHTML += `
+                    <div class="dossie-card" data-busca="${buscaTermo.replace(/"/g, '')}">
+                        <div class="dossie-media">
+                            <img src="${fotoSrc}" alt="${npc.nome}" loading="lazy">
+                            <div class="dossie-tag"><span class="dossie-tag-dot"></span> NPC</div>
+                            <div class="dossie-level">NÍVEL ${npc.nivel || '—'}</div>
+                            <div class="dossie-name-wrap">
+                                <h3 class="dossie-name">${npc.nome}</h3>
+                                ${npc.papel ? `<div class="dossie-codename">"${npc.papel}"</div>` : (npc.codinome ? `<div class="dossie-codename">"${npc.codinome}"</div>` : '')}
+                            </div>
+                        </div>
+                        <div class="dossie-body">
+                            <div class="dossie-meta">
+                                <span class="dossie-chip dossie-chip-accent">${npc.classe || '—'}</span>
+                                <span class="dossie-chip">${npc.origem || '—'}</span>
+                                ${npc.campanhaNome ? `<span class="dossie-chip dossie-chip-npc">${npc.campanhaNome}</span>` : ''}
+                            </div>
+                            <div class="dossie-actions-row">
+                                <a href="ficha.html?id=${npc.id}&tipo=npc" class="btn-dossie-acessar">Acessar Ficha</a>
+                                <button onclick="deletarNpc(${index})" class="dossie-icon-btn danger" title="Remover NPC">🗑</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function filtrarNpcs(termo) {
+            const t = (termo || '').toLowerCase().trim();
+            const cards = document.querySelectorAll('#lista-npcs .dossie-card');
+            let visiveis = 0;
+            cards.forEach(card => {
+                const match = !t || (card.dataset.busca || '').includes(t);
+                card.style.display = match ? '' : 'none';
+                if (match) visiveis++;
+            });
+
+            let aviso = document.getElementById('npc-sem-resultado');
+            if (visiveis === 0 && cards.length > 0) {
+                if (!aviso) {
+                    aviso = document.createElement('div');
+                    aviso.id = 'npc-sem-resultado';
+                    aviso.style.gridColumn = '1/-1';
+                    aviso.className = 'dossie-empty';
+                    aviso.innerHTML = `<div class="dossie-empty-icon">🔎</div><p class="dossie-empty-text">▸ Nenhum NPC corresponde à busca.</p>`;
+                    document.getElementById('lista-npcs').appendChild(aviso);
+                }
+            } else if (aviso) {
+                aviso.remove();
+            }
+        }
+
+        async function deletarNpc(index) {
+            if (!confirm('Remover este NPC? Esta ação não pode ser desfeita.')) return;
+            const usuario = getUsuarioLogado();
+            const chave   = getPrefix() + 'lista_npcs';
+            const npcs    = JSON.parse(localStorage.getItem(chave)) || [];
+            const npc     = npcs[index];
+            if (npc?.id && window._firebaseDB && window._firebaseRemove && window._firebaseRef) {
+                try {
+                    await window._firebaseRemove(window._firebaseRef(window._firebaseDB, `npcs/${usuario}/${npc.id}`));
+                } catch (e) { console.warn('Erro ao remover NPC do Firebase:', e); }
+            }
+            npcs.splice(index, 1);
+            localStorage.setItem(chave, JSON.stringify(npcs));
+            carregarNpcs();
         }
 
         /* =============================================

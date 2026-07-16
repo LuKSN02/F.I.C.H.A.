@@ -1528,7 +1528,7 @@
           <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
           <button onclick="abrirModalCompartilhar();toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid var(--green,#39d353);color:var(--green,#39d353);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;letter-spacing:1px;margin-bottom:8px;cursor:pointer;">🔗 Compartilhar Ficha</button>
           <a id="btn-portrait-mobile" href="portrait.html" target="_blank" onclick="toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid var(--purple,#9b30d9);color:var(--purple-neon,#d070ff);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:1px;margin-bottom:8px;">🎭 Portrait</a>
-          <a href="index.html?view=agentes" onclick="toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid #333;color:#aaa;padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:1px;">← Voltar</a>
+          <a href="index.html?view=agentes" id="link-voltar-mobile" onclick="toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid #333;color:#aaa;padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:1px;">← Voltar</a>
       </div>
     </div>
     <div class="d-none d-lg-flex align-items-center flex-shrink-0" style="justify-content:flex-end;gap:8px;">
@@ -1560,7 +1560,7 @@
   <button onclick="abrirModalCompartilhar()" class="btn-voltar" style="border-color:var(--green);color:var(--green);cursor:pointer;">
     🔗 Compartilhar
   </button>
-  <a href="index.html?view=agentes" class="btn-voltar">← Voltar</a>
+  <a href="index.html?view=agentes" id="link-voltar-desktop" class="btn-voltar">← Voltar</a>
 </div>
   </div>
 </nav>
@@ -4615,6 +4615,23 @@ function getPrefix() {
 }
 
 // ══════════════════════════════════════════════
+// TIPO DE FICHA — Agente (jogador) ou NPC de Campanha
+// Mantém os dois tipos em caminhos/chaves totalmente separados,
+// para que um NPC nunca apareça na lista "Meus Agentes" e vice-versa.
+// ══════════════════════════════════════════════
+function getTipoFicha() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('tipo') === 'npc' ? 'npc' : 'agente';
+}
+function isFichaNpc() { return getTipoFicha() === 'npc'; }
+// Nó raiz no Firebase Realtime Database: 'agentes' ou 'npcs'
+function getFirebaseNode() { return isFichaNpc() ? 'npcs' : 'agentes'; }
+// Chave da lista em cache no localStorage: 'lista_agentes' ou 'lista_npcs'
+function getListaChave() { return isFichaNpc() ? 'lista_npcs' : 'lista_agentes'; }
+// Link de "voltar" para a seção correta do index.html
+function getVoltarUrl() { return isFichaNpc() ? 'index.html?view=agentes&sub=npcs' : 'index.html?view=agentes'; }
+
+// ══════════════════════════════════════════════
 // ESTADO
 // ══════════════════════════════════════════════
 let ficha  = null;
@@ -4637,6 +4654,13 @@ function bonusAtrib(v) { return v || 0; }
 // INIT
 // ══════════════════════════════════════════════
 window.onload = function() {
+    // Ajusta os links de "Voltar" para retornar à subaba correta (Meus Agentes ou NPCs de Campanha)
+    const _voltarUrl = getVoltarUrl();
+    const _linkVoltarDesktop = document.getElementById('link-voltar-desktop');
+    const _linkVoltarMobile  = document.getElementById('link-voltar-mobile');
+    if (_linkVoltarDesktop) _linkVoltarDesktop.href = _voltarUrl;
+    if (_linkVoltarMobile)  _linkVoltarMobile.href  = _voltarUrl;
+
     // Aguarda o Firebase Auth resolver o estado do usuário antes de carregar a ficha.
     // Isso garante que sessionStorage('ficha_user') esteja preenchido mesmo quando
     // ficha.html é aberto diretamente (não via index.html).
@@ -4707,7 +4731,7 @@ window.onload = function() {
 
 // ── Remove duplicatas de lista_agentes que possam ter se acumulado ──────────
 function deduplicarAgentesLocais() {
-    const chave = getPrefix() + 'lista_agentes';
+    const chave = getPrefix() + getListaChave();
     const agentes = JSON.parse(localStorage.getItem(chave)) || [];
     const vistos = new Map();
     // Mantém sempre o último (mais atualizado) para cada id
@@ -4729,22 +4753,22 @@ async function carregarFicha() {
     if (campanhaParam) window._fichaCurrentCampanha = campanhaParam;
 
     // 1) Tenta carregar agente do localStorage (cache local)
-    const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+    const agentesLocal = JSON.parse(localStorage.getItem(getPrefix() + getListaChave())) || [];
     if (id) ficha = agentesLocal.find(a => String(a.id) === String(id));
     if (!ficha && agentesLocal.length > 0) ficha = agentesLocal[agentesLocal.length - 1];
 
     // 2) Se não achou localmente, busca no Firebase
     if (!ficha && id && window._firebaseDB && usuario) {
         try {
-            const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${id}`));
+            const snap = await window._firebaseGet(window._firebaseRef(window._firebaseDB, `${getFirebaseNode()}/${usuario}/${id}`));
             if (snap.exists()) {
                 ficha = snap.val();
                 // Re-sincroniza cache local — garante que não haja duplicatas por tipo (string vs number)
-                let agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+                let agentes = JSON.parse(localStorage.getItem(getPrefix() + getListaChave())) || [];
                 // Remove todas as entradas com o mesmo id antes de inserir (evita duplicata por tipo misto)
                 agentes = agentes.filter(a => String(a.id) !== String(id));
                 agentes.push(ficha);
-                localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes));
+                localStorage.setItem(getPrefix() + getListaChave(), JSON.stringify(agentes));
             }
         } catch(e) { console.error('Erro ao buscar agente no Firebase:', e); }
     }
@@ -4844,7 +4868,7 @@ function sincronizarAgenteFirebase() {
   if (!ficha.criadoEm) ficha.criadoEm = new Date().toLocaleDateString('pt-BR');
   try {
     // Path com usuário: agentes/{usuario}/{id} — evita mistura entre jogadores
-    const agenteRef = window._firebaseRef(window._firebaseDB, `agentes/${usuario}/${ficha.id}`);
+    const agenteRef = window._firebaseRef(window._firebaseDB, `${getFirebaseNode()}/${usuario}/${ficha.id}`);
     window._firebaseSet(agenteRef, {
       id:        ficha.id,
       nome:      ficha.nome,
@@ -4921,9 +4945,9 @@ function _salvarFotoProcessada(base64, alvo) {
         estado.fotoCostum = base64;
         try { localStorage.setItem(getPrefix() + `foto_ficha_${ficha?.id}`, base64); } catch(e) { console.warn('foto localStorage:', e); }
         if (ficha) {
-            const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+            const agentes = JSON.parse(localStorage.getItem(getPrefix() + getListaChave())) || [];
             const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-            if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
+            if (idx !== -1) { agentes[idx].fotoCostum = base64; localStorage.setItem(getPrefix() + getListaChave(), JSON.stringify(agentes)); }
         }
         salvarEstado();
         sincronizarAgenteFirebase();
@@ -7967,9 +7991,9 @@ function salvarAtributos() {
     });
 
     // Persistir no localStorage
-    const agentes = JSON.parse(localStorage.getItem(getPrefix() + 'lista_agentes')) || [];
+    const agentes = JSON.parse(localStorage.getItem(getPrefix() + getListaChave())) || [];
     const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-    if (idx !== -1) { agentes[idx].atributos = ficha.atributos; localStorage.setItem(getPrefix() + 'lista_agentes', JSON.stringify(agentes)); }
+    if (idx !== -1) { agentes[idx].atributos = ficha.atributos; localStorage.setItem(getPrefix() + getListaChave(), JSON.stringify(agentes)); }
 
     // Recalcular recursos pela classe + NEX atual
     const nex  = estado.progressao?.nex || '5%';
@@ -8235,7 +8259,7 @@ function salvarNex() {
             // Salva no estado
             if (estado) { estado.nome = novoNome; salvarEstado(); }
             // Atualiza lista de agentes
-            const chave = getPrefix() + 'lista_agentes';
+            const chave = getPrefix() + getListaChave();
             const agentes = JSON.parse(localStorage.getItem(chave)) || [];
             const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
             if (idx !== -1) { agentes[idx].nome = novoNome; localStorage.setItem(chave, JSON.stringify(agentes)); }
