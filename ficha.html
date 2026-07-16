@@ -5397,12 +5397,42 @@ function rolarDado() {
     else { const ts=document.getElementById('dado-tipo').value, qtd=Math.max(1,Math.min(10,parseInt(document.getElementById('dado-qtd').value)||1)), lados=parseInt(ts.replace('d','')), rolls=Array.from({length:qtd},()=>Math.floor(Math.random()*lados)+1); adicionarAoLog(`${qtd}${ts}`,`[${rolls.join(', ')}]`,rolls.reduce((a,b)=>a+b,0),'normal'); }
 }
 
+// Rola uma expressão de dados. Suporta múltiplos termos somados/subtraídos,
+// ex: "1d1+1d1", "2d6+1d4-2", "1d8+3", não só um único "NdM+bônus".
 function rolarExpressao(expr) {
-    const m=expr.match(/^(\d+)d(\d+)([+-]\d+)?$/i); if(!m) return{total:0,detalhe:expr};
-    const qtd=parseInt(m[1]),lados=parseInt(m[2]),bonus=parseInt(m[3]||0);
-    if(qtd<1||qtd>20||lados<2) return{total:0,detalhe:expr};
-    const rolls=Array.from({length:qtd},()=>Math.floor(Math.random()*lados)+1);
-    return{total:rolls.reduce((a,b)=>a+b,0)+bonus,detalhe:`[${rolls.join(', ')}]${bonus?(bonus>0?'+':'')+bonus:''}`};
+    const tokens = String(expr).replace(/\s+/g, '').match(/[+-]?(\d+d\d+|\d+)/gi);
+    if (!tokens) return { total: 0, detalhe: expr };
+    let total = 0;
+    const partes = [];
+    tokens.forEach((tok, idx) => {
+        const neg = tok[0] === '-';
+        const explicitoPos = tok[0] === '+';
+        const corpo = (neg || explicitoPos) ? tok.slice(1) : tok;
+        const sinalTxt = idx === 0 ? (neg ? '-' : '') : (neg ? ' - ' : ' + ');
+        const md = corpo.match(/^(\d+)d(\d+)$/i);
+        if (md) {
+            let qtd = parseInt(md[1]), lados = parseInt(md[2]);
+            qtd = Math.min(Math.max(qtd, 1), 20);
+            if (lados < 2) lados = 2;
+            const rolls = Array.from({ length: qtd }, () => Math.floor(Math.random() * lados) + 1);
+            const soma = rolls.reduce((a, b) => a + b, 0);
+            total += neg ? -soma : soma;
+            partes.push(`${sinalTxt}[${rolls.join(',')}]`);
+        } else {
+            const val = parseInt(corpo, 10) || 0;
+            total += neg ? -val : val;
+            partes.push(`${sinalTxt}${val}`);
+        }
+    });
+    return { total, detalhe: partes.join('').trim() };
+}
+
+// Valida uma expressão de dano, aceitando múltiplos termos de dado
+// (ex: "1d1+1d1", "2d6+1d4-2") e variações separadas por "/" (ex: "1d6/1d8").
+const DANO_EXPR_RE = /^\d+d\d+(\s*[+\-]\s*(\d+d\d+|\d+))*$/i;
+function _isValidDanoExpr(expr) {
+    if (!expr) return false;
+    return expr.split('/').every(p => DANO_EXPR_RE.test(p.trim()));
 }
 
 // ══════════════════════════════════════════════
@@ -5630,8 +5660,8 @@ function _getArmaRollStats(item) {
         tipoDano = item.armaStats.tipoDano || tipoDano;
     }
     if (!dano && item.desc) {
-        const md = item.desc.match(/Dano:\s*([0-9dD]+(?:\s*[+\-]\s*\d+)?(?:\s*\/\s*[0-9dD]+(?:\s*[+\-]\s*\d+)?)?)/);
-        if (md) dano = md[1].replace(/\s+/g, '');
+        const md = item.desc.match(/Dano:\s*([^·]+)/i);
+        if (md) dano = md[1].trim().replace(/\s+/g, '');
         const mc = item.desc.match(/Cr[ií]t:\s*([0-9x\/]+)/i);
         if (mc) crit = mc[1];
         if (!tipoDano) {
@@ -5641,7 +5671,7 @@ function _getArmaRollStats(item) {
     }
     if (!dano) return null;
     const danoPrincipal = dano.split('/')[0].trim();
-    if (!/^\d+d\d+([+\-]\d+)?$/i.test(danoPrincipal)) return null;
+    if (!_isValidDanoExpr(danoPrincipal)) return null;
 
     // Itens homebrew guardam a ameaça de crítico e o multiplicador em campos
     // separados (ex: crit:"20", mult:"x3"); o catálogo oficial guarda tudo
@@ -5724,7 +5754,7 @@ function _garantirModalModificarItem() {
                 <div class="mod-item-row">
                     <div class="mod-item-field">
                         <label>Dano</label>
-                        <input type="text" id="mod-item-dano" placeholder="ex: 8d8">
+                        <input type="text" id="mod-item-dano" placeholder="ex: 8d8 ou 1d6+1d4">
                     </div>
                     <div class="mod-item-field">
                         <label>Tipo de dano</label>
@@ -5812,8 +5842,8 @@ function salvarModificacaoItem() {
         const tipo = document.getElementById('mod-item-tipo').value;
         const crit = document.getElementById('mod-item-crit').value.trim() || '20';
         const mult = document.getElementById('mod-item-mult').value.trim() || '2';
-        if (!/^\d+d\d+([+\-]\d+)?(\/\d+d\d+([+\-]\d+)?)?$/i.test(dano)) {
-            mostrarToast('⚠ Formato de dano inválido. Use ex: 8d8 ou 2d6+2');
+        if (!_isValidDanoExpr(dano.replace(/\s+/g, ''))) {
+            mostrarToast('⚠ Formato de dano inválido. Use ex: 8d8, 2d6+2 ou 1d6+1d4');
             return;
         }
         item.hbStats = { dano, tipo, crit, mult: 'x' + mult.replace(/[^\d]/g,'') };
