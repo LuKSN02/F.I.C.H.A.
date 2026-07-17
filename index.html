@@ -3976,7 +3976,6 @@ body { transition: background 0.6s ease; }
             document.getElementById('secao-social').classList.add('d-none');
             document.getElementById('secao-agentes').classList.remove('d-none');
             mostrarSubAbaAgentes('agentes');
-            carregarAgentes();
         }
 
         function mostrarInicio() {
@@ -5180,7 +5179,11 @@ body { transition: background 0.6s ease; }
             document.getElementById('agentes-subtitulo').textContent = ehNpc
                 ? 'Personagens não-jogáveis criados para suas campanhas.'
                 : 'Registro de agentes vinculados à sua credencial de acesso.';
+            // Recarrega os dados da subaba atual — o innerHTML acima recria os spans
+            // #contador/#contador-npcs do zero, então o contador precisa ser
+            // repreenchido aqui ou fica travado em 0 mesmo com a lista visível.
             if (ehNpc) carregarNpcs();
+            else carregarAgentes();
         }
 
         /* =============================================
