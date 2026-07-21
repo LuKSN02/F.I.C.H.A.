@@ -942,6 +942,30 @@
         .atrib-edit-val::-webkit-inner-spin-button { -webkit-appearance: none; }
         .atrib-edit-val[type=number] { -moz-appearance: textfield; }
 
+        /* PATCH — Modal editar valor máximo de recurso (VIDA/SANIDADE/ESFORÇO/DETERMINAÇÃO) */
+        #modal-recurso {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.88); z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        .modal-recurso-box {
+            background: #0d0010; border: 1px solid var(--purple); border-radius: 12px;
+            padding: 26px 24px; max-width: 360px; width: 92%;
+            box-shadow: 0 0 40px var(--purple-glow);
+        }
+        .modal-recurso-title { font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+        .modal-recurso-atual { font-size: 0.65rem; color: #555; font-family: 'Share Tech Mono', monospace; margin-bottom: 16px; }
+        .modal-recurso-atual span { color: var(--purple-neon); font-weight: 700; }
+        .recurso-edit-controls { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; }
+        .recurso-spin-btn { background: #1a0033; border: 1px solid var(--border); color: var(--text-dim); width: 38px; height: 38px; border-radius: 6px; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: 0.15s; flex-shrink: 0; }
+        .recurso-spin-btn:hover { background: var(--purple); color: white; border-color: var(--purple); }
+        .recurso-edit-input { background: #080010; border: 1px solid var(--border); color: white; font-family: 'Oswald', sans-serif; font-size: 1.6rem; font-weight: 700; padding: 8px 6px; border-radius: 6px; text-align: center; width: 110px; outline: none; transition: border-color 0.2s; }
+        .recurso-edit-input:focus { border-color: var(--purple); }
+        .recurso-edit-input::-webkit-outer-spin-button,
+        .recurso-edit-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .recurso-edit-input[type=number] { -moz-appearance: textfield; }
+        .modal-recurso-erro { font-size: 0.65rem; color: #ff5c5c; font-family: 'Share Tech Mono', monospace; min-height: 14px; margin-bottom: 4px; text-align: center; }
+
         /* PATCH — Modal NEX */
         #modal-nex {
             display: none; position: fixed; inset: 0;
@@ -2993,6 +3017,25 @@
     <div style="display:flex;gap:8px;justify-content:flex-end;">
       <button onclick="fecharModalAtributos()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;padding:8px 18px;border-radius:4px;cursor:pointer;">Cancelar</button>
       <button onclick="salvarAtributos()" style="background:var(--purple);border:none;color:white;font-family:'Oswald',sans-serif;font-weight:700;padding:8px 18px;border-radius:4px;cursor:pointer;">✦ Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PATCH: Modal editar valor máximo de recurso -->
+<div id="modal-recurso">
+  <div class="modal-recurso-box">
+    <div class="modal-recurso-title">✎ Alterar Valor Máximo</div>
+    <div class="modal-recurso-atual" id="mr-label">VIDA — atual: <span id="mr-atual-val">0</span></div>
+    <div class="recurso-edit-controls">
+      <button class="recurso-spin-btn" onclick="stepRecursoMax(-1)">−</button>
+      <input type="number" class="recurso-edit-input" id="mr-input" min="0"
+        onkeydown="if(event.key==='Enter') salvarMaximoRecurso(); if(event.key==='Escape') fecharModalRecurso();">
+      <button class="recurso-spin-btn" onclick="stepRecursoMax(1)">+</button>
+    </div>
+    <div class="modal-recurso-erro" id="mr-erro"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">
+      <button onclick="fecharModalRecurso()" style="background:transparent;border:1px solid #333;color:#888;font-family:'Oswald',sans-serif;font-size:0.85rem;padding:8px 18px;border-radius:5px;cursor:pointer;transition:0.2s;" onmouseover="this.style.borderColor='#666';this.style.color='#aaa'" onmouseout="this.style.borderColor='#333';this.style.color='#888'">Cancelar</button>
+      <button onclick="salvarMaximoRecurso()" style="background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;padding:8px 20px;border-radius:5px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">✔ Salvar</button>
     </div>
   </div>
 </div>
@@ -5309,20 +5352,44 @@ function atualizarBarras() {
     atualizarFotoPorEstado();
 }
 
+let _mrTipoAtual = null;
+
 function editarMaximoRecurso(tipo, label) {
     if (!estado[tipo]) return;
+    _mrTipoAtual = tipo;
     const atual = estado[tipo].max;
-    const entrada = window.prompt(`Novo valor máximo de ${label} (atual: ${atual}):`, atual);
-    if (entrada === null) return; // cancelado
+    document.getElementById('mr-label').innerHTML = `${label} — atual: <span id="mr-atual-val">${atual}</span>`;
+    document.getElementById('mr-input').value = atual;
+    document.getElementById('mr-erro').textContent = '';
+    document.getElementById('modal-recurso').style.display = 'flex';
+    setTimeout(() => { const inp = document.getElementById('mr-input'); inp.focus(); inp.select(); }, 50);
+}
+
+function fecharModalRecurso() {
+    document.getElementById('modal-recurso').style.display = 'none';
+    _mrTipoAtual = null;
+}
+
+function stepRecursoMax(delta) {
+    const inp = document.getElementById('mr-input');
+    inp.value = Math.max(0, (parseInt(inp.value, 10) || 0) + delta);
+}
+
+function salvarMaximoRecurso() {
+    const tipo = _mrTipoAtual;
+    if (!tipo || !estado[tipo]) { fecharModalRecurso(); return; }
+    const entrada = document.getElementById('mr-input').value;
     const novoMax = parseInt(entrada, 10);
     if (isNaN(novoMax) || novoMax < 0) {
-        alert('Digite um número válido (0 ou maior).');
+        document.getElementById('mr-erro').textContent = '⚠ Digite um número válido (0 ou maior).';
         return;
     }
     estado[tipo].max = novoMax;
     estado[tipo].atual = Math.max(0, Math.min(estado[tipo].atual, novoMax));
     atualizarBarras();
     salvarEstado();
+    mostrarToast('✦ VALOR MÁXIMO ATUALIZADO');
+    fecharModalRecurso();
 }
 
 function ajustarRecurso(tipo, delta) {
