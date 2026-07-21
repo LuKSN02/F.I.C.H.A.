@@ -277,7 +277,7 @@ body {
   font-family: 'Oswald', sans-serif;
   background: linear-gradient(135deg, var(--tema-bg-body1) 0%, var(--tema-bg-body2) 100%);
   background-attachment: fixed;
-  color: white;
+  color: var(--texto-custom, white);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -4265,7 +4265,7 @@ document.getElementById('modal-compartilhar').addEventListener('click', function
         }
 
         function aplicarCorTextoPersonalizada(cor) {
-            document.body.style.color = cor || '';
+            document.documentElement.style.setProperty('--texto-custom', cor || '');
             if (cor) {
                 localStorage.setItem(CHAVE_COR_TEXTO_CUSTOM, cor);
             } else {
@@ -4275,7 +4275,7 @@ document.getElementById('modal-compartilhar').addEventListener('click', function
         }
 
         function removerCorTextoCustom() {
-            document.body.style.color = '';
+            document.documentElement.style.removeProperty('--texto-custom');
             localStorage.removeItem(CHAVE_COR_TEXTO_CUSTOM);
             var corEl = document.getElementById('cor-texto-custom');
             if (corEl) corEl.value = '#000000';
@@ -4298,7 +4298,7 @@ document.getElementById('modal-compartilhar').addEventListener('click', function
             var corSalva = localStorage.getItem(CHAVE_COR_TEXTO_CUSTOM);
             var corEl = document.getElementById('cor-texto-custom');
             if (corSalva) {
-                document.body.style.color = corSalva;
+                document.documentElement.style.setProperty('--texto-custom', corSalva);
                 if (corEl) corEl.value = corSalva;
             } else if (corEl) {
                 corEl.value = '#000000';

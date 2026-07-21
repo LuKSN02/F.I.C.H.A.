@@ -94,7 +94,7 @@
         font-family: 'Oswald', sans-serif;
         background: linear-gradient(135deg, var(--tema-bg-body1) 0%, var(--tema-bg-body2) 100%);
         background-attachment: fixed;
-        color: white;
+        color: var(--texto-custom, white);
         min-height: 100vh;
         display: flex;
         flex-direction: column;
@@ -365,7 +365,7 @@
     }
     .btn-login:hover {
         border-color: var(--tema-primary-light);
-        color: white;
+        color: var(--texto-custom, white);
         box-shadow: 0 0 20px rgba(var(--tema-glow-rgb), 0.25), inset 0 0 20px rgba(var(--tema-glow-rgb), 0.08);
         text-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb), 0.6);
     }
@@ -1560,7 +1560,7 @@ body { transition: background 0.6s ease; }
     line-height: 1;
     letter-spacing: 6px;
     margin: 0 0 8px;
-    color: #fff;
+    color: var(--texto-custom, #fff);
     text-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3);
 }
 
@@ -1613,7 +1613,7 @@ body { transition: background 0.6s ease; }
     padding: 14px 36px;
     background: transparent;
     border: 2px solid var(--tema-primary);
-    color: white;
+    color: var(--texto-custom, white);
     font-family: 'Oswald', sans-serif;
     font-size: 1rem;
     font-weight: 700;
@@ -1638,7 +1638,7 @@ body { transition: background 0.6s ease; }
 .btn-cta-primary:hover::before { transform: scaleX(1); }
 .btn-cta-primary:hover {
     border-color: var(--tema-primary-light);
-    color: white;
+    color: var(--texto-custom, white);
     box-shadow: 0 0 30px rgba(var(--tema-glow-rgb),0.4), 0 0 60px rgba(var(--tema-glow-rgb),0.15);
     text-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb),0.6);
 }
@@ -1866,7 +1866,7 @@ body { transition: background 0.6s ease; }
     font-weight: 700;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: #fff;
+    color: var(--texto-custom, #fff);
     margin-bottom: 10px;
 }
 .feat-desc {
@@ -1962,7 +1962,7 @@ body { transition: background 0.6s ease; }
     font-weight: 700;
     font-size: clamp(2.2rem, 5vw, 3.4rem);
     letter-spacing: 4px;
-    color: #fff;
+    color: var(--texto-custom, #fff);
     text-shadow: 0 0 30px rgba(var(--tema-glow-rgb),0.25);
     margin: 0;
     line-height: 1.05;
@@ -1994,7 +1994,7 @@ body { transition: background 0.6s ease; }
     padding: 13px 30px;
     background: transparent;
     border: 2px solid var(--tema-primary);
-    color: #fff;
+    color: var(--texto-custom, #fff);
     font-family: 'Oswald', sans-serif;
     font-size: 0.85rem;
     font-weight: 700;
@@ -5740,7 +5740,7 @@ body { transition: background 0.6s ease; }
         }
 
         function aplicarCorTextoPersonalizada(cor) {
-            document.body.style.color = cor || '';
+            document.documentElement.style.setProperty('--texto-custom', cor || '');
             if (cor) {
                 localStorage.setItem(CHAVE_COR_TEXTO_CUSTOM, cor);
             } else {
@@ -5750,7 +5750,7 @@ body { transition: background 0.6s ease; }
         }
 
         function removerCorTextoCustom() {
-            document.body.style.color = '';
+            document.documentElement.style.removeProperty('--texto-custom');
             localStorage.removeItem(CHAVE_COR_TEXTO_CUSTOM);
             var corEl = document.getElementById('cor-texto-custom');
             if (corEl) corEl.value = '#000000';
@@ -5774,7 +5774,7 @@ body { transition: background 0.6s ease; }
             var corSalva = localStorage.getItem(CHAVE_COR_TEXTO_CUSTOM);
             var corEl = document.getElementById('cor-texto-custom');
             if (corSalva) {
-                document.body.style.color = corSalva;
+                document.documentElement.style.setProperty('--texto-custom', corSalva);
                 if (corEl) corEl.value = corSalva;
             } else if (corEl) {
                 corEl.value = '#000000';

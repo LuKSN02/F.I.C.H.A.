@@ -266,7 +266,7 @@
         body {
             font-family: 'Oswald', sans-serif;
             background: linear-gradient(135deg, var(--tema-bg-body1) 0%, var(--tema-bg-body2) 100%);
-            background-attachment: fixed; color: white; min-height: 100vh;
+            background-attachment: fixed; color: var(--texto-custom, white); min-height: 100vh;
             display: flex; flex-direction: column;
         }
         .custom-nav { background: black; border-bottom: 2px solid #333; position: relative; z-index: 1040; overflow: visible; }
@@ -3647,7 +3647,7 @@ window.fazerLogout = async function() {
         }
 
         function aplicarCorTextoPersonalizada(cor) {
-            document.body.style.color = cor || '';
+            document.documentElement.style.setProperty('--texto-custom', cor || '');
             if (cor) {
                 localStorage.setItem(CHAVE_COR_TEXTO_CUSTOM, cor);
             } else {
@@ -3657,7 +3657,7 @@ window.fazerLogout = async function() {
         }
 
         function removerCorTextoCustom() {
-            document.body.style.color = '';
+            document.documentElement.style.removeProperty('--texto-custom');
             localStorage.removeItem(CHAVE_COR_TEXTO_CUSTOM);
             var corEl = document.getElementById('cor-texto-custom');
             if (corEl) corEl.value = '#000000';
@@ -3680,7 +3680,7 @@ window.fazerLogout = async function() {
             var corSalva = localStorage.getItem(CHAVE_COR_TEXTO_CUSTOM);
             var corEl = document.getElementById('cor-texto-custom');
             if (corSalva) {
-                document.body.style.color = corSalva;
+                document.documentElement.style.setProperty('--texto-custom', corSalva);
                 if (corEl) corEl.value = corSalva;
             } else if (corEl) {
                 corEl.value = '#000000';
