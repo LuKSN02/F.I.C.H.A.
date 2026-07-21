@@ -1624,7 +1624,7 @@
           <div class="label-field">Personagem</div>
           <div style="display:flex;align-items:center;gap:6px;">
             <div class="value-field" id="display-nome" style="margin-bottom:0;flex:1">—</div>
-            <button onclick="abrirModalRenomear()" title="Renomear personagem" style="background:none;border:none;color:var(--text-dim);font-size:0.85rem;cursor:pointer;padding:0 2px;opacity:0.5;transition:opacity 0.2s,color 0.2s;line-height:1;" onmouseover="this.style.opacity='1';this.style.color='var(--purple-neon)'" onmouseout="this.style.opacity='0.5';this.style.color='var(--text-dim)'">✎</button>
+            <button onclick="abrirModalRenomear()" title="Editar nome/codinome" style="background:none;border:none;color:var(--text-dim);font-size:0.85rem;cursor:pointer;padding:0 2px;opacity:0.5;transition:opacity 0.2s,color 0.2s;line-height:1;" onmouseover="this.style.opacity='1';this.style.color='var(--purple-neon)'" onmouseout="this.style.opacity='0.5';this.style.color='var(--text-dim)'">✎</button>
           </div>
           <div class="label-field">Criado em</div>
           <div style="color:var(--text-dim);font-size:0.85rem" id="display-criado">—</div>
@@ -3057,12 +3057,19 @@
 <!-- MODAL RENOMEAR PERSONAGEM -->
 <div id="modal-renomear" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#0d0010;border:1px solid var(--purple);border-radius:12px;padding:28px 24px;max-width:380px;width:92%;box-shadow:0 0 40px var(--purple-glow);">
-    <div style="font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin-bottom:18px;">✎ Renomear Personagem</div>
+    <div style="font-size:0.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin-bottom:18px;">✎ Nome / Codinome</div>
+    <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:6px;">NOME</label>
     <input id="input-renomear" type="text" maxlength="60"
-      style="width:100%;background:#080010;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;font-size:1.1rem;font-weight:700;padding:10px 14px;border-radius:6px;outline:none;margin-bottom:18px;transition:border-color 0.2s;"
+      style="width:100%;background:#080010;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;font-size:1.1rem;font-weight:700;padding:10px 14px;border-radius:6px;outline:none;margin-bottom:16px;transition:border-color 0.2s;"
       onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border)'"
       onkeydown="if(event.key==='Enter') salvarRenomear(); if(event.key==='Escape') fecharModalRenomear();"
       placeholder="Nome do personagem">
+    <label style="font-size:0.65rem;letter-spacing:2px;color:var(--text-dim);display:block;margin-bottom:6px;">CODINOME</label>
+    <input id="input-renomear-codinome" type="text" maxlength="40"
+      style="width:100%;background:#080010;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;font-size:1rem;font-weight:700;padding:10px 14px;border-radius:6px;outline:none;margin-bottom:18px;transition:border-color 0.2s;"
+      onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border)'"
+      onkeydown="if(event.key==='Enter') salvarRenomear(); if(event.key==='Escape') fecharModalRenomear();"
+      placeholder="Codinome do agente (opcional)">
     <div style="display:flex;gap:8px;justify-content:flex-end;">
       <button onclick="fecharModalRenomear()" style="background:transparent;border:1px solid #333;color:#555;font-family:'Oswald',sans-serif;font-size:0.85rem;padding:8px 18px;border-radius:5px;cursor:pointer;transition:0.2s;" onmouseover="this.style.borderColor='#666';this.style.color='#888'" onmouseout="this.style.borderColor='#333';this.style.color='#555'">Cancelar</button>
       <button onclick="salvarRenomear()" style="background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;padding:8px 20px;border-radius:5px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='var(--purple)'" onmouseout="this.style.background='var(--purple-dark)'">✔ Salvar</button>
@@ -8325,7 +8332,9 @@ function salvarNex() {
         /* ===== RENOMEAR PERSONAGEM ===== */
         function abrirModalRenomear() {
             const nomeAtual = ficha ? ficha.nome : '';
+            const codinomeAtual = ficha ? (ficha.codinome || '') : '';
             document.getElementById('input-renomear').value = nomeAtual;
+            document.getElementById('input-renomear-codinome').value = codinomeAtual;
             document.getElementById('modal-renomear').style.display = 'flex';
             setTimeout(() => {
                 const inp = document.getElementById('input-renomear');
@@ -8340,17 +8349,21 @@ function salvarNex() {
         function salvarRenomear() {
             const novoNome = document.getElementById('input-renomear').value.trim();
             if (!novoNome) return;
+            const novoCodinome = document.getElementById('input-renomear-codinome').value.trim();
             ficha.nome = novoNome;
+            ficha.codinome = novoCodinome;
             // Atualiza display
             document.getElementById('display-nome').textContent = ficha.nome + (ficha.codinome ? ` "${ficha.codinome}"` : '');
             document.title = `F.I.C.H.A. – ${ficha.nome}`;
             // Salva no estado
-            if (estado) { estado.nome = novoNome; salvarEstado(); }
+            if (estado) { estado.nome = novoNome; estado.codinome = novoCodinome; salvarEstado(); }
             // Atualiza lista de agentes
             const chave = getPrefix() + getListaChave();
             const agentes = JSON.parse(localStorage.getItem(chave)) || [];
             const idx = agentes.findIndex(a => String(a.id) === String(ficha.id));
-            if (idx !== -1) { agentes[idx].nome = novoNome; localStorage.setItem(chave, JSON.stringify(agentes)); }
+            if (idx !== -1) { agentes[idx].nome = novoNome; agentes[idx].codinome = novoCodinome; localStorage.setItem(chave, JSON.stringify(agentes)); }
+            // Sincroniza com Firebase (mesmo agenteRef usado ao carregar a ficha)
+            sincronizarAgenteFirebase();
             fecharModalRenomear();
             mostrarToast('✎ NOME ATUALIZADO');
         }
