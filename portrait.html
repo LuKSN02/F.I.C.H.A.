@@ -3542,12 +3542,18 @@ function aplicarAgente(ficha, est) {
         const v = est.vida || {};
         const semSan = !!(est.regraOpc && est.regraOpc.semSan);
         aplicarModoDeterminacao(semSan);
+        gerenciarAutoDesconjuracao(semSan);
         atualizarStat('vida', v.atual ?? 0, v.max ?? 20);
         if (semSan) {
             // Regra opcional "Jogando sem Sanidade": Sanidade + Esforço
-            // são substituídos por uma única barra de Determinação.
+            // são substituídos por uma única barra de Determinação. Espelha
+            // o valor também no slot de "esf" (PE) para que o layout
+            // Desconjuração — que exibe SAN e PE em textos separados, sem
+            // a barra unificada do layout clássico — mostre a Determinação
+            // no lugar do PE.
             const d = est.det || {};
             atualizarStat('san', d.atual ?? 0, d.max ?? 0);
+            atualizarStat('esf', d.atual ?? 0, d.max ?? 0);
         } else {
             const s = est.san || {}, e = est.esf || {};
             atualizarStat('san', s.atual ?? 0, s.max ?? 20);
@@ -3571,6 +3577,35 @@ function aplicarModoDeterminacao(semSan) {
     document.querySelectorAll('#fill-san, #cart-fill-san').forEach(el => {
         el.style.background = semSan ? 'linear-gradient(90deg,#006070,#00bcd4)' : '';
     });
+    // Desconjuração: some com o número de Sanidade (não existe mais nessa
+    // regra) e deixa só o slot de PE, que passa a exibir a Determinação.
+    const descSan = document.getElementById('desc-san-txt');
+    if (descSan) descSan.style.display = semSan ? 'none' : '';
+}
+
+// Troca automaticamente para o layout "Desconjuração" assim que a regra
+// opcional "Jogando sem Sanidade" é ativada na ficha, e volta para o layout
+// anterior quando ela é desligada — mas só se essa troca de volta/ida tiver
+// sido feita por aqui (não mexe se o usuário escolheu Desconjuração por conta
+// própria enquanto a regra já estava ativa).
+let semSanAnterior = null;
+let layoutAntesAutoDesconjuracao = null;
+function gerenciarAutoDesconjuracao(semSan) {
+    if (semSan === semSanAnterior) return;
+    semSanAnterior = semSan;
+    if (typeof window.aplicarLayout !== 'function') return;
+    const layoutAtual = localStorage.getItem('portrait_layout') || 'classico';
+    if (semSan) {
+        if (layoutAtual !== 'desconjuracao') {
+            layoutAntesAutoDesconjuracao = layoutAtual;
+            window.aplicarLayout('desconjuracao');
+        }
+    } else {
+        if (layoutAntesAutoDesconjuracao && layoutAtual === 'desconjuracao') {
+            window.aplicarLayout(layoutAntesAutoDesconjuracao);
+        }
+        layoutAntesAutoDesconjuracao = null;
+    }
 }
 
 function atualizarStat(tipo, atual, max) {
