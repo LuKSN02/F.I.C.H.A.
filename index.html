@@ -6407,11 +6407,17 @@ confirmarCrop = async function() {
         const canvas = document.getElementById('particle-canvas');
         const ctx    = canvas.getContext('2d');
         let W, H, particles = [], animId;
+        let paused = false;
 
-        function getThemeColor() {
+        // Cache da cor do tema: só recalcula quando o tema realmente muda,
+        // em vez de forçar getComputedStyle() em TODOS os frames (60x/s).
+        let themeColorCache = '58,123,213';
+        function refreshThemeColor() {
             const style = getComputedStyle(document.documentElement);
-            const rgb   = style.getPropertyValue('--tema-glow-rgb').trim() || '58,123,213';
-            return rgb;
+            themeColorCache = style.getPropertyValue('--tema-glow-rgb').trim() || '58,123,213';
+        }
+        function getThemeColor() {
+            return themeColorCache;
         }
 
         function resize() {
@@ -6457,8 +6463,9 @@ confirmarCrop = async function() {
         }
 
         function loop() {
+            if (paused) return;
             ctx.clearRect(0, 0, W, H);
-            const rgb = getThemeColor();
+            const rgb = getThemeColor(); // agora é só uma leitura de variável, sem custo de layout
             for (const p of particles) { p.update(); p.draw(rgb); }
             animId = requestAnimationFrame(loop);
         }
@@ -6466,10 +6473,23 @@ confirmarCrop = async function() {
         window.addEventListener('resize', () => { resize(); });
         resize();
         initParticles(90);
+        refreshThemeColor();
         loop();
 
-        // Reinicia quando o tema muda (as cores mudam)
-        document.addEventListener('temaAplicado', () => {});
+        // Recalcula a cor só quando o tema realmente muda (evento já disparado em outro lugar do código)
+        document.addEventListener('temaAplicado', refreshThemeColor);
+
+        // Pausa o loop quando a aba está em segundo plano (economiza CPU/bateria)
+        // e retoma de onde parou ao voltar.
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                paused = true;
+                if (animId) cancelAnimationFrame(animId);
+            } else if (paused) {
+                paused = false;
+                loop();
+            }
+        });
     })();
 
     /* ── Anima cards de agente ao aparecerem ── */
