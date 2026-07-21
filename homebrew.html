@@ -236,6 +236,33 @@
         color: white; padding: 10px 12px; border-radius: 4px; font-size: 0.9rem;
         font-family: 'Oswald', sans-serif; cursor: pointer;
     }
+    .personalizar-cor-linha {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .personalizar-cor-linha input[type="color"] {
+        width: 44px;
+        height: 36px;
+        padding: 0;
+        border: 1px solid var(--tema-primary-dark);
+        border-radius: 4px;
+        background: #000;
+        cursor: pointer;
+    }
+    .personalizar-cor-reset {
+        background: transparent;
+        border: 1px solid #333;
+        color: #777;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.68rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+    .personalizar-cor-reset:hover { color: #ff6666; border-color: #552222; }
     .personalizar-status {
         font-family: 'Share Tech Mono', monospace; font-size: 0.68rem;
         color: var(--tema-primary-light); text-align: right; margin-top: 14px; min-height: 14px;
@@ -1463,6 +1490,14 @@ body { transition: background 0.5s ease; }
                 <option value="Montserrat, sans-serif">Montserrat</option>
                 <option value="'Courier New', Courier, monospace">Courier New</option>
             </select>
+        </div>
+
+        <div class="personalizar-campo">
+            <label class="personalizar-label" for="cor-texto-custom">Cor do texto</label>
+            <div class="personalizar-cor-linha">
+                <input type="color" id="cor-texto-custom" value="#000000" onchange="aplicarCorTextoPersonalizada(this.value)">
+                <button class="personalizar-cor-reset" onclick="removerCorTextoCustom()">Restaurar padrão</button>
+            </div>
         </div>
 
         <div class="personalizar-status" id="personalizar-status"></div>
@@ -4151,6 +4186,7 @@ document.getElementById('modal-compartilhar').addEventListener('click', function
         ============================================= */
         var CHAVE_WALLPAPER_CUSTOM = 'ficha_wallpaper_custom';
         var CHAVE_FONTE_CUSTOM = 'ficha_fonte_custom';
+        var CHAVE_COR_TEXTO_CUSTOM = 'ficha_cor_texto_custom';
 
         function mostrarStatusPersonalizar(msg) {
             var el = document.getElementById('personalizar-status');
@@ -4228,6 +4264,24 @@ document.getElementById('modal-compartilhar').addEventListener('click', function
             mostrarStatusPersonalizar('Fonte salva');
         }
 
+        function aplicarCorTextoPersonalizada(cor) {
+            document.body.style.color = cor || '';
+            if (cor) {
+                localStorage.setItem(CHAVE_COR_TEXTO_CUSTOM, cor);
+            } else {
+                localStorage.removeItem(CHAVE_COR_TEXTO_CUSTOM);
+            }
+            mostrarStatusPersonalizar('Cor do texto salva');
+        }
+
+        function removerCorTextoCustom() {
+            document.body.style.color = '';
+            localStorage.removeItem(CHAVE_COR_TEXTO_CUSTOM);
+            var corEl = document.getElementById('cor-texto-custom');
+            if (corEl) corEl.value = '#000000';
+            mostrarStatusPersonalizar('Cor do texto restaurada');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             var wallpaperSalvo = localStorage.getItem(CHAVE_WALLPAPER_CUSTOM);
             if (wallpaperSalvo) {
@@ -4240,6 +4294,14 @@ document.getElementById('modal-compartilhar').addEventListener('click', function
                 document.body.style.fontFamily = fonteSalva;
                 var seletor = document.getElementById('seletor-fonte-custom');
                 if (seletor) seletor.value = fonteSalva;
+            }
+            var corSalva = localStorage.getItem(CHAVE_COR_TEXTO_CUSTOM);
+            var corEl = document.getElementById('cor-texto-custom');
+            if (corSalva) {
+                document.body.style.color = corSalva;
+                if (corEl) corEl.value = corSalva;
+            } else if (corEl) {
+                corEl.value = '#000000';
             }
         });
 
