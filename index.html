@@ -18,7 +18,7 @@
 </head>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Montserrat:wght@300..700&display=swap');
 
     /* ===== SISTEMA DE TEMAS - ORDEM PARANORMAL ===== */
     :root {
@@ -588,6 +588,119 @@
         border-radius: 50%;
         flex-shrink: 0;
         box-shadow: 0 0 6px currentColor;
+    }
+    .temas-dropdown .td-divider { border-top: 1px solid #1a1a1a; margin: 4px 0; }
+
+    /* ===== PERSONALIZADO: WALLPAPER + FONTE ===== */
+    .personalizar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 99998;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .personalizar-overlay.show { display: flex; }
+    .personalizar-painel {
+        background: #0d0d0d;
+        border: 1px solid var(--tema-primary-dark);
+        border-radius: 12px;
+        width: 100%;
+        max-width: 420px;
+        padding: 26px;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+    }
+    .personalizar-titulo {
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+        color: white;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .personalizar-fechar {
+        background: transparent;
+        border: none;
+        color: #666;
+        font-size: 1.2rem;
+        cursor: pointer;
+        line-height: 1;
+    }
+    .personalizar-fechar:hover { color: #ff6666; }
+    .personalizar-campo { margin-bottom: 18px; }
+    .personalizar-campo:last-of-type { margin-bottom: 0; }
+    .personalizar-label {
+        display: block;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.68rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #666;
+        margin-bottom: 10px;
+    }
+    .personalizar-upload-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(var(--tema-glow-rgb),0.1);
+        border: 1px solid var(--tema-primary);
+        color: var(--tema-primary-light);
+        padding: 9px 16px;
+        border-radius: 4px;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        font-size: 0.82rem;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .personalizar-upload-btn:hover { background: var(--tema-primary); color: white; box-shadow: 0 0 12px rgba(var(--tema-glow-rgb),0.4); }
+    .personalizar-upload-btn input[type="file"] { display: none; }
+    .personalizar-nome-arquivo {
+        display: block;
+        margin-top: 8px;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.72rem;
+        color: #555;
+        font-style: italic;
+    }
+    .personalizar-remover {
+        background: transparent;
+        border: 1px solid #333;
+        color: #777;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.68rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .personalizar-remover:hover { color: #ff6666; border-color: #552222; }
+    .personalizar-select {
+        width: 100%;
+        background: #000;
+        border: 1px solid var(--tema-primary-dark);
+        color: white;
+        padding: 10px 12px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-family: 'Oswald', sans-serif;
+        cursor: pointer;
+    }
+    .personalizar-status {
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.68rem;
+        color: var(--tema-primary-light);
+        text-align: right;
+        margin-top: 14px;
+        min-height: 14px;
     }
 
     /* ── MODAL CROPPER ── */
@@ -3305,6 +3418,40 @@ body { transition: background 0.6s ease; }
         <!-- input oculto para upload -->
         <input type="file" id="file-foto" accept="image/*" style="display:none" onchange="abrirCropper(event)">
 
+        <!-- ===== MODAL: PERSONALIZADO (WALLPAPER + FONTE) ===== -->
+        <div class="personalizar-overlay" id="personalizar-overlay" onclick="if(event.target===this) fecharPersonalizarTema()">
+            <div class="personalizar-painel">
+                <div class="personalizar-titulo">
+                    Personalizado
+                    <button class="personalizar-fechar" onclick="fecharPersonalizarTema()">✕</button>
+                </div>
+
+                <div class="personalizar-campo">
+                    <label class="personalizar-label" for="input-wallpaper-custom">Wallpaper de fundo</label>
+                    <label class="personalizar-upload-btn" for="input-wallpaper-custom">
+                        📁 Escolher imagem
+                        <input type="file" id="input-wallpaper-custom" accept="image/*" onchange="handleWallpaperUpload(event)">
+                    </label>
+                    <span class="personalizar-nome-arquivo" id="personalizar-nome-arquivo">Nenhuma imagem selecionada</span>
+                    <br>
+                    <button class="personalizar-remover" onclick="removerWallpaperCustom()">Remover wallpaper</button>
+                </div>
+
+                <div class="personalizar-campo">
+                    <label class="personalizar-label" for="seletor-fonte-custom">Fonte do site</label>
+                    <select class="personalizar-select" id="seletor-fonte-custom" onchange="aplicarFontePersonalizada(this.value)">
+                        <option value="">Oswald (padrão)</option>
+                        <option value="Arial, Helvetica, sans-serif">Arial</option>
+                        <option value="Georgia, 'Times New Roman', serif">Georgia</option>
+                        <option value="Montserrat, sans-serif">Montserrat</option>
+                        <option value="'Courier New', Courier, monospace">Courier New</option>
+                    </select>
+                </div>
+
+                <div class="personalizar-status" id="personalizar-status"></div>
+            </div>
+        </div>
+
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar navbar-expand-lg custom-nav navbar-dark">
         <div class="container-fluid">
@@ -3332,6 +3479,7 @@ body { transition: background 0.6s ease; }
                         <button onclick="aplicarTema('morte');toggleNavbar()" style="background:rgba(136,136,136,0.15);border:1px solid #888;color:#ccc;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Morte</button>
                         <button onclick="aplicarTema('conhecimento');toggleNavbar()" style="background:rgba(200,150,12,0.15);border:1px solid #c8960c;color:#f5c842;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Conhecimento</button>
                         <button onclick="aplicarTema('energia');toggleNavbar()" style="background:rgba(155,48,217,0.15);border:1px solid #9b30d9;color:#d070ff;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Energia</button>
+                        <button onclick="abrirPersonalizarTema(event);toggleNavbar()" style="background:rgba(255,255,255,0.06);border:1px solid #444;color:#ccc;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">🖼️ Personalizado</button>
                     </div>
                     <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
                     <button onclick="abrirPainelPerfil(event);toggleNavbar()" style="width:100%;background:transparent;border:1px solid var(--tema-primary);color:var(--tema-primary-light);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;">👤 Ver Perfil</button>
@@ -3361,6 +3509,10 @@ body { transition: background 0.6s ease; }
                         </div>
                         <div class="td-item" onclick="aplicarTema('energia')" data-tema="energia">
                             <span class="td-swatch" style="background:#9b30d9;color:#9b30d9"></span> Energia
+                        </div>
+                        <div class="td-divider"></div>
+                        <div class="td-item" onclick="abrirPersonalizarTema(event)">
+                            <span class="td-swatch" style="background:transparent;box-shadow:none;">🖼️</span> Personalizado
                         </div>
                     </div>
                 </div>
@@ -5468,6 +5620,104 @@ body { transition: background 0.6s ease; }
                 });
             });
         })();
+
+        /* =============================================
+           PERSONALIZADO: WALLPAPER + FONTE
+        ============================================= */
+        var CHAVE_WALLPAPER_CUSTOM = 'ficha_wallpaper_custom';
+        var CHAVE_FONTE_CUSTOM = 'ficha_fonte_custom';
+
+        function mostrarStatusPersonalizar(msg) {
+            var el = document.getElementById('personalizar-status');
+            if (!el) return;
+            el.textContent = msg;
+            clearTimeout(mostrarStatusPersonalizar._t);
+            mostrarStatusPersonalizar._t = setTimeout(function() { el.textContent = ''; }, 2200);
+        }
+
+        function abrirPersonalizarTema(e) {
+            if (e) e.stopPropagation();
+            var overlay = document.getElementById('personalizar-overlay');
+            if (overlay) overlay.classList.add('show');
+            var dd = document.getElementById('temas-dropdown');
+            if (dd) dd.classList.remove('open');
+        }
+
+        function fecharPersonalizarTema() {
+            var overlay = document.getElementById('personalizar-overlay');
+            if (overlay) overlay.classList.remove('show');
+        }
+
+        function aplicarWallpaperCustom(dataUrl) {
+            if (dataUrl) {
+                document.body.style.backgroundImage = 'url("' + dataUrl + '")';
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundRepeat = 'no-repeat';
+            } else {
+                document.body.style.backgroundImage = '';
+                document.body.style.backgroundSize = '';
+                document.body.style.backgroundPosition = '';
+                document.body.style.backgroundRepeat = '';
+            }
+        }
+
+        function handleWallpaperUpload(event) {
+            var arquivo = event.target.files[0];
+            if (!arquivo) return;
+            var leitor = new FileReader();
+            leitor.onload = function(evento) {
+                var dataUrl = evento.target.result;
+                aplicarWallpaperCustom(dataUrl);
+                var nomeEl = document.getElementById('personalizar-nome-arquivo');
+                try {
+                    localStorage.setItem(CHAVE_WALLPAPER_CUSTOM, dataUrl);
+                    if (nomeEl) nomeEl.textContent = arquivo.name;
+                    mostrarStatusPersonalizar('Wallpaper salvo');
+                } catch (err) {
+                    console.warn('Não foi possível salvar o wallpaper no localStorage (arquivo muito grande):', err);
+                    if (nomeEl) nomeEl.textContent = arquivo.name + ' (não salvo — arquivo grande)';
+                    mostrarStatusPersonalizar('Aplicado, mas não pôde ser salvo');
+                }
+            };
+            leitor.readAsDataURL(arquivo);
+        }
+
+        function removerWallpaperCustom() {
+            aplicarWallpaperCustom(null);
+            localStorage.removeItem(CHAVE_WALLPAPER_CUSTOM);
+            var nomeEl = document.getElementById('personalizar-nome-arquivo');
+            if (nomeEl) nomeEl.textContent = 'Nenhuma imagem selecionada';
+            var inputEl = document.getElementById('input-wallpaper-custom');
+            if (inputEl) inputEl.value = '';
+            mostrarStatusPersonalizar('Wallpaper removido');
+        }
+
+        function aplicarFontePersonalizada(fonte) {
+            document.body.style.fontFamily = fonte || '';
+            if (fonte) {
+                localStorage.setItem(CHAVE_FONTE_CUSTOM, fonte);
+            } else {
+                localStorage.removeItem(CHAVE_FONTE_CUSTOM);
+            }
+            mostrarStatusPersonalizar('Fonte salva');
+        }
+
+        // Restaura wallpaper e fonte personalizados ao carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            var wallpaperSalvo = localStorage.getItem(CHAVE_WALLPAPER_CUSTOM);
+            if (wallpaperSalvo) {
+                aplicarWallpaperCustom(wallpaperSalvo);
+                var nomeEl = document.getElementById('personalizar-nome-arquivo');
+                if (nomeEl) nomeEl.textContent = 'Wallpaper salvo carregado';
+            }
+            var fonteSalva = localStorage.getItem(CHAVE_FONTE_CUSTOM);
+            if (fonteSalva) {
+                document.body.style.fontFamily = fonteSalva;
+                var seletor = document.getElementById('seletor-fonte-custom');
+                if (seletor) seletor.value = fonteSalva;
+            }
+        });
 
 function abrirSeletorFoto(e) {
     e.stopPropagation();
