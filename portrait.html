@@ -3660,8 +3660,9 @@ function escutarAgente(path) {
     const agenteRef = window._firebaseRef(window._firebaseDB, path);
     unsubAgente = window._firebaseOnValue(agenteRef, snap => {
         if (!snap.exists()) return;
-        const id = agenteAtivo?.id;
-        agenteAtivo = { ...snap.val(), id };
+        const id   = agenteAtivo?.id;
+        const node = agenteAtivo?._node || 'agentes';
+        agenteAtivo = { ...snap.val(), id, _node: node };
         aplicarAgente(agenteAtivo, null);
     });
 }
@@ -3683,24 +3684,45 @@ function fecharOverlays() {
     document.getElementById('login-overlay').classList.remove('show');
 }
 
+// Busca a lista de fichas de um nó ('agentes' ou 'npcs'), tentando primeiro
+// o caminho com usuário (nó/{usuario}/{id}) e caindo para a estrutura antiga
+// achatada (nó/{id}) quando a primeira não existir nesse formato.
+function carregarListaNode(node, usuario) {
+    return window._firebaseGet(window._firebaseRef(window._firebaseDB, `${node}/${usuario}`)).then(snap => {
+        if (snap.exists()) {
+            const val = snap.val();
+            const primeiroVal = Object.values(val)[0];
+            if (primeiroVal && primeiroVal.nome) {
+                return Object.entries(val).map(([id, ag]) => ({ ...ag, id, _node: node, _usuario: usuario }));
+            }
+        }
+        return window._firebaseGet(window._firebaseRef(window._firebaseDB, node)).then(snap2 => {
+            if (!snap2.exists()) return [];
+            return Object.entries(snap2.val())
+                .map(([id, ag]) => ({ ...ag, id, _node: node, _usuario: null }))
+                .filter(ag => ag.nome);
+        });
+    });
+}
+
 function renderSelector(usuario) {
     const grid = document.getElementById('agentes-grid');
     grid.innerHTML = `<div class="sel-vazio">Carregando agentes...</div>`;
     if (!window._firebaseDB) { grid.innerHTML = `<div class="sel-vazio">Firebase não conectado.</div>`; return; }
 
-    const renderLista = (agentes, usandoUsuario) => {
+    const renderLista = (agentes) => {
         if (!agentes || agentes.length === 0) {
             grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.</div>`;
             return;
         }
         grid.innerHTML = agentes.map(ag => {
-            const ativo = agenteAtivo?.id === ag.id;
+            const ativo = agenteAtivo?.id === ag.id && (agenteAtivo?._node || 'agentes') === ag._node;
             const foto  = ag.fotoCostum || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ag.nome)}`;
-            const path  = usandoUsuario ? `'${usuario}','${ag.id}'` : `null,'${ag.id}'`;
-            return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente(${path})">
+            const usu   = ag._usuario ? `'${ag._usuario}'` : 'null';
+            return `<div class="agente-card-sel ${ativo?'ativo':''}" onclick="selecionarAgente(${usu},'${ag.id}','${ag._node}')">
                 <img class="sel-foto" src="${foto}" alt="">
                 <div class="sel-info">
-                    <div class="sel-nome">${ag.codinome?'"'+ag.codinome+'" ':''}${ag.nome}</div>
+                    <div class="sel-nome">${ag.codinome?'"'+ag.codinome+'" ':''}${ag.nome}${ag._node==='npcs'?' <span style="opacity:.5">[NPC]</span>':''}</div>
                     <div class="sel-sub">${ag.classe||'—'} · ${ag.origem||'—'}</div>
                 </div>
                 ${ativo?'<span style="color:#4caf50;font-family:\'Share Tech Mono\',monospace;font-size:0.7rem;">● ATIVO</span>':''}
@@ -3708,38 +3730,22 @@ function renderSelector(usuario) {
         }).join('');
     };
 
-    window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes/${usuario}`)).then(snap => {
-        if (snap.exists()) {
-            const val = snap.val();
-            const primeiroVal = Object.values(val)[0];
-            if (primeiroVal && primeiroVal.nome) {
-                renderLista(Object.entries(val).map(([id, ag]) => ({ ...ag, id })), true);
-            } else {
-                window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes`)).then(snap2 => {
-                    if (!snap2.exists()) { grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.</div>`; return; }
-                    const todos = Object.entries(snap2.val()).map(([id, ag]) => ({ ...ag, id })).filter(ag => ag.nome);
-                    renderLista(todos, false);
-                });
-            }
-        } else {
-            window._firebaseGet(window._firebaseRef(window._firebaseDB, `agentes`)).then(snap2 => {
-                if (!snap2.exists()) { grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.</div>`; return; }
-                const todos = Object.entries(snap2.val()).map(([id, ag]) => ({ ...ag, id })).filter(ag => ag.nome);
-                renderLista(todos, false);
-            });
-        }
-    });
+    Promise.all([carregarListaNode('agentes', usuario), carregarListaNode('npcs', usuario)])
+        .then(([ags, npcs]) => renderLista([...(ags || []), ...(npcs || [])]))
+        .catch(() => { grid.innerHTML = `<div class="sel-vazio">▸ Nenhum agente encontrado.</div>`; });
 }
 
-function selecionarAgente(usuario, id) {
+function selecionarAgente(usuario, id, node) {
     if (!window._firebaseDB) return;
+    node = node || 'agentes';
     localStorage.setItem('portrait_agente_ativo', String(id));
+    localStorage.setItem('portrait_agente_node', node);
     if (usuario) localStorage.setItem('portrait_usuario', usuario);
 
-    const path = usuario ? `agentes/${usuario}/${id}` : `agentes/${id}`;
+    const path = usuario ? `${node}/${usuario}/${id}` : `${node}/${id}`;
     window._firebaseGet(window._firebaseRef(window._firebaseDB, path)).then(snap => {
         if (!snap.exists()) return;
-        agenteAtivo = { ...snap.val(), id };
+        agenteAtivo = { ...snap.val(), id, _node: node };
         aplicarAgente(agenteAtivo, null);
         escutarEstado(id);
         escutarAgente(path);
@@ -3756,24 +3762,34 @@ function iniciarPortrait() {
 
     localStorage.setItem('portrait_agente_ativo', fichaId);
 
-    const tentarCarregar = (path) => {
+    // Ordem de tentativa: agentes/{usuario}/{id} → npcs/{usuario}/{id}
+    // → agentes/{id} → npcs/{id}. Fichas do tipo NPC (ficha.html?tipo=npc)
+    // são gravadas no nó "npcs" em vez de "agentes" — sem tentar os dois
+    // nós aqui, o retrato de um NPC nunca recebe atualizações de foto.
+    const nodePreferido = localStorage.getItem('portrait_agente_node');
+    const nodes = nodePreferido === 'npcs' ? ['npcs', 'agentes'] : ['agentes', 'npcs'];
+    const tentativas = [];
+    if (usuario) nodes.forEach(n => tentativas.push(`${n}/${usuario}/${fichaId}`));
+    nodes.forEach(n => tentativas.push(`${n}/${fichaId}`));
+
+    const tentarCarregar = (i) => {
+        if (i >= tentativas.length) return;
+        const path = tentativas[i];
         window._firebaseGet(window._firebaseRef(window._firebaseDB, path)).then(snap => {
             if (snap.exists()) {
-                agenteAtivo = { ...snap.val(), id: fichaId };
+                const node = path.split('/')[0];
+                agenteAtivo = { ...snap.val(), id: fichaId, _node: node };
+                localStorage.setItem('portrait_agente_node', node);
                 aplicarAgente(agenteAtivo, null);
                 escutarEstado(fichaId);
                 escutarAgente(path);
-            } else if (path.includes(usuario)) {
-                tentarCarregar(`agentes/${fichaId}`);
+            } else {
+                tentarCarregar(i + 1);
             }
         });
     };
 
-    if (usuario) {
-        tentarCarregar(`agentes/${usuario}/${fichaId}`);
-    } else {
-        tentarCarregar(`agentes/${fichaId}`);
-    }
+    tentarCarregar(0);
 }
 
 window.addEventListener('firebaseReady', function() {
