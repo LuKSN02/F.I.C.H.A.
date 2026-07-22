@@ -1347,15 +1347,7 @@
 /* ===== ANIMAÇÕES PARANORMAIS ===== */
 
 /* Canvas de partículas */
-/* Canvas de partículas */
-#particle-canvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.45;
-}
+/* Canvas de partículas removido (alto consumo de CPU) */
 
 /* Garante que o conteúdo da página fique acima do canvas sem criar stacking context problemático */
 .custom-nav { isolation: isolate; }
@@ -3336,7 +3328,7 @@ body { transition: background 0.6s ease; }
 <body>
 
 <!-- Canvas de partículas paranormais -->
-<canvas id="particle-canvas"></canvas>
+<!-- canvas de partículas removido -->
 
     <!-- ===== MODAL DE LOGIN ===== -->
     <div id="modal-login-overlay">
@@ -6401,96 +6393,7 @@ confirmarCrop = async function() {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- ===== SISTEMA DE PARTÍCULAS PARANORMAIS ===== -->
-    <script>
-    (function() {
-        const canvas = document.getElementById('particle-canvas');
-        const ctx    = canvas.getContext('2d');
-        let W, H, particles = [], animId;
-        let paused = false;
-
-        // Cache da cor do tema: só recalcula quando o tema realmente muda,
-        // em vez de forçar getComputedStyle() em TODOS os frames (60x/s).
-        let themeColorCache = '58,123,213';
-        function refreshThemeColor() {
-            const style = getComputedStyle(document.documentElement);
-            themeColorCache = style.getPropertyValue('--tema-glow-rgb').trim() || '58,123,213';
-        }
-        function getThemeColor() {
-            return themeColorCache;
-        }
-
-        function resize() {
-            W = canvas.width  = window.innerWidth;
-            H = canvas.height = window.innerHeight;
-        }
-
-        function Particle() {
-            this.reset();
-        }
-        Particle.prototype.reset = function() {
-            this.x     = Math.random() * W;
-            this.y     = Math.random() * H;
-            this.r     = Math.random() * 1.8 + 0.4;
-            this.vx    = (Math.random() - 0.5) * 0.35;
-            this.vy    = -(Math.random() * 0.5 + 0.15);
-            this.alpha = Math.random() * 0.6 + 0.1;
-            this.life  = Math.random() * 200 + 100;
-            this.age   = 0;
-        };
-        Particle.prototype.update = function() {
-            this.x   += this.vx;
-            this.y   += this.vy;
-            this.age++;
-            // flicker
-            if (Math.random() < 0.03) this.alpha = Math.random() * 0.5 + 0.05;
-            if (this.age > this.life || this.y < -10) this.reset();
-        };
-        Particle.prototype.draw = function(rgb) {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${rgb},${this.alpha})`;
-            ctx.fill();
-        };
-
-        function initParticles(n) {
-            particles = [];
-            for (let i = 0; i < n; i++) {
-                const p = new Particle();
-                p.age = Math.random() * p.life; // stagger
-                particles.push(p);
-            }
-        }
-
-        function loop() {
-            if (paused) return;
-            ctx.clearRect(0, 0, W, H);
-            const rgb = getThemeColor(); // agora é só uma leitura de variável, sem custo de layout
-            for (const p of particles) { p.update(); p.draw(rgb); }
-            animId = requestAnimationFrame(loop);
-        }
-
-        window.addEventListener('resize', () => { resize(); });
-        resize();
-        initParticles(90);
-        refreshThemeColor();
-        loop();
-
-        // Recalcula a cor só quando o tema realmente muda (evento já disparado em outro lugar do código)
-        document.addEventListener('temaAplicado', refreshThemeColor);
-
-        // Pausa o loop quando a aba está em segundo plano (economiza CPU/bateria)
-        // e retoma de onde parou ao voltar.
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                paused = true;
-                if (animId) cancelAnimationFrame(animId);
-            } else if (paused) {
-                paused = false;
-                loop();
-            }
-        });
-    })();
+    <!-- ===== SISTEMA DE PARTÍCULAS PARANORMAIS — REMOVIDO (alto consumo de CPU) ===== -->
 
     /* ── Anima cards de agente ao aparecerem ── */
     function animarCards() {
