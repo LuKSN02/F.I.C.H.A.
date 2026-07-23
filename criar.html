@@ -916,7 +916,8 @@ const ATRIBUTOS = [
     { id:'VIG', nome:'Vigor',     abrev:'VIG' },
 ];
 
-const BASE_ATRIB  = 0;  // atributos começam em 0
+const MIN_ATRIB   = 0;  // valor mínimo que um atributo pode assumir (ainda pode ser reduzido até aqui)
+const START_ATRIB = 1;  // valor inicial ao começar a distribuir atributos
 const MAX_ATRIB   = 3;  // máximo de atributo na criação
 const TOTAL_PONTOS = 4; // pontos totais para distribuir
 
@@ -1228,7 +1229,7 @@ function restaurarRascunho() {
 
     if (rascunho.atributos) {
         atributosValores = { ...atributosValores, ...rascunho.atributos };
-        const usados = Object.values(atributosValores).reduce((s, v) => s + (v - BASE_ATRIB), 0);
+        const usados = Object.values(atributosValores).reduce((s, v) => s + (v - START_ATRIB), 0);
         pontosRestantes = Math.max(0, TOTAL_PONTOS - usados);
         const elPontos = document.getElementById('pontos-restantes');
         if (elPontos) elPontos.textContent = pontosRestantes;
@@ -1279,7 +1280,7 @@ let etapaAtual = 0;
 const totalEtapas = 4;
 let etapasVisitadas = new Set([0]);
 
-let atributosValores = { FOR: BASE_ATRIB, AGI: BASE_ATRIB, INT: BASE_ATRIB, PRE: BASE_ATRIB, VIG: BASE_ATRIB };
+let atributosValores = { FOR: START_ATRIB, AGI: START_ATRIB, INT: START_ATRIB, PRE: START_ATRIB, VIG: START_ATRIB };
 let pontosRestantes  = TOTAL_PONTOS;
 let periciasSelected = new Set();
 let fichaIdCriada    = null;
@@ -1496,7 +1497,7 @@ function renderAtributos() {
     ATRIBUTOS.forEach(a => {
         const v          = atributosValores[a.id];
         const podeSubir  = pontosRestantes >= 1 && v < MAX_ATRIB;
-        const podeDescer = v > BASE_ATRIB;
+        const podeDescer = v > MIN_ATRIB;
         grid.innerHTML += `
         <div class="atributo-box">
             <div class="atributo-nome">${a.nome}</div>
@@ -1513,7 +1514,7 @@ function ajustarAtributo(id, delta) {
     const atual = atributosValores[id];
     const novo  = atual + delta;
 
-    if (novo < BASE_ATRIB || novo > MAX_ATRIB) return;
+    if (novo < MIN_ATRIB || novo > MAX_ATRIB) return;
 
     if (delta > 0) {
         if (pontosRestantes < 1) {
