@@ -485,6 +485,60 @@
     }
     .confirm-btn-ok:active, .confirm-btn-cancel:active { transform: scale(0.98); }
 
+    /* ===== MODAL CONFIRMAR APAGAR FICHA (Agente/NPC) ===== */
+    #confirm-apagar-ficha-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(8px);
+        z-index: 100000;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.18s;
+    }
+    #confirm-apagar-ficha-overlay.show {
+        opacity: 1; pointer-events: all;
+    }
+    .confirm-resumo-ficha {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(232,64,64,0.25);
+        border-left: 3px solid var(--red, #e84040);
+        border-radius: 4px;
+        padding: 14px 16px;
+        margin-bottom: 22px;
+        text-align: left;
+    }
+    .confirm-resumo-ficha-nome {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #fff;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .confirm-resumo-ficha-tag {
+        flex-shrink: 0;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.6rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #ff9a9a;
+        background: rgba(232,64,64,0.12);
+        border: 1px solid rgba(232,64,64,0.3);
+        padding: 3px 8px;
+        border-radius: 3px;
+    }
+    .confirm-resumo-ficha-meta {
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.78rem;
+        color: #888;
+        letter-spacing: 0.5px;
+    }
+    .confirm-resumo-ficha-meta strong { color: #ddd; font-weight: 700; }
+
     /* ===== AVATAR DE PERFIL ===== */
     .avatar-wrapper {
         position: relative;
@@ -3430,6 +3484,38 @@ body { transition: background 0.6s ease; }
         </div>
     </div>
 
+    <!-- ===== MODAL CONFIRMAR APAGAR FICHA (Agente/NPC) ===== -->
+    <div id="confirm-apagar-ficha-overlay" onclick="_confirmarApagarFichaBackdrop(event)">
+        <div class="confirm-box" id="confirm-apagar-ficha-box">
+            <div class="confirm-icon" style="border-color:rgba(232,64,64,0.3);background:rgba(232,64,64,0.07);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ff6666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <path d="M10 11v6M14 11v6"/>
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+            </div>
+            <p class="confirm-title" id="confirm-apagar-ficha-titulo">Remover Ficha</p>
+            <p class="confirm-desc">Esta ação não pode ser desfeita.</p>
+
+            <div class="confirm-resumo-ficha">
+                <div class="confirm-resumo-ficha-nome">
+                    <span id="confirm-apagar-ficha-nome">—</span>
+                    <span class="confirm-resumo-ficha-tag" id="confirm-apagar-ficha-tag">AGENTE</span>
+                </div>
+                <div class="confirm-resumo-ficha-meta">
+                    Classe: <strong id="confirm-apagar-ficha-classe">—</strong> &nbsp;·&nbsp;
+                    NEX: <strong id="confirm-apagar-ficha-nex">—</strong>
+                </div>
+            </div>
+
+            <div class="confirm-actions">
+                <button class="confirm-btn confirm-btn-cancel" id="confirm-apagar-ficha-cancel">Cancelar</button>
+                <button class="confirm-btn confirm-btn-ok" id="confirm-apagar-ficha-ok">🗑 Confirmar</button>
+            </div>
+        </div>
+    </div>
+
         <!-- MODAL CROPPER -->
         <div class="crop-overlay" id="crop-overlay">
         <div class="crop-title">▸ AJUSTAR FOTO DE PERFIL</div>
@@ -4844,6 +4930,50 @@ body { transition: background 0.6s ease; }
         }
         window._confirmarApagarBackdrop = _confirmarApagarBackdrop;
 
+        // ===== Confirmação de exclusão de ficha (Agente/NPC) com resumo =====
+        // ficha: objeto com { nome, classe, nivel, ... } | tipo: 'agente' | 'npc'
+        function _mostrarConfirmApagarFicha(ficha, tipo) {
+            return new Promise(resolve => {
+                const overlay   = document.getElementById('confirm-apagar-ficha-overlay');
+                const btnOk     = document.getElementById('confirm-apagar-ficha-ok');
+                const btnCancel = document.getElementById('confirm-apagar-ficha-cancel');
+                const elTitulo  = document.getElementById('confirm-apagar-ficha-titulo');
+                const elNome    = document.getElementById('confirm-apagar-ficha-nome');
+                const elTag     = document.getElementById('confirm-apagar-ficha-tag');
+                const elClasse  = document.getElementById('confirm-apagar-ficha-classe');
+                const elNex     = document.getElementById('confirm-apagar-ficha-nex');
+
+                const ehNpc = tipo === 'npc';
+                elTitulo.textContent = ehNpc ? 'Remover NPC' : 'Remover Agente';
+                elNome.textContent   = (ficha && ficha.nome) ? ficha.nome : 'Sem nome';
+                elTag.textContent    = ehNpc ? 'NPC' : 'AGENTE';
+                elClasse.textContent = (ficha && ficha.classe) ? ficha.classe : '—';
+                elNex.textContent    = (ficha && ficha.nivel !== undefined && ficha.nivel !== null && ficha.nivel !== '')
+                    ? ficha.nivel : '—';
+
+                overlay.classList.add('show');
+
+                function fechar(res) {
+                    overlay.classList.remove('show');
+                    btnOk.removeEventListener('click', onOk);
+                    btnCancel.removeEventListener('click', onCancel);
+                    resolve(res);
+                }
+                function onOk()     { fechar(true);  }
+                function onCancel() { fechar(false); }
+                btnOk.addEventListener('click', onOk);
+                btnCancel.addEventListener('click', onCancel);
+            });
+        }
+        window._mostrarConfirmApagarFicha = _mostrarConfirmApagarFicha;
+
+        function _confirmarApagarFichaBackdrop(e) {
+            if (e.target === document.getElementById('confirm-apagar-ficha-overlay')) {
+                document.getElementById('confirm-apagar-ficha-overlay').classList.remove('show');
+            }
+        }
+        window._confirmarApagarFichaBackdrop = _confirmarApagarFichaBackdrop;
+
         /* =============================================
            EMOJI PICKER — categorizado, sem dependência
         ============================================= */
@@ -5326,11 +5456,15 @@ body { transition: background 0.6s ease; }
 
 
         async function deletarAgente(index) {
-            if (!confirm('Remover este agente? Esta ação não pode ser desfeita.')) return;
             const usuario  = getUsuarioLogado();
             const chave    = getPrefix() + 'lista_agentes';
             const agentes  = JSON.parse(localStorage.getItem(chave)) || [];
             const agente   = agentes[index];
+            if (!agente) return;
+
+            const confirmado = await _mostrarConfirmApagarFicha(agente, 'agente');
+            if (!confirmado) return;
+
             if (agente?.id) {
                 localStorage.removeItem(getPrefix() + 'estado_ficha_' + agente.id);
                 // Remove também do Firebase
@@ -5487,11 +5621,15 @@ body { transition: background 0.6s ease; }
         }
 
         async function deletarNpc(index) {
-            if (!confirm('Remover este NPC? Esta ação não pode ser desfeita.')) return;
             const usuario = getUsuarioLogado();
             const chave   = getPrefix() + 'lista_npcs';
             const npcs    = JSON.parse(localStorage.getItem(chave)) || [];
             const npc     = npcs[index];
+            if (!npc) return;
+
+            const confirmado = await _mostrarConfirmApagarFicha(npc, 'npc');
+            if (!confirmado) return;
+
             if (npc?.id && window._firebaseDB && window._firebaseRemove && window._firebaseRef) {
                 try {
                     await window._firebaseRemove(window._firebaseRef(window._firebaseDB, `npcs/${usuario}/${npc.id}`));

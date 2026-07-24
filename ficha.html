@@ -874,42 +874,74 @@
         .res-tag.r-normal  { background: #1a0033; color: var(--purple-neon); }
         .rituais-vazio { text-align: center; padding: 24px; color: #333; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; }
 
-        /* HABILIDADES */
-        .hab-categorias{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px;}
-        .hab-cat-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 12px;border-radius:6px;cursor:pointer;transition:0.2s;}
-        .hab-cat-btn:hover{color:white;background:#1a0033;}
-        .hab-cat-btn.active{background:var(--purple-dark);border-color:var(--purple);color:var(--purple-neon);}
-        .hab-subabas{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);}
-        .hab-subaba-btn{background:#0d0010;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:4px;cursor:pointer;transition:0.2s;}
+        /* HABILIDADES — estilo C.R.I.S. */
+        .hab-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+        .hab-toolbar .sec-title{margin-bottom:0;border-bottom:none;padding-bottom:0;}
+        .btn-homebrew{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.03);border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:1px;padding:7px 14px;border-radius:8px;cursor:pointer;transition:0.18s;}
+        .btn-homebrew:hover{color:var(--purple-neon);border-color:var(--purple);background:rgba(255,255,255,0.06);}
+
+        .hab-categorias{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-bottom:12px;}
+        .hab-cat-btn{background:rgba(255,255,255,0.02);border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:9px 10px;border-radius:8px;cursor:pointer;transition:0.18s;text-align:center;}
+        .hab-cat-btn:hover{color:white;border-color:var(--text-dim);background:rgba(255,255,255,0.05);}
+        .hab-cat-btn.active{background:var(--purple-dark);border-color:var(--purple);color:var(--purple-neon);box-shadow:0 0 0 1px var(--purple) inset;}
+
+        .hab-subabas{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+        .hab-subaba-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.66rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:5px 11px;border-radius:20px;cursor:pointer;transition:0.18s;}
         .hab-subaba-btn:hover{color:white;border-color:var(--purple);}
         .hab-subaba-btn.active{background:var(--purple);border-color:var(--purple);color:white;}
+
         .hab-search-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
         .hab-search-wrap2{flex:1;position:relative;}
-        .hab-search-wrap2 .sicon2{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:0.9rem;pointer-events:none;}
-        .hab-search-input{width:100%;padding:7px 10px 7px 30px;background:#0d0010;border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;border-radius:6px;transition:border-color 0.2s;}
-        .hab-search-input:focus{border-color:var(--purple);outline:none;}
-        .hab-search-input::placeholder{color:#444;}
-        .hab-count{font-size:0.6rem;letter-spacing:2px;color:#444;text-transform:uppercase;font-family:'Share Tech Mono',monospace;margin-bottom:8px;}
-        .poder-card{background:#0d0010;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:8px;transition:border-color 0.15s;}
-        .poder-card:hover{border-color:#3a0070;}
-        .poder-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:13px 16px;cursor:pointer;gap:10px;transition:background 0.15s;}
-        .poder-card-hdr:hover{background:#130020;}
-        .poder-hdr-esq{flex:1;}
-        .poder-nome{font-size:1rem;font-weight:700;color:white;margin-bottom:6px;}
-        .poder-badges{display:flex;gap:4px;flex-wrap:wrap;}
-        .poder-toggle{font-size:0.7rem;color:#444;flex-shrink:0;padding-top:2px;transition:color 0.15s;}
-        .poder-card-hdr:hover .poder-toggle{color:var(--purple-neon);}
-        .poder-card-body{padding:0 14px 14px;border-top:1px solid #150025;animation:fadeIn 0.2s ease;}
-        .poder-desc{font-size:0.8rem;color:#999;font-family:'Share Tech Mono',monospace;line-height:1.6;margin:10px 0;}
-        .poder-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px;margin-bottom:10px;}
-        .poder-meta-item{font-size:0.65rem;color:#555;font-family:'Share Tech Mono',monospace;}
-        .poder-meta-item span{color:#888;}
-        .btn-add-poder{background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;padding:5px 12px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:0.2s;}
+        .hab-search-wrap2 .sicon2{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:0.9rem;pointer-events:none;}
+        .hab-search-input{width:100%;padding:9px 12px 9px 34px;background:rgba(255,255,255,0.02);border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;border-radius:8px;transition:border-color 0.2s,background 0.2s;}
+        .hab-search-input:focus{border-color:var(--purple);outline:none;background:rgba(255,255,255,0.04);}
+        .hab-search-input::placeholder{color:#555;}
+        .hab-count{font-size:0.62rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;font-family:'Share Tech Mono',monospace;margin-bottom:10px;}
+
+        .hab-grupo-hdr{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:0.66rem;letter-spacing:3px;color:var(--purple-neon);text-transform:uppercase;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-top:6px;}
+        .hab-grupo-hdr .hg-icon{color:var(--purple);font-size:0.75rem;}
+        .hab-grupo-hdr .hg-count{margin-left:auto;font-size:0.58rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
+
+        /* grid de cards — cartões viram largura total quando expandidos */
+        .hab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start;}
+
+        .poder-card{
+            --ecor: var(--purple-neon); --ebg: rgba(255,255,255,0.02); --eborder: var(--border);
+            position:relative; background:rgba(255,255,255,0.015);
+            border:1px solid var(--border); border-left:3px solid var(--ecor);
+            border-radius:12px; overflow:hidden;
+            transition:border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+        .poder-card:hover{border-color:var(--ecor); background:rgba(255,255,255,0.035); transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,0.35);}
+        .poder-card.aberto{grid-column:1/-1;}
+
+        .poder-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 16px;cursor:pointer;gap:10px;transition:background 0.15s;}
+        .poder-card-hdr:hover{background:rgba(255,255,255,0.02);}
+        .poder-hdr-esq{flex:1;min-width:0;}
+        .poder-nome{font-size:0.98rem;font-weight:700;color:white;margin-bottom:8px;letter-spacing:0.2px;}
+        .poder-badges{display:flex;gap:5px;flex-wrap:wrap;}
+
+        .hbadge{display:inline-flex;align-items:center;gap:4px;font-size:0.58rem;letter-spacing:0.8px;text-transform:uppercase;font-weight:700;padding:3px 9px;border-radius:20px;font-family:'Oswald',sans-serif;border:1px solid var(--eborder);background:var(--ebg);color:var(--ecor);white-space:nowrap;}
+        .hbadge-tipo{--ecor:var(--purple-neon);--ebg:rgba(255,255,255,0.03);--eborder:var(--border);}
+        .hbadge-trilha{color:var(--text-dim);background:rgba(255,255,255,0.02);border-color:var(--border);}
+        .hbadge-acao{color:#ccc;background:rgba(255,255,255,0.03);border-color:var(--border);}
+        .hbadge-custo{color:#ddd;background:rgba(255,255,255,0.04);border-color:var(--border);font-family:'Share Tech Mono',monospace;letter-spacing:0.5px;}
+
+        .poder-toggle{font-size:0.65rem;color:var(--text-dim);flex-shrink:0;padding-top:3px;transition:color 0.15s,transform 0.15s;}
+        .poder-card-hdr:hover .poder-toggle{color:var(--ecor);}
+
+        .poder-card-body{padding:0 16px 16px;border-top:1px solid rgba(255,255,255,0.05);animation:fadeIn 0.2s ease;}
+        .poder-desc{font-size:0.82rem;color:#bbb;font-family:'Share Tech Mono',monospace;line-height:1.7;margin:12px 0;white-space:pre-line;}
+        .poder-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin-bottom:12px;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;}
+        .poder-meta-item{font-size:0.65rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
+        .poder-meta-item span{color:#ccc;}
+
+        .btn-add-poder{background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;padding:6px 13px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:0.2s;}
         .btn-add-poder:hover{background:var(--purple);box-shadow:0 0 8px var(--purple-glow);}
-        .btn-add-poder.added{background:#1a0033;border:1px solid #3a0063;color:#555;cursor:default;}
-        .btn-rem-poder{background:none;border:1px solid #2a0030;color:#555;font-size:0.7rem;font-family:'Share Tech Mono',monospace;padding:3px 10px;border-radius:4px;cursor:pointer;transition:0.2s;}
+        .btn-add-poder.added{background:rgba(255,255,255,0.03);border:1px solid var(--border);color:var(--text-dim);cursor:default;}
+        .btn-rem-poder{background:none;border:1px solid var(--border);color:var(--text-dim);font-size:0.68rem;font-family:'Share Tech Mono',monospace;padding:4px 11px;border-radius:8px;cursor:pointer;transition:0.2s;}
         .btn-rem-poder:hover{color:var(--red);border-color:var(--red-dark);}
-        .hab-vazio{text-align:center;padding:24px;color:#333;font-family:'Share Tech Mono',monospace;font-size:0.8rem;letter-spacing:1px;}
+        .hab-vazio{grid-column:1/-1;text-align:center;padding:30px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:0.8rem;letter-spacing:1px;border:1px dashed var(--border);border-radius:10px;}
 
         /* PATCH — Botão de edição inline */
         .edit-btn {
@@ -3752,8 +3784,8 @@ const HABILIDADES_DB = {
   // ══════════════════════════════════════════════
   classe: [
     // COMBATENTE
-    { nome:'Ataque Especial', classe:'Combatente', tipo:'classe', elem:'NEUTRO', nex:'5%', src:'Livro Base',
-      desc:'Você pode gastar PE para melhorar seus ataques. 1 PE: +1 ataque ou +3 dano. 2 PE: +2/+6. 3 PE: +3/+9. 4 PE: +4/+12. 5 PE: +5/+15. Em NEX 25% o custo máximo sobe para 3 PE (+10), NEX 55% para 4 PE (+15), NEX 85% para 5 PE (+20).' },
+    { nome:'Ataque Especial (Inofensivo/Ligeiro)', classe:'Combatente', tipo:'classe', elem:'NEUTRO', nex:'5%', custo:'1 PE', tipoAcao:'Ativa', src:'Livro Base',
+      desc:'Quando faz um ataque corpo a corpo ou com uma arma de curta distância, você pode gastar 1 PE para receber +2 no teste de ataque ou +2 na rolagem de dano.' },
     { nome:'Habilidade de Trilha (Combatente)', classe:'Combatente', tipo:'classe', elem:'NEUTRO', nex:'10%', src:'Livro Base',
       desc:'Em NEX 10% escolha uma trilha de combatente e receba o 1º poder. Recebe novos poderes da trilha em NEX 40%, 65% e 99%.' },
       { nome:'Ciente das Cicatrizes', classe:'Combatente', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror',
@@ -3778,10 +3810,10 @@ const HABILIDADES_DB = {
       
 
     // ESPECIALISTA
-    { nome:'Eclético', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'5%', src:'Livro Base',
+    { nome:'Eclético', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'5% (variante)', src:'Livro Base',
       desc:'Quando faz um teste de uma perícia, você pode gastar 2 PE para receber os benefícios de ser treinado nesta perícia.' },
-    { nome:'Perito', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'5%', src:'Livro Base',
-      desc:'Escolha duas perícias treinadas (exceto Luta e Pontaria). Quando faz um teste dessas perícias, gaste 2 PE para +1d6. Em NEX 25%: 3 PE/+1d8. NEX 55%: 4 PE/+1d10. NEX 85%: 5 PE/+1d12.' },
+    { nome:'Perito', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'5%', custo:'1 PE', tipoAcao:'Ativa / Passiva', src:'Livro Base',
+      desc:'Escolha duas perícias nas quais você é treinado (exceto Luta e Pontaria). Quando faz um teste de uma dessas perícias, você pode gastar 1 PE para somar +1d6 no resultado do teste.' },
     { nome:'Engenhosidade', classe:'Especialista', tipo:'classe', elem:'NEUTRO', nex:'40%', src:'Livro Base',
       desc:'Em NEX 40%: ao usar Eclético, gaste +2 PE para receber benefícios de veterano. Em NEX 75%: gaste +4 PE para benefícios de expert.' },
       { nome:'Disfarce Sutil', classe:'Especialista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror',
@@ -3804,8 +3836,9 @@ const HABILIDADES_DB = {
     desc:'Uma vez por cena de investigação, gaste 5 PE para coordenar os esforços: a urgência aumenta em 1 rodada e durante essa rodada adicional todos os personagens recebem +2 em testes de perícia. Pré-requisito: treinado em Investigação.' },
 
     // OCULTISTA
-    { nome:'Escolhido pelo Outro Lado', classe:'Ocultista', tipo:'classe', elem:'NEUTRO', nex:'5%', src:'Livro Base',
-      desc:'Você pode lançar rituais de 1º círculo. NEX 25%: 2º círculo. NEX 55%: 3º círculo. NEX 85%: 4º círculo. Começa com 3 rituais de 1º círculo e aprende 1 ritual por aumento de NEX.' },
+    { nome:'Escolhido pelo Outro Lado', classe:'Ocultista', tipo:'classe', elem:'NEUTRO', nex:'5%', custo:'Passiva', tipoAcao:'Passiva', src:'Livro Base',
+      exemplos:'Amaldiçoar Arma, Decadência, Eletrocussão',
+      desc:'Você começa o jogo com três rituais de 1º círculo à sua escolha. Você também recebe +1 PE por nível de exposição (NEX).' },
     { nome:'Identificação Paranormal', classe:'Ocultista', tipo:'classe', elem:'NEUTRO', nex:'15%', src:'Livro Base',
       desc:'Você recebe +10 em testes de Ocultismo para identificar criaturas, objetos ou rituais.' },
       { nome:'Estalos Macabros', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror',
@@ -3823,7 +3856,7 @@ const HABILIDADES_DB = {
   { nome:'Traçado Conjuratório', classe:'Ocultista', tipo:'poder_classe', elem:'NEUTRO', nex:'15%', src:'Sobrevivendo ao Horror',
     desc:'Gaste 1 PE e uma ação completa para traçar um símbolo paranormal no chão (1,5m²). Enquanto dentro do símbolo, recebe +2 em testes de Ocultismo e resistência, e a DT dos seus rituais aumenta em +2. O símbolo dura até o fim da cena.' },
         // SOBREVIVENTE — habilidades de classe
-    { nome:'Empenho', classe:'Sobrevivente', tipo:'classe', elem:'NEUTRO', nex:'Estágio 1', src:'Sobrevivendo ao Horror',
+    { nome:'Empenho', classe:'Sobrevivente', tipo:'classe', elem:'NEUTRO', nex:'Estágio 1', custo:'1 PE', tipoAcao:'Ativa', src:'Sobrevivendo ao Horror',
       desc:'Quando faz um teste de perícia, pode gastar 1 PE para receber +2 nesse teste.' },
     { nome:'Trilha', classe:'Sobrevivente', tipo:'classe', elem:'NEUTRO', nex:'Estágio 2', src:'Sobrevivendo ao Horror',
       desc:'Escolha uma trilha de sobrevivente (Durão, Esperto ou Esotérico) e recebe o 1º poder. No 4º estágio recebe o 2º poder.' },
@@ -7838,21 +7871,22 @@ function renderHabilidades() {
 ];
     const catBtns = cats.map(c => `<button class="hab-cat-btn ${habCatAtiva===c.id?'active':''}" onclick="setHabCat('${c.id}')">${c.label}</button>`).join('');
     let content = habCatAtiva === 'ficha' ? buildHabFichaView() : buildHabCatView(habCatAtiva);
-    container.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><div class="sec-title" style="margin-bottom:0;">Habilidades & Poderes</div><button onclick="abrirModalHabHomebrew()" style="background:transparent;border:1px solid var(--purple);color:var(--purple-neon);font-family:'Oswald',sans-serif;font-size:0.75rem;font-weight:700;padding:6px 14px;border-radius:4px;cursor:pointer;letter-spacing:1px;transition:0.2s;" onmouseover="this.style.background='var(--purple-dark)'" onmouseout="this.style.background='transparent'">🧪 Homebrew</button></div><div class="hab-categorias">${catBtns}</div>${content}`;
+    container.innerHTML = `<div class="hab-toolbar"><div class="sec-title">Habilidades &amp; Poderes</div><button class="btn-homebrew" onclick="abrirModalHabHomebrew()">🧪 Homebrew</button></div><div class="hab-categorias">${catBtns}</div>${content}`;
     container.querySelector('#hab-search')?.addEventListener('input', renderHabilidades);
 }
 
 function buildHabFichaView() {
     const lista = estado.habilidadesPersonagem || [];
-    if (lista.length === 0) return `<div class="hab-vazio">▸ Nenhuma habilidade adicionada ainda.<br>Use as abas acima para explorar e adicionar!</div>`;
+    if (lista.length === 0) return `<div class="hab-grid"><div class="hab-vazio">▸ Nenhuma habilidade adicionada ainda.<br>Use as abas acima para explorar e adicionar!</div></div>`;
     const grupos = {}; lista.forEach(h => { const g = h.tipo || 'outro'; if (!grupos[g]) grupos[g] = []; grupos[g].push(h); });
     const labels = { classe:'Habilidades de Classe', trilha:'Habilidades de Trilha', paranormal:'Poderes Paranormais', poder_classe:'Poderes de Classe', origem:'Habilidades de Origem', treinamento_especial:'Treinamento Especial', homebrew:'Homebrew' };
-    let html = '';
+    const icones = { classe:'⚔', trilha:'◈', paranormal:'✦', poder_classe:'◆', origem:'◉', treinamento_especial:'⊕', homebrew:'🧪', outro:'▸' };
+    let html = '<div class="hab-grid">';
     Object.entries(grupos).forEach(([tipo, habs]) => {
-        const icones = { classe:'⚔', trilha:'◈', paranormal:'✦', poder_classe:'◆', origem:'◉', treinamento_especial:'⊕', homebrew:'🧪', outro:'▸' };
-        html += `<div style="display:flex;align-items:center;gap:8px;font-size:0.68rem;letter-spacing:3px;color:var(--purple-neon);text-transform:uppercase;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:7px 12px;margin-bottom:10px;margin-top:16px;position:relative;z-index:1;"><span style="color:var(--purple);font-size:0.75rem;">${icones[tipo]||'▸'}</span><span>${labels[tipo]||tipo}</span><span style="margin-left:auto;font-size:0.55rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;">${habs.length}</span></div>`;
+        html += `<div class="hab-grupo-hdr"><span class="hg-icon">${icones[tipo]||'▸'}</span><span>${labels[tipo]||tipo}</span><span class="hg-count">${habs.length}</span></div>`;
         html += habs.map(h => buildPoderCard(h, true)).join('');
     });
+    html += '</div>';
     return html;
 }
 
@@ -7871,28 +7905,30 @@ function buildHabCatView(cat) {
     if (busca) todos = todos.filter(h => h.nome.toLowerCase().includes(busca) || (h.desc||'').toLowerCase().includes(busca) || (h.trilha||'').toLowerCase().includes(busca) || (h.classe||'').toLowerCase().includes(busca));
     const subBtns = subabaOpts.map(s => { const lbl = s === 'todos' ? 'Todos' : s.charAt(0)+s.slice(1).toLowerCase(); return `<button class="hab-subaba-btn ${habSubabaAtiva===s?'active':''}" onclick="setHabSubaba('${s}')">${lbl}</button>`; }).join('');
     const cards = todos.length === 0 ? `<div class="hab-vazio">▸ Nenhuma habilidade encontrada.</div>` : todos.map(h => buildPoderCard(h, false)).join('');
-    return `<div class="hab-subabas">${subBtns}</div><div class="hab-search-row"><div class="hab-search-wrap2"><span class="sicon2">⌕</span><input type="text" id="hab-search" class="hab-search-input" placeholder="Buscar habilidade..." value="${busca}"></div></div><div class="hab-count">▸ ${todos.length} habilidade${todos.length!==1?'s':''}</div>${cards}`;
+    return `<div class="hab-subabas">${subBtns}</div><div class="hab-search-row"><div class="hab-search-wrap2"><span class="sicon2">⌕</span><input type="text" id="hab-search" class="hab-search-input" placeholder="Buscar habilidade..." value="${busca}"></div></div><div class="hab-count">▸ ${todos.length} habilidade${todos.length!==1?'s':''}</div><div class="hab-grid">${cards}</div>`;
 }
 
 function buildPoderCard(h, isFicha) {
     const open  = habAbertos[h.nome] || false;
     const jatem = (estado.habilidadesPersonagem || []).some(x => x.nome === h.nome);
     const esc   = s => (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    const ECORES = { SANGUE:{cor:'#ff4466',bg:'#200010',border:'#440020'}, MORTE:{cor:'#9966ff',bg:'#150030',border:'#330066'}, CONHECIMENTO:{cor:'#4a9eff',bg:'#001020',border:'#003366'}, ENERGIA:{cor:'#ffcc00',bg:'#1a1400',border:'#443300'}, MEDO:{cor:'#ff8c00',bg:'#0d0800',border:'#3a2000'}, NEUTRO:{cor:'#888',bg:'#0d0d0d',border:'#222'} };
+    const ECORES = { SANGUE:{cor:'#ff4466',bg:'rgba(255,68,102,0.08)',border:'rgba(255,68,102,0.35)'}, MORTE:{cor:'#9966ff',bg:'rgba(153,102,255,0.08)',border:'rgba(153,102,255,0.35)'}, CONHECIMENTO:{cor:'#4a9eff',bg:'rgba(74,158,255,0.08)',border:'rgba(74,158,255,0.35)'}, ENERGIA:{cor:'#ffcc00',bg:'rgba(255,204,0,0.08)',border:'rgba(255,204,0,0.35)'}, MEDO:{cor:'#ff8c00',bg:'rgba(255,140,0,0.08)',border:'rgba(255,140,0,0.35)'}, NEUTRO:{cor:'#999',bg:'rgba(255,255,255,0.03)',border:'var(--border)'} };
     const elem  = (h.elem || 'NEUTRO').toUpperCase();
     const ec    = ECORES[elem] || ECORES.NEUTRO;
     const elbl  = elem === 'NEUTRO' ? '—' : elem.charAt(0)+elem.slice(1).toLowerCase();
-    const badgeElem = `<span style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;background:${ec.bg};color:${ec.cor};border:1px solid ${ec.border};">${elbl}</span>`;
-    const TIPOS = { classe:{cor:'var(--purple-neon)',bg:'#0d0020',border:'var(--border)',lbl:'CLASSE'}, trilha:{cor:'#39d353',bg:'#001510',border:'#003322',lbl:'TRILHA'}, paranormal:{cor:'#cc88ff',bg:'#100010',border:'#3a0060',lbl:'PARANORMAL'}, poder_classe:{cor:'var(--purple-neon)',bg:'#0d0020',border:'var(--border)',lbl:'PODER'}, origem:{cor:'#ffd700',bg:'#101000',border:'#443300',lbl:'ORIGEM'}, homebrew:{cor:'#39d353',bg:'#001a00',border:'#004400',lbl:'HOMEBREW'} };
-    const tc = TIPOS[h.tipo] || TIPOS.classe;
-    const badgeTipo = `<span style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;color:${tc.cor};background:${tc.bg};border:1px solid ${tc.border};">${tc.lbl}</span>`;
-    const badgeTrilha = h.trilha ? `<span style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;color:#888;background:#0d0010;border:1px solid var(--border);">${h.trilha}</span>` : '';
-    const badgeNex = (h.nex && h.nex !== '—') ? `<span style="font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:99px;font-family:'Oswald',sans-serif;font-weight:700;color:#666;background:#080010;border:1px solid #1a0033;">NEX ${h.nex}</span>` : '';
+    const badgeElem = `<span class="hbadge" style="--ecor:${ec.cor};--ebg:${ec.bg};--eborder:${ec.border};">${elbl}</span>`;
+    const LABELS_TIPO = { classe:'Classe', trilha:'Trilha', paranormal:'Paranormal', poder_classe:'Poder', origem:'Origem', treinamento_especial:'Treinamento', homebrew:'Homebrew' };
+    const badgeTipo = `<span class="hbadge hbadge-tipo">${LABELS_TIPO[h.tipo] || h.tipo || 'Categoria'}</span>`;
+    const badgeTrilha = h.trilha ? `<span class="hbadge hbadge-trilha">${h.trilha}</span>` : '';
+    const badgeAcao = h.tipoAcao ? `<span class="hbadge hbadge-acao">${h.tipoAcao}</span>` : '';
+    const badgeCusto = h.custo ? `<span class="hbadge hbadge-custo">${h.custo}</span>` : '';
+    const badgeNex = (h.nex && h.nex !== '—') ? `<span class="hbadge hbadge-custo">NEX ${h.nex}</span>` : '';
     const acaoBtn = isFicha ? `<button class="btn-rem-poder" onclick="removerHabilidade(event,'${esc(h.nome)}')">🗑 Remover</button>` : `<button class="${jatem?'btn-add-poder added':'btn-add-poder'}" onclick="adicionarHabilidade(event,'${esc(h.nome)}')">${jatem?'✓ Adicionado':'+ Adicionar'}</button>`;
     const metaExtra = h.trilha ? `<div class="poder-meta-grid"><div class="poder-meta-item">Classe <span>${h.classe}</span></div><div class="poder-meta-item">Trilha <span>${h.trilha}</span></div></div>` : '';
     const metaOrigem = h.origem ? `<div class="poder-meta-grid"><div class="poder-meta-item">Origem <span>${h.origem}</span></div></div>` : '';
-    const bodyHtml = open ? `<div class="poder-card-body"><div class="poder-desc">${h.desc||'—'}</div>${metaExtra}${metaOrigem}<div style="text-align:right;margin-top:8px;">${acaoBtn}</div></div>` : '';
-    return `<div class="poder-card"><div class="poder-card-hdr" onclick="toggleHab('${esc(h.nome)}')"><div class="poder-hdr-esq"><div class="poder-nome">${h.nome}</div><div class="poder-badges">${badgeElem}${badgeTipo}${badgeTrilha}${badgeNex}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${!open ? acaoBtn : ''}<div class="poder-toggle">${open?'▲':'▼'}</div></div></div>${bodyHtml}</div>`;
+    const metaExemplos = h.exemplos ? `<div class="poder-meta-grid" style="grid-template-columns:1fr;"><div class="poder-meta-item">Exemplos de 1º círculo <span>${h.exemplos}</span></div></div>` : '';
+    const bodyHtml = open ? `<div class="poder-card-body"><div class="poder-desc">${h.desc||'—'}</div>${metaExemplos}${metaExtra}${metaOrigem}<div style="text-align:right;margin-top:8px;">${acaoBtn}</div></div>` : '';
+    return `<div class="poder-card ${open?'aberto':''}" style="--ecor:${ec.cor};--ebg:${ec.bg};--eborder:${ec.border};"><div class="poder-card-hdr" onclick="toggleHab('${esc(h.nome)}')"><div class="poder-hdr-esq"><div class="poder-nome">${h.nome}</div><div class="poder-badges">${badgeElem}${badgeTipo}${badgeTrilha}${badgeAcao}${badgeCusto}${badgeNex}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${!open ? acaoBtn : ''}<div class="poder-toggle">${open?'▲':'▼'}</div></div></div>${bodyHtml}</div>`;
 }
 
 function setHabCat(cat)  { habCatAtiva=cat; habSubabaAtiva='todos'; renderHabilidades(); }

@@ -940,7 +940,7 @@ const PERICIAS = [
 
 const HABILIDADES_CLASSE = {
     'Combatente': [
-        { nome:'Ataque Especial (NEX 5%)', desc:'2 PE, +5 no ataque. Habilidade inicial do Combatente.' },
+        { nome:'Ataque Especial (Inofensivo/Ligeiro) (NEX 5%)', desc:'1 PE (Ativa). Quando faz um ataque corpo a corpo ou com uma arma de curta distância, você pode gastar 1 PE para receber +2 no teste de ataque ou +2 na rolagem de dano.' },
         { nome:'Habilidade de Trilha', desc:'Bônus da trilha escolhida (Combate, Defesa ou Fogo).' },
         { nome:'Poder de Combatente', desc:'Escolha um poder da lista de poderes de combatente.' },
         { nome:'Aumento de Atributo', desc:'Aumente um atributo em +1 (máximo 5).' },
@@ -951,7 +951,7 @@ const HABILIDADES_CLASSE = {
         { nome:'Versatilidade', desc:'Ganhe uma perícia treinada adicional.' },
     ],
     'Especialista': [
-        { nome:'Eclético, Perito (NEX 5%)', desc:'2 PE, +1d6 em testes de perícia. Habilidade inicial.' },
+        { nome:'Perito (NEX 5%)', desc:'1 PE (Ativa/Passiva). Escolha duas perícias treinadas (exceto Luta e Pontaria). Quando faz um teste de uma dessas perícias, pode gastar 1 PE para somar +1d6 no resultado.' },
         { nome:'Habilidade de Trilha', desc:'Bônus da trilha escolhida (Explorador, Atirador ou Infiltrador).' },
         { nome:'Poder de Especialista', desc:'Escolha um poder da lista de poderes de especialista.' },
         { nome:'Aumento de Atributo', desc:'Aumente um atributo em +1 (máximo 5).' },
@@ -963,7 +963,7 @@ const HABILIDADES_CLASSE = {
         { nome:'Versatilidade', desc:'Ganhe uma perícia treinada adicional.' },
     ],
     'Ocultista': [
-        { nome:'Escolhido pelo Outro Lado 1º Círculo (NEX 5%)', desc:'Habilidade de ritual do 1º círculo concedida pelo Outro Lado.' },
+        { nome:'Escolhido pelo Outro Lado (NEX 5%)', desc:'Passiva. Você começa o jogo com três rituais de 1º círculo à sua escolha (ex: Amaldiçoar Arma, Decadência, Eletrocussão). Recebe +1 PE por NEX.' },
         { nome:'Habilidade de Trilha', desc:'Bônus da trilha escolhida (Médium, Ilusionista ou Destruidor).' },
         { nome:'Poder de Ocultista', desc:'Escolha um poder da lista de poderes de ocultista.' },
         { nome:'Aumento de Atributo', desc:'Aumente um atributo em +1 (máximo 5).' },
@@ -978,7 +978,7 @@ const HABILIDADES_CLASSE = {
         { nome:'Conexões', desc:'Possui contatos em 3 áreas distintas que podem fornecer informações ou ajuda.' },
     ],
     'Sobrevivente': [
-        { nome:'Empenho', desc:'Gaste 1 PD para receber +2 em um teste de perícia.' },
+        { nome:'Empenho (Estágio 1)', desc:'1 PE (Ativa). Quando faz um teste de perícia, pode gastar 1 PE para receber +2 nesse teste.' },
         { nome:'Sentir o Paranormal (Esotérico)', desc:'Gaste uma ação padrão e 1 PD para sentir energias paranormais em alcance curto.' },
         { nome:'Habilidade de Trilha', desc:'Escolha uma trilha: Durão (resistência física), Esperto (perícias) ou Esotérico (contato com o Outro Lado).' },
         { nome:'Treinamento Especial (Estágio 5)', desc:'Ao atingir o 5º estágio, pode ser recrutado por uma organização (como a Ordo Realitas) e se tornar agente de NEX 5%, mantendo as habilidades adquiridas.' },
@@ -1641,11 +1641,10 @@ async function finalizarFicha() {
     const id = Date.now();
     fichaIdCriada = id;
 
-    // Habilidades da classe que NÃO são de NEX específico
-    const habsClasse = (HABILIDADES_CLASSE[classe] || []).filter(h => !h.nome.includes('NEX'));
-    const habilidadesIniciais = habsClasse.map(h => ({
-        nome: h.nome, desc: h.desc, tipo: 'classe', elem: 'NEUTRO', nex: '5%', src: 'Livro Base'
-    }));
+    // A habilidade oficial de NEX 5% (ou Estágio 1, no caso do Sobrevivente) é adicionada
+    // automaticamente pela própria ficha.html, com base na classe salva abaixo — a partir da
+    // HABILIDADES_DB (fonte única, evita duplicar/misturar habilidades de outras classes).
+    const habilidadesIniciais = [];
 
     const ficha = {
         id, nome, codinome, idade, nivel, origem, classe,
