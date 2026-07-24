@@ -101,6 +101,17 @@ body.tema-scifi {
   --foto-overlay:linear-gradient(to right, transparent 38%, rgba(0,3,12,0.45) 60%, rgba(0,3,12,0.72) 100%);
   --classe-bg:#005599; --classe-color:#cce4ff;
 }
+body.tema-digitalcircus {
+  --green:#ff2fb0; --green-bright:#ff6fe0; --green-dark:#1a0014;
+  --green-glow:rgba(255,47,176,0.6); --gold:#00e5ff; --gold-light:#5cf3ff;
+  --card:rgba(12,2,16,0.96); --border:rgba(255,47,176,0.75); --text-dim:#6a4a66; --white:#f5e8ff;
+  --accent1:#ff2f6c; --accent2:#00e5ff; --accent3:#ffe135;
+  --panel-bg:rgba(12,2,16,0.96); --nome-glow:rgba(255,47,176,0.6);
+  --btn-bg:rgba(12,2,16,0.85); --btn-border:#ff2fb0;
+  --foto-overlay:linear-gradient(to right, transparent 38%, rgba(12,0,16,0.45) 60%, rgba(12,0,16,0.72) 100%);
+  --classe-bg:#ffe135; --classe-color:#1a0014;
+}
+
 
 /* ============================================================
    BASE
@@ -2953,6 +2964,177 @@ body.layout-desconjuracao #desc-death-overlay.morto { opacity: 0.85 !important; 
 
 .obs-note { font-size: 0.55rem; color: #333; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; text-align: center; margin-top: 20px; line-height: 1.8; }
 .obs-note span { color: #555; }
+
+/* ============================================================
+   LAYOUT 13 — CIRCO DIGITAL (cartaz de picadeiro / marquise)
+   Medalhão com anel de bala listrada + faixa de bandeirinhas
+   recortada no topo, luzes de marquise sob o nome.
+   ============================================================ */
+body.layout-circo {
+  width: 290px;
+}
+
+body.layout-circo .portrait {
+  width: 290px;
+  height: auto;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 22px 15px 12px;
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  position: relative;
+  overflow: visible;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.65), 0 0 22px var(--green-glow);
+  animation: circoPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes circoPop {
+  from { opacity: 0; transform: scale(0.92) rotate(-1.5deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Faixa de bandeirinhas recortada, encostada no topo do cartão */
+body.layout-circo .portrait::before {
+  content: '';
+  position: absolute;
+  top: -10px; left: 10px; right: 10px;
+  height: 16px;
+  background: repeating-linear-gradient(135deg, var(--accent1) 0 12px, var(--green-dark) 12px 24px);
+  border-radius: 5px 5px 0 0;
+  -webkit-mask-image: radial-gradient(circle at 9px 100%, transparent 8px, black 9px);
+  mask-image: radial-gradient(circle at 9px 100%, transparent 8px, black 9px);
+  -webkit-mask-size: 18px 100%;
+  mask-size: 18px 100%;
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  z-index: 1;
+  opacity: 0.9;
+}
+
+/* Medalhão com anel de "bala" listrada, empoleirado sobre a faixa */
+body.layout-circo .foto-wrap {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin: -30px auto 10px;
+  position: relative;
+  z-index: 3;
+  border: 5px solid transparent;
+  background:
+    linear-gradient(var(--green-dark), var(--green-dark)) padding-box,
+    repeating-conic-gradient(var(--accent1) 0deg 15deg, var(--white) 15deg 30deg) border-box;
+  box-shadow:
+    0 0 0 2px rgba(0,0,0,0.85),
+    0 9px 22px rgba(0,0,0,0.7),
+    0 0 22px var(--green-glow);
+}
+
+body.layout-circo #death-overlay { border-radius: 50%; }
+
+body.layout-circo .nome-ghost { display: none; }
+
+/* Coluna de conteúdo centralizada, como um cartaz */
+body.layout-circo .stats-col {
+  width: 100%;
+  padding: 0;
+  gap: 9px;
+  align-items: stretch;
+  height: auto;
+}
+
+body.layout-circo .bars-wrap { gap: 4px; margin-bottom: 0; }
+
+body.layout-circo .stat-bar {
+  height: 20px;
+  border-radius: 10px;
+}
+body.layout-circo .stat-fill { border-radius: 10px; }
+
+body.layout-circo .info-panel {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 7px;
+  background: var(--panel-bg);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 9px 10px 10px;
+}
+body.layout-circo .info-panel::before { display: none; }
+
+body.layout-circo .nome-group { align-items: center; text-align: center; }
+
+body.layout-circo .nome {
+  font-family: 'Bebas Neue', 'Oswald', sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 2px;
+  color: var(--white);
+  text-shadow: 0 0 8px var(--green-glow), 1.5px 1.5px 0 rgba(0,0,0,0.8);
+  white-space: nowrap;
+}
+
+/* "Luzes de marquise" — fileira de pontinhos sob o nome */
+body.layout-circo .nome-group::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 3px;
+  margin-top: 4px;
+  background-image: radial-gradient(circle, var(--accent3) 1.1px, transparent 1.3px);
+  background-size: 7px 3px;
+  background-repeat: repeat-x;
+  background-position: center;
+  opacity: 0.85;
+}
+
+body.layout-circo .sub-row { justify-content: center; margin-top: 1px; }
+
+body.layout-circo .nex-badge {
+  border-radius: 8px;
+  border: 1px dashed var(--green);
+}
+
+body.layout-circo .classe-tag { border-radius: 8px; }
+
+body.layout-circo .right-group {
+  width: 100%;
+  align-items: center;
+  flex-direction: column-reverse;
+  gap: 6px;
+}
+
+body.layout-circo .pe-row { justify-content: center; }
+
+body.layout-circo .btn-ficha {
+  border-radius: 16px;
+  padding: 4px 13px;
+}
+
+/* Preview miniatura: Circo Digital */
+.lp-circo .lp-circo-ring {
+  position: absolute;
+  left: 2px; top: 2px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(var(--accent1) 0deg 20deg, var(--white) 20deg 40deg);
+}
+.lp-circo .lp-circo-flag {
+  position: absolute;
+  left: 16px; right: 2px; top: 2px;
+  height: 3px;
+  background: repeating-linear-gradient(135deg, var(--accent1) 0 3px, var(--green-dark) 3px 6px);
+  border-radius: 0 0 2px 2px;
+}
+.lp-circo .lp-circo-bar {
+  position: absolute;
+  left: 16px; right: 2px; bottom: 3px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent3);
+  opacity: 0.8;
+}
 </style>
 
 <!-- Firebase -->
@@ -3326,6 +3508,15 @@ body.layout-desconjuracao #desc-death-overlay.morto { opacity: 0.85 !important; 
         ✦ Desconjuração
       </div>
 
+      <div class="layout-opt" data-layout="circo" onclick="aplicarLayout('circo')">
+        <div class="layout-preview lp-circo">
+          <div class="lp-circo-flag"></div>
+          <div class="lp-circo-ring"></div>
+          <div class="lp-circo-bar"></div>
+        </div>
+        🎪 Circo Digital
+      </div>
+
     </div>
     <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.42rem;color:#334;letter-spacing:1px;line-height:1.8;">
       ▸ CLASSICO/BANNER/COMPACTO: 600px<br>
@@ -3370,6 +3561,10 @@ body.layout-desconjuracao #desc-death-overlay.morto { opacity: 0.85 !important; 
       <div class="theme-opt" data-tema="scifi" onclick="aplicarTema('scifi')">
         <span class="theme-dot" style="background:#0088dd;box-shadow:0 0 6px #0088dd"></span>
         Espacial / Sci-Fi
+      </div>
+      <div class="theme-opt" data-tema="digitalcircus" onclick="aplicarTema('digitalcircus')">
+        <span class="theme-dot" style="background:#ff2fb0;box-shadow:0 0 6px #ff2fb0"></span>
+        Circo Digital
       </div>
     </div>
   </div>
@@ -3849,7 +4044,8 @@ else window.addEventListener('load', tentarIniciar);
     cyberpunk:  'Cyberpunk',
     horror:     'Horror / Vampírico',
     posapoc:    'Pós-Apocalíptico',
-    scifi:      'Espacial / Sci-Fi'
+    scifi:      'Espacial / Sci-Fi',
+    digitalcircus: 'Circo Digital'
   };
 
   const layoutLabels = {
@@ -3865,7 +4061,8 @@ else window.addEventListener('load', tentarIniciar);
     radar:     'Radar',
     rpg:       'RPG',
     carteirinha: 'Carteirinha',
-    desconjuracao: 'Desconjuração'
+    desconjuracao: 'Desconjuração',
+    circo: 'Circo Digital'
   };
 
   // ---- Tema ----
@@ -3883,7 +4080,7 @@ else window.addEventListener('load', tentarIniciar);
 
   window.aplicarTema = function(tema) {
     // Remove qualquer tema anterior
-    ['paranormal','fantasia','cyberpunk','horror','posapoc','scifi'].forEach(t => {
+    ['paranormal','fantasia','cyberpunk','horror','posapoc','scifi','digitalcircus'].forEach(t => {
       document.body.classList.remove('tema-' + t);
     });
     document.body.classList.add('tema-' + tema);
@@ -3912,7 +4109,7 @@ else window.addEventListener('load', tentarIniciar);
   };
 
   window.aplicarLayout = function(layout) {
-    ['classico','banner','compacto','vertical','hud','ritual','terminal','ficha','taro','radar','rpg','carteirinha','desconjuracao'].forEach(l => {
+    ['classico','banner','compacto','vertical','hud','ritual','terminal','ficha','taro','radar','rpg','carteirinha','desconjuracao','circo'].forEach(l => {
       document.body.classList.remove('layout-' + l);
     });
     document.body.classList.add('layout-' + layout);
