@@ -1588,7 +1588,7 @@
           </div>
           <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
           <button onclick="abrirModalCompartilhar();toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid var(--green,#39d353);color:var(--green,#39d353);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;letter-spacing:1px;margin-bottom:8px;cursor:pointer;">🔗 Compartilhar Ficha</button>
-          <a id="btn-portrait-mobile" href="portrait.html" target="_blank" onclick="toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid var(--purple,#9b30d9);color:var(--purple-neon,#d070ff);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:1px;margin-bottom:8px;">🎭 Portrait</a>
+          <button id="btn-portrait-mobile" onclick="toggleNavbar();abrirModalPortrait()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid var(--purple,#9b30d9);color:var(--purple-neon,#d070ff);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:1px;margin-bottom:8px;cursor:pointer;">🎭 Portrait</button>
           <a href="index.html?view=agentes" id="link-voltar-mobile" onclick="toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid #333;color:#aaa;padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;text-decoration:none;letter-spacing:1px;">← Voltar</a>
       </div>
     </div>
@@ -1614,10 +1614,10 @@
                         </div>
                     </div>
                 </div>
-                <a href="portrait.html" id="btn-portrait" class="btn-voltar" 
-     style="border-color:var(--purple);color:var(--purple-neon);" target="_blank">
+                <button id="btn-portrait" class="btn-voltar" onclick="abrirModalPortrait()"
+     style="border-color:var(--purple);color:var(--purple-neon);cursor:pointer;">
     🎭 Portrait
-  </a>
+  </button>
   <button onclick="abrirModalCompartilhar()" class="btn-voltar" style="border-color:var(--green);color:var(--green);cursor:pointer;">
     🔗 Compartilhar
   </button>
@@ -5184,12 +5184,11 @@ function renderFicha() {
     }
 });
 
-    const btnPortrait = document.getElementById('btn-portrait');
-if (btnPortrait && ficha) {
+    if (ficha) {
     const usuario = localStorage.getItem('ficha_user_ativo') 
                  || sessionStorage.getItem('ficha_user') 
                  || '';
-    btnPortrait.href = `portrait.html?id=${ficha.id}&usuario=${usuario}`;
+    window.__portraitUrl = `portrait.html?id=${ficha.id}&usuario=${usuario}`;
 }
 
     desenharRadar(atribs);
@@ -8863,6 +8862,114 @@ function travarCampos() {
 }
 
 // ══════════════════════════════════════════════
+// PORTRAIT - SELEÇÃO DE LAYOUT E TEMA
+// ══════════════════════════════════════════════
+
+const PORTRAIT_LAYOUTS = [
+    { id: 'classico',      label: 'Clássico',       icon: '🖼️' },
+    { id: 'banner',        label: 'Banner',         icon: '🎫' },
+    { id: 'compacto',      label: 'Compacto',       icon: '▫️' },
+    { id: 'vertical',      label: 'Vertical',       icon: '📱' },
+    { id: 'hud',           label: 'HUD',            icon: '🎯' },
+    { id: 'ritual',        label: 'Ritual',         icon: '🕯️' },
+    { id: 'terminal',      label: 'Terminal',       icon: '💻' },
+    { id: 'ficha',         label: 'Prontuário',     icon: '📋' },
+    { id: 'taro',          label: 'Tarô',           icon: '🔮' },
+    { id: 'radar',         label: 'Radar',          icon: '📡' },
+    { id: 'rpg',           label: 'RPG',            icon: '⚔️' },
+    { id: 'carteirinha',   label: 'Carteirinha',    icon: '🪪' },
+    { id: 'desconjuracao', label: 'Desconjuração',  icon: '📺' },
+    { id: 'circo',         label: 'Circo Digital',  icon: '🎪' },
+];
+
+const PORTRAIT_TEMAS = [
+    { id: 'paranormal',    label: 'Ordem Paranormal',   cor: '#3eb554' },
+    { id: 'fantasia',      label: 'Fantasia Medieval',  cor: '#c8891e' },
+    { id: 'cyberpunk',     label: 'Cyberpunk',          cor: '#ee44ff' },
+    { id: 'horror',        label: 'Horror / Vampírico', cor: '#cc2200' },
+    { id: 'posapoc',       label: 'Pós-Apocalíptico',   cor: '#aaaa00' },
+    { id: 'scifi',         label: 'Espacial / Sci-Fi',  cor: '#0088dd' },
+    { id: 'digitalcircus', label: 'Circo Digital',      cor: '#ff2fb0' },
+];
+
+let portraitLayoutSelecionado = null;
+let portraitTemaSelecionado = null;
+
+function abrirModalPortrait() {
+    if (!ficha) { mostrarToast('⚠️ Nenhuma ficha carregada'); return; }
+
+    portraitLayoutSelecionado = localStorage.getItem('portrait_layout') || 'classico';
+    portraitTemaSelecionado   = localStorage.getItem('portrait_tema') || 'paranormal';
+
+    const gridLayout = document.getElementById('portrait-layout-grid');
+    gridLayout.innerHTML = PORTRAIT_LAYOUTS.map(l => `
+        <div onclick="selecionarPortraitLayout('${l.id}')" data-portrait-layout="${l.id}"
+             style="border:1px solid ${l.id===portraitLayoutSelecionado ? 'var(--purple,#9b30d9)' : 'rgba(255,255,255,0.08)'};
+                    background:${l.id===portraitLayoutSelecionado ? 'rgba(155,48,217,0.15)' : '#0d0010'};
+                    border-radius:8px;padding:10px;cursor:pointer;text-align:center;transition:0.15s;
+                    font-family:'Oswald',sans-serif;font-size:0.78rem;font-weight:700;
+                    color:${l.id===portraitLayoutSelecionado ? 'var(--purple-neon,#d070ff)' : '#aaa'};">
+            <div style="font-size:1.1rem;margin-bottom:4px;">${l.icon}</div>
+            ${l.label}
+        </div>
+    `).join('');
+
+    const gridTema = document.getElementById('portrait-tema-grid');
+    gridTema.innerHTML = PORTRAIT_TEMAS.map(t => `
+        <div onclick="selecionarPortraitTema('${t.id}')" data-portrait-tema="${t.id}"
+             style="border:1px solid ${t.id===portraitTemaSelecionado ? t.cor : 'rgba(255,255,255,0.08)'};
+                    background:${t.id===portraitTemaSelecionado ? t.cor+'22' : '#0d0010'};
+                    border-radius:8px;padding:10px;cursor:pointer;text-align:center;transition:0.15s;
+                    font-family:'Oswald',sans-serif;font-size:0.78rem;font-weight:700;
+                    color:${t.id===portraitTemaSelecionado ? '#fff' : '#aaa'};
+                    display:flex;align-items:center;gap:8px;justify-content:center;">
+            <span style="width:10px;height:10px;border-radius:50%;background:${t.cor};box-shadow:0 0 6px ${t.cor};flex-shrink:0;"></span>
+            ${t.label}
+        </div>
+    `).join('');
+
+    document.getElementById('modal-portrait').style.display = 'flex';
+}
+
+function fecharModalPortrait() {
+    document.getElementById('modal-portrait').style.display = 'none';
+}
+
+function selecionarPortraitLayout(id) {
+    portraitLayoutSelecionado = id;
+    document.querySelectorAll('[data-portrait-layout]').forEach(el => {
+        const ativo = el.dataset.portraitLayout === id;
+        el.style.borderColor = ativo ? 'var(--purple,#9b30d9)' : 'rgba(255,255,255,0.08)';
+        el.style.background  = ativo ? 'rgba(155,48,217,0.15)' : '#0d0010';
+        el.style.color        = ativo ? 'var(--purple-neon,#d070ff)' : '#aaa';
+    });
+}
+
+function selecionarPortraitTema(id) {
+    portraitTemaSelecionado = id;
+    const tema = PORTRAIT_TEMAS.find(t => t.id === id);
+    document.querySelectorAll('[data-portrait-tema]').forEach(el => {
+        const ativo = el.dataset.portraitTema === id;
+        const t = PORTRAIT_TEMAS.find(x => x.id === el.dataset.portraitTema);
+        el.style.borderColor = ativo ? t.cor : 'rgba(255,255,255,0.08)';
+        el.style.background  = ativo ? t.cor+'22' : '#0d0010';
+        el.style.color        = ativo ? '#fff' : '#aaa';
+    });
+}
+
+function confirmarAbrirPortrait() {
+    if (!portraitLayoutSelecionado || !portraitTemaSelecionado) {
+        mostrarToast('⚠️ Escolha um layout e um tema');
+        return;
+    }
+    localStorage.setItem('portrait_layout', portraitLayoutSelecionado);
+    localStorage.setItem('portrait_tema', portraitTemaSelecionado);
+    fecharModalPortrait();
+    const url = window.__portraitUrl || 'portrait.html';
+    window.open(url, '_blank');
+}
+
+// ══════════════════════════════════════════════
 // COMPARTILHAR FICHA
 // ══════════════════════════════════════════════
 
@@ -9153,6 +9260,35 @@ if ('serviceWorker' in navigator) {
           O link expira em 7 dias e pode ser usado apenas uma vez.
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL SELEÇÃO DE PORTRAIT ══ -->
+<div id="modal-portrait" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(6px);z-index:10002;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:linear-gradient(160deg,#0d0018 0%,#060010 100%);border:1px solid var(--purple,#9b30d9);border-radius:16px;max-width:480px;width:100%;max-height:88vh;box-shadow:0 0 60px var(--purple-glow,rgba(155,48,217,0.35));overflow:hidden;animation:mritIn 0.25s cubic-bezier(.22,.68,0,1.1) both;display:flex;flex-direction:column;">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(90deg,rgba(155,48,217,0.14) 0%,transparent 70%);border-bottom:1px solid rgba(155,48,217,0.18);padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div>
+        <div style="font-size:0.6rem;letter-spacing:4px;color:var(--text-dim,#888);font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:4px;">Modo de exibição</div>
+        <div style="font-size:1.05rem;font-weight:700;letter-spacing:2px;color:white;">🎭 ABRIR PORTRAIT</div>
+      </div>
+      <button onclick="fecharModalPortrait()" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#555;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:0.2s;flex-shrink:0;" onmouseover="this.style.color='#ff6666';this.style.borderColor='rgba(255,60,60,0.3)'" onmouseout="this.style.color='#555';this.style.borderColor='rgba(255,255,255,0.08)'">✕</button>
+    </div>
+
+    <!-- Corpo (rolável) -->
+    <div style="padding:20px 24px;overflow-y:auto;">
+      <div style="font-size:0.55rem;letter-spacing:3px;color:#666;font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:10px;">▸ Layout do Portrait</div>
+      <div id="portrait-layout-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:20px;"></div>
+
+      <div style="font-size:0.55rem;letter-spacing:3px;color:#666;font-family:'Share Tech Mono',monospace;text-transform:uppercase;margin-bottom:10px;">▸ Tema / Cor</div>
+      <div id="portrait-tema-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;"></div>
+    </div>
+
+    <!-- Rodapé -->
+    <div style="padding:16px 24px;border-top:1px solid rgba(255,255,255,0.06);flex-shrink:0;">
+      <button onclick="confirmarAbrirPortrait()" style="width:100%;background:var(--purple-dark,rgba(155,48,217,0.25));border:1px solid var(--purple,#9b30d9);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:2px;padding:12px;border-radius:8px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='var(--purple,#9b30d9)';this.style.boxShadow='0 0 14px var(--purple-glow,rgba(155,48,217,0.5))'" onmouseout="this.style.background='var(--purple-dark,rgba(155,48,217,0.25))';this.style.boxShadow='none'">🎭 ABRIR PORTRAIT</button>
     </div>
   </div>
 </div>
