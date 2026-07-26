@@ -133,6 +133,16 @@
         --orange:      #f5a623;
         --green:       #39d353;
         --yellow:      #f5c842;
+
+        /* ── design tokens: raio, sombra, vidro ── */
+        --r-sm: 8px;
+        --r-md: 12px;
+        --r-lg: 18px;
+        --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 8px 28px -8px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.03);
+        --shadow-card-hover: 0 1px 2px rgba(0,0,0,0.4), 0 12px 36px -10px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+        --shadow-pop: 0 4px 16px -4px rgba(var(--tema-glow-rgb,138,43,226),0.35);
+        --glass: rgba(255,255,255,0.015);
+        --hairline: rgba(255,255,255,0.06);
     }
 
     .btn-temas {
@@ -216,24 +226,44 @@
 
         .ficha-wrapper {
             display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 16px;
-            max-width: 1300px;
-            margin: 24px auto;
-            padding: 0 16px 60px;
+            grid-template-columns: 312px 1fr;
+            gap: 22px;
+            max-width: 1340px;
+            margin: 28px auto;
+            padding: 0 20px 60px;
         }
 
-        .col-esquerda { display: flex; flex-direction: column; gap: 12px; }
+        .col-esquerda { display: flex; flex-direction: column; gap: 16px; }
 
-        .card-personagem { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+        .card-personagem {
+            background: linear-gradient(160deg, var(--card) 0%, rgba(0,0,0,0.18) 100%);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+        .card-personagem::before {
+            content: '';
+            position: absolute; inset: 0 0 auto 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--purple-neon), transparent);
+            opacity: 0.6;
+        }
+        .card-personagem:hover { box-shadow: var(--shadow-card-hover); border-color: rgba(var(--tema-glow-rgb),0.4); }
 
         .foto-wrapper {
-            width: 72px; height: 72px; border-radius: 8px; border: 2px solid var(--purple);
+            width: 84px; height: 84px; border-radius: var(--r-md); border: 2px solid var(--purple);
             overflow: hidden; flex-shrink: 0; position: relative; cursor: pointer;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.4), 0 0 18px rgba(var(--tema-glow-rgb),0.35), var(--shadow-card);
+            transition: box-shadow 0.25s ease, transform 0.2s ease;
         }
+        .foto-wrapper:hover { box-shadow: 0 0 0 3px rgba(0,0,0,0.4), 0 0 26px rgba(var(--tema-glow-rgb),0.55), var(--shadow-card); transform: translateY(-1px); }
         .foto-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .foto-overlay {
-            position: absolute; inset: 0; background: rgba(138,43,226,0.75);
+            position: absolute; inset: 0; background: rgba(20,0,35,0.72);
+            backdrop-filter: blur(1px);
             display: flex; align-items: center; justify-content: center;
             opacity: 0; transition: opacity 0.2s; font-size: 1.3rem;
         }
@@ -262,11 +292,16 @@
         .value-field { font-size: 0.95rem; font-weight: 600; color: white; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 8px; }
 
         .card-atributos {
-            background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-            padding: 16px; display: flex; flex-direction: column; align-items: center;
+            background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg);
+            padding: 20px; display: flex; flex-direction: column; align-items: center;
+            box-shadow: var(--shadow-card);
         }
-        .radar-container { position: relative; width: 240px; height: 240px; margin: 12px auto; }
-        #radar-svg { width: 100%; height: 100%; }
+        .radar-container {
+            position: relative; width: 240px; height: 240px; margin: 14px auto;
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 50%, rgba(var(--tema-glow-rgb),0.07), transparent 70%);
+        }
+        #radar-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 10px rgba(var(--tema-glow-rgb),0.25)); }
 
         .atrib-bubble { position: absolute; display: flex; flex-direction: column; align-items: center; cursor: default; }
         .atrib-label { font-size: 0.52rem; letter-spacing: 2px; color: rgba(255,255,255,0.5); text-transform: uppercase; margin-bottom: 1px; }
@@ -280,11 +315,11 @@
         .bubble-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 0.5rem; letter-spacing: 2px; color: rgba(255,255,255,0.2); text-align: center; text-transform: uppercase; pointer-events: none; }
         .atrib-dados-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; width: 100%; margin-top: 10px; }
         .atrib-dado-btn {
-            background: #0d0010; border: 1px solid var(--border); border-radius: 6px;
-            padding: 6px 4px; text-align: center; cursor: pointer; transition: 0.2s;
+            background: #0d0010; border: 1px solid var(--border); border-radius: var(--r-sm);
+            padding: 7px 4px; text-align: center; cursor: pointer; transition: 0.18s ease;
             display: flex; flex-direction: column; align-items: center; gap: 2px;
         }
-        .atrib-dado-btn:hover { border-color: var(--purple); background: #1a0033; box-shadow: 0 0 8px var(--purple-glow); }
+        .atrib-dado-btn:hover { border-color: var(--purple); background: #1a0033; box-shadow: 0 0 10px rgba(var(--tema-glow-rgb),0.3); transform: translateY(-1px); }
         .atrib-dado-btn:active { transform: scale(0.95); }
         .atrib-dado-btn .btn-label { font-size: 0.5rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
         .atrib-dado-btn .btn-val   { font-size: 1rem; font-weight: 700; color: white; line-height: 1; }
@@ -327,7 +362,7 @@
         /* Botão regras opcionais hover */
         #btn-regra-opc:hover { border-color: var(--purple) !important; color: var(--purple-neon) !important; }
 
-        .card-recursos { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+        .card-recursos { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--shadow-card); }
         .recurso-row { display: flex; flex-direction: column; gap: 4px; }
         .recurso-header { display: flex; justify-content: space-between; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; }
         .recurso-val { font-family: 'Share Tech Mono', monospace; }
@@ -350,7 +385,7 @@
         .btn-recurso:hover { background: var(--purple); color: white; border-color: var(--purple); }
         .btn-recurso.big { padding: 0 6px; width: auto; font-size: 0.6rem; letter-spacing: 1px; }
 
-        .card-defesa { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+        .card-defesa { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px 18px; box-shadow: var(--shadow-card); }
         .defesa-grid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; align-items: center; }
         .defesa-escudo { width: 54px; height: 62px; position: relative; display: flex; align-items: center; justify-content: center; }
         .defesa-escudo svg { position: absolute; top:0; left:0; }
@@ -362,19 +397,33 @@
 
         .col-direita { display: flex; flex-direction: column; gap: 12px; }
 
-        .abas { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 6px; flex-wrap: wrap; }
-        .aba-btn {
-            flex: 1; background: transparent; border: 1px solid transparent; color: var(--text-dim);
-            font-family: 'Oswald', sans-serif; font-size: 0.75rem; font-weight: 700;
-            letter-spacing: 1px; text-transform: uppercase; padding: 8px 4px;
-            border-radius: 6px; cursor: pointer; transition: 0.2s; min-width: 60px;
+        .abas {
+            display: flex; gap: 2px; background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--r-md); padding: 5px; flex-wrap: wrap; box-shadow: var(--shadow-card);
         }
-        .aba-btn:hover { color: white; background: #1a0033; }
-        .aba-btn.active { background: var(--purple-dark); border-color: var(--purple); color: var(--purple-neon); }
-        .aba-panel { display: none; }
+        .aba-btn {
+            flex: 1; position: relative; background: transparent; border: none; color: var(--text-dim);
+            font-family: 'Oswald', sans-serif; font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 6px 11px;
+            border-radius: 8px; cursor: pointer; transition: color 0.2s ease, background 0.2s ease;
+            min-width: 60px; overflow: hidden;
+        }
+        .aba-btn::after {
+            content: ''; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+            width: 0; height: 2px; border-radius: 2px;
+            background: var(--purple-neon); box-shadow: 0 0 8px var(--purple-neon);
+            transition: width 0.25s ease;
+        }
+        .aba-btn:hover { color: white; background: rgba(255,255,255,0.03); }
+        .aba-btn.active {
+            background: linear-gradient(180deg, rgba(var(--tema-glow-rgb),0.16), rgba(var(--tema-glow-rgb),0.05));
+            color: var(--purple-neon);
+        }
+        .aba-btn.active::after { width: 60%; }
+        .aba-panel { display: none; animation: fadeIn 0.25s ease; }
         .aba-panel.active { display: block; }
 
-        .card-pericias { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        .card-pericias { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-card); }
         .pericias-header {
             display: grid; grid-template-columns: 1fr 55px 55px 55px 70px;
             padding: 8px 16px; background: #0d0010; border-bottom: 1px solid var(--border);
@@ -429,38 +478,58 @@
         .btn-rolar-pericia:hover { background: var(--purple); color: white; border-color: var(--purple); box-shadow: 0 0 6px var(--purple-glow); }
         .btn-rolar-pericia:active { transform: scale(0.94); }
 
+        .log-terminal-bar {
+            display: flex; align-items: center; gap: 6px;
+            background: #0d0010; border: 1px solid var(--border); border-bottom: none;
+            border-radius: var(--r-md) var(--r-md) 0 0;
+            padding: 7px 12px;
+        }
+        .log-dot { width: 8px; height: 8px; border-radius: 50%; opacity: 0.85; }
+        .log-terminal-title { margin-left: 6px; font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; letter-spacing: 1px; color: var(--text-dim); }
+        .log-rolagens-attached { border-radius: 0 0 var(--r-md) var(--r-md); }
         .log-rolagens {
-            background: #080010; border: 1px solid var(--border); border-radius: 8px;
+            background:
+                repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px),
+                #060009;
+            border: 1px solid var(--border); border-radius: var(--r-md);
             max-height: 220px; overflow-y: auto; font-family: 'Share Tech Mono', monospace;
-            font-size: 0.75rem; margin-bottom: 12px;
+            font-size: 0.75rem; margin-bottom: 14px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.02);
+            position: relative;
         }
-        .log-rolagens::-webkit-scrollbar { width: 4px; }
-        .log-rolagens::-webkit-scrollbar-track { background: #0d0010; }
-        .log-rolagens::-webkit-scrollbar-thumb { background: var(--purple-dark); border-radius: 2px; }
+        .log-rolagens::-webkit-scrollbar { width: 5px; }
+        .log-rolagens::-webkit-scrollbar-track { background: transparent; }
+        .log-rolagens::-webkit-scrollbar-thumb { background: var(--purple-dark); border-radius: 3px; }
         .log-entrada {
-            padding: 8px 14px; border-bottom: 1px solid #150025;
+            padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.04);
             display: flex; justify-content: space-between; align-items: center;
-            animation: slideIn 0.25s ease;
+            animation: slideIn 0.25s ease; transition: background 0.15s ease;
         }
+        .log-entrada:hover { background: rgba(255,255,255,0.02); }
+        .log-entrada::before { content: '›'; color: var(--purple-neon); opacity: 0.5; margin-right: 8px; font-weight: 700; }
         @keyframes slideIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
-        .log-nome  { color: #aaa; font-size: 0.7rem; }
+        .log-nome  { color: #aaa; font-size: 0.7rem; letter-spacing: 0.5px; }
         .log-expr  { color: var(--text-dim); font-size: 0.65rem; }
-        .log-total { font-size: 1.1rem; font-weight: 700; }
-        .log-total.critico { color: var(--green); text-shadow: 0 0 6px var(--green); }
-        .log-total.falha   { color: var(--red);   text-shadow: 0 0 6px var(--red); }
-        .log-total.normal  { color: var(--purple-neon); }
-        .log-tag { font-size: 0.65rem; padding: 2px 7px; border-radius: 3px; letter-spacing: 1px; margin-left: 6px; }
-        .log-tag.critico { background: #003300; color: var(--green); }
-        .log-tag.falha   { background: #330000; color: var(--red); }
-        .log-vazio { color: #333; font-size: 0.75rem; padding: 14px; text-align: center; letter-spacing: 1px; }
+        .log-total { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px; }
+        .log-total.critico { color: var(--green); text-shadow: 0 0 8px rgba(57,211,83,0.6); }
+        .log-total.falha   { color: var(--red);   text-shadow: 0 0 8px rgba(232,64,64,0.6); }
+        .log-total.normal  { color: var(--purple-neon); text-shadow: 0 0 6px rgba(var(--tema-glow-rgb),0.35); }
+        .log-tag { font-size: 0.62rem; padding: 2px 8px; border-radius: 99px; letter-spacing: 1px; margin-left: 6px; font-weight: 700; }
+        .log-tag.critico { background: rgba(57,211,83,0.14); color: var(--green); box-shadow: inset 0 0 0 1px rgba(57,211,83,0.3); }
+        .log-tag.falha   { background: rgba(232,64,64,0.14); color: var(--red); box-shadow: inset 0 0 0 1px rgba(232,64,64,0.3); }
+        .log-vazio { color: #3a3a3a; font-size: 0.75rem; padding: 20px 14px; text-align: center; letter-spacing: 1px; }
 
-        .card-combate { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+        .card-combate { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px; box-shadow: var(--shadow-card); }
         .btn-novo-ataque {
-            background: var(--purple-dark); border: 1px solid var(--purple); color: white;
-            font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 2px;
-            font-size: 0.85rem; padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+            background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+            border: 1px solid rgba(255,255,255,0.08); color: white;
+            font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1.5px;
+            font-size: 0.82rem; padding: 9px 22px; border-radius: var(--r-sm); cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            display: inline-flex; align-items: center; gap: 6px;
         }
-        .btn-novo-ataque:hover { background: var(--purple); box-shadow: 0 0 12px var(--purple-glow); }
+        .btn-novo-ataque:hover { filter: brightness(1.12); box-shadow: 0 6px 20px -4px rgba(var(--tema-glow-rgb),0.55); transform: translateY(-1px); }
+        .btn-novo-ataque:active { transform: translateY(0); filter: brightness(0.98); }
         .ataque-row {
             background: #0d0010; border: 1px solid var(--border); border-radius: 6px;
             padding: 10px 14px; margin-bottom: 8px; display: grid;
@@ -473,12 +542,29 @@
         .btn-rolar:hover { background: var(--red); }
 
         .rolar-dados-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
-        .dado-select { background: #0d0010; border: 1px solid var(--border); color: white; font-family: 'Oswald', sans-serif; font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
-        .dado-expr-input { background: #0d0010; border: 1px solid var(--border); color: white; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; width: 120px; }
-        .dado-expr-input:focus { border-color: var(--purple); outline: none; }
-        .btn-rolar-livre { background: #1a0033; border: 1px solid var(--border); color: var(--purple-neon); font-family: 'Oswald', sans-serif; font-size: 0.8rem; font-weight: 700; padding: 6px 16px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        .btn-rolar-livre:hover { background: var(--purple); border-color: var(--purple); color: white; }
-        .btn-limpar-log { background: transparent; border: 1px solid #2a0040; color: #444; font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 4px 10px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+        .dado-select {
+            background: #0d0010; border: 1px solid var(--border); color: white;
+            font-family: 'Oswald', sans-serif; font-size: 0.85rem; padding: 7px 10px;
+            border-radius: var(--r-sm); cursor: pointer; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .dado-select:hover { border-color: rgba(var(--tema-glow-rgb),0.6); }
+        .dado-select:focus { border-color: var(--purple); outline: none; box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb),0.18); }
+        .dado-expr-input {
+            background: #0d0010; border: 1px solid var(--border); color: white;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; padding: 7px 10px;
+            border-radius: var(--r-sm); width: 120px; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .dado-expr-input:hover { border-color: rgba(var(--tema-glow-rgb),0.6); }
+        .dado-expr-input:focus { border-color: var(--purple); outline: none; box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb),0.18); }
+        .btn-rolar-livre {
+            background: #1a0033; border: 1px solid var(--border); color: var(--purple-neon);
+            font-family: 'Oswald', sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px;
+            padding: 7px 18px; border-radius: var(--r-sm); cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+        }
+        .btn-rolar-livre:hover { background: var(--purple); border-color: var(--purple); color: white; transform: translateY(-1px); box-shadow: 0 4px 16px -2px rgba(var(--tema-glow-rgb),0.5); }
+        .btn-rolar-livre:active { transform: translateY(0); }
+        .btn-limpar-log { background: transparent; border: 1px solid #2a0040; color: #444; font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 4px 10px; border-radius: var(--r-sm); cursor: pointer; transition: 0.2s; }
         .btn-limpar-log:hover { border-color: var(--red-dark); color: var(--red); }
 
         .habilidade-card { background: #0d0010; border: 1px solid var(--border); border-left: 4px solid var(--purple); border-radius: 6px; padding: 12px 16px; margin-bottom: 8px; }
@@ -568,7 +654,7 @@
         /* ══ CONDIÇÕES ══ */
         .card-condicoes {
             background: var(--card); border: 1px solid var(--border);
-            border-radius: 10px; padding: 14px 16px;
+            border-radius: var(--r-lg); padding: 16px 18px; box-shadow: var(--shadow-card);
         }
         .cond-grid {
             display: flex; flex-wrap: wrap; gap: 6px;
@@ -643,7 +729,7 @@
         /* ══ CICATRIZES ══ */
         .card-cicatrizes {
             background: var(--card); border: 1px solid var(--border);
-            border-radius: 10px; padding: 14px 16px;
+            border-radius: var(--r-lg); padding: 16px 18px; box-shadow: var(--shadow-card);
         }
         .cicatrizes-trilha {
             display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
@@ -786,15 +872,20 @@
         .rituais-input-busca:focus { border-color: var(--purple); outline: none; }
         .rituais-input-busca::placeholder { color: #444; }
         .rituais-count { font-size: 0.6rem; letter-spacing: 2px; color: #444; text-transform: uppercase; font-family: 'Share Tech Mono', monospace; margin-bottom: 6px; }
-        .rituais-lista { display: flex; flex-direction: column; gap: 6px; }
-        .ritual-card-f { background: #0d0010; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: border-color 0.15s; }
-        .ritual-card-f:hover { border-color: #3a0070; }
-        .ritual-card-hdr { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; gap: 10px; transition: background 0.15s; min-height: 58px; }
-        .ritual-card-hdr:hover { background: #130020; }
-        .ritual-hdr-esq { flex: 1; min-width: 0; }
-        .ritual-card-nome { font-size: 1rem; font-weight: 700; color: white; margin-bottom: 5px; line-height: 1.3; }
-        .ritual-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px; }
-        .rbadge { font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; font-family: 'Oswald', sans-serif; font-weight: 700; }
+        .rituais-lista { display: flex; flex-direction: column; gap: 14px; }
+        .rituais-grupo-lista { border:1px solid var(--border); border-radius:var(--r-md); overflow:hidden; background:rgba(255,255,255,0.012); }
+        .ritual-card-f { border-bottom:1px solid var(--hairline); transition: background 0.15s; }
+        .ritual-card-f:last-child { border-bottom:none; }
+        .ritual-card-f:nth-child(even) > .ritual-card-hdr { background: rgba(255,255,255,0.014); }
+        .ritual-card-f:hover > .ritual-card-hdr { background: rgba(255,255,255,0.045); }
+        .ritual-card-f.aberto > .ritual-card-hdr { background: rgba(255,255,255,0.05); }
+        .ritual-card-hdr { display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer; transition: background 0.15s; min-height: 46px; }
+        .ritual-hdr-esq { flex: 0 1 auto; min-width: 0; max-width: 40%; display:flex; align-items:center; gap:8px; }
+        .ritual-row-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+        .ritual-card-nome { font-size: 0.86rem; font-weight: 700; color: white; line-height: 1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .ritual-badges { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; justify-content:center; }
+        .ritual-row-right { display:flex; align-items:center; gap:10px; flex-shrink:0; margin-left:auto; }
+        .rbadge { font-size: 0.56rem; letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; font-family: 'Oswald', sans-serif; font-weight: 700; white-space:nowrap; }
         .rbadge-MORTE        { background: #1a0010; color: #e84040; border: 1px solid #3a0020; }
         .rbadge-SANGUE       { background: #200000; color: #ff5555; border: 1px solid #440000; }
         .rbadge-ENERGIA      { background: #00101a; color: #4a9eff; border: 1px solid #003366; }
@@ -808,23 +899,7 @@
         .rbadge-circulo-2 { background: #0a1020; color: #42a5f5; border: 1px solid #103070; }
         .rbadge-circulo-3 { background: #1a0800; color: #ff9800; border: 1px solid #5a2800; }
         .rbadge-circulo-4 { background: #2a0015; color: #e040fb; border: 1px solid #6a0040; }
-        /* ── Filtros de círculo no modal ── */
-        .mrit-circulos-wrap { padding: 0 16px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .mrit-circulos { display: flex; gap: 6px; flex-wrap: wrap; }
-        .mrit-circulo-btn {
-            display: flex; align-items: center; gap: 5px;
-            background: transparent; border: 1px solid rgba(255,255,255,0.07);
-            color: #444; border-radius: 8px; padding: 5px 10px;
-            font-family: 'Oswald', sans-serif; font-size: 0.72rem; font-weight: 700;
-            letter-spacing: 0.5px; cursor: pointer; transition: 0.15s;
-        }
-        .mrit-circulo-btn:hover { border-color: rgba(255,255,255,0.15); color: #888; }
-        .mrit-circulo-btn .ci-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-        .mrit-circulo-btn.sel.c0    { background: rgba(200,200,200,0.08); border-color: #555; color: #ccc; }
-        .mrit-circulo-btn.sel.c1    { background: rgba(76,175,80,0.15); border-color: #4caf50; color: #81c784; box-shadow: 0 0 8px rgba(76,175,80,0.15); }
-        .mrit-circulo-btn.sel.c2    { background: rgba(66,165,245,0.15); border-color: #42a5f5; color: #90caf9; box-shadow: 0 0 8px rgba(66,165,245,0.15); }
-        .mrit-circulo-btn.sel.c3    { background: rgba(255,152,0,0.15); border-color: #ff9800; color: #ffcc02; box-shadow: 0 0 8px rgba(255,152,0,0.15); }
-        .mrit-circulo-btn.sel.c4    { background: rgba(224,64,251,0.15); border-color: #e040fb; color: #f48fb1; box-shadow: 0 0 8px rgba(224,64,251,0.15); }
+        /* ── Filtro de círculo do modal agora é um dropdown — ver .mrit-circulo-dd / .mrit-dd-* ── */
         /* ── Filtros de círculo na aba rituais ── */
         .rituais-circulo-filtros { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
         .rituais-circulo-btn {
@@ -841,11 +916,12 @@
         .rituais-circulo-btn.ativo.rc2 { background: rgba(66,165,245,0.12); border-color: #42a5f5; color: #90caf9; }
         .rituais-circulo-btn.ativo.rc3 { background: rgba(255,152,0,0.12); border-color: #ff9800; color: #ffcc02; }
         .rituais-circulo-btn.ativo.rc4 { background: rgba(224,64,251,0.12); border-color: #e040fb; color: #f48fb1; }
-        .ritual-toggle { font-size: 0.7rem; color: #444; flex-shrink: 0; padding-top: 2px; transition: color 0.15s; }
+        .ritual-toggle { font-size: 0.62rem; color: var(--text-dim); flex-shrink: 0; transition: color 0.15s, transform 0.25s; }
         .ritual-card-hdr:hover .ritual-toggle { color: var(--purple-neon); }
-        .ritual-card-body { padding: 0 14px 14px; border-top: 1px solid #150025; animation: fadeIn 0.2s ease; }
-        .ritual-desc-txt { font-size: 0.85rem; color: #ddd; font-family: 'Oswald', sans-serif; line-height: 1.65; margin: 10px 0; font-weight: 300; white-space: pre-line; }
-        .ritual-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; margin-bottom: 12px; }
+        .ritual-card-f.aberto .ritual-toggle { transform: rotate(180deg); color: var(--purple-neon); }
+        .ritual-card-body { padding: 2px 16px 16px 14px; animation: slideDown 0.22s ease; }
+        .ritual-desc-txt { font-size: 0.86rem; color: #ddd; font-family: 'Oswald', sans-serif; line-height: 1.7; margin: 10px 0; font-weight: 300; white-space: pre-line; }
+        .ritual-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px; margin-bottom: 12px; padding:10px 12px; background:rgba(255,255,255,0.025); border-radius:8px; }
         .ritual-meta-item { font-size: 0.72rem; color: #888; font-family: 'Oswald', sans-serif; }
         .ritual-meta-item .meta-label { color: var(--tema-primary-light, #7ab3f5); font-weight: 700; margin-right: 3px; }
         .ritual-meta-item .meta-val { color: #ccc; font-weight: 400; }
@@ -875,20 +951,40 @@
         .rituais-vazio { text-align: center; padding: 24px; color: #333; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; }
 
         /* HABILIDADES — estilo C.R.I.S. */
-        .hab-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+        .hab-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
         .hab-toolbar .sec-title{margin-bottom:0;border-bottom:none;padding-bottom:0;}
         .btn-homebrew{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.03);border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:1px;padding:7px 14px;border-radius:8px;cursor:pointer;transition:0.18s;}
         .btn-homebrew:hover{color:var(--purple-neon);border-color:var(--purple);background:rgba(255,255,255,0.06);}
 
-        .hab-categorias{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-bottom:12px;}
-        .hab-cat-btn{background:rgba(255,255,255,0.02);border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:9px 10px;border-radius:8px;cursor:pointer;transition:0.18s;text-align:center;}
+        /* barra superior: categorias */
+        .hab-categorias{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+        .hab-cat-btn{background:rgba(255,255,255,0.02);border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:7px 12px;border-radius:20px;cursor:pointer;transition:0.18s;text-align:center;}
         .hab-cat-btn:hover{color:white;border-color:var(--text-dim);background:rgba(255,255,255,0.05);}
         .hab-cat-btn.active{background:var(--purple-dark);border-color:var(--purple);color:var(--purple-neon);box-shadow:0 0 0 1px var(--purple) inset;}
 
-        .hab-subabas{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
-        .hab-subaba-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.66rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:5px 11px;border-radius:20px;cursor:pointer;transition:0.18s;}
+        /* subabas normais (classe/trilha) — pill */
+        .hab-subabas{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--hairline);}
+        .hab-subaba-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Oswald',sans-serif;font-size:0.64rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;padding:5px 11px;border-radius:20px;cursor:pointer;transition:0.18s;}
         .hab-subaba-btn:hover{color:white;border-color:var(--purple);}
         .hab-subaba-btn.active{background:var(--purple);border-color:var(--purple);color:white;}
+
+        /* subabas de ELEMENTO — filtros circulares discretos e sutis */
+        .hab-subabas.elementos{display:flex;align-items:center;gap:14px;}
+        .hab-elem-btn{
+            display:flex; flex-direction:column; align-items:center; gap:4px;
+            background:none; border:none; cursor:pointer; padding:2px 0;
+            color:#555; font-family:'Oswald',sans-serif; font-size:0.56rem; font-weight:700;
+            letter-spacing:1px; text-transform:uppercase; transition:0.18s; opacity:0.6;
+        }
+        .hab-elem-dot{
+            width:16px; height:16px; border-radius:50%; flex-shrink:0;
+            background:var(--edot-bg,#333); border:1.5px solid var(--edot-border,#555);
+            transition:0.18s; box-shadow:none;
+        }
+        .hab-elem-btn:hover{opacity:0.9;}
+        .hab-elem-btn:hover .hab-elem-dot{box-shadow:0 0 6px var(--edot-glow,transparent);}
+        .hab-elem-btn.active{opacity:1;color:var(--edot-glow,#ccc);}
+        .hab-elem-btn.active .hab-elem-dot{background:var(--edot-glow,#555); border-color:var(--edot-glow,#555); box-shadow:0 0 8px var(--edot-glow,transparent);}
 
         .hab-search-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
         .hab-search-wrap2{flex:1;position:relative;}
@@ -896,52 +992,60 @@
         .hab-search-input{width:100%;padding:9px 12px 9px 34px;background:rgba(255,255,255,0.02);border:1px solid var(--border);color:white;font-family:'Oswald',sans-serif;font-size:0.85rem;border-radius:8px;transition:border-color 0.2s,background 0.2s;}
         .hab-search-input:focus{border-color:var(--purple);outline:none;background:rgba(255,255,255,0.04);}
         .hab-search-input::placeholder{color:#555;}
-        .hab-count{font-size:0.62rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;font-family:'Share Tech Mono',monospace;margin-bottom:10px;}
+        .hab-count{font-size:0.62rem;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;font-family:'Share Tech Mono',monospace;margin-bottom:8px;}
 
-        .hab-grupo-hdr{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:0.66rem;letter-spacing:3px;color:var(--purple-neon);text-transform:uppercase;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-top:6px;}
+        .hab-grupo-hdr{display:flex;align-items:center;gap:8px;font-size:0.64rem;letter-spacing:3px;color:var(--purple-neon);text-transform:uppercase;background:rgba(255,255,255,0.02);padding:8px 14px;margin-top:10px;border-radius:6px 6px 0 0;}
         .hab-grupo-hdr .hg-icon{color:var(--purple);font-size:0.75rem;}
         .hab-grupo-hdr .hg-count{margin-left:auto;font-size:0.58rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
 
-        /* grid de cards — cartões viram largura total quando expandidos */
-        .hab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start;}
+        /* ══ LISTA VERTICAL COMPACTA (accordion) — habilidades ══ */
+        .hab-grid{ display:flex; flex-direction:column; background:rgba(255,255,255,0.012); border:1px solid var(--border); border-radius:var(--r-md); overflow:hidden; }
 
         .poder-card{
             --ecor: var(--purple-neon); --ebg: rgba(255,255,255,0.02); --eborder: var(--border);
-            position:relative; background:rgba(255,255,255,0.015);
-            border:1px solid var(--border); border-left:3px solid var(--ecor);
-            border-radius:12px; overflow:hidden;
-            transition:border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+            position:relative; border-bottom:1px solid var(--hairline);
+            transition:background 0.15s;
         }
-        .poder-card:hover{border-color:var(--ecor); background:rgba(255,255,255,0.035); transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,0.35);}
-        .poder-card.aberto{grid-column:1/-1;}
+        .poder-card:nth-child(even) > .poder-card-hdr{ background:rgba(255,255,255,0.014); }
+        .poder-card:last-child{ border-bottom:none; }
+        .poder-card:hover > .poder-card-hdr{background:rgba(255,255,255,0.04);}
+        .poder-card.aberto > .poder-card-hdr{background:rgba(255,255,255,0.045);}
 
-        .poder-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 16px;cursor:pointer;gap:10px;transition:background 0.15s;}
-        .poder-card-hdr:hover{background:rgba(255,255,255,0.02);}
-        .poder-hdr-esq{flex:1;min-width:0;}
-        .poder-nome{font-size:0.98rem;font-weight:700;color:white;margin-bottom:8px;letter-spacing:0.2px;}
-        .poder-badges{display:flex;gap:5px;flex-wrap:wrap;}
+        .poder-card-hdr{
+            display:flex; align-items:center; gap:12px;
+            padding:10px 14px; cursor:pointer; min-height:44px;
+            transition:background 0.15s;
+        }
+        .poder-row-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; background:var(--ecor); box-shadow:0 0 5px var(--ecor); }
+        .poder-hdr-esq{flex:0 1 auto; min-width:0; max-width:34%; display:flex; align-items:center; gap:8px;}
+        .poder-nome{font-size:0.85rem; font-weight:700; color:white; letter-spacing:0.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+        .poder-badges{display:flex;gap:5px;flex-wrap:wrap; flex:1; justify-content:center;}
 
-        .hbadge{display:inline-flex;align-items:center;gap:4px;font-size:0.58rem;letter-spacing:0.8px;text-transform:uppercase;font-weight:700;padding:3px 9px;border-radius:20px;font-family:'Oswald',sans-serif;border:1px solid var(--eborder);background:var(--ebg);color:var(--ecor);white-space:nowrap;}
+        .hbadge{display:inline-flex;align-items:center;gap:4px;font-size:0.56rem;letter-spacing:0.6px;text-transform:uppercase;font-weight:700;padding:2px 8px;border-radius:20px;font-family:'Oswald',sans-serif;border:1px solid var(--eborder);background:var(--ebg);color:var(--ecor);white-space:nowrap;}
         .hbadge-tipo{--ecor:var(--purple-neon);--ebg:rgba(255,255,255,0.03);--eborder:var(--border);}
         .hbadge-trilha{color:var(--text-dim);background:rgba(255,255,255,0.02);border-color:var(--border);}
         .hbadge-acao{color:#ccc;background:rgba(255,255,255,0.03);border-color:var(--border);}
         .hbadge-custo{color:#ddd;background:rgba(255,255,255,0.04);border-color:var(--border);font-family:'Share Tech Mono',monospace;letter-spacing:0.5px;}
 
-        .poder-toggle{font-size:0.65rem;color:var(--text-dim);flex-shrink:0;padding-top:3px;transition:color 0.15s,transform 0.15s;}
+        .poder-row-right{display:flex; align-items:center; gap:10px; flex-shrink:0; margin-left:auto;}
+        .poder-toggle{font-size:0.62rem;color:var(--text-dim);flex-shrink:0;transition:color 0.15s,transform 0.25s;}
         .poder-card-hdr:hover .poder-toggle{color:var(--ecor);}
+        .poder-card.aberto .poder-toggle{transform:rotate(180deg); color:var(--ecor);}
 
-        .poder-card-body{padding:0 16px 16px;border-top:1px solid rgba(255,255,255,0.05);animation:fadeIn 0.2s ease;}
-        .poder-desc{font-size:0.82rem;color:#bbb;font-family:'Share Tech Mono',monospace;line-height:1.7;margin:12px 0;white-space:pre-line;}
-        .poder-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin-bottom:12px;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;}
+        .poder-card-body{padding:2px 16px 16px 14px; animation:slideDown 0.22s ease;}
+        .poder-desc{font-size:0.85rem;color:#ccc;font-family:'Oswald',sans-serif;line-height:1.75;margin:10px 0;white-space:pre-line;}
+        .poder-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin-bottom:12px;padding:10px 12px;background:rgba(255,255,255,0.025);border-radius:8px;}
         .poder-meta-item{font-size:0.65rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
         .poder-meta-item span{color:#ccc;}
 
-        .btn-add-poder{background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.72rem;font-weight:700;padding:6px 13px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:0.2s;}
+        @keyframes slideDown{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:translateY(0); } }
+
+        .btn-add-poder{background:var(--purple-dark);border:1px solid var(--purple);color:white;font-family:'Oswald',sans-serif;font-size:0.68rem;font-weight:700;padding:5px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:0.2s;}
         .btn-add-poder:hover{background:var(--purple);box-shadow:0 0 8px var(--purple-glow);}
         .btn-add-poder.added{background:rgba(255,255,255,0.03);border:1px solid var(--border);color:var(--text-dim);cursor:default;}
-        .btn-rem-poder{background:none;border:1px solid var(--border);color:var(--text-dim);font-size:0.68rem;font-family:'Share Tech Mono',monospace;padding:4px 11px;border-radius:8px;cursor:pointer;transition:0.2s;}
+        .btn-rem-poder{background:none;border:1px solid var(--border);color:var(--text-dim);font-size:0.66rem;font-family:'Share Tech Mono',monospace;padding:4px 10px;border-radius:8px;cursor:pointer;transition:0.2s;}
         .btn-rem-poder:hover{color:var(--red);border-color:var(--red-dark);}
-        .hab-vazio{grid-column:1/-1;text-align:center;padding:30px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:0.8rem;letter-spacing:1px;border:1px dashed var(--border);border-radius:10px;}
+        .hab-vazio{text-align:center;padding:30px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:0.8rem;letter-spacing:1px;border:1px dashed var(--border);border-radius:10px;}
 
         /* PATCH — Botão de edição inline */
         .edit-btn {
@@ -1495,6 +1599,14 @@
     /* Textos grandes demais em telas pequenas */
     h1 { font-size: 1.8rem !important; }
     h2 { font-size: 1.4rem !important; }
+
+    /* Listas de habilidades/rituais: empilha em 2 linhas no mobile */
+    .poder-card-hdr, .ritual-card-hdr { flex-wrap: wrap; row-gap: 6px; }
+    .poder-hdr-esq, .ritual-hdr-esq { max-width: 100%; flex: 1 1 100%; order: 1; }
+    .poder-badges, .ritual-badges { order: 3; flex: 1 1 100%; justify-content: flex-start; }
+    .poder-row-right, .ritual-row-right { order: 2; margin-left: auto; }
+    .hab-categorias { gap: 5px; }
+    .hab-cat-btn { font-size: 0.62rem; padding: 6px 9px; }
 }
 
     </style>
@@ -1943,7 +2055,13 @@
         <div class="sec-title" style="margin-bottom:0;">Log de Rolagens</div>
         <button class="btn-limpar-log" onclick="limparLog()">🗑 Limpar</button>
       </div>
-      <div class="log-rolagens" id="log-rolagens">
+      <div class="log-terminal-bar">
+        <span class="log-dot" style="background:#ff5f56;"></span>
+        <span class="log-dot" style="background:#ffbd2e;"></span>
+        <span class="log-dot" style="background:#27c93f;"></span>
+        <span class="log-terminal-title">feed_rolagens.log</span>
+      </div>
+      <div class="log-rolagens log-rolagens-attached" id="log-rolagens">
         <div class="log-vazio" id="log-vazio">▸ Nenhuma rolagem ainda. Clique em 🎲 para rolar!</div>
       </div>
       <div class="sec-title mt-2">Rolar Dado Livre</div>
@@ -2418,12 +2536,16 @@
   to   { opacity:1; transform:translateY(0)    scale(1); }
 }
 .mrit-box {
-  background:linear-gradient(160deg,#100018 0%,#080010 60%,#0a0008 100%);
-  border:1px solid rgba(155,48,217,0.45);
+  background:linear-gradient(160deg,#0d0d10 0%,#08080a 60%,#0a0a0c 100%);
+  border:1px solid rgba(155,48,217,0.28);
   border-radius:16px;
   width:100%; max-width:700px; max-height:92vh;
   display:flex; flex-direction:column;
-  box-shadow:0 0 0 1px rgba(155,48,217,0.1), 0 8px 60px rgba(100,0,180,0.45), 0 0 120px rgba(100,0,180,0.1);
+  box-shadow:
+    0 0 0 1px rgba(155,48,217,0.06),
+    0 0 18px rgba(155,48,217,0.22),
+    0 0 46px rgba(155,48,217,0.08),
+    0 8px 60px rgba(0,0,0,0.6);
   overflow:hidden;
   animation:mritIn 0.25s cubic-bezier(.22,.68,0,1.1) both;
   position:relative;
@@ -2438,7 +2560,7 @@
 .mrit-header {
   position:relative; z-index:1;
   display:flex; align-items:center; justify-content:space-between;
-  padding:22px 28px 18px;
+  padding:18px 28px 14px;
   background:linear-gradient(90deg,rgba(155,48,217,0.12) 0%,transparent 70%);
   border-bottom:1px solid rgba(155,48,217,0.15);
   flex-shrink:0;
@@ -2467,11 +2589,13 @@
 .mrit-close:hover { background:rgba(255,60,60,0.12); border-color:rgba(255,60,60,0.3); color:#ff6666; }
 
 /* ── Tabs ── */
-.mrit-tabs {
+.mrit-tabs-row {
   position:relative; z-index:1;
-  display:flex; gap:6px; padding:14px 28px 0;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 28px 0;
   flex-shrink:0;
 }
+.mrit-tabs { display:flex; gap:6px; }
 .mrit-tab {
   padding:8px 20px; border-radius:8px 8px 0 0; font-size:0.8rem;
   font-weight:700; cursor:pointer; letter-spacing:1px;
@@ -2484,17 +2608,29 @@
 }
 .mrit-tab.ativo::after {
   content:''; position:absolute; bottom:-1px; left:0; right:0; height:1px;
-  background:linear-gradient(160deg,#100018 0%,#080010 60%);
+  background:linear-gradient(160deg,#0d0d10 0%,#08080a 60%);
 }
 .mrit-tab:not(.ativo):hover { color:#888; background:rgba(255,255,255,0.03); }
 
-/* ── Filtros de elemento (com ícone) ── */
-.mrit-elems-wrap {
-  position:relative; z-index:1;
+/* ── Contador (agora com contraste legível, ao lado das abas) ── */
+.mrit-count {
+  position:relative; z-index:1; flex-shrink:0;
+  font-size:0.68rem; letter-spacing:1.5px; color:#a985c2;
+  font-family:'Share Tech Mono',monospace; white-space:nowrap;
+  padding:5px 12px; border-radius:99px;
+  background:rgba(155,48,217,0.1); border:1px solid rgba(155,48,217,0.22);
+}
+.mrit-count b { color:#d070ff; font-weight:700; }
+
+/* ── Barra de filtros compacta: elementos (chips) + círculo (dropdown) ── */
+.mrit-filtros-row {
+  position:relative; z-index:5;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
   padding:12px 28px;
   border-bottom:1px solid rgba(155,48,217,0.1);
   flex-shrink:0; background:rgba(0,0,0,0.2);
 }
+.mrit-elems-wrap { flex:1; min-width:0; }
 .mrit-elems { display:flex; gap:6px; flex-wrap:wrap; }
 .mrit-elem-btn {
   display:flex; align-items:center; gap:5px;
@@ -2505,6 +2641,38 @@
 }
 .mrit-elem-btn .ei { font-size:0.75rem; }
 .mrit-elem-btn:hover { border-color:rgba(255,255,255,0.15); color:#888; }
+
+/* ── Dropdown elegante de Círculo ── */
+.mrit-circulo-dd { position:relative; flex-shrink:0; }
+.mrit-dd-trigger {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 12px; border-radius:8px;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  color:#aaa; font-family:'Oswald',sans-serif; font-size:0.72rem; font-weight:700;
+  letter-spacing:0.5px; cursor:pointer; transition:all 0.18s; white-space:nowrap;
+}
+.mrit-dd-trigger:hover { border-color:rgba(155,48,217,0.35); color:#ddd; }
+.mrit-dd-trigger.aberto { border-color:rgba(155,48,217,0.5); box-shadow:0 0 0 3px rgba(155,48,217,0.1); }
+.mrit-dd-trigger .dd-chev { font-size:0.6rem; opacity:0.5; transition:transform 0.2s; }
+.mrit-dd-trigger.aberto .dd-chev { transform:rotate(180deg); }
+.mrit-dd-menu {
+  position:absolute; top:calc(100% + 6px); right:0; min-width:220px;
+  background:#0d0d10; border:1px solid rgba(155,48,217,0.3); border-radius:10px;
+  box-shadow:0 0 0 1px rgba(155,48,217,0.06), 0 12px 30px rgba(0,0,0,0.6), 0 0 20px rgba(155,48,217,0.12);
+  padding:6px; display:none; flex-direction:column; gap:2px; z-index:50;
+  animation:mritDdIn 0.15s ease both;
+}
+.mrit-dd-menu.aberto { display:flex; }
+@keyframes mritDdIn { from{opacity:0;transform:translateY(-4px);} to{opacity:1;transform:translateY(0);} }
+.mrit-dd-item {
+  display:flex; align-items:center; gap:9px;
+  padding:8px 10px; border-radius:6px; cursor:pointer;
+  font-family:'Oswald',sans-serif; font-size:0.75rem; color:#999;
+  border:1px solid transparent; transition:all 0.15s; text-align:left; background:transparent;
+}
+.mrit-dd-item:hover { background:rgba(255,255,255,0.05); color:#ddd; }
+.mrit-dd-item.sel { background:rgba(155,48,217,0.15); color:#d070ff; border-color:rgba(155,48,217,0.3); }
+.mrit-dd-item .ci-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
 
 /* selecionado por elemento — cada um com sua cor */
 .mrit-elem-btn.sel.eTodos    { background:rgba(200,200,200,0.12); border-color:#666; color:#ddd; box-shadow:0 0 10px rgba(200,200,200,0.08); }
@@ -2518,7 +2686,7 @@
 /* ── Busca ── */
 .mrit-search-row {
   position:relative; z-index:1;
-  padding:12px 28px 8px; flex-shrink:0;
+  padding:12px 28px; flex-shrink:0;
 }
 .mrit-search-wrap {
   display:flex; align-items:center; gap:10px;
@@ -2532,14 +2700,6 @@
   font-family:'Oswald',sans-serif; font-size:0.95rem; width:100%; outline:none;
 }
 .mrit-search::placeholder { color:#2a2a3a; }
-
-/* ── Contador ── */
-.mrit-count {
-  position:relative; z-index:1;
-  padding:0 28px 6px;
-  font-size:0.6rem; letter-spacing:2px; color:#2a1a3a;
-  font-family:'Share Tech Mono',monospace; flex-shrink:0;
-}
 
 /* ── Lista ── */
 .mrit-lista {
@@ -2602,6 +2762,7 @@
   animation:mritItemIn 0.2s ease both;
   position:relative; overflow:hidden;
   min-height:64px;
+  flex-shrink:0;
 }
 .mrit-item-row {
   display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -2666,6 +2827,18 @@
   font-family:'Oswald',sans-serif; font-weight:700;
 }
 
+/* ── Área de ações à direita: ícone de expandir | divisor | botão adicionar ── */
+.mrit-item-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.mrit-expand-icon {
+  width:26px; height:26px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.7rem; color:#555; transition:all 0.2s;
+  border:1px solid transparent;
+}
+.mrit-item:hover .mrit-expand-icon { color:#999; background:rgba(255,255,255,0.05); }
+.mrit-expand-icon.aberto { color:#d070ff; background:rgba(155,48,217,0.12); border-color:rgba(155,48,217,0.25); transform:rotate(180deg); }
+.mrit-item-divisor { width:1px; height:22px; background:rgba(255,255,255,0.08); flex-shrink:0; }
+
 /* ── Botão + ── */
 .mrit-btn-add {
   flex-shrink:0; width:38px; height:38px; border-radius:8px;
@@ -2713,33 +2886,43 @@
       <button class="mrit-close" onclick="fecharModalRitual()">✕</button>
     </div>
 
-    <!-- Tabs -->
-    <div class="mrit-tabs">
-      <div class="mrit-tab ativo" id="mrit-tab-todos" onclick="mritTrocarTab('todos')">Rituais Oficiais</div>
-      <div class="mrit-tab" id="mrit-tab-homebrew" onclick="mritTrocarTab('homebrew')">🧪 Homebrew</div>
-    </div>
-
-    <!-- Filtros de elemento -->
-    <div class="mrit-elems-wrap">
-      <div class="mrit-elems" id="mrit-elems">
-        <button class="mrit-elem-btn eTodos sel" onclick="mritFiltroElem('Todos')"><span class="ei">✦</span> Todos</button>
-        <button class="mrit-elem-btn eCONHECIMENTO" onclick="mritFiltroElem('CONHECIMENTO')"><span class="ei">📖</span> Conhecimento</button>
-        <button class="mrit-elem-btn eENERGIA"  onclick="mritFiltroElem('ENERGIA')"><span class="ei">⚡</span> Energia</button>
-        <button class="mrit-elem-btn eMORTE"    onclick="mritFiltroElem('MORTE')"><span class="ei">💀</span> Morte</button>
-        <button class="mrit-elem-btn eSANGUE"   onclick="mritFiltroElem('SANGUE')"><span class="ei">🩸</span> Sangue</button>
-        <button class="mrit-elem-btn eMEDO"     onclick="mritFiltroElem('MEDO')"><span class="ei">👁</span> Medo</button>
-        <button class="mrit-elem-btn eVARIA"    onclick="mritFiltroElem('VARIA')"><span class="ei">◈</span> Varia</button>
+    <!-- Tabs + contador -->
+    <div class="mrit-tabs-row">
+      <div class="mrit-tabs">
+        <div class="mrit-tab ativo" id="mrit-tab-todos" onclick="mritTrocarTab('todos')">Rituais Oficiais</div>
+        <div class="mrit-tab" id="mrit-tab-homebrew" onclick="mritTrocarTab('homebrew')">🧪 Homebrew</div>
       </div>
+      <div class="mrit-count" id="mrit-count"></div>
     </div>
 
-    <!-- Filtros de círculo -->
-    <div class="mrit-circulos-wrap">
-      <div class="mrit-circulos" id="mrit-circulos">
-        <button class="mrit-circulo-btn c0 sel" onclick="mritFiltroCirculo(0)"><span class="ci-dot" style="background:#888;"></span> Todos os círculos</button>
-        <button class="mrit-circulo-btn c1" onclick="mritFiltroCirculo(1)"><span class="ci-dot" style="background:#4caf50;box-shadow:0 0 4px #4caf50;"></span> 1º Círculo · NEX 5%</button>
-        <button class="mrit-circulo-btn c2" onclick="mritFiltroCirculo(2)"><span class="ci-dot" style="background:#42a5f5;box-shadow:0 0 4px #42a5f5;"></span> 2º Círculo · NEX 25%</button>
-        <button class="mrit-circulo-btn c3" onclick="mritFiltroCirculo(3)"><span class="ci-dot" style="background:#ff9800;box-shadow:0 0 4px #ff9800;"></span> 3º Círculo · NEX 55%</button>
-        <button class="mrit-circulo-btn c4" onclick="mritFiltroCirculo(4)"><span class="ci-dot" style="background:#e040fb;box-shadow:0 0 4px #e040fb;"></span> 4º Círculo · NEX 85%</button>
+    <!-- Filtros compactos: elementos (chips) + círculo (dropdown) -->
+    <div class="mrit-filtros-row">
+      <div class="mrit-elems-wrap">
+        <div class="mrit-elems" id="mrit-elems">
+          <button class="mrit-elem-btn eTodos sel" onclick="mritFiltroElem('Todos')"><span class="ei">✦</span> Todos</button>
+          <button class="mrit-elem-btn eCONHECIMENTO" onclick="mritFiltroElem('CONHECIMENTO')"><span class="ei">📖</span> Conhecimento</button>
+          <button class="mrit-elem-btn eENERGIA"  onclick="mritFiltroElem('ENERGIA')"><span class="ei">⚡</span> Energia</button>
+          <button class="mrit-elem-btn eMORTE"    onclick="mritFiltroElem('MORTE')"><span class="ei">💀</span> Morte</button>
+          <button class="mrit-elem-btn eSANGUE"   onclick="mritFiltroElem('SANGUE')"><span class="ei">🩸</span> Sangue</button>
+          <button class="mrit-elem-btn eMEDO"     onclick="mritFiltroElem('MEDO')"><span class="ei">👁</span> Medo</button>
+          <button class="mrit-elem-btn eVARIA"    onclick="mritFiltroElem('VARIA')"><span class="ei">◈</span> Varia</button>
+        </div>
+      </div>
+
+      <!-- Dropdown elegante de círculo -->
+      <div class="mrit-circulo-dd" id="mrit-circulo-dd">
+        <button type="button" class="mrit-dd-trigger" id="mrit-dd-trigger" onclick="mritToggleCirculoDD(event)">
+          <span class="ci-dot" style="background:#888;"></span>
+          <span id="mrit-circulo-label">Todos os círculos</span>
+          <span class="dd-chev">▼</span>
+        </button>
+        <div class="mrit-dd-menu" id="mrit-circulo-menu">
+          <button type="button" class="mrit-dd-item sel c0" onclick="mritFiltroCirculo(0)"><span class="ci-dot" style="background:#888;"></span> Todos os círculos</button>
+          <button type="button" class="mrit-dd-item c1" onclick="mritFiltroCirculo(1)"><span class="ci-dot" style="background:#4caf50;box-shadow:0 0 4px #4caf50;"></span> 1º Círculo · NEX 5%</button>
+          <button type="button" class="mrit-dd-item c2" onclick="mritFiltroCirculo(2)"><span class="ci-dot" style="background:#42a5f5;box-shadow:0 0 4px #42a5f5;"></span> 2º Círculo · NEX 25%</button>
+          <button type="button" class="mrit-dd-item c3" onclick="mritFiltroCirculo(3)"><span class="ci-dot" style="background:#ff9800;box-shadow:0 0 4px #ff9800;"></span> 3º Círculo · NEX 55%</button>
+          <button type="button" class="mrit-dd-item c4" onclick="mritFiltroCirculo(4)"><span class="ci-dot" style="background:#e040fb;box-shadow:0 0 4px #e040fb;"></span> 4º Círculo · NEX 85%</button>
+        </div>
       </div>
     </div>
 
@@ -2750,7 +2933,6 @@
         <input class="mrit-search" id="mrit-busca" placeholder="Buscar ritual..." oninput="renderModalRituais()">
       </div>
     </div>
-    <div class="mrit-count" id="mrit-count"></div>
 
     <!-- Lista -->
     <div class="mrit-lista" id="modal-rituais-lista"></div>
@@ -5236,12 +5418,16 @@ function desenharRadar(atribs) {
     svgEl.setAttribute('viewBox','0 0 240 240');
     svgEl.innerHTML = '';
 
+    // Cor do tema ativo (reage à troca de tema em tempo real)
+    const rootStyle = getComputedStyle(document.documentElement);
+    const glowRgb = (rootStyle.getPropertyValue('--tema-glow-rgb') || '138,43,226').trim();
+
     // Círculos concêntricos
     const rings=[0.2,0.4,0.6,0.8,1.0];
     rings.forEach(r=>{
         const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
         c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',maxR*r);
-        c.setAttribute('fill','none');c.setAttribute('stroke','rgba(255,255,255,0.07)');c.setAttribute('stroke-width','1');
+        c.setAttribute('fill','none');c.setAttribute('stroke','rgba(255,255,255,0.06)');c.setAttribute('stroke-width','1');
         svgEl.appendChild(c);
     });
 
@@ -5249,8 +5435,8 @@ function desenharRadar(atribs) {
     const bgPts = angs.map(a=>`${cx+maxR*Math.cos(a)},${cy+maxR*Math.sin(a)}`).join(' ');
     const bgPoly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
     bgPoly.setAttribute('points',bgPts);
-    bgPoly.setAttribute('fill','rgba(138,43,226,0.06)');
-    bgPoly.setAttribute('stroke','rgba(255,255,255,0.15)');
+    bgPoly.setAttribute('fill',`rgba(${glowRgb},0.05)`);
+    bgPoly.setAttribute('stroke','rgba(255,255,255,0.12)');
     bgPoly.setAttribute('stroke-width','1');
     svgEl.appendChild(bgPoly);
 
@@ -5259,11 +5445,11 @@ function desenharRadar(atribs) {
         const l=document.createElementNS('http://www.w3.org/2000/svg','line');
         l.setAttribute('x1',cx);l.setAttribute('y1',cy);
         l.setAttribute('x2',cx+maxR*Math.cos(a));l.setAttribute('y2',cy+maxR*Math.sin(a));
-        l.setAttribute('stroke','rgba(255,255,255,0.12)');l.setAttribute('stroke-width','1');
+        l.setAttribute('stroke','rgba(255,255,255,0.1)');l.setAttribute('stroke-width','1');
         svgEl.appendChild(l);
     });
 
-    // Polígono dos valores (mínimo de 6px de raio para não colapsar no 0)
+    // Polígono dos valores (mínimo de 6px de raio para não colapsar no 0) — preenchimento suave + linha semi-transparente
     const valPts = angs.map((a,i)=>{
         const v = atribs[ord[i]] ?? 0;
         const r = Math.max(6, (v / MAX) * maxR);
@@ -5271,9 +5457,10 @@ function desenharRadar(atribs) {
     }).join(' ');
     const valPoly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
     valPoly.setAttribute('points',valPts);
-    valPoly.setAttribute('fill','rgba(120,60,220,0.35)');
-    valPoly.setAttribute('stroke','rgba(180,100,255,0.9)');
-    valPoly.setAttribute('stroke-width','1.5');
+    valPoly.setAttribute('fill',`rgba(${glowRgb},0.28)`);
+    valPoly.setAttribute('stroke',`rgba(${glowRgb},0.95)`);
+    valPoly.setAttribute('stroke-width','1.75');
+    valPoly.setAttribute('stroke-linejoin','round');
     svgEl.appendChild(valPoly);
 
     // Pontos nos vértices
@@ -5283,8 +5470,10 @@ function desenharRadar(atribs) {
         const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
         dot.setAttribute('cx',cx+r*Math.cos(a));
         dot.setAttribute('cy',cy+r*Math.sin(a));
-        dot.setAttribute('r','3');
-        dot.setAttribute('fill','rgba(200,130,255,1)');
+        dot.setAttribute('r','3.5');
+        dot.setAttribute('fill','white');
+        dot.setAttribute('stroke',`rgba(${glowRgb},1)`);
+        dot.setAttribute('stroke-width','2');
         svgEl.appendChild(dot);
     });
 }
@@ -5634,19 +5823,6 @@ function salvarNovoItem() {
     renderInventario();
     fecharModalNovoItem();
     mostrarToast('✦ ITEM ADICIONADO');
-}
-
-// ── Funções legacy (compatibilidade) ────────────────────────────
-function adicionarItem() {
-    const nome = document.getElementById('inv-nome-input')?.value.trim();
-    const qtd  = parseInt(document.getElementById('inv-qtd-input')?.value) || 1;
-    if (!nome) return;
-    if (!estado.inventario) estado.inventario = [];
-    estado.inventario.push({ nome, cat: 'GERAL', qtd, desc: '' });
-    salvarEstado();
-    renderInventario();
-    if (document.getElementById('inv-nome-input')) document.getElementById('inv-nome-input').value = '';
-    if (document.getElementById('inv-qtd-input'))  document.getElementById('inv-qtd-input').value  = '1';
 }
 
 // ── Remover item ────────────────────────────────────────────────
@@ -7446,7 +7622,9 @@ function rituaisRender() {
         const circuloBadgeCard = r.circulo
             ? `<span class="rbadge-circulo rbadge-circulo-${r.circulo}">⬡ ${CIRC_LABEL_CARD[r.circulo]||r.circulo+'º Círculo'}</span>`
             : `<span class="rbadge-circulo" style="background:#1a1a1a;color:#666;border:1px solid #333;">⬡ Círculo não definido</span>`;
-        return `<div class="ritual-card-f"><div class="ritual-card-hdr" data-toggle="${safeNome}"><div class="ritual-hdr-esq"><div class="ritual-card-nome">${r.nome}</div><div class="ritual-badges">${r.elem ? `<span class="rbadge rbadge-${eu}">${r.elem}</span>` : ''}${circuloBadgeCard}${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}</div></div><div class="ritual-toggle">${open ? '▲' : '▼'}</div></div>${bodyHtml}</div>`;
+        const custoPeBadge = r.circulo ? `<span class="rbadge" style="background:rgba(255,255,255,0.04);color:#ddd;border:1px solid var(--border);font-family:'Share Tech Mono',monospace;">⚡ ${r.circulo} PE</span>` : '';
+        const dotCor = ELEM_COR[eu] || '#aaa';
+        return `<div class="ritual-card-f ${open?'aberto':''}"><div class="ritual-card-hdr" data-toggle="${safeNome}"><div class="ritual-hdr-esq"><span class="ritual-row-dot" style="background:${dotCor};box-shadow:0 0 5px ${dotCor};"></span><div class="ritual-card-nome" title="${safeNome}">${r.nome}</div></div><div class="ritual-badges">${r.elem ? `<span class="rbadge rbadge-${eu}">${r.elem}</span>` : ''}${circuloBadgeCard}${custoPeBadge}${r.src ? `<span class="rbadge rbadge-src">${r.src}</span>` : ''}${r.custom ? '<span class="rbadge" style="background:#001a00;color:#39d353;border:1px solid #004400;">HOMEBREW</span>' : ''}</div><div class="ritual-row-right"><div class="ritual-toggle">▼</div></div></div>${bodyHtml}</div>`;
     };
 
     let html = '';
@@ -7457,12 +7635,12 @@ function rituaisRender() {
         const bg     = ELEM_BG[eu]    || '#111';
         const icon   = ELEM_ICON[eu]  || '◆';
         const label  = eu.charAt(0) + eu.slice(1).toLowerCase();
-        html += `<div style="display:flex;align-items:center;gap:10px;padding:8px 14px;margin-top:14px;margin-bottom:6px;background:${bg};border:1px solid ${borda};border-radius:8px;">
+        html += `<div style="display:flex;align-items:center;gap:10px;padding:7px 14px;margin-top:14px;margin-bottom:6px;background:${bg};border:1px solid ${borda};border-radius:8px;">
             <span style="font-size:1rem;">${icon}</span>
-            <span style="font-size:0.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:${cor};font-family:'Oswald',sans-serif;">${label}</span>
+            <span style="font-size:0.68rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:${cor};font-family:'Oswald',sans-serif;">${label}</span>
             <span style="margin-left:auto;font-size:0.6rem;color:#444;font-family:'Share Tech Mono',monospace;">${grupos[eu].length} ritual${grupos[eu].length !== 1 ? 'is' : ''}</span>
         </div>`;
-        html += grupos[eu].map(buildCard).join('');
+        html += `<div class="rituais-grupo-lista">` + grupos[eu].map(buildCard).join('') + `</div>`;
     });
 
     lista.innerHTML = html;
@@ -7581,6 +7759,8 @@ function mritFiltroCirculo(c) {
     _mritCirculo = c;
     _mritAtualizarCirculos();
     renderModalRituais();
+    document.getElementById('mrit-circulo-menu')?.classList.remove('aberto');
+    document.getElementById('mrit-dd-trigger')?.classList.remove('aberto');
 }
 
 function _mritAtualizarElems() {
@@ -7593,13 +7773,51 @@ function _mritAtualizarElems() {
     });
 }
 
+const _MRIT_CIRCULO_INFO = {
+    0: { label: 'Todos os círculos',      dot: '#888',    glow: 'none' },
+    1: { label: '1º Círculo · NEX 5%',    dot: '#4caf50', glow: '0 0 4px #4caf50' },
+    2: { label: '2º Círculo · NEX 25%',   dot: '#42a5f5', glow: '0 0 4px #42a5f5' },
+    3: { label: '3º Círculo · NEX 55%',   dot: '#ff9800', glow: '0 0 4px #ff9800' },
+    4: { label: '4º Círculo · NEX 85%',   dot: '#e040fb', glow: '0 0 4px #e040fb' },
+};
+
 function _mritAtualizarCirculos() {
-    document.querySelectorAll('.mrit-circulo-btn').forEach(btn => {
-        const cClass = [...btn.classList].find(cl => cl.startsWith('c') && !isNaN(cl.slice(1)));
+    // Atualiza seleção dentro do menu suspenso
+    document.querySelectorAll('.mrit-dd-item').forEach(item => {
+        const cClass = [...item.classList].find(cl => cl.startsWith('c') && !isNaN(cl.slice(1)));
         const val = cClass ? parseInt(cClass.slice(1)) : null;
-        if (val !== null) btn.classList.toggle('sel', val === _mritCirculo);
+        if (val !== null) item.classList.toggle('sel', val === _mritCirculo);
     });
+    // Atualiza o rótulo e o ponto colorido do botão principal
+    const info = _MRIT_CIRCULO_INFO[_mritCirculo] || _MRIT_CIRCULO_INFO[0];
+    const trigger = document.getElementById('mrit-dd-trigger');
+    const label = document.getElementById('mrit-circulo-label');
+    if (label) label.textContent = info.label;
+    if (trigger) {
+        const dot = trigger.querySelector('.ci-dot');
+        if (dot) { dot.style.background = info.dot; dot.style.boxShadow = info.glow; }
+    }
 }
+
+function mritToggleCirculoDD(e) {
+    if (e) e.stopPropagation();
+    const trigger = document.getElementById('mrit-dd-trigger');
+    const menu = document.getElementById('mrit-circulo-menu');
+    if (!trigger || !menu) return;
+    const abrindo = !menu.classList.contains('aberto');
+    menu.classList.toggle('aberto', abrindo);
+    trigger.classList.toggle('aberto', abrindo);
+}
+
+// Fecha o dropdown de círculo ao clicar fora dele
+document.addEventListener('click', function(e) {
+    const dd = document.getElementById('mrit-circulo-dd');
+    if (!dd) return;
+    if (!dd.contains(e.target)) {
+        document.getElementById('mrit-circulo-menu')?.classList.remove('aberto');
+        document.getElementById('mrit-dd-trigger')?.classList.remove('aberto');
+    }
+});
 
 function _getHomebrewRituais() {
     const user = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || localStorage.getItem('ficha_user_backup') || 'guest';
@@ -7699,10 +7917,11 @@ function renderModalRituais() {
           <span style="font-size:0.55rem;font-family:'Share Tech Mono',monospace;color:#2a1a3a;flex-shrink:0;">${grupos[ne].length}</span>
         </div>`;
         grupos[ne].forEach((r, i) => {
+          try {
             total++;
             const jatem   = meus.includes(r.nome);
             const hbBadge = r._hb ? '<span class="mrit-item-hb">Homebrew</span>' : '';
-            const nomeEsc = r.nome.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const nomeEsc = (r.nome || '—').replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const delay   = Math.min(i * 20, 200);
             const itemId  = `mrit-desc-${total}`;
             // Badge de círculo
@@ -7723,7 +7942,7 @@ function renderModalRituais() {
               <div class="mrit-item e${ne}" style="animation-delay:${delay}ms" data-desc-id="${itemId}">
                 <div class="mrit-item-row">
                   <div class="mrit-item-esq">
-                    <div class="mrit-item-nome">${r.nome}</div>
+                    <div class="mrit-item-nome">${r.nome || '—'}</div>
                     <div class="mrit-item-tags">
                       ${elemBadge(r.elem)}
                       ${circuloBadge}
@@ -7731,11 +7950,12 @@ function renderModalRituais() {
                       <span class="mrit-item-src">${r.src || ''}</span>
                     </div>
                   </div>
-                  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                    <span id="${itemId}-chevron" style="font-size:0.65rem;color:#444;transition:transform 0.2s;">▼</span>
+                  <div class="mrit-item-actions">
+                    <span id="${itemId}-chevron" class="mrit-expand-icon" title="Ver descrição">▼</span>
+                    <span class="mrit-item-divisor"></span>
                     <button
                       class="mrit-btn-add ${jatem ? 'tem' : 'pode'}"
-                      data-add-nome="${r.nome.replace(/"/g,'&quot;')}"
+                      data-add-nome="${(r.nome || '').replace(/"/g,'&quot;')}"
                       data-add-hb="${r._hb}"
                       data-add-jatem="${jatem}"
                       title="${jatem ? 'Já adicionado' : 'Adicionar ritual'}"
@@ -7746,6 +7966,9 @@ function renderModalRituais() {
                 </div>
                 <div id="${itemId}" class="mrit-desc-panel" style="display:none;"></div>
               </div>`;
+          } catch (err) {
+            console.error('[mrit] erro ao renderizar ritual, pulando item:', r && r.nome, err);
+          }
         });
     });
 
@@ -7753,6 +7976,7 @@ function renderModalRituais() {
 
     // Event delegation — sem onclick inline, funciona com qualquer nome de ritual
     lista.onclick = function(e) {
+      try {
         // Botão +
         const btnAdd = e.target.closest('.mrit-btn-add');
         if (btnAdd) {
@@ -7764,37 +7988,46 @@ function renderModalRituais() {
         // Toggle descrição — clique no item inteiro
         const item = e.target.closest('[data-desc-id]');
         if (item) { mritToggleDesc(item.dataset.descId); }
+      } catch (err) {
+        console.error('[mrit] erro ao processar clique no banco de rituais:', err);
+      }
     };
 
     const cnt = document.getElementById('mrit-count');
-    if (cnt) cnt.textContent = total + ' ritual' + (total !== 1 ? 'is' : '') + ' encontrado' + (total !== 1 ? 's' : '');
+    if (cnt) cnt.innerHTML = '<b>' + total + '</b> ritual' + (total !== 1 ? 'is' : '') + ' encontrado' + (total !== 1 ? 's' : '');
 }
 
 function mritToggleDesc(id) {
-    const panel   = document.getElementById(id);
-    const chevron = document.getElementById(id + '-chevron');
-    if (!panel) return;
-    const isOpen = panel.style.display !== 'none';
-    if (isOpen) {
-        panel.style.display = 'none';
-        if (chevron) chevron.style.transform = '';
-    } else {
-        // Preenche o conteúdo na primeira abertura
-        if (!panel.dataset.loaded) {
-            const d = (window._mritDescData || {})[id] || {};
-            const metaItens = [
-                d.exec       ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Execução</span><span class="mrit-desc-meta-val">${d.exec}</span></div>` : '',
-                d.alcance    ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Alcance</span><span class="mrit-desc-meta-val">${d.alcance}</span></div>` : '',
-                d.dur        ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Duração</span><span class="mrit-desc-meta-val">${d.dur}</span></div>` : '',
-                d.conjuracao ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Conjuração</span><span class="mrit-desc-meta-val">${d.conjuracao}</span></div>` : '',
-            ].filter(Boolean).join('');
-            panel.innerHTML =
-                (metaItens ? `<div class="mrit-desc-meta">${metaItens}</div>` : '') +
-                `<div class="mrit-desc-txt">${d.desc || '<em style="color:#555">Sem descrição disponível.</em>'}</div>`;
-            panel.dataset.loaded = '1';
+    try {
+        const panel   = document.getElementById(id);
+        const chevron = document.getElementById(id + '-chevron');
+        if (!panel) { console.warn('[mrit] painel de descrição não encontrado para id:', id); return; }
+        const isOpen = panel.style.display !== 'none';
+        if (isOpen) {
+            panel.style.display = 'none';
+            if (chevron) chevron.classList.remove('aberto');
+        } else {
+            // Preenche o conteúdo na primeira abertura
+            if (!panel.dataset.loaded) {
+                const d = (window._mritDescData || {})[id];
+                if (!d) console.warn('[mrit] dados de descrição ausentes para id:', id, '— exibindo aviso de "sem descrição".');
+                const dd = d || {};
+                const metaItens = [
+                    dd.exec       ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Execução</span><span class="mrit-desc-meta-val">${dd.exec}</span></div>` : '',
+                    dd.alcance    ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Alcance</span><span class="mrit-desc-meta-val">${dd.alcance}</span></div>` : '',
+                    dd.dur        ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Duração</span><span class="mrit-desc-meta-val">${dd.dur}</span></div>` : '',
+                    dd.conjuracao ? `<div class="mrit-desc-meta-item"><span class="mrit-desc-meta-lbl">Conjuração</span><span class="mrit-desc-meta-val">${dd.conjuracao}</span></div>` : '',
+                ].filter(Boolean).join('');
+                panel.innerHTML =
+                    (metaItens ? `<div class="mrit-desc-meta">${metaItens}</div>` : '') +
+                    `<div class="mrit-desc-txt">${dd.desc || '<em style="color:#555">Sem descrição disponível.</em>'}</div>`;
+                panel.dataset.loaded = '1';
+            }
+            panel.style.display = 'block';
+            if (chevron) chevron.classList.add('aberto');
         }
-        panel.style.display = 'block';
-        if (chevron) chevron.style.transform = 'rotate(180deg)';
+    } catch (err) {
+        console.error('[mrit] erro ao alternar descrição do ritual:', err);
     }
 }
 
@@ -7902,9 +8135,29 @@ function buildHabCatView(cat) {
     }
     const busca = (document.getElementById('hab-search')?.value || '').toLowerCase();
     if (busca) todos = todos.filter(h => h.nome.toLowerCase().includes(busca) || (h.desc||'').toLowerCase().includes(busca) || (h.trilha||'').toLowerCase().includes(busca) || (h.classe||'').toLowerCase().includes(busca));
-    const subBtns = subabaOpts.map(s => { const lbl = s === 'todos' ? 'Todos' : s.charAt(0)+s.slice(1).toLowerCase(); return `<button class="hab-subaba-btn ${habSubabaAtiva===s?'active':''}" onclick="setHabSubaba('${s}')">${lbl}</button>`; }).join('');
-    const cards = todos.length === 0 ? `<div class="hab-vazio">▸ Nenhuma habilidade encontrada.</div>` : todos.map(h => buildPoderCard(h, false)).join('');
-    return `<div class="hab-subabas">${subBtns}</div><div class="hab-search-row"><div class="hab-search-wrap2"><span class="sicon2">⌕</span><input type="text" id="hab-search" class="hab-search-input" placeholder="Buscar habilidade..." value="${busca}"></div></div><div class="hab-count">▸ ${todos.length} habilidade${todos.length!==1?'s':''}</div><div class="hab-grid">${cards}</div>`;
+
+    let subBtns;
+    if (cat === 'paranormal') {
+        // filtros circulares de elemento — discretos, com cor temática sutil
+        const ELEM_DOT = {
+            SANGUE:       { bg:'rgba(255,68,102,0.18)',  border:'#ff4466' },
+            MORTE:        { bg:'rgba(153,102,255,0.18)', border:'#9966ff' },
+            CONHECIMENTO: { bg:'rgba(74,158,255,0.18)',  border:'#4a9eff' },
+            ENERGIA:      { bg:'rgba(255,204,0,0.18)',   border:'#ffcc00' },
+            MEDO:         { bg:'rgba(255,140,0,0.18)',   border:'#ff8c00' },
+        };
+        subBtns = `<div class="hab-subabas elementos">` + subabaOpts.map(s => {
+            if (s === 'todos') return `<button class="hab-elem-btn ${habSubabaAtiva===s?'active':''}" onclick="setHabSubaba('${s}')" style="--edot-glow:var(--purple-neon);"><span class="hab-elem-dot" style="background:transparent;border-color:#555;"></span>Todos</button>`;
+            const d = ELEM_DOT[s] || {bg:'#222',border:'#555'};
+            const lbl = s.charAt(0)+s.slice(1).toLowerCase();
+            return `<button class="hab-elem-btn ${habSubabaAtiva===s?'active':''}" onclick="setHabSubaba('${s}')" style="--edot-bg:${d.bg};--edot-border:${d.border};--edot-glow:${d.border};"><span class="hab-elem-dot"></span>${lbl}</button>`;
+        }).join('') + `</div>`;
+    } else {
+        subBtns = `<div class="hab-subabas">` + subabaOpts.map(s => { const lbl = s === 'todos' ? 'Todos' : s.charAt(0)+s.slice(1).toLowerCase(); return `<button class="hab-subaba-btn ${habSubabaAtiva===s?'active':''}" onclick="setHabSubaba('${s}')">${lbl}</button>`; }).join('') + `</div>`;
+    }
+
+    const cards = todos.length === 0 ? `<div class="hab-vazio">▸ Nenhuma habilidade encontrada.</div>` : `<div class="hab-grid">${todos.map(h => buildPoderCard(h, false)).join('')}</div>`;
+    return `${subBtns}<div class="hab-search-row"><div class="hab-search-wrap2"><span class="sicon2">⌕</span><input type="text" id="hab-search" class="hab-search-input" placeholder="Buscar habilidade..." value="${busca}"></div></div><div class="hab-count">▸ ${todos.length} habilidade${todos.length!==1?'s':''}</div>${cards}`;
 }
 
 function buildPoderCard(h, isFicha) {
@@ -7915,7 +8168,7 @@ function buildPoderCard(h, isFicha) {
     const elem  = (h.elem || 'NEUTRO').toUpperCase();
     const ec    = ECORES[elem] || ECORES.NEUTRO;
     const elbl  = elem === 'NEUTRO' ? '—' : elem.charAt(0)+elem.slice(1).toLowerCase();
-    const badgeElem = `<span class="hbadge" style="--ecor:${ec.cor};--ebg:${ec.bg};--eborder:${ec.border};">${elbl}</span>`;
+    const badgeElem = elem !== 'NEUTRO' ? `<span class="hbadge" style="--ecor:${ec.cor};--ebg:${ec.bg};--eborder:${ec.border};">${elbl}</span>` : '';
     const LABELS_TIPO = { classe:'Classe', trilha:'Trilha', paranormal:'Paranormal', poder_classe:'Poder', origem:'Origem', treinamento_especial:'Treinamento', homebrew:'Homebrew' };
     const badgeTipo = `<span class="hbadge hbadge-tipo">${LABELS_TIPO[h.tipo] || h.tipo || 'Categoria'}</span>`;
     const badgeTrilha = h.trilha ? `<span class="hbadge hbadge-trilha">${h.trilha}</span>` : '';
@@ -7927,7 +8180,7 @@ function buildPoderCard(h, isFicha) {
     const metaOrigem = h.origem ? `<div class="poder-meta-grid"><div class="poder-meta-item">Origem <span>${h.origem}</span></div></div>` : '';
     const metaExemplos = h.exemplos ? `<div class="poder-meta-grid" style="grid-template-columns:1fr;"><div class="poder-meta-item">Exemplos de 1º círculo <span>${h.exemplos}</span></div></div>` : '';
     const bodyHtml = open ? `<div class="poder-card-body"><div class="poder-desc">${h.desc||'—'}</div>${metaExemplos}${metaExtra}${metaOrigem}<div style="text-align:right;margin-top:8px;">${acaoBtn}</div></div>` : '';
-    return `<div class="poder-card ${open?'aberto':''}" style="--ecor:${ec.cor};--ebg:${ec.bg};--eborder:${ec.border};"><div class="poder-card-hdr" onclick="toggleHab('${esc(h.nome)}')"><div class="poder-hdr-esq"><div class="poder-nome">${h.nome}</div><div class="poder-badges">${badgeElem}${badgeTipo}${badgeTrilha}${badgeAcao}${badgeCusto}${badgeNex}</div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">${!open ? acaoBtn : ''}<div class="poder-toggle">${open?'▲':'▼'}</div></div></div>${bodyHtml}</div>`;
+    return `<div class="poder-card ${open?'aberto':''}" style="--ecor:${ec.cor};--ebg:${ec.bg};--eborder:${ec.border};"><div class="poder-card-hdr" onclick="toggleHab('${esc(h.nome)}')"><div class="poder-hdr-esq"><span class="poder-row-dot"></span><div class="poder-nome" title="${esc(h.nome)}">${h.nome}</div></div><div class="poder-badges">${badgeElem}${badgeTipo}${badgeTrilha}${badgeAcao}${badgeCusto}${badgeNex}</div><div class="poder-row-right">${!open ? acaoBtn : ''}<div class="poder-toggle">▼</div></div></div>${bodyHtml}</div>`;
 }
 
 function setHabCat(cat)  { habCatAtiva=cat; habSubabaAtiva='todos'; renderHabilidades(); }
@@ -8408,8 +8661,6 @@ function salvarNex() {
             e.stopPropagation();
             var dd = document.getElementById('temas-dropdown');
             if (dd) dd.classList.toggle('open');
-            var av = document.getElementById('avatar-dropdown');
-            if (av) av.classList.remove('open');
         }
         function aplicarTema(tema) {
             document.documentElement.setAttribute('data-tema', tema);
