@@ -268,6 +268,7 @@
         width: 100%; height: 100%; object-fit: cover;
         z-index: -1; pointer-events: none;
     }
+    #wallpaper-video-custom.ativo { display: block; }
     body { transition: background 0.4s ease; }
 
         
@@ -1329,13 +1330,12 @@ body { transition: background 0.5s ease; }
         </div>
 
         <div class="personalizar-campo">
-            <label class="personalizar-label" for="input-wallpaper-custom">Wallpaper de fundo</label>
+            <label class="personalizar-label" for="input-wallpaper-custom">Wallpaper de fundo (imagem ou vídeo)</label>
             <label class="personalizar-upload-btn" for="input-wallpaper-custom">
                 📁 Escolher imagem ou vídeo
                 <input type="file" id="input-wallpaper-custom" accept="image/*,video/*" onchange="handleWallpaperUpload(event)">
             </label>
             <span class="personalizar-nome-arquivo" id="personalizar-nome-arquivo">Nenhum arquivo selecionado</span>
-            <span class="personalizar-hint">Vídeos ficam em loop e sem áudio, cobrindo o fundo da página.</span>
             <br>
             <button class="personalizar-remover" onclick="removerWallpaperCustom()">Remover wallpaper</button>
         </div>
@@ -3582,7 +3582,64 @@ window.fazerLogout = async function() {
         var CHAVE_WALLPAPER_TIPO = 'ficha_wallpaper_tipo'; // 'imagem' | 'video'
         var CHAVE_FONTE_CUSTOM = 'ficha_fonte_custom';
         var CHAVE_COR_TEXTO_CUSTOM = 'ficha_cor_texto_custom';
-        var _wallpaperVideoObjectURL = null; // guarda a object URL ativa p/ poder liberar da memória
+
+        // Vídeos costumam ser grandes demais para o localStorage, então o
+        // arquivo de vídeo é guardado como Blob no IndexedDB (o localStorage
+        // só marca "há um vídeo salvo" via CHAVE_WALLPAPER_TIPO).
+        // Mesmo nome de banco/store/chave usado em index.html e homebrew.html
+        // para que o wallpaper em vídeo seja compartilhado automaticamente
+        // entre as páginas (localStorage e IndexedDB são por origem, não por página).
+        var WALLPAPER_DB_NOME = 'FichaWallpaperDB';
+        var WALLPAPER_DB_STORE = 'arquivos';
+        var WALLPAPER_DB_CHAVE = 'wallpaper_video';
+        var wallpaperVideoObjectUrl = null;
+
+        function abrirWallpaperDB() {
+            return new Promise(function(resolve, reject) {
+                if (!window.indexedDB) { reject(new Error('IndexedDB indisponível')); return; }
+                var req = indexedDB.open(WALLPAPER_DB_NOME, 1);
+                req.onupgradeneeded = function() {
+                    if (!req.result.objectStoreNames.contains(WALLPAPER_DB_STORE)) {
+                        req.result.createObjectStore(WALLPAPER_DB_STORE);
+                    }
+                };
+                req.onsuccess = function() { resolve(req.result); };
+                req.onerror = function() { reject(req.error); };
+            });
+        }
+
+        function salvarVideoWallpaperDB(blob) {
+            return abrirWallpaperDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var tx = db.transaction(WALLPAPER_DB_STORE, 'readwrite');
+                    tx.objectStore(WALLPAPER_DB_STORE).put(blob, WALLPAPER_DB_CHAVE);
+                    tx.oncomplete = function() { resolve(); };
+                    tx.onerror = function() { reject(tx.error); };
+                });
+            });
+        }
+
+        function carregarVideoWallpaperDB() {
+            return abrirWallpaperDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var tx = db.transaction(WALLPAPER_DB_STORE, 'readonly');
+                    var req = tx.objectStore(WALLPAPER_DB_STORE).get(WALLPAPER_DB_CHAVE);
+                    req.onsuccess = function() { resolve(req.result || null); };
+                    req.onerror = function() { reject(req.error); };
+                });
+            });
+        }
+
+        function removerVideoWallpaperDB() {
+            return abrirWallpaperDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var tx = db.transaction(WALLPAPER_DB_STORE, 'readwrite');
+                    tx.objectStore(WALLPAPER_DB_STORE).delete(WALLPAPER_DB_CHAVE);
+                    tx.oncomplete = function() { resolve(); };
+                    tx.onerror = function() { reject(tx.error); };
+                });
+            });
+        }
 
         function mostrarStatusPersonalizar(msg) {
             var el = document.getElementById('personalizar-status');
@@ -3605,51 +3662,7 @@ window.fazerLogout = async function() {
             if (overlay) overlay.classList.remove('show');
         }
 
-        /* ---- IndexedDB: usado só para vídeo, pois localStorage é pequeno demais ---- */
-        function _abrirWallpaperDB() {
-            return new Promise(function(resolve, reject) {
-                var req = indexedDB.open('fichaWallpaperDB', 1);
-                req.onupgradeneeded = function() { req.result.createObjectStore('wallpaper'); };
-                req.onsuccess = function() { resolve(req.result); };
-                req.onerror = function() { reject(req.error); };
-            });
-        }
-        async function _salvarVideoWallpaperDB(blob) {
-            var db = await _abrirWallpaperDB();
-            return new Promise(function(resolve, reject) {
-                var tx = db.transaction('wallpaper', 'readwrite');
-                tx.objectStore('wallpaper').put(blob, 'video');
-                tx.oncomplete = function() { resolve(); };
-                tx.onerror = function() { reject(tx.error); };
-            });
-        }
-        async function _obterVideoWallpaperDB() {
-            var db = await _abrirWallpaperDB();
-            return new Promise(function(resolve, reject) {
-                var req = db.transaction('wallpaper', 'readonly').objectStore('wallpaper').get('video');
-                req.onsuccess = function() { resolve(req.result || null); };
-                req.onerror = function() { reject(req.error); };
-            });
-        }
-        async function _removerVideoWallpaperDB() {
-            try {
-                var db = await _abrirWallpaperDB();
-                db.transaction('wallpaper', 'readwrite').objectStore('wallpaper').delete('video');
-            } catch (err) { /* ignora */ }
-        }
-
-        function aplicarWallpaperImagem(dataUrl) {
-            var videoEl = document.getElementById('wallpaper-video-custom');
-            if (videoEl) {
-                videoEl.style.display = 'none';
-                videoEl.pause();
-                if (_wallpaperVideoObjectURL) {
-                    URL.revokeObjectURL(_wallpaperVideoObjectURL);
-                    _wallpaperVideoObjectURL = null;
-                }
-                videoEl.removeAttribute('src');
-                videoEl.load();
-            }
+        function aplicarWallpaperCustom(dataUrl) {
             if (dataUrl) {
                 document.body.style.backgroundImage = 'url("' + dataUrl + '")';
                 document.body.style.backgroundSize = 'cover';
@@ -3663,23 +3676,28 @@ window.fazerLogout = async function() {
             }
         }
 
-        function aplicarWallpaperVideo(url) {
-            document.body.style.backgroundImage = '';
-            document.body.style.backgroundSize = '';
-            document.body.style.backgroundPosition = '';
-            document.body.style.backgroundRepeat = '';
+        // Aplica (ou remove) o wallpaper em vídeo. Recebe um Blob/File de
+        // vídeo (ou null para desligar) e cuida do <video id="wallpaper-video-custom">.
+        function aplicarWallpaperVideoCustom(blob) {
             var videoEl = document.getElementById('wallpaper-video-custom');
             if (!videoEl) return;
-            if (_wallpaperVideoObjectURL) URL.revokeObjectURL(_wallpaperVideoObjectURL);
-            _wallpaperVideoObjectURL = url;
-            videoEl.src = url;
-            videoEl.style.display = 'block';
-            videoEl.play().catch(function() { /* autoplay pode ser bloqueado até 1ª interação */ });
-        }
 
-        // Mantido por compatibilidade com outros trechos do código que chamam esta função
-        function aplicarWallpaperCustom(dataUrl) {
-            aplicarWallpaperImagem(dataUrl);
+            if (wallpaperVideoObjectUrl) {
+                URL.revokeObjectURL(wallpaperVideoObjectUrl);
+                wallpaperVideoObjectUrl = null;
+            }
+
+            if (blob) {
+                wallpaperVideoObjectUrl = URL.createObjectURL(blob);
+                videoEl.src = wallpaperVideoObjectUrl;
+                videoEl.classList.add('ativo');
+                videoEl.play().catch(function() { /* autoplay pode ser bloqueado até interação do usuário */ });
+            } else {
+                videoEl.pause();
+                videoEl.removeAttribute('src');
+                videoEl.load();
+                videoEl.classList.remove('ativo');
+            }
         }
 
         function handleWallpaperUpload(event) {
@@ -3687,28 +3705,35 @@ window.fazerLogout = async function() {
             if (!arquivo) return;
             var nomeEl = document.getElementById('personalizar-nome-arquivo');
 
+            // ── Vídeo ──
             if (arquivo.type.indexOf('video/') === 0) {
-                var objectUrl = URL.createObjectURL(arquivo);
-                aplicarWallpaperVideo(objectUrl);
+                // Desliga um wallpaper de imagem anterior, se houver
+                aplicarWallpaperCustom(null);
                 localStorage.removeItem(CHAVE_WALLPAPER_CUSTOM);
-                localStorage.setItem(CHAVE_WALLPAPER_TIPO, 'video');
-                _salvarVideoWallpaperDB(arquivo).then(function() {
-                    if (nomeEl) nomeEl.textContent = arquivo.name;
+
+                aplicarWallpaperVideoCustom(arquivo);
+                salvarVideoWallpaperDB(arquivo).then(function() {
+                    localStorage.setItem(CHAVE_WALLPAPER_TIPO, 'video');
+                    if (nomeEl) nomeEl.textContent = arquivo.name + ' (vídeo)';
                     mostrarStatusPersonalizar('Wallpaper em vídeo salvo');
                 }).catch(function(err) {
-                    console.warn('Não foi possível salvar o vídeo no armazenamento local:', err);
-                    if (nomeEl) nomeEl.textContent = arquivo.name + ' (não salvo — sem espaço)';
+                    console.warn('Não foi possível salvar o vídeo no IndexedDB:', err);
+                    localStorage.removeItem(CHAVE_WALLPAPER_TIPO);
+                    if (nomeEl) nomeEl.textContent = arquivo.name + ' (não salvo — ' + err.message + ')';
                     mostrarStatusPersonalizar('Aplicado, mas não pôde ser salvo');
                 });
                 return;
             }
 
+            // ── Imagem (comportamento original) ──
+            aplicarWallpaperVideoCustom(null);
+            removerVideoWallpaperDB().catch(function() {});
+            localStorage.removeItem(CHAVE_WALLPAPER_TIPO);
+
             var leitor = new FileReader();
             leitor.onload = function(evento) {
                 var dataUrl = evento.target.result;
-                aplicarWallpaperImagem(dataUrl);
-                localStorage.removeItem(CHAVE_WALLPAPER_TIPO);
-                _removerVideoWallpaperDB();
+                aplicarWallpaperCustom(dataUrl);
                 try {
                     localStorage.setItem(CHAVE_WALLPAPER_CUSTOM, dataUrl);
                     if (nomeEl) nomeEl.textContent = arquivo.name;
@@ -3723,10 +3748,11 @@ window.fazerLogout = async function() {
         }
 
         function removerWallpaperCustom() {
-            aplicarWallpaperImagem(null);
+            aplicarWallpaperCustom(null);
             localStorage.removeItem(CHAVE_WALLPAPER_CUSTOM);
+            aplicarWallpaperVideoCustom(null);
+            removerVideoWallpaperDB().catch(function() {});
             localStorage.removeItem(CHAVE_WALLPAPER_TIPO);
-            _removerVideoWallpaperDB();
             var nomeEl = document.getElementById('personalizar-nome-arquivo');
             if (nomeEl) nomeEl.textContent = 'Nenhum arquivo selecionado';
             var inputEl = document.getElementById('input-wallpaper-custom');
@@ -3763,13 +3789,14 @@ window.fazerLogout = async function() {
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            var tipoWallpaperSalvo = localStorage.getItem(CHAVE_WALLPAPER_TIPO);
             var nomeEl = document.getElementById('personalizar-nome-arquivo');
-            var tipoSalvo = localStorage.getItem(CHAVE_WALLPAPER_TIPO);
-            if (tipoSalvo === 'video') {
-                _obterVideoWallpaperDB().then(function(blob) {
+
+            if (tipoWallpaperSalvo === 'video') {
+                carregarVideoWallpaperDB().then(function(blob) {
                     if (blob) {
-                        aplicarWallpaperVideo(URL.createObjectURL(blob));
-                        if (nomeEl) nomeEl.textContent = 'Wallpaper em vídeo carregado';
+                        aplicarWallpaperVideoCustom(blob);
+                        if (nomeEl) nomeEl.textContent = 'Wallpaper em vídeo salvo carregado';
                     }
                 }).catch(function(err) {
                     console.warn('Não foi possível carregar o vídeo salvo:', err);
@@ -3777,7 +3804,7 @@ window.fazerLogout = async function() {
             } else {
                 var wallpaperSalvo = localStorage.getItem(CHAVE_WALLPAPER_CUSTOM);
                 if (wallpaperSalvo) {
-                    aplicarWallpaperImagem(wallpaperSalvo);
+                    aplicarWallpaperCustom(wallpaperSalvo);
                     if (nomeEl) nomeEl.textContent = 'Wallpaper salvo carregado';
                 }
             }
