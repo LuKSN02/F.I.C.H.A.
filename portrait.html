@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="FICHA">
 <meta name="theme-color" content="#050d1a">
 <title>Portrait – Ordem Paranormal</title>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&family=Bebas+Neue&family=Cinzel+Decorative:wght@700&family=Satisfy&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    VARIÁVEIS DE TEMA
@@ -3137,6 +3137,203 @@ body.layout-circo .btn-ficha {
   background: var(--accent3);
   opacity: 0.8;
 }
+
+/* ============================================================
+   LAYOUT 14 — MANUSCRITO (retrato antigo, foto desvanecida
+   nas bordas + nome caligráfico, resgatado do portrait antigo)
+   ============================================================ */
+body.layout-manuscrito {
+  width: 600px;
+}
+
+body.layout-manuscrito .portrait {
+  width: 600px;
+  height: 240px;
+  flex-direction: row;
+  align-items: flex-end;
+  padding: 0 16px 16px 16px;
+  gap: 14px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
+  animation: manuscritoFade 0.55s ease 0.1s both;
+}
+
+@keyframes manuscritoFade {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Arte com fade nas bordas direita e inferior, sem moldura */
+body.layout-manuscrito .foto-wrap {
+  width: 210px;
+  height: 220px;
+  flex-shrink: 0;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  align-self: flex-end;
+  -webkit-mask-image:
+    linear-gradient(to right,  black 55%, transparent 100%),
+    linear-gradient(to bottom, black 65%, transparent 100%);
+  -webkit-mask-composite: destination-in;
+  mask-image:
+    linear-gradient(to right,  black 55%, transparent 100%),
+    linear-gradient(to bottom, black 65%, transparent 100%);
+  mask-composite: intersect;
+}
+
+body.layout-manuscrito #foto-img { object-position: center top; }
+body.layout-manuscrito #death-overlay { border-radius: 0; }
+body.layout-manuscrito .nome-ghost { display: none; }
+
+/* Coluna direita: nome caligráfico + barras, ancorados embaixo */
+body.layout-manuscrito .stats-col {
+  flex: 1;
+  justify-content: flex-end;
+  height: auto;
+  padding-left: 4px;
+  padding-bottom: 2px;
+  gap: 0;
+}
+
+body.layout-manuscrito .bars-wrap {
+  order: 2;
+  gap: 4px;
+  margin-bottom: 0;
+}
+
+body.layout-manuscrito .info-panel {
+  order: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  display: block;
+  margin-bottom: 4px;
+}
+body.layout-manuscrito .info-panel::before { display: none; }
+body.layout-manuscrito .nome-label-small { display: none; }
+
+body.layout-manuscrito .nome {
+  font-family: 'Satisfy', cursive;
+  font-size: 2.5rem;
+  font-weight: 400;
+  text-transform: lowercase;
+  color: rgba(255,255,255,0.92);
+  letter-spacing: -1px;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.95), 0 0 24px rgba(0,0,0,0.7);
+  transform: rotate(-2deg) translateX(-2px);
+  transform-origin: left bottom;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+body.layout-manuscrito .sub-row { margin-top: 6px; gap: 6px; }
+
+body.layout-manuscrito .nex-badge,
+body.layout-manuscrito .classe-tag,
+body.layout-manuscrito .origem-txt {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.4rem;
+}
+body.layout-manuscrito .nex-badge { background: rgba(0,0,0,0.55); }
+
+body.layout-manuscrito .right-group { display: none; }
+
+/* Barras estilo "ficha antiga": trilho escuro com textura de linhas
+   verticais e valor centralizado sobre o preenchimento */
+body.layout-manuscrito .stat-bar {
+  height: 20px;
+  border-radius: 2px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+}
+body.layout-manuscrito .stat-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg, transparent 0, transparent 13px,
+    rgba(0,0,0,0.15) 13px, rgba(0,0,0,0.15) 15px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+body.layout-manuscrito .stat-fill { border-radius: 2px; z-index: 1; }
+body.layout-manuscrito .stat-bar-vida .stat-fill { background: linear-gradient(90deg, #7b0000, #c0392b 70%, #e74c3c); }
+body.layout-manuscrito .stat-bar-san  .stat-fill { background: linear-gradient(90deg, #3a0080, #8a2be2 70%, #bc6ff1); }
+body.layout-manuscrito .stat-bar-esf  .stat-fill { background: linear-gradient(90deg, #7a3800, #e07b00 70%, #ff9d00); }
+
+body.layout-manuscrito .stat-label {
+  position: relative;
+  z-index: 3;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.42rem;
+  color: rgba(255,255,255,0.45);
+  width: 26px;
+  letter-spacing: 0.5px;
+}
+
+body.layout-manuscrito .stat-item {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+body.layout-manuscrito .stat-val,
+body.layout-manuscrito .stat-max {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.95);
+  letter-spacing: 1px;
+}
+body.layout-manuscrito .stat-sep {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.6);
+}
+
+/* Preview miniatura: Manuscrito */
+.lp-manuscrito .lp-manu-frame {
+  position: absolute;
+  left: 2px; top: 2px;
+  width: 11px; height: 14px;
+  background: linear-gradient(135deg, var(--green-dark), rgba(0,0,0,0.2));
+  -webkit-mask-image: linear-gradient(to right, black 55%, transparent 100%), linear-gradient(to bottom, black 65%, transparent 100%);
+  -webkit-mask-composite: destination-in;
+  mask-image: linear-gradient(to right, black 55%, transparent 100%), linear-gradient(to bottom, black 65%, transparent 100%);
+  mask-composite: intersect;
+}
+.lp-manuscrito .lp-manu-name {
+  position: absolute;
+  left: 15px; right: 2px; top: 2px;
+  height: 5px;
+  font-family: 'Satisfy', cursive;
+  font-size: 6px;
+  color: var(--white);
+  transform: rotate(-4deg);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.lp-manuscrito .lp-manu-bar {
+  position: absolute;
+  left: 15px; right: 2px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent1);
+  opacity: 0.85;
+}
+.lp-manuscrito .lp-manu-bar:nth-child(3) { top: 9px; }
+.lp-manuscrito .lp-manu-bar:nth-child(4) { top: 12px; background: var(--accent2); }
+.lp-manuscrito .lp-manu-bar:nth-child(5) { top: 15px; background: var(--accent3); }
 </style>
 
 <!-- Firebase -->
@@ -3519,6 +3716,17 @@ body.layout-circo .btn-ficha {
         🎪 Circo Digital
       </div>
 
+      <div class="layout-opt" data-layout="manuscrito" onclick="aplicarLayout('manuscrito')">
+        <div class="layout-preview lp-manuscrito">
+          <div class="lp-manu-frame"></div>
+          <div class="lp-manu-name">nome</div>
+          <div class="lp-manu-bar"></div>
+          <div class="lp-manu-bar"></div>
+          <div class="lp-manu-bar"></div>
+        </div>
+        ✎ Manuscrito
+      </div>
+
     </div>
     <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.42rem;color:#334;letter-spacing:1px;line-height:1.8;">
       ▸ CLASSICO/BANNER/COMPACTO: 600px<br>
@@ -3527,6 +3735,7 @@ body.layout-circo .btn-ficha {
       ▸ PRONTUÁRIO: 560px · TARÔ: 300px<br>
       ▸ RADAR: 420px · RPG: 580px<br>
       ▸ CARTEIRINHA: 360px<br>
+      ▸ MANUSCRITO: 600px<br>
       ▸ DESCONJURAÇÃO: 1800×900px (fixo — use esse tamanho exato na Fonte de Navegador do OBS)
     </div>
   </div>
@@ -4064,7 +4273,8 @@ else window.addEventListener('load', tentarIniciar);
     rpg:       'RPG',
     carteirinha: 'Carteirinha',
     desconjuracao: 'Desconjuração',
-    circo: 'Circo Digital'
+    circo: 'Circo Digital',
+    manuscrito: 'Manuscrito'
   };
 
   // ---- Tema ----
@@ -4111,7 +4321,7 @@ else window.addEventListener('load', tentarIniciar);
   };
 
   window.aplicarLayout = function(layout) {
-    ['classico','banner','compacto','vertical','hud','ritual','terminal','ficha','taro','radar','rpg','carteirinha','desconjuracao','circo'].forEach(l => {
+    ['classico','banner','compacto','vertical','hud','ritual','terminal','ficha','taro','radar','rpg','carteirinha','desconjuracao','circo','manuscrito'].forEach(l => {
       document.body.classList.remove('layout-' + l);
     });
     document.body.classList.add('layout-' + layout);
