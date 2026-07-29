@@ -259,6 +259,15 @@
         font-family: 'Share Tech Mono', monospace; font-size: 0.68rem;
         color: var(--tema-primary-light); text-align: right; margin-top: 14px; min-height: 14px;
     }
+    .personalizar-hint {
+        display: block; font-family: 'Share Tech Mono', monospace; font-size: 0.62rem;
+        color: #555; margin-top: 6px; letter-spacing: 0.5px;
+    }
+    #wallpaper-video-custom {
+        display: none; position: fixed; inset: 0;
+        width: 100%; height: 100%; object-fit: cover;
+        z-index: -1; pointer-events: none;
+    }
     body { transition: background 0.4s ease; }
 
         
@@ -1303,6 +1312,8 @@ body { transition: background 0.5s ease; }
 </head>
 <body>
 
+<video id="wallpaper-video-custom" muted loop autoplay playsinline></video>
+
 <!-- Loading -->
 <div id="loading-screen">
     <div class="loading-spinner"></div>
@@ -1320,10 +1331,11 @@ body { transition: background 0.5s ease; }
         <div class="personalizar-campo">
             <label class="personalizar-label" for="input-wallpaper-custom">Wallpaper de fundo</label>
             <label class="personalizar-upload-btn" for="input-wallpaper-custom">
-                📁 Escolher imagem
-                <input type="file" id="input-wallpaper-custom" accept="image/*" onchange="handleWallpaperUpload(event)">
+                📁 Escolher imagem ou vídeo
+                <input type="file" id="input-wallpaper-custom" accept="image/*,video/*" onchange="handleWallpaperUpload(event)">
             </label>
-            <span class="personalizar-nome-arquivo" id="personalizar-nome-arquivo">Nenhuma imagem selecionada</span>
+            <span class="personalizar-nome-arquivo" id="personalizar-nome-arquivo">Nenhum arquivo selecionado</span>
+            <span class="personalizar-hint">Vídeos ficam em loop e sem áudio, cobrindo o fundo da página.</span>
             <br>
             <button class="personalizar-remover" onclick="removerWallpaperCustom()">Remover wallpaper</button>
         </div>
@@ -3567,8 +3579,10 @@ window.fazerLogout = async function() {
            PERSONALIZADO: WALLPAPER + FONTE
         ============================================= */
         var CHAVE_WALLPAPER_CUSTOM = 'ficha_wallpaper_custom';
+        var CHAVE_WALLPAPER_TIPO = 'ficha_wallpaper_tipo'; // 'imagem' | 'video'
         var CHAVE_FONTE_CUSTOM = 'ficha_fonte_custom';
         var CHAVE_COR_TEXTO_CUSTOM = 'ficha_cor_texto_custom';
+        var _wallpaperVideoObjectURL = null; // guarda a object URL ativa p/ poder liberar da memória
 
         function mostrarStatusPersonalizar(msg) {
             var el = document.getElementById('personalizar-status');
@@ -3591,7 +3605,51 @@ window.fazerLogout = async function() {
             if (overlay) overlay.classList.remove('show');
         }
 
-        function aplicarWallpaperCustom(dataUrl) {
+        /* ---- IndexedDB: usado só para vídeo, pois localStorage é pequeno demais ---- */
+        function _abrirWallpaperDB() {
+            return new Promise(function(resolve, reject) {
+                var req = indexedDB.open('fichaWallpaperDB', 1);
+                req.onupgradeneeded = function() { req.result.createObjectStore('wallpaper'); };
+                req.onsuccess = function() { resolve(req.result); };
+                req.onerror = function() { reject(req.error); };
+            });
+        }
+        async function _salvarVideoWallpaperDB(blob) {
+            var db = await _abrirWallpaperDB();
+            return new Promise(function(resolve, reject) {
+                var tx = db.transaction('wallpaper', 'readwrite');
+                tx.objectStore('wallpaper').put(blob, 'video');
+                tx.oncomplete = function() { resolve(); };
+                tx.onerror = function() { reject(tx.error); };
+            });
+        }
+        async function _obterVideoWallpaperDB() {
+            var db = await _abrirWallpaperDB();
+            return new Promise(function(resolve, reject) {
+                var req = db.transaction('wallpaper', 'readonly').objectStore('wallpaper').get('video');
+                req.onsuccess = function() { resolve(req.result || null); };
+                req.onerror = function() { reject(req.error); };
+            });
+        }
+        async function _removerVideoWallpaperDB() {
+            try {
+                var db = await _abrirWallpaperDB();
+                db.transaction('wallpaper', 'readwrite').objectStore('wallpaper').delete('video');
+            } catch (err) { /* ignora */ }
+        }
+
+        function aplicarWallpaperImagem(dataUrl) {
+            var videoEl = document.getElementById('wallpaper-video-custom');
+            if (videoEl) {
+                videoEl.style.display = 'none';
+                videoEl.pause();
+                if (_wallpaperVideoObjectURL) {
+                    URL.revokeObjectURL(_wallpaperVideoObjectURL);
+                    _wallpaperVideoObjectURL = null;
+                }
+                videoEl.removeAttribute('src');
+                videoEl.load();
+            }
             if (dataUrl) {
                 document.body.style.backgroundImage = 'url("' + dataUrl + '")';
                 document.body.style.backgroundSize = 'cover';
@@ -3605,14 +3663,52 @@ window.fazerLogout = async function() {
             }
         }
 
+        function aplicarWallpaperVideo(url) {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundRepeat = '';
+            var videoEl = document.getElementById('wallpaper-video-custom');
+            if (!videoEl) return;
+            if (_wallpaperVideoObjectURL) URL.revokeObjectURL(_wallpaperVideoObjectURL);
+            _wallpaperVideoObjectURL = url;
+            videoEl.src = url;
+            videoEl.style.display = 'block';
+            videoEl.play().catch(function() { /* autoplay pode ser bloqueado até 1ª interação */ });
+        }
+
+        // Mantido por compatibilidade com outros trechos do código que chamam esta função
+        function aplicarWallpaperCustom(dataUrl) {
+            aplicarWallpaperImagem(dataUrl);
+        }
+
         function handleWallpaperUpload(event) {
             var arquivo = event.target.files[0];
             if (!arquivo) return;
+            var nomeEl = document.getElementById('personalizar-nome-arquivo');
+
+            if (arquivo.type.indexOf('video/') === 0) {
+                var objectUrl = URL.createObjectURL(arquivo);
+                aplicarWallpaperVideo(objectUrl);
+                localStorage.removeItem(CHAVE_WALLPAPER_CUSTOM);
+                localStorage.setItem(CHAVE_WALLPAPER_TIPO, 'video');
+                _salvarVideoWallpaperDB(arquivo).then(function() {
+                    if (nomeEl) nomeEl.textContent = arquivo.name;
+                    mostrarStatusPersonalizar('Wallpaper em vídeo salvo');
+                }).catch(function(err) {
+                    console.warn('Não foi possível salvar o vídeo no armazenamento local:', err);
+                    if (nomeEl) nomeEl.textContent = arquivo.name + ' (não salvo — sem espaço)';
+                    mostrarStatusPersonalizar('Aplicado, mas não pôde ser salvo');
+                });
+                return;
+            }
+
             var leitor = new FileReader();
             leitor.onload = function(evento) {
                 var dataUrl = evento.target.result;
-                aplicarWallpaperCustom(dataUrl);
-                var nomeEl = document.getElementById('personalizar-nome-arquivo');
+                aplicarWallpaperImagem(dataUrl);
+                localStorage.removeItem(CHAVE_WALLPAPER_TIPO);
+                _removerVideoWallpaperDB();
                 try {
                     localStorage.setItem(CHAVE_WALLPAPER_CUSTOM, dataUrl);
                     if (nomeEl) nomeEl.textContent = arquivo.name;
@@ -3627,10 +3723,12 @@ window.fazerLogout = async function() {
         }
 
         function removerWallpaperCustom() {
-            aplicarWallpaperCustom(null);
+            aplicarWallpaperImagem(null);
             localStorage.removeItem(CHAVE_WALLPAPER_CUSTOM);
+            localStorage.removeItem(CHAVE_WALLPAPER_TIPO);
+            _removerVideoWallpaperDB();
             var nomeEl = document.getElementById('personalizar-nome-arquivo');
-            if (nomeEl) nomeEl.textContent = 'Nenhuma imagem selecionada';
+            if (nomeEl) nomeEl.textContent = 'Nenhum arquivo selecionado';
             var inputEl = document.getElementById('input-wallpaper-custom');
             if (inputEl) inputEl.value = '';
             mostrarStatusPersonalizar('Wallpaper removido');
@@ -3665,11 +3763,23 @@ window.fazerLogout = async function() {
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            var wallpaperSalvo = localStorage.getItem(CHAVE_WALLPAPER_CUSTOM);
-            if (wallpaperSalvo) {
-                aplicarWallpaperCustom(wallpaperSalvo);
-                var nomeEl = document.getElementById('personalizar-nome-arquivo');
-                if (nomeEl) nomeEl.textContent = 'Wallpaper salvo carregado';
+            var nomeEl = document.getElementById('personalizar-nome-arquivo');
+            var tipoSalvo = localStorage.getItem(CHAVE_WALLPAPER_TIPO);
+            if (tipoSalvo === 'video') {
+                _obterVideoWallpaperDB().then(function(blob) {
+                    if (blob) {
+                        aplicarWallpaperVideo(URL.createObjectURL(blob));
+                        if (nomeEl) nomeEl.textContent = 'Wallpaper em vídeo carregado';
+                    }
+                }).catch(function(err) {
+                    console.warn('Não foi possível carregar o vídeo salvo:', err);
+                });
+            } else {
+                var wallpaperSalvo = localStorage.getItem(CHAVE_WALLPAPER_CUSTOM);
+                if (wallpaperSalvo) {
+                    aplicarWallpaperImagem(wallpaperSalvo);
+                    if (nomeEl) nomeEl.textContent = 'Wallpaper salvo carregado';
+                }
             }
             var fonteSalva = localStorage.getItem(CHAVE_FONTE_CUSTOM);
             if (fonteSalva) {

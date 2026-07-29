@@ -1411,6 +1411,20 @@
     opacity: 0.45;
 }
 
+/* Wallpaper em vídeo personalizado — mesma camada do canvas de partículas,
+   inserido antes dele no DOM para ficar por trás (partículas e conteúdo
+   continuam visíveis por cima, graças ao isolation:isolate das seções). */
+#wallpaper-video-custom {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+    display: none;
+}
+#wallpaper-video-custom.ativo { display: block; }
+
 /* Garante que o conteúdo da página fique acima do canvas sem criar stacking context problemático */
 .custom-nav { isolation: isolate; }
 #secao-inicio, #secao-agentes { isolation: isolate; }
@@ -3389,6 +3403,9 @@ body { transition: background 0.6s ease; }
 
 <body>
 
+<!-- Wallpaper em vídeo personalizado (fica atrás das partículas e do conteúdo) -->
+<video id="wallpaper-video-custom" muted loop autoplay playsinline></video>
+
 <!-- Canvas de partículas paranormais -->
 <canvas id="particle-canvas"></canvas>
 
@@ -3540,12 +3557,12 @@ body { transition: background 0.6s ease; }
                 </div>
 
                 <div class="personalizar-campo">
-                    <label class="personalizar-label" for="input-wallpaper-custom">Wallpaper de fundo</label>
+                    <label class="personalizar-label" for="input-wallpaper-custom">Wallpaper de fundo (imagem ou vídeo)</label>
                     <label class="personalizar-upload-btn" for="input-wallpaper-custom">
-                        📁 Escolher imagem
-                        <input type="file" id="input-wallpaper-custom" accept="image/*" onchange="handleWallpaperUpload(event)">
+                        📁 Escolher imagem ou vídeo
+                        <input type="file" id="input-wallpaper-custom" accept="image/*,video/*" onchange="handleWallpaperUpload(event)">
                     </label>
-                    <span class="personalizar-nome-arquivo" id="personalizar-nome-arquivo">Nenhuma imagem selecionada</span>
+                    <span class="personalizar-nome-arquivo" id="personalizar-nome-arquivo">Nenhum arquivo selecionado</span>
                     <br>
                     <button class="personalizar-remover" onclick="removerWallpaperCustom()">Remover wallpaper</button>
                 </div>
@@ -5798,8 +5815,64 @@ body { transition: background 0.6s ease; }
            PERSONALIZADO: WALLPAPER + FONTE
         ============================================= */
         var CHAVE_WALLPAPER_CUSTOM = 'ficha_wallpaper_custom';
+        var CHAVE_WALLPAPER_TIPO = 'ficha_wallpaper_tipo'; // 'imagem' | 'video'
         var CHAVE_FONTE_CUSTOM = 'ficha_fonte_custom';
         var CHAVE_COR_TEXTO_CUSTOM = 'ficha_cor_texto_custom';
+
+        // Vídeos costumam ser grandes demais para o localStorage, então o
+        // arquivo de vídeo é guardado como Blob no IndexedDB (o localStorage
+        // só marca "há um vídeo salvo" via CHAVE_WALLPAPER_TIPO).
+        var WALLPAPER_DB_NOME = 'FichaWallpaperDB';
+        var WALLPAPER_DB_STORE = 'arquivos';
+        var WALLPAPER_DB_CHAVE = 'wallpaper_video';
+        var wallpaperVideoObjectUrl = null;
+
+        function abrirWallpaperDB() {
+            return new Promise(function(resolve, reject) {
+                if (!window.indexedDB) { reject(new Error('IndexedDB indisponível')); return; }
+                var req = indexedDB.open(WALLPAPER_DB_NOME, 1);
+                req.onupgradeneeded = function() {
+                    if (!req.result.objectStoreNames.contains(WALLPAPER_DB_STORE)) {
+                        req.result.createObjectStore(WALLPAPER_DB_STORE);
+                    }
+                };
+                req.onsuccess = function() { resolve(req.result); };
+                req.onerror = function() { reject(req.error); };
+            });
+        }
+
+        function salvarVideoWallpaperDB(blob) {
+            return abrirWallpaperDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var tx = db.transaction(WALLPAPER_DB_STORE, 'readwrite');
+                    tx.objectStore(WALLPAPER_DB_STORE).put(blob, WALLPAPER_DB_CHAVE);
+                    tx.oncomplete = function() { resolve(); };
+                    tx.onerror = function() { reject(tx.error); };
+                });
+            });
+        }
+
+        function carregarVideoWallpaperDB() {
+            return abrirWallpaperDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var tx = db.transaction(WALLPAPER_DB_STORE, 'readonly');
+                    var req = tx.objectStore(WALLPAPER_DB_STORE).get(WALLPAPER_DB_CHAVE);
+                    req.onsuccess = function() { resolve(req.result || null); };
+                    req.onerror = function() { reject(req.error); };
+                });
+            });
+        }
+
+        function removerVideoWallpaperDB() {
+            return abrirWallpaperDB().then(function(db) {
+                return new Promise(function(resolve, reject) {
+                    var tx = db.transaction(WALLPAPER_DB_STORE, 'readwrite');
+                    tx.objectStore(WALLPAPER_DB_STORE).delete(WALLPAPER_DB_CHAVE);
+                    tx.oncomplete = function() { resolve(); };
+                    tx.onerror = function() { reject(tx.error); };
+                });
+            });
+        }
 
         function mostrarStatusPersonalizar(msg) {
             var el = document.getElementById('personalizar-status');
@@ -5836,14 +5909,64 @@ body { transition: background 0.6s ease; }
             }
         }
 
+        // Aplica (ou remove) o wallpaper em vídeo. Recebe um Blob/File de
+        // vídeo (ou null para desligar) e cuida do <video id="wallpaper-video-custom">.
+        function aplicarWallpaperVideoCustom(blob) {
+            var videoEl = document.getElementById('wallpaper-video-custom');
+            if (!videoEl) return;
+
+            if (wallpaperVideoObjectUrl) {
+                URL.revokeObjectURL(wallpaperVideoObjectUrl);
+                wallpaperVideoObjectUrl = null;
+            }
+
+            if (blob) {
+                wallpaperVideoObjectUrl = URL.createObjectURL(blob);
+                videoEl.src = wallpaperVideoObjectUrl;
+                videoEl.classList.add('ativo');
+                videoEl.play().catch(function() { /* autoplay pode ser bloqueado até interação do usuário */ });
+            } else {
+                videoEl.pause();
+                videoEl.removeAttribute('src');
+                videoEl.load();
+                videoEl.classList.remove('ativo');
+            }
+        }
+
         function handleWallpaperUpload(event) {
             var arquivo = event.target.files[0];
             if (!arquivo) return;
+            var nomeEl = document.getElementById('personalizar-nome-arquivo');
+
+            // ── Vídeo ──
+            if (arquivo.type.indexOf('video/') === 0) {
+                // Desliga um wallpaper de imagem anterior, se houver
+                aplicarWallpaperCustom(null);
+                localStorage.removeItem(CHAVE_WALLPAPER_CUSTOM);
+
+                aplicarWallpaperVideoCustom(arquivo);
+                salvarVideoWallpaperDB(arquivo).then(function() {
+                    localStorage.setItem(CHAVE_WALLPAPER_TIPO, 'video');
+                    if (nomeEl) nomeEl.textContent = arquivo.name + ' (vídeo)';
+                    mostrarStatusPersonalizar('Wallpaper em vídeo salvo');
+                }).catch(function(err) {
+                    console.warn('Não foi possível salvar o vídeo no IndexedDB:', err);
+                    localStorage.removeItem(CHAVE_WALLPAPER_TIPO);
+                    if (nomeEl) nomeEl.textContent = arquivo.name + ' (não salvo — ' + err.message + ')';
+                    mostrarStatusPersonalizar('Aplicado, mas não pôde ser salvo');
+                });
+                return;
+            }
+
+            // ── Imagem (comportamento original) ──
+            aplicarWallpaperVideoCustom(null);
+            removerVideoWallpaperDB().catch(function() {});
+            localStorage.removeItem(CHAVE_WALLPAPER_TIPO);
+
             var leitor = new FileReader();
             leitor.onload = function(evento) {
                 var dataUrl = evento.target.result;
                 aplicarWallpaperCustom(dataUrl);
-                var nomeEl = document.getElementById('personalizar-nome-arquivo');
                 try {
                     localStorage.setItem(CHAVE_WALLPAPER_CUSTOM, dataUrl);
                     if (nomeEl) nomeEl.textContent = arquivo.name;
@@ -5860,8 +5983,11 @@ body { transition: background 0.6s ease; }
         function removerWallpaperCustom() {
             aplicarWallpaperCustom(null);
             localStorage.removeItem(CHAVE_WALLPAPER_CUSTOM);
+            aplicarWallpaperVideoCustom(null);
+            removerVideoWallpaperDB().catch(function() {});
+            localStorage.removeItem(CHAVE_WALLPAPER_TIPO);
             var nomeEl = document.getElementById('personalizar-nome-arquivo');
-            if (nomeEl) nomeEl.textContent = 'Nenhuma imagem selecionada';
+            if (nomeEl) nomeEl.textContent = 'Nenhum arquivo selecionado';
             var inputEl = document.getElementById('input-wallpaper-custom');
             if (inputEl) inputEl.value = '';
             mostrarStatusPersonalizar('Wallpaper removido');
@@ -5895,13 +6021,26 @@ body { transition: background 0.6s ease; }
             mostrarStatusPersonalizar('Cor do texto restaurada');
         }
 
-        // Restaura wallpaper e fonte personalizados ao carregar
+        // Restaura wallpaper (imagem ou vídeo) e fonte personalizados ao carregar
         document.addEventListener('DOMContentLoaded', function() {
-            var wallpaperSalvo = localStorage.getItem(CHAVE_WALLPAPER_CUSTOM);
-            if (wallpaperSalvo) {
-                aplicarWallpaperCustom(wallpaperSalvo);
-                var nomeEl = document.getElementById('personalizar-nome-arquivo');
-                if (nomeEl) nomeEl.textContent = 'Wallpaper salvo carregado';
+            var tipoWallpaperSalvo = localStorage.getItem(CHAVE_WALLPAPER_TIPO);
+            var nomeEl = document.getElementById('personalizar-nome-arquivo');
+
+            if (tipoWallpaperSalvo === 'video') {
+                carregarVideoWallpaperDB().then(function(blob) {
+                    if (blob) {
+                        aplicarWallpaperVideoCustom(blob);
+                        if (nomeEl) nomeEl.textContent = 'Wallpaper em vídeo salvo carregado';
+                    }
+                }).catch(function(err) {
+                    console.warn('Não foi possível carregar o vídeo salvo:', err);
+                });
+            } else {
+                var wallpaperSalvo = localStorage.getItem(CHAVE_WALLPAPER_CUSTOM);
+                if (wallpaperSalvo) {
+                    aplicarWallpaperCustom(wallpaperSalvo);
+                    if (nomeEl) nomeEl.textContent = 'Wallpaper salvo carregado';
+                }
             }
             var fonteSalva = localStorage.getItem(CHAVE_FONTE_CUSTOM);
             if (fonteSalva) {
