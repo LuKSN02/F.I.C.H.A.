@@ -643,140 +643,567 @@
         .status-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
         .status-dot.offline { background: #444; }
 
-        /* ===== PAINEL DE PERFIL ESTILO DISCORD ===== */
-        #perfil-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
-            z-index: 9998; align-items: center; justify-content: center;
-            padding: 16px;
-        }
-        #perfil-overlay.show { display: flex; }
-        .perfil-card {
-            background: #111115;
-            border-radius: 10px;
-            width: min(360px, 95vw);
-            overflow: hidden; box-shadow: 0 24px 70px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.06);
-            position: relative; font-family: 'Oswald', sans-serif;
-            --perfil-accent: var(--tema-primary);
-            --perfil-accent-glow: var(--tema-glow-rgb);
-        }
-        .perfil-banner {
-            width: 100%; height: 150px;
-            background: linear-gradient(135deg, var(--tema-primary-dark), #000);
-            background-size: cover; background-position: center;
-            position: relative; cursor: pointer; transition: filter 0.2s;
-            overflow: hidden;
-        }
-        .perfil-banner:hover .perfil-banner-edit { opacity: 1; }
-        .perfil-banner-edit {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.5);
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: 0.2s; font-size: 0.7rem; letter-spacing: 2px;
-            color: #ccc; font-family: 'Share Tech Mono', monospace;
-            z-index: 1;
-        }
-        .banner-img-animado {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%; object-fit: cover; z-index: 0;
-        }
-        .perfil-avatar-wrap { position: absolute; top: 105px; left: 18px; cursor: pointer; z-index: 10; }
-        .perfil-avatar {
-            width: 90px; height: 90px; border-radius: 50%; border: 5px solid #111115;
-            background: #222; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.9rem; font-weight: 700; color: var(--tema-primary-light);
-            position: relative; transition: filter 0.2s;
-        }
-        .perfil-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .perfil-avatar-edit {
-            position: absolute; inset: 0; border-radius: 50%;
-            background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: 0.2s; font-size: 1.2rem;
-        }
-        .perfil-avatar-wrap:hover .perfil-avatar-edit { opacity: 1; }
-        .perfil-avatar-wrap.borda-ativa .perfil-avatar {
-            border-color: var(--perfil-borda, var(--tema-primary));
-            box-shadow: 0 0 12px var(--perfil-borda, var(--tema-primary));
-        }
-        .perfil-top-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; z-index: 2; }
-        .perfil-top-btn {
-            background: rgba(0,0,0,0.65); border: 1px solid rgba(255,255,255,0.12);
-            color: #aaa; font-size: 0.68rem; padding: 5px 12px;
-            border-radius: 5px; cursor: pointer; transition: 0.2s;
-            font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px;
-            backdrop-filter: blur(4px);
-        }
-        .perfil-top-btn:hover { background: rgba(0,0,0,0.9); color: white; border-color: #555; }
-        .perfil-top-btn.danger:hover { border-color: #aa2222; color: #ff6666; }
-        .perfil-body { padding: 58px 18px 18px; }
-        .perfil-username { font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 1px; }
-        .perfil-handle { font-size: 0.72rem; color: #555; margin-bottom: 6px; font-family: 'Share Tech Mono', monospace; }
-        .perfil-status {
-            background: rgba(255,255,255,0.04); border-radius: 6px; padding: 8px 12px;
-            font-size: 0.82rem; color: #aaa; margin-bottom: 12px;
-            border-left: 3px solid var(--tema-primary); min-height: 34px;
-            cursor: pointer; transition: border-color 0.2s, background 0.2s; font-style: italic;
-        }
-        .perfil-status:hover { border-left-color: var(--tema-primary-light); color: #ccc; background: rgba(255,255,255,0.06); }
-        .perfil-status.vazio { color: #444; font-style: italic; }
-        .perfil-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 12px 0; }
-        .perfil-bio-label {
-            font-size: 0.58rem; letter-spacing: 2.5px; text-transform: uppercase;
-            color: var(--tema-primary); margin-bottom: 6px; font-family: 'Share Tech Mono', monospace;
-            opacity: 0.8;
-        }
-        .perfil-bio { font-size: 0.82rem; color: #999; line-height: 1.55; cursor: pointer; min-height: 20px; transition: color 0.2s; }
-        .perfil-bio:hover { color: #ccc; }
-        .perfil-bio.vazio { color: #333; font-style: italic; }
-        .perfil-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-        .perfil-badge {
-            display: flex; align-items: center; gap: 5px; padding: 4px 10px;
-            border-radius: 20px; font-size: 0.68rem; font-weight: 700;
-            letter-spacing: 1px; text-transform: uppercase; transition: transform 0.15s; cursor: default;
-        }
-        .perfil-badge:hover { transform: scale(1.06); }
-        .badge-mestre  { background: rgba(200,150,12,0.15); border: 1px solid #c8960c; color: #f5c842; }
-        .badge-novato  { background: rgba(80,80,100,0.2);   border: 1px solid #555;    color: #888; }
-        .badge-membro  { background: rgba(58,123,213,0.15); border: 1px solid #3a7bd5; color: #7ab3f5; }
-        .perfil-pronomes { font-size: 0.72rem; color: #555; margin-top: 4px; font-family: 'Share Tech Mono', monospace; }
-        .perfil-membro-desde { font-size: 0.65rem; color: #444; margin-top: 8px; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
-        .perfil-cor-row { display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
-        .perfil-cor-label { font-size: 0.55rem; letter-spacing: 2px; color: #555; text-transform: uppercase; font-family: 'Share Tech Mono', monospace; margin-right: 4px; }
-        .cor-btn { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.15s; flex-shrink: 0; }
-        .cor-btn:hover, .cor-btn.ativa { border-color: white; transform: scale(1.25); }
-        .perfil-edit-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.82);
-            backdrop-filter: blur(8px);
-            z-index: 10000; align-items: center; justify-content: center;
-            padding: 16px;
-        }
-        .perfil-edit-overlay.show { display: flex; }
-        .perfil-edit-box {
-            background: #0d0d0d; border: 1px solid var(--tema-primary-dark);
-            border-radius: 12px; padding: 24px; width: min(380px, 94vw);
-            box-shadow: 0 0 40px rgba(var(--tema-glow-rgb),0.3);
-        }
-        .perfil-edit-title { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: #666; margin-bottom: 14px; font-family: 'Share Tech Mono', monospace; }
-        .perfil-edit-input, .perfil-edit-textarea {
-            width: 100%; background: #1a1a1f; border: 1px solid #333; color: white;
-            font-family: 'Oswald', sans-serif; font-size: 0.95rem;
-            padding: 9px 12px; border-radius: 6px; outline: none;
-            transition: border-color 0.2s; resize: vertical;
-        }
-        .perfil-edit-input:focus, .perfil-edit-textarea:focus { border-color: var(--tema-primary); }
-        .perfil-edit-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
-        .perfil-edit-btn-ok {
-            background: var(--tema-primary-dark); border: 1px solid var(--tema-primary);
-            color: white; font-family: 'Oswald', sans-serif; font-size: 0.85rem;
-            font-weight: 700; padding: 7px 18px; border-radius: 5px; cursor: pointer; transition: 0.2s;
-        }
-        .perfil-edit-btn-ok:hover { background: var(--tema-primary); }
-        .perfil-edit-btn-cancel {
-            background: transparent; border: 1px solid #333; color: #555;
-            font-family: 'Oswald', sans-serif; font-size: 0.85rem;
-            padding: 7px 18px; border-radius: 5px; cursor: pointer; transition: 0.2s;
-        }
-        .perfil-edit-btn-cancel:hover { border-color: #666; color: #888; }
+    /* ===== PAINEL DE PERFIL — GLASSMORPHISM ===== */
+    #perfil-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+        z-index: 9998; align-items: center; justify-content: center;
+        padding: 16px;
+    }
+    #perfil-overlay.show { display: flex; }
+
+    /* ===== CARD ===== */
+    .perfil-card {
+        background: rgba(18,14,24,0.72);
+        backdrop-filter: blur(22px) saturate(140%);
+        -webkit-backdrop-filter: blur(22px) saturate(140%);
+        border-radius: 20px;
+        width: min(380px, 95vw);
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(var(--tema-glow-rgb, 155,48,217), 0.25);
+        position: relative;
+        font-family: 'Oswald', sans-serif;
+        /* Accent color propagada via CSS var */
+        --perfil-accent: var(--tema-primary);
+        --perfil-accent-glow: var(--tema-glow-rgb);
+    }
+
+    /* Banner */
+    .perfil-banner {
+        width: 100%; height: 160px;
+        background:
+            linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(10,6,16,0.9) 100%),
+            linear-gradient(135deg, var(--tema-primary-dark) 0%, #000 100%);
+        background-size: cover; background-position: center;
+        position: relative; cursor: pointer;
+        transition: filter 0.2s;
+        overflow: hidden;
+    }
+    .perfil-banner:hover .perfil-banner-edit { opacity: 1; }
+    .perfil-banner-edit {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: 0.2s;
+        font-size: 0.7rem; letter-spacing: 2px; color: #e6dcf5;
+        font-family: 'Share Tech Mono', monospace;
+        z-index: 1;
+    }
+    .banner-img-animado {
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
+        object-fit: cover; z-index: 0;
+    }
+
+    /* Avatar sobreposto ao banner */
+    .perfil-avatar-wrap {
+        position: absolute;
+        top: 108px; left: 20px;
+        cursor: pointer; z-index: 10;
+    }
+    /* Anel decorativo externo */
+    .perfil-avatar-wrap::before {
+        content: '';
+        position: absolute; inset: -4px;
+        border-radius: 50%;
+        background: var(--perfil-accent, var(--tema-primary));
+        opacity: 0;
+        transition: opacity 0.25s;
+        z-index: -1;
+    }
+    .perfil-avatar-wrap.borda-ativa::before { opacity: 1; }
+
+    .perfil-avatar {
+        width: 92px; height: 92px; border-radius: 50%;
+        border: 4px solid #140e18;
+        background: linear-gradient(135deg, var(--tema-primary-dark), #150a1e);
+        overflow: hidden;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.9rem; font-weight: 700;
+        color: var(--tema-primary-light);
+        position: relative; transition: filter 0.2s;
+        box-shadow: 0 0 22px rgba(var(--perfil-accent-glow, var(--tema-glow-rgb)), 0.4);
+    }
+    .perfil-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .perfil-avatar-edit {
+        position: absolute; inset: 0; border-radius: 50%;
+        background: rgba(0,0,0,0.55);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: 0.2s;
+        font-size: 1.4rem;
+    }
+    .perfil-avatar-wrap:hover .perfil-avatar-edit { opacity: 1; }
+
+    /* Borda colorida do avatar — usa glow + anel externo */
+    .perfil-avatar-wrap.borda-ativa .perfil-avatar {
+        border-color: var(--perfil-borda, var(--tema-primary));
+        box-shadow: 0 0 18px var(--perfil-borda, var(--tema-primary)), 0 0 6px var(--perfil-borda, var(--tema-primary));
+    }
+
+    /* Badge de status online */
+    .perfil-status-dot {
+        position: absolute;
+        bottom: 4px; right: 4px;
+        width: 16px; height: 16px; border-radius: 50%;
+        background: #39d98a;
+        border: 3px solid #140e18;
+        z-index: 11;
+    }
+
+    /* Barra de ações — pills de vidro ancoradas no banner */
+    .perfil-top-actions {
+        position: absolute; top: 12px; right: 12px;
+        display: flex; gap: 8px; z-index: 2;
+    }
+    .perfil-top-btn {
+        display: flex; align-items: center; gap: 5px;
+        background: rgba(10,6,16,0.55); border: 1px solid rgba(255,255,255,0.14);
+        color: #d8d0e0; font-size: 0.7rem; padding: 7px 13px;
+        border-radius: 999px; cursor: pointer; transition: 0.2s;
+        font-family: 'Oswald', sans-serif; font-weight: 600; letter-spacing: 0.5px;
+        backdrop-filter: blur(8px);
+    }
+    .perfil-top-btn:hover { background: rgba(0,0,0,0.85); color: white; border-color: rgba(255,255,255,0.3); transform: translateY(-1px); }
+    .perfil-top-btn.danger:hover { border-color: rgba(255,90,90,0.5); color: #ff8a8a; background: rgba(60,10,10,0.4); }
+    /* Botão principal (Editar Perfil) com destaque na cor do tema */
+    .perfil-top-btn.primary {
+        background: linear-gradient(135deg, var(--perfil-accent, var(--tema-primary)) 0%, var(--tema-primary-dark) 100%);
+        border-color: rgba(var(--perfil-accent-glow, var(--tema-glow-rgb)), 0.6);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(var(--perfil-accent-glow, var(--tema-glow-rgb)), 0.35);
+    }
+    .perfil-top-btn.primary:hover { filter: brightness(1.15); color: #fff; }
+
+    /* Body do card */
+    .perfil-body { padding: 54px 20px 20px; }
+
+    /* Faixa de destaque no topo do body */
+    .perfil-body::before {
+        content: '';
+        position: absolute;
+        top: 160px; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--perfil-accent, var(--tema-primary)) 0%, transparent 80%);
+        opacity: 0.7;
+    }
+
+    .perfil-username {
+        font-family: 'Syne', 'Oswald', sans-serif;
+        font-size: 1.3rem; font-weight: 800; color: #f5f1fa; margin-bottom: 2px;
+        letter-spacing: 0.2px;
+    }
+    .perfil-handle {
+        font-size: 0.74rem; color: #9d93ac; margin-bottom: 8px;
+        font-family: 'Share Tech Mono', monospace;
+    }
+    .perfil-pronomes {
+        display: inline-block;
+        font-size: 0.66rem; color: #c9c2d4; margin-bottom: 10px;
+        font-family: 'Share Tech Mono', monospace;
+        background: rgba(255,255,255,0.05);
+        padding: 3px 10px; border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.08);
+        cursor: pointer;
+    }
+    .perfil-pronomes:empty { display: none; }
+
+    /* Status/recado */
+    .perfil-status {
+        background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 13px;
+        font-size: 0.83rem; color: #c9c2d4; margin-bottom: 14px;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-left: 3px solid var(--perfil-accent, var(--tema-primary));
+        min-height: 34px; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+        font-style: italic;
+    }
+    .perfil-status:hover { border-left-color: var(--tema-primary-light); color: #e8e3ef; background: rgba(255,255,255,0.07); }
+    .perfil-status.vazio { color: #6b6478; font-style: italic; }
+
+    /* Divisor sutil em degradê */
+    .perfil-divider {
+        border: none; height: 1px; margin: 16px 0;
+        background: linear-gradient(90deg, rgba(var(--perfil-accent-glow, var(--tema-glow-rgb)), 0.35), transparent 75%);
+    }
+
+    /* Labels de seção */
+    .perfil-bio-label {
+        font-size: 0.62rem; letter-spacing: 2.4px; text-transform: uppercase;
+        color: var(--tema-primary-light); margin-bottom: 8px;
+        font-family: 'Share Tech Mono', monospace;
+        opacity: 0.9;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .perfil-bio-label::before {
+        content: ''; width: 3px; height: 11px; border-radius: 2px;
+        background: var(--tema-primary-light); display: inline-block; flex-shrink: 0;
+    }
+
+    /* Bio */
+    .perfil-bio {
+        font-size: 0.86rem; color: #c9c2d4; line-height: 1.6;
+        cursor: pointer; min-height: 20px; transition: color 0.2s, background 0.2s;
+        background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px; padding: 12px 14px;
+    }
+    .perfil-bio:hover { color: #f0ecf5; background: rgba(255,255,255,0.065); }
+    .perfil-bio.vazio { color: #6b6478; font-style: italic; background: transparent; border-style: dashed; }
+
+    /* Faixa de metadados: Membro desde + Atividade lado a lado
+       (auto-fit faz o bloco ocupar 100% quando só há 1 item visível) */
+    .perfil-meta-strip {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;
+        margin-top: 10px;
+    }
+    .perfil-meta-strip .perfil-membro-section,
+    .perfil-meta-strip .perfil-atividade { margin-top: 0; }
+
+    /* Seção "Membro desde" */
+    .perfil-membro-section {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(255,255,255,0.045);
+        border-radius: 12px; padding: 10px 12px;
+        margin-top: 10px;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    .perfil-membro-icon {
+        width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.95rem; opacity: 0.95;
+        background: rgba(var(--perfil-accent-glow, var(--tema-glow-rgb)), 0.16);
+        color: var(--tema-primary-light);
+    }
+    .perfil-membro-info { flex: 1; min-width: 0; }
+    .perfil-membro-label {
+        font-size: 0.56rem; letter-spacing: 1.6px; text-transform: uppercase;
+        color: #9d93ac; font-family: 'Share Tech Mono', monospace;
+        margin-bottom: 2px;
+    }
+    .perfil-membro-desde {
+        font-size: 0.78rem; color: #f0ecf5;
+        font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* Atividade recente */
+    .perfil-atividade {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(255,255,255,0.045);
+        border-radius: 12px; padding: 10px 12px;
+        margin-top: 6px;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    .perfil-atividade-icone {
+        width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.95rem;
+        background: rgba(var(--perfil-accent-glow, var(--tema-glow-rgb)), 0.16);
+        color: var(--tema-primary-light);
+    }
+    .perfil-atividade-info { flex: 1; min-width: 0; }
+    .perfil-atividade-label {
+        font-size: 0.56rem; letter-spacing: 1.6px; text-transform: uppercase;
+        color: #9d93ac; font-family: 'Share Tech Mono', monospace;
+        margin-bottom: 2px;
+    }
+    .perfil-atividade-texto { font-size: 0.78rem; color: #c9c2d4; }
+
+    /* Badges (Cargos) */
+    .perfil-badges { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
+    .perfil-badge {
+        display: flex; align-items: center; gap: 5px;
+        padding: 5px 12px; border-radius: 999px;
+        font-size: 0.68rem; font-weight: 700; letter-spacing: 1px;
+        text-transform: uppercase; transition: transform 0.15s;
+        cursor: default;
+    }
+    .perfil-badge:hover { transform: scale(1.06); }
+    .badge-mestre  { background: rgba(200,150,12,0.15); border: 1px solid #c8960c; color: #f5c842; }
+    .badge-novato  { background: rgba(80,80,100,0.15);  border: 1px solid #444;    color: #999; }
+    .badge-membro  { background: rgba(58,123,213,0.15); border: 1px solid #3a7bd5; color: #7ab3f5; }
+    .badge-veterano { background: rgba(155,48,217,0.15); border: 1px solid #9b30d9; color: #d070ff; }
+
+    /* Badge especial — Criador do site */
+    @keyframes badgeCriadorShine {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    .badge-criador {
+        background: linear-gradient(120deg, #9b30d9, #2ee6d6, #9b30d9);
+        background-size: 220% 220%;
+        animation: badgeCriadorShine 4s ease infinite;
+        border: 1px solid rgba(255,255,255,0.35);
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+        box-shadow: 0 0 14px rgba(155,48,217,0.5);
+    }
+
+    /* Cor de destaque (borda do avatar) */
+    .perfil-cor-row {
+        display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap;
+    }
+    .perfil-cor-label {
+        font-size: 0.56rem; letter-spacing: 1.6px; color: #9d93ac;
+        text-transform: uppercase; font-family: 'Share Tech Mono', monospace;
+        margin-right: 4px;
+    }
+    .cor-btn {
+        width: 21px; height: 21px; border-radius: 50%; cursor: pointer;
+        border: 2px solid rgba(255,255,255,0.12); transition: 0.15s; flex-shrink: 0;
+        position: relative;
+    }
+    .cor-btn:hover { transform: scale(1.18); }
+    .cor-btn.ativa { border-color: white; transform: scale(1.22); box-shadow: 0 0 0 3px rgba(255,255,255,0.12); }
+
+    /* ===== MODAL DE EDIÇÃO DE PERFIL — GLASSMORPHISM ===== */
+    @keyframes perfilEditOverlayIn {
+        from { opacity: 0; backdrop-filter: blur(0px); background: rgba(0,0,0,0); }
+        to   { opacity: 1; backdrop-filter: blur(8px); background: rgba(0,0,0,0.78); }
+    }
+    @keyframes perfilEditOverlayOut {
+        from { opacity: 1; backdrop-filter: blur(8px); background: rgba(0,0,0,0.78); }
+        to   { opacity: 0; backdrop-filter: blur(0px); background: rgba(0,0,0,0); }
+    }
+    .perfil-edit-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.78);
+        backdrop-filter: blur(8px);
+        z-index: 10000; align-items: center; justify-content: center;
+        padding: 16px;
+    }
+    .perfil-edit-overlay.show {
+        display: flex;
+        animation: perfilEditOverlayIn 0.22s ease both;
+    }
+    .perfil-edit-overlay.closing {
+        display: flex;
+        animation: perfilEditOverlayOut 0.18s ease both;
+    }
+
+    @keyframes perfilEditIn {
+        from { opacity: 0; transform: translateY(18px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes perfilEditOut {
+        from { opacity: 1; transform: translateY(0) scale(1); }
+        to   { opacity: 0; transform: translateY(14px) scale(0.96); }
+    }
+    .perfil-edit-box {
+        background: rgba(18,14,24,0.78);
+        backdrop-filter: blur(24px) saturate(140%);
+        -webkit-backdrop-filter: blur(24px) saturate(140%);
+        border: 1px solid rgba(var(--tema-glow-rgb), 0.25);
+        border-radius: 20px; padding: 0;
+        width: min(460px, 100%);
+        max-height: 90vh;
+        box-shadow: 0 0 60px rgba(var(--tema-glow-rgb),0.18), 0 30px 80px rgba(0,0,0,0.7);
+        animation: perfilEditIn 0.28s cubic-bezier(.22,1,.36,1) both;
+        position: relative;
+        display: flex; flex-direction: column;
+    }
+    .perfil-edit-overlay.closing .perfil-edit-box {
+        animation: perfilEditOut 0.18s cubic-bezier(.4,0,1,1) both;
+    }
+
+    /* Preview do perfil no topo do modal */
+    .perfil-edit-preview {
+        position: relative; height: 96px; overflow: hidden;
+        border-radius: 20px 20px 0 0; flex-shrink: 0;
+        background:
+            linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(10,6,16,0.85) 100%),
+            linear-gradient(135deg, var(--tema-primary-dark) 0%, #000 100%);
+        background-size: cover; background-position: center;
+    }
+    .perfil-edit-preview-banner { position: absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    .perfil-edit-preview-avatar {
+        position: absolute; bottom: -24px; left: 20px;
+        width: 58px; height: 58px; border-radius: 50%;
+        border: 4px solid rgba(18,14,24,0.95);
+        background: linear-gradient(135deg, var(--tema-primary-dark), #150a1e); overflow: hidden;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.25rem; font-weight: 700;
+        color: var(--tema-primary-light);
+        box-shadow: 0 0 18px rgba(var(--tema-glow-rgb), 0.4);
+    }
+    .perfil-edit-preview-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Header com nome */
+    .perfil-edit-header {
+        padding: 34px 22px 0 22px;
+        position: relative; flex-shrink: 0;
+    }
+    .perfil-edit-title {
+        font-family: 'Syne', 'Oswald', sans-serif;
+        font-size: 1.1rem; font-weight: 800; letter-spacing: 0.2px;
+        color: #f5f1fa;
+    }
+
+    /* Abas — pill segmentado (mais moderno que underline solto) */
+    .perfil-edit-abas {
+        display: flex; gap: 4px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 999px;
+        padding: 4px;
+        margin: 16px 0 0 0; flex-shrink: 0;
+        overflow-x: auto;
+    }
+    .perfil-edit-aba {
+        padding: 8px 16px; font-size: 0.68rem; font-weight: 700;
+        letter-spacing: 1.2px; text-transform: uppercase; cursor: pointer;
+        color: #9d93ac; border-radius: 999px;
+        font-family: 'Oswald', sans-serif;
+        transition: color 0.15s, background 0.15s;
+        white-space: nowrap; user-select: none; text-align: center; flex: 1;
+    }
+    .perfil-edit-aba:hover { color: #d8d0e0; }
+    .perfil-edit-aba.ativa {
+        color: #fff;
+        background: linear-gradient(135deg, var(--tema-primary) 0%, var(--tema-primary-dark) 100%);
+        box-shadow: 0 2px 10px rgba(var(--tema-glow-rgb), 0.35);
+    }
+
+    /* Conteúdo das abas */
+    .perfil-edit-body { padding: 20px 22px; overflow-y: auto; flex: 1; }
+    .perfil-edit-painel { display: none; }
+    .perfil-edit-painel.ativo { display: block; }
+
+    .perfil-edit-field { margin-bottom: 18px; }
+    .perfil-edit-field:last-child { margin-bottom: 0; }
+    .perfil-edit-label {
+        font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase;
+        color: var(--tema-primary-light); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+        font-family: 'Share Tech Mono', monospace;
+        opacity: 0.9;
+    }
+    .perfil-edit-input, .perfil-edit-textarea {
+        width: 100%; background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.09);
+        color: #f5f1fa; font-family: 'Oswald', sans-serif; font-size: 0.95rem;
+        padding: 11px 14px; border-radius: 12px; outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; resize: vertical;
+        box-sizing: border-box;
+    }
+    .perfil-edit-input::placeholder, .perfil-edit-textarea::placeholder { color: #6b6478; }
+    .perfil-edit-input:focus, .perfil-edit-textarea:focus {
+        border-color: var(--tema-primary);
+        background: rgba(255,255,255,0.065);
+        box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb), 0.18);
+    }
+    .perfil-edit-textarea { min-height: 90px; line-height: 1.55; }
+    .perfil-edit-counter {
+        font-size: 0.62rem; color: #6b6478; text-align: right; margin-top: 5px;
+        font-family: 'Share Tech Mono', monospace; letter-spacing: 1px;
+    }
+
+    /* Seletor de cor de destaque */
+    .perfil-edit-cor-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .perfil-edit-cor-btn {
+        width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+        border: 2px solid rgba(255,255,255,0.14); transition: 0.2s; flex-shrink: 0;
+        position: relative;
+    }
+    .perfil-edit-cor-btn:hover { transform: scale(1.15); }
+    .perfil-edit-cor-btn.ativa {
+        border-color: white;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.14), 0 0 12px currentColor;
+    }
+    .perfil-edit-cor-btn.ativa::after {
+        content: '✓'; position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; color: #fff; text-shadow: 0 0 4px rgba(0,0,0,0.9);
+    }
+
+    /* Painel Aparência — tema de cor do card inteiro */
+    .perfil-edit-tema-label {
+        font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase;
+        color: var(--tema-primary-light); margin-bottom: 10px;
+        font-family: 'Share Tech Mono', monospace;
+        opacity: 0.9;
+    }
+    .perfil-edit-tema-row {
+        display: flex; gap: 9px; flex-wrap: wrap; margin-bottom: 6px;
+    }
+    .perfil-edit-tema-btn {
+        width: 36px; height: 36px; border-radius: 11px; cursor: pointer;
+        border: 2px solid rgba(255,255,255,0.14); transition: 0.2s; flex-shrink: 0;
+        position: relative;
+    }
+    .perfil-edit-tema-btn:hover { transform: scale(1.1); }
+    .perfil-edit-tema-btn.ativa {
+        border-color: white;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.14), 0 0 10px currentColor;
+    }
+    .perfil-edit-tema-btn.ativa::after {
+        content: '✓'; position: absolute; inset: 0; border-radius: 9px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.72rem; color: #fff; text-shadow: 0 0 4px rgba(0,0,0,0.9);
+    }
+
+    /* Painel Conta — info somente leitura */
+    .perfil-edit-conta-info {
+        background: rgba(255,255,255,0.045);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px; padding: 14px 16px;
+        margin-bottom: 14px;
+    }
+    .perfil-edit-conta-linha {
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 0.8rem; padding: 7px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .perfil-edit-conta-linha:last-child { border-bottom: none; }
+    .perfil-edit-conta-chave { color: #9d93ac; font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; }
+    .perfil-edit-conta-valor { color: #f0ecf5; font-family: 'Oswald', sans-serif; }
+
+    /* Danger zone */
+    .perfil-edit-danger-btn {
+        width: 100%; padding: 11px; border-radius: 999px;
+        background: rgba(180,0,0,0.12); border: 1px solid rgba(220,60,60,0.3);
+        color: #ff8a8a; font-family: 'Oswald', sans-serif; font-size: 0.8rem;
+        letter-spacing: 1px; cursor: pointer; transition: 0.2s; font-weight: 700;
+    }
+    .perfil-edit-danger-btn:hover { background: rgba(200,0,0,0.22); border-color: rgba(255,90,90,0.5); }
+
+    .perfil-edit-footer {
+        display: flex; gap: 10px; justify-content: flex-end;
+        padding: 16px 22px 20px;
+        border-top: 1px solid rgba(255,255,255,0.07);
+        flex-shrink: 0;
+    }
+    .perfil-edit-btn-ok {
+        background: linear-gradient(135deg, var(--tema-primary) 0%, var(--tema-primary-dark) 100%);
+        border: 1px solid rgba(var(--tema-glow-rgb), 0.6);
+        color: white; font-family: 'Oswald', sans-serif; font-size: 0.85rem;
+        font-weight: 700; letter-spacing: 1px; padding: 10px 24px; border-radius: 999px; cursor: pointer; transition: 0.2s;
+        position: relative; overflow: hidden;
+        box-shadow: 0 4px 16px rgba(var(--tema-glow-rgb), 0.35);
+    }
+    .perfil-edit-btn-ok::before {
+        content: ''; position: absolute; inset: 0;
+        background: rgba(255,255,255,0.15); transform: scaleX(0); transform-origin: left;
+        transition: transform 0.2s ease;
+    }
+    .perfil-edit-btn-ok:hover::before { transform: scaleX(1); }
+    .perfil-edit-btn-ok:hover { box-shadow: 0 0 20px rgba(var(--tema-glow-rgb),0.55); filter: brightness(1.08); }
+    .perfil-edit-btn-cancel {
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #c9c2d4;
+        font-family: 'Oswald', sans-serif; font-size: 0.85rem; letter-spacing: 1px;
+        padding: 10px 22px; border-radius: 999px; cursor: pointer; transition: 0.2s;
+    }
+    .perfil-edit-btn-cancel:hover { border-color: rgba(255,255,255,0.25); color: #f0ecf5; background: rgba(255,255,255,0.07); }
+
+    /* Botão "Editar Perfil" no card */
+    .btn-editar-perfil {
+        background: transparent; border: 1px solid rgba(var(--tema-glow-rgb), 0.35);
+        color: var(--tema-primary-light); font-size: 0.7rem;
+        font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px;
+        padding: 5px 14px; border-radius: 5px; cursor: pointer; transition: 0.2s;
+        text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-editar-perfil:hover {
+        background: rgba(var(--tema-glow-rgb), 0.15);
+        border-color: var(--tema-primary-light);
+        box-shadow: 0 0 10px rgba(var(--tema-glow-rgb),0.3);
+        color: #fff;
+    }
 
         /* Crop avatar */
         .crop-overlay {
@@ -1759,31 +2186,68 @@ let unsubListeners = [];
 let agentesSelecionados = new Set();
 
 // ══ AUTH — usa o mesmo login do index.html ══
+
+// Trava de segurança: se o Firebase Auth não responder em 10s (rede offline,
+// bloqueio de extensão, servidor de login fora do ar etc.), mostra um erro
+// em vez de deixar a tela de carregamento travada pra sempre.
+let _authResolveu = false;
+setTimeout(() => {
+    if (_authResolveu) return;
+    const ls = document.getElementById('loading-screen');
+    if (ls) {
+        ls.innerHTML = `
+            <div style="font-size:0.8rem;letter-spacing:2px;color:#ff6666;font-family:'Share Tech Mono',monospace;text-align:center;max-width:320px;padding:0 16px;">
+                ⚠ FALHA AO CONECTAR AO FIREBASE<br><br>
+                <span style="color:var(--text-dim,#888);font-size:0.7rem;">
+                    Verifique sua conexão com a internet, se algum bloqueador de anúncios/extensão
+                    está bloqueando *.googleapis.com / *.gstatic.com, e recarregue a página.
+                </span><br><br>
+                <button onclick="location.reload()" style="cursor:pointer;padding:8px 16px;background:transparent;border:1px solid #ff6666;color:#ff6666;border-radius:6px;font-family:inherit;letter-spacing:2px;">RECARREGAR</button>
+            </div>`;
+    }
+    console.error('[AUTH] onAuthStateChanged não respondeu em 10s — provável falha de rede/CDN do Firebase.');
+}, 10000);
+
 onAuthStateChanged(auth, async user => {
-    if (user) {
-        currentUser = user;
+    _authResolveu = true;
+    try {
+        if (user) {
+            currentUser = user;
 
-        // Salva o UID no localStorage (necessário para campanhas/badges cross-page)
-        localStorage.setItem('ficha_uid', user.uid);
-        localStorage.setItem('ficha_uid_firebase', user.uid);
-        // Usuário logado fica APENAS no sessionStorage — nunca no localStorage
-        const nomeUsuario = user.displayName || user.email.replace('@ficha.local', '');
-        sessionStorage.setItem('ficha_user', nomeUsuario);
-        localStorage.removeItem('ficha_user_ativo'); // limpa resíduo de versões antigas
-        document.getElementById('status-dot').className = 'status-dot online';
-        document.getElementById('status-txt').textContent = nomeUsuario;
-        atualizarAvatar();
+            // Salva o UID no localStorage (necessário para campanhas/badges cross-page)
+            localStorage.setItem('ficha_uid', user.uid);
+            localStorage.setItem('ficha_uid_firebase', user.uid);
+            // Usuário logado fica APENAS no sessionStorage — nunca no localStorage
+            const nomeUsuario = user.displayName || user.email.replace('@ficha.local', '');
+            sessionStorage.setItem('ficha_user', nomeUsuario);
+            localStorage.removeItem('ficha_user_ativo'); // limpa resíduo de versões antigas
+            document.getElementById('status-dot').className = 'status-dot online';
+            document.getElementById('status-txt').textContent = nomeUsuario;
+            atualizarAvatar();
 
-        // Checa se veio de link de convite
-        const params = new URLSearchParams(window.location.search);
-        const conviteId = params.get('convite');
-        if (conviteId) await processarConvite(conviteId);
+            // Checa se veio de link de convite
+            const params = new URLSearchParams(window.location.search);
+            const conviteId = params.get('convite');
+            if (conviteId) await processarConvite(conviteId);
 
-        await carregarCampanhas();
-        document.getElementById('loading-screen').style.display = 'none';
-    } else {
-        // Não está logado — redireciona para o index
-        window.location.href = 'index.html';
+            await carregarCampanhas();
+            document.getElementById('loading-screen').style.display = 'none';
+        } else {
+            // Não está logado — redireciona para o index
+            window.location.href = 'index.html';
+        }
+    } catch (err) {
+        // Se qualquer etapa acima falhar, não deixa a tela travada em silêncio
+        console.error('[AUTH] Erro ao inicializar a página:', err);
+        const ls = document.getElementById('loading-screen');
+        if (ls) {
+            ls.innerHTML = `
+                <div style="font-size:0.8rem;letter-spacing:2px;color:#ff6666;font-family:'Share Tech Mono',monospace;text-align:center;max-width:320px;padding:0 16px;">
+                    ⚠ ERRO AO CARREGAR CAMPANHAS<br><br>
+                    <span style="color:var(--text-dim,#888);font-size:0.7rem;">${(err && err.message) ? err.message : err}</span><br><br>
+                    <button onclick="location.reload()" style="cursor:pointer;padding:8px 16px;background:transparent;border:1px solid #ff6666;color:#ff6666;border-radius:6px;font-family:inherit;letter-spacing:2px;">RECARREGAR</button>
+                </div>`;
+        }
     }
 });
 
@@ -3062,22 +3526,32 @@ async function salvarPerfilFirebase(dados) {
         const apps = getApps();
         if (apps.length === 0) return;
         const rtdb = getDatabase(apps[0]);
+        const dadosLimpos = { ...dados };
         // Foto (base64 grande) → nó separado para não estourar limite do Firebase
         if (dados.foto) {
             const fotoBytes = Math.round(dados.foto.length * 0.75);
             if (fotoBytes > 9 * 1024 * 1024) {
-                alert('A imagem é grande demais para sincronizar entre dispositivos (máx ~9MB). Tente uma imagem menor.');
+                alert('A foto é grande demais para sincronizar entre dispositivos (máx ~9MB). Tente uma imagem menor.');
                 return;
             }
             await set(ref(rtdb, `fotos_perfil/${u}`), dados.foto);
-            const dadosSemFoto = { ...dados };
-            delete dadosSemFoto.foto;
-            dadosSemFoto.temFoto = true;
-            dadosSemFoto.fotoAnimada = !!dados.fotoAnimada;
-            await set(ref(rtdb, `perfis/${u}`), dadosSemFoto);
-        } else {
-            await set(ref(rtdb, `perfis/${u}`), dados);
+            delete dadosLimpos.foto;
+            dadosLimpos.temFoto = true;
+            dadosLimpos.fotoAnimada = !!dados.fotoAnimada;
         }
+        // Banner (base64 grande) → nó separado
+        if (dados.banner) {
+            const bannerBytes = Math.round(dados.banner.length * 0.75);
+            if (bannerBytes > 9 * 1024 * 1024) {
+                alert('O banner é grande demais para sincronizar entre dispositivos (máx ~9MB). Tente uma imagem menor.');
+                return;
+            }
+            await set(ref(rtdb, `banners_perfil/${u}`), dados.banner);
+            delete dadosLimpos.banner;
+            dadosLimpos.temBanner = true;
+            dadosLimpos.bannerAnimado = !!dados.bannerAnimado;
+        }
+        await set(ref(rtdb, `perfis/${u}`), dadosLimpos);
     } catch(e) { console.warn('Perfil firebase erro:', e); }
 }
 async function carregarPerfilFirebase(usuario) {
@@ -3087,14 +3561,15 @@ async function carregarPerfilFirebase(usuario) {
         const apps = getApps();
         if (apps.length === 0) return null;
         const rtdb = getDatabase(apps[0]);
-        // Busca perfil e foto em paralelo (foto em nó separado por ser grande)
-        const [snapPerfil, snapFoto] = await Promise.all([
+        const [snapPerfil, snapFoto, snapBanner] = await Promise.all([
             get(ref(rtdb, `perfis/${usuario}`)),
-            get(ref(rtdb, `fotos_perfil/${usuario}`))
+            get(ref(rtdb, `fotos_perfil/${usuario}`)),
+            get(ref(rtdb, `banners_perfil/${usuario}`))
         ]);
         if (!snapPerfil.exists()) return null;
         const perfil = snapPerfil.val();
-        if (snapFoto.exists()) perfil.foto = snapFoto.val();
+        if (snapFoto.exists())   perfil.foto   = snapFoto.val();
+        if (snapBanner.exists()) perfil.banner = snapBanner.val();
         return perfil;
     } catch(e) { return null; }
 }
@@ -3116,13 +3591,12 @@ window.abrirPainelPerfil = async function(e) {
 };
 
 async function renderPainelPerfil(usuario, perfil) {
-    document.getElementById('perfil-username').textContent = usuario;
+    document.getElementById('perfil-username').textContent = perfil.nickname || usuario;
     document.getElementById('perfil-handle').textContent   = '@' + usuario;
     const avatarEl    = document.getElementById('perfil-avatar-img');
     const fotoFirebase = perfil.foto || '';
     const fotoLocal    = await _imgDB.get(getAvatarKey()) || '';
     const fotoSalva    = fotoFirebase || fotoLocal;
-    // Sincroniza cache local se Firebase tem foto mais recente
     if (fotoFirebase && fotoFirebase !== fotoLocal) {
         await _imgDB.set(getAvatarKey(), fotoFirebase);
     }
@@ -3139,11 +3613,23 @@ async function renderPainelPerfil(usuario, perfil) {
         wrap.style.setProperty('--perfil-borda', corBorda);
         document.querySelectorAll('.cor-btn').forEach(b => b.classList.toggle('ativa', b.dataset.cor === corBorda));
     }
-    const banner = document.getElementById('perfil-banner');
     const bannerKey = getUsuarioLogado() + '_banner_perfil';
-    const bannerData = (await _imgDB.get(bannerKey)) || perfil.banner || null;
-    if (bannerData) { _aplicarBannerNaUI(bannerData, !!perfil.bannerAnimado); }
-    else { banner.style.backgroundImage = ''; const imgAnt = banner.querySelector('.banner-img-animado'); if (imgAnt) imgAnt.remove(); }
+    const bannerFirebase = perfil.banner || null;
+    const bannerLocal    = await _imgDB.get(bannerKey) || null;
+    const bannerData     = bannerFirebase || bannerLocal;
+    if (bannerFirebase && bannerFirebase !== bannerLocal) {
+        await _imgDB.set(bannerKey, bannerFirebase);
+    }
+    if (bannerData) {
+        _aplicarBannerNaUI(bannerData, !!perfil.bannerAnimado);
+    } else {
+        const banner = document.getElementById('perfil-banner');
+        if (banner) {
+            banner.style.backgroundImage = '';
+            const imgAnt = banner.querySelector('.banner-img-animado');
+            if (imgAnt) imgAnt.remove();
+        }
+    }
     const statusEl = document.getElementById('perfil-status-display');
     if (perfil.status) { statusEl.textContent = '💬 ' + perfil.status; statusEl.classList.remove('vazio'); }
     else { statusEl.textContent = 'Clique para adicionar um recado...'; statusEl.classList.add('vazio'); }
@@ -3154,12 +3640,46 @@ async function renderPainelPerfil(usuario, perfil) {
     const dataEntrada = perfil.dataEntrada || new Date().toLocaleDateString('pt-BR');
     if (!perfil.dataEntrada) { perfil.dataEntrada = dataEntrada; setPerfilLocal(perfil); }
     document.getElementById('perfil-membro-desde').textContent = '▸ Membro desde ' + dataEntrada;
+
+    const cardEl = document.getElementById('perfil-card');
+    if (perfil.accent) {
+        cardEl.style.setProperty('--perfil-accent', perfil.accent);
+        cardEl.style.setProperty('--perfil-accent-glow', _hexParaRgb(perfil.accent));
+    } else {
+        cardEl.style.removeProperty('--perfil-accent');
+        cardEl.style.removeProperty('--perfil-accent-glow');
+    }
+
     await renderBadges(usuario);
+}
+
+// Converte #rrggbb para "r,g,b" (para usar em rgba())
+function _hexParaRgb(hex) {
+    hex = (hex || '').replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    const r = parseInt(hex.substring(0,2), 16) || 0;
+    const g = parseInt(hex.substring(2,4), 16) || 0;
+    const b = parseInt(hex.substring(4,6), 16) || 0;
+    return `${r},${g},${b}`;
+}
+
+// Usuário que criou e mantém o F.I.C.H.A. — recebe o badge especial "Criador"
+const USUARIO_CRIADOR_SITE = 'lucasmestre';
+function ehCriadorDoSite(usuario) {
+    return !!usuario && usuario.toLowerCase() === USUARIO_CRIADOR_SITE;
 }
 
 async function renderBadges(usuario) {
     const badgesEl = document.getElementById('perfil-badges');
-    badgesEl.innerHTML = `<span class="perfil-badge badge-membro">⚡ Membro</span>`;
+    badgesEl.innerHTML = '';
+
+    // Badge especial de Criador do site (fixo, não depende de dados salvos)
+    if (ehCriadorDoSite(usuario)) {
+        badgesEl.innerHTML += `<span class="perfil-badge badge-criador">★ Criador</span>`;
+    }
+
+    badgesEl.innerHTML += `<span class="perfil-badge badge-membro">⚡ Membro</span>`;
+
     // badge Mestre — verifica campanhas que o usuário criou (já temos o db Firestore aqui)
     try {
         const uid = currentUser ? currentUser.uid : (localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase'));
@@ -3181,49 +3701,150 @@ window.fecharPainelPerfil = function(e) {
 };
 
 let _perfilCampoAtual = null;
-window.abrirEditPerfil = function(campo) {
-    _perfilCampoAtual = campo;
+
+window.abrirEditPerfil = function(campoFoco) {
     const overlay  = document.getElementById('perfil-edit-overlay');
-    const titleEl  = document.getElementById('perfil-edit-title');
-    const inputEl  = document.getElementById('perfil-edit-input');
-    const textaEl  = document.getElementById('perfil-edit-textarea');
+    const nickEl   = document.getElementById('perfil-edit-nickname');
+    const statusEl = document.getElementById('perfil-edit-status');
+    const pronEl   = document.getElementById('perfil-edit-pronomes');
+    const bioEl    = document.getElementById('perfil-edit-bio');
+    const counter  = document.getElementById('perfil-edit-bio-counter');
     const perfil   = getPerfilLocal();
-    inputEl.style.display = 'none';
-    textaEl.style.display = 'none';
-    if (campo === 'status') {
-        titleEl.textContent = '▸ EDITAR RECADO';
-        inputEl.value = perfil.status || ''; inputEl.placeholder = 'Ex: O medo é real...';
-        inputEl.style.display = ''; overlay.classList.add('show');
-        setTimeout(() => { inputEl.focus(); inputEl.select(); }, 50);
-    } else if (campo === 'bio') {
-        titleEl.textContent = '▸ EDITAR BIO';
-        textaEl.value = perfil.bio || ''; textaEl.placeholder = 'Fale um pouco sobre você...';
-        textaEl.style.display = ''; overlay.classList.add('show');
-        setTimeout(() => textaEl.focus(), 50);
-    } else if (campo === 'pronomes') {
-        titleEl.textContent = '▸ PRONOMES';
-        inputEl.value = perfil.pronomes || ''; inputEl.placeholder = 'Ex: ele/dele';
-        inputEl.style.display = ''; overlay.classList.add('show');
-        setTimeout(() => { inputEl.focus(); inputEl.select(); }, 50);
-    }
+
+    nickEl.value   = perfil.nickname || '';
+    statusEl.value = perfil.status   || '';
+    pronEl.value   = perfil.pronomes || '';
+    bioEl.value    = perfil.bio      || '';
+    counter.textContent = bioEl.value.length + '/280';
+
+    // Marca a cor de destaque ativa (borda do avatar)
+    const corAtual = perfil.corBorda || '';
+    document.querySelectorAll('#perfil-edit-cor-row .perfil-edit-cor-btn').forEach(b => {
+        b.classList.toggle('ativa', b.dataset.cor === corAtual);
+    });
+
+    // Marca a accent color ativa (Aparência)
+    const accentAtual = perfil.accent || '';
+    document.querySelectorAll('#perfil-edit-tema-row .perfil-edit-tema-btn').forEach(b => {
+        b.classList.toggle('ativa', b.dataset.accent === accentAtual);
+    });
+
+    // Preenche a aba Conta
+    preencherAbaConta();
+
+    // Volta para a primeira aba
+    mudarAbaEdit('perfil');
+
+    overlay.classList.add('show');
+
+    // Foca o campo relevante (se indicado), senão o status
+    const focoMap = { nickname: nickEl, status: statusEl, pronomes: pronEl, bio: bioEl };
+    const elFoco  = focoMap[campoFoco] || statusEl;
+    setTimeout(() => {
+        elFoco.focus();
+        if (elFoco.select) elFoco.select();
+    }, 60);
 };
-window.fecharEditPerfil = function() {
-    document.getElementById('perfil-edit-overlay').classList.remove('show');
-    _perfilCampoAtual = null;
+
+window.mudarAbaEdit = function(aba) {
+    document.querySelectorAll('.perfil-edit-aba').forEach(el => {
+        el.classList.toggle('ativa', el.dataset.aba === aba);
+    });
+    document.querySelectorAll('.perfil-edit-painel').forEach(el => {
+        el.classList.toggle('ativo', el.id === 'perfil-edit-painel-' + aba);
+    });
 };
-window.salvarEditPerfil = async function() {
-    const campo   = _perfilCampoAtual;
-    const inputEl = document.getElementById('perfil-edit-input');
-    const textaEl = document.getElementById('perfil-edit-textarea');
-    const valor   = (campo === 'bio' ? textaEl.value : inputEl.value).trim();
+
+window.selecionarAccentEdit = function(el) {
+    document.querySelectorAll('#perfil-edit-tema-row .perfil-edit-tema-btn').forEach(b => b.classList.remove('ativa'));
+    el.classList.add('ativa');
+};
+
+window.selecionarCorEdit = function(el) {
+    document.querySelectorAll('#perfil-edit-cor-row .perfil-edit-cor-btn').forEach(b => b.classList.remove('ativa'));
+    el.classList.add('ativa');
+};
+
+async function preencherAbaConta() {
+    const usuario = getUsuarioLogado() || '—';
     const perfil  = getPerfilLocal();
-    perfil[campo] = valor;
+
+    document.getElementById('conta-usuario-display').textContent = usuario;
+    document.getElementById('conta-membro-display').textContent  = perfil.dataEntrada || '—';
+
+    // Conta fichas criadas
+    let totalFichas = '0';
+    try {
+        const agentes = JSON.parse(localStorage.getItem(usuario + '_lista_agentes')) || [];
+        totalFichas = String(agentes.length);
+    } catch(e) {}
+    document.getElementById('conta-fichas-display').textContent = totalFichas;
+
+    // Conta campanhas criadas
+    const totalCampanhas = await contarCampanhasCriadas();
+    document.getElementById('conta-campanha-display').textContent = String(totalCampanhas);
+}
+window.preencherAbaConta = preencherAbaConta;
+
+// Conta quantas campanhas o usuário criou (mestreUid no Firestore)
+async function contarCampanhasCriadas() {
+    try {
+        const uid = currentUser ? currentUser.uid : (localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase'));
+        if (!uid || typeof db === 'undefined') return 0;
+        const { query: q, collection: col, where: wh, getDocs: gd } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        const snap = await gd(q(col(db, 'campanhas'), wh('mestreUid', '==', uid)));
+        return snap.size || 0;
+    } catch(e) { return 0; }
+}
+window.contarCampanhasCriadas = contarCampanhasCriadas;
+
+window.fecharEditPerfil = function() {
+    const overlay = document.getElementById('perfil-edit-overlay');
+    if (!overlay.classList.contains('show')) return;
+    overlay.classList.remove('show');
+    overlay.classList.add('closing');
+    setTimeout(() => { overlay.classList.remove('closing'); }, 180);
+};
+
+window.salvarEditPerfil = async function() {
+    const perfil = getPerfilLocal();
+
+    perfil.nickname = document.getElementById('perfil-edit-nickname').value.trim();
+    perfil.status   = document.getElementById('perfil-edit-status').value.trim();
+    perfil.pronomes = document.getElementById('perfil-edit-pronomes').value.trim();
+    perfil.bio      = document.getElementById('perfil-edit-bio').value.trim();
+
+    const corAtiva = document.querySelector('#perfil-edit-cor-row .perfil-edit-cor-btn.ativa');
+    perfil.corBorda = corAtiva ? corAtiva.dataset.cor : '';
+
+    const accentAtivo = document.querySelector('#perfil-edit-tema-row .perfil-edit-tema-btn.ativa');
+    perfil.accent = accentAtivo ? accentAtivo.dataset.accent : '';
+
     setPerfilLocal(perfil);
     await salvarPerfilFirebase(perfil);
     window.fecharEditPerfil();
     renderPainelPerfil(getUsuarioLogado(), perfil);
+
+    // Atualiza sidebar do social com novo status
+    if (typeof _socialAtualizarSidebarPerfil === 'function') _socialAtualizarSidebarPerfil();
+
+    // Atualiza a borda do avatar imediatamente
+    const wrap = document.getElementById('perfil-avatar-wrap');
+    const circle = document.getElementById('avatar-circle');
+    if (perfil.corBorda) {
+        wrap.classList.add('borda-ativa');
+        wrap.style.setProperty('--perfil-borda', perfil.corBorda);
+        if (circle) { circle.style.borderColor = perfil.corBorda; circle.style.boxShadow = `0 0 8px ${perfil.corBorda}`; }
+        document.querySelectorAll('.cor-btn').forEach(b => b.classList.toggle('ativa', b.dataset.cor === perfil.corBorda));
+    } else {
+        wrap.classList.remove('borda-ativa');
+        wrap.style.removeProperty('--perfil-borda');
+        if (circle) { circle.style.borderColor = ''; circle.style.boxShadow = ''; }
+        document.querySelectorAll('.cor-btn').forEach(b => b.classList.remove('ativa'));
+    }
 };
 
+/* ── Borda colorida ── */
 window.aplicarCorBorda = async function(el) {
     const cor    = el.dataset.cor;
     const perfil = getPerfilLocal();
@@ -3394,36 +4015,72 @@ window.fazerLogout = async function() {
 <!-- ===== PAINEL DE PERFIL ===== -->
 <div id="perfil-overlay" onclick="fecharPainelPerfil(event)">
   <div class="perfil-card" onclick="event.stopPropagation()" id="perfil-card">
+
+    <!-- Banner -->
     <div class="perfil-banner" id="perfil-banner" onclick="perfilClicarBanner()">
       <div class="perfil-banner-edit">📷 Alterar banner</div>
       <div class="perfil-top-actions">
-        <button class="perfil-top-btn" onclick="event.stopPropagation();abrirEditPerfil('status')">✎ Status</button>
+        <button class="perfil-top-btn primary" onclick="event.stopPropagation();abrirEditPerfil('bio')">✎ Editar Perfil</button>
         <button class="perfil-top-btn danger" onclick="event.stopPropagation();fazerLogout()">✕ Sair</button>
       </div>
     </div>
+
+    <!-- Avatar com status dot -->
     <div class="perfil-avatar-wrap" id="perfil-avatar-wrap" onclick="event.stopPropagation();perfilClicarAvatar()">
       <div class="perfil-avatar" id="perfil-avatar-img">
         <span id="perfil-avatar-iniciais"></span>
         <div class="perfil-avatar-edit">📷</div>
       </div>
     </div>
+    <div class="perfil-status-dot" id="perfil-status-dot" title="Online"></div>
+
+    <!-- Body -->
     <div class="perfil-body">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div>
-          <div class="perfil-username" id="perfil-username">—</div>
-          <div class="perfil-handle" id="perfil-handle">@—</div>
-          <div class="perfil-pronomes" id="perfil-pronomes-display" onclick="abrirEditPerfil('pronomes')" title="Editar pronomes"></div>
-        </div>
-        <button onclick="abrirEditPerfil('bio')" style="background:transparent;border:1px solid #333;color:#555;font-size:0.7rem;font-family:'Oswald',sans-serif;padding:4px 10px;border-radius:4px;cursor:pointer;transition:0.2s;margin-top:4px;" onmouseover="this.style.borderColor='var(--tema-primary)';this.style.color='var(--tema-primary-light)'" onmouseout="this.style.borderColor='#333';this.style.color='#555'">✎ Editar</button>
+      <div class="perfil-username" id="perfil-username">—</div>
+      <div class="perfil-handle" id="perfil-handle">@—</div>
+      <div class="perfil-pronomes" id="perfil-pronomes-display" onclick="abrirEditPerfil('bio')" title="Editar pronomes"></div>
+
+      <!-- Status/recado -->
+      <div class="perfil-status vazio" id="perfil-status-display" onclick="abrirEditPerfil('bio')">
+        Clique para adicionar um recado...
       </div>
-      <div class="perfil-status vazio" id="perfil-status-display" onclick="abrirEditPerfil('status')">Clique para adicionar um recado...</div>
+
       <hr class="perfil-divider">
+
+      <!-- Bio -->
       <div class="perfil-bio-label">Sobre mim</div>
-      <div class="perfil-bio vazio" id="perfil-bio-display" onclick="abrirEditPerfil('bio')">Nenhuma descrição ainda...</div>
+      <div class="perfil-bio vazio" id="perfil-bio-display" onclick="abrirEditPerfil('bio')">
+        Nenhuma descrição ainda...
+      </div>
+
       <hr class="perfil-divider">
+
+      <!-- Badges -->
       <div class="perfil-bio-label">Cargos</div>
       <div class="perfil-badges" id="perfil-badges"></div>
-      <div class="perfil-membro-desde" id="perfil-membro-desde"></div>
+
+      <hr class="perfil-divider">
+
+      <!-- Membro desde + Atividade, lado a lado -->
+      <div class="perfil-meta-strip">
+        <div class="perfil-membro-section" id="perfil-membro-section">
+          <div class="perfil-membro-icon">📅</div>
+          <div class="perfil-membro-info">
+            <div class="perfil-membro-label">Membro desde</div>
+            <div class="perfil-membro-desde" id="perfil-membro-desde">—</div>
+          </div>
+        </div>
+
+        <div class="perfil-atividade" id="perfil-atividade" style="display:none;">
+          <div class="perfil-atividade-icone" id="perfil-atividade-icone">🎲</div>
+          <div class="perfil-atividade-info">
+            <div class="perfil-atividade-label">Atividade</div>
+            <div class="perfil-atividade-texto" id="perfil-atividade-texto">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cor de destaque da borda do avatar -->
       <hr class="perfil-divider">
       <div class="perfil-cor-row">
         <span class="perfil-cor-label">Borda</span>
@@ -3440,17 +4097,116 @@ window.fazerLogout = async function() {
   </div>
 </div>
 
-<!-- Modal edição de campo -->
+<!-- Modal de edição de perfil — estilo Discord com abas -->
 <div class="perfil-edit-overlay" id="perfil-edit-overlay" onclick="fecharEditPerfil()">
   <div class="perfil-edit-box" onclick="event.stopPropagation()">
-    <div class="perfil-edit-title" id="perfil-edit-title">Editar</div>
-    <input type="text" class="perfil-edit-input" id="perfil-edit-input" style="display:none"
-      onkeydown="if(event.key==='Enter')salvarEditPerfil();if(event.key==='Escape')fecharEditPerfil();">
-    <textarea class="perfil-edit-textarea" id="perfil-edit-textarea" rows="4" style="display:none"
-      onkeydown="if(event.key==='Escape')fecharEditPerfil();"></textarea>
-    <div class="perfil-edit-btns">
+
+    <!-- Preview do perfil no topo -->
+    <div class="perfil-edit-preview" id="perfil-edit-preview">
+      <div class="perfil-edit-preview-avatar" id="perfil-edit-preview-avatar"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="perfil-edit-header">
+      <div class="perfil-edit-title" id="perfil-edit-title-nome">Editar Perfil</div>
+
+      <!-- Abas -->
+      <div class="perfil-edit-abas">
+        <div class="perfil-edit-aba ativa" data-aba="perfil" onclick="mudarAbaEdit('perfil')">Perfil</div>
+        <div class="perfil-edit-aba" data-aba="aparencia" onclick="mudarAbaEdit('aparencia')">Aparência</div>
+        <div class="perfil-edit-aba" data-aba="conta" onclick="mudarAbaEdit('conta')">Conta</div>
+      </div>
+    </div>
+
+    <!-- Corpo com paineis por aba -->
+    <div class="perfil-edit-body">
+
+      <!-- ABA: Perfil -->
+      <div class="perfil-edit-painel ativo" id="perfil-edit-painel-perfil">
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-label">✎ Apelido de exibição</div>
+          <input type="text" class="perfil-edit-input" id="perfil-edit-nickname" maxlength="24" placeholder="Ex: Lucas Mestre"
+            onkeydown="if(event.key==='Enter')salvarEditPerfil();if(event.key==='Escape')fecharEditPerfil();">
+          <div class="perfil-edit-counter" id="perfil-edit-nickname-counter" style="text-align:left;opacity:0.75;">Seu @usuário de login não muda — isso é só o nome exibido.</div>
+        </div>
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-label">💬 Recado / Status</div>
+          <input type="text" class="perfil-edit-input" id="perfil-edit-status" maxlength="60" placeholder="Ex: O medo é real..."
+            onkeydown="if(event.key==='Enter')salvarEditPerfil();if(event.key==='Escape')fecharEditPerfil();">
+        </div>
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-label">⚑ Pronomes</div>
+          <input type="text" class="perfil-edit-input" id="perfil-edit-pronomes" maxlength="30" placeholder="Ex: ele/dele"
+            onkeydown="if(event.key==='Enter')salvarEditPerfil();if(event.key==='Escape')fecharEditPerfil();">
+        </div>
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-label">▸ Sobre mim</div>
+          <textarea class="perfil-edit-textarea" id="perfil-edit-bio" maxlength="280" placeholder="Fale um pouco sobre você..."
+            oninput="document.getElementById('perfil-edit-bio-counter').textContent = this.value.length + '/280'"
+            onkeydown="if(event.key==='Escape')fecharEditPerfil();"></textarea>
+          <div class="perfil-edit-counter" id="perfil-edit-bio-counter">0/280</div>
+        </div>
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-label">◐ Cor da borda do avatar</div>
+          <div class="perfil-edit-cor-row" id="perfil-edit-cor-row">
+            <div class="perfil-edit-cor-btn" data-cor="#3a7bd5" style="background:#3a7bd5" onclick="selecionarCorEdit(this)" title="Azul"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#cc1111" style="background:#cc1111" onclick="selecionarCorEdit(this)" title="Vermelho"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#9b30d9" style="background:#9b30d9" onclick="selecionarCorEdit(this)" title="Roxo"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#c8960c" style="background:#c8960c" onclick="selecionarCorEdit(this)" title="Dourado"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#39d353" style="background:#39d353" onclick="selecionarCorEdit(this)" title="Verde"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#ff6ec7" style="background:#ff6ec7" onclick="selecionarCorEdit(this)" title="Rosa"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#888888" style="background:#888888" onclick="selecionarCorEdit(this)" title="Cinza"></div>
+            <div class="perfil-edit-cor-btn" data-cor="#ffffff" style="background:#ffffff" onclick="selecionarCorEdit(this)" title="Branco"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA: Aparência -->
+      <div class="perfil-edit-painel" id="perfil-edit-painel-aparencia">
+        <div class="perfil-edit-field">
+          <div class="perfil-edit-tema-label">◈ Cor de destaque do card</div>
+          <p style="font-size:0.72rem;color:#555;margin-bottom:10px;font-family:'Share Tech Mono',monospace;">Personaliza a accent color do seu perfil — afeta status, labels e divisores.</p>
+          <div class="perfil-edit-tema-row" id="perfil-edit-tema-row">
+            <div class="perfil-edit-tema-btn" data-accent="#3a7bd5" style="background:linear-gradient(135deg,#3a7bd5,#0d2a5e)" onclick="selecionarAccentEdit(this)" title="Medo (Azul)"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#cc1111" style="background:linear-gradient(135deg,#cc1111,#5a0000)" onclick="selecionarAccentEdit(this)" title="Sangue (Vermelho)"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#9b30d9" style="background:linear-gradient(135deg,#9b30d9,#3a0063)" onclick="selecionarAccentEdit(this)" title="Energia (Roxo)"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#c8960c" style="background:linear-gradient(135deg,#c8960c,#5a4000)" onclick="selecionarAccentEdit(this)" title="Conhecimento (Dourado)"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#888888" style="background:linear-gradient(135deg,#888,#333)" onclick="selecionarAccentEdit(this)" title="Morte (Cinza)"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#39d353" style="background:linear-gradient(135deg,#39d353,#0a4a1a)" onclick="selecionarAccentEdit(this)" title="Verde"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#ff6ec7" style="background:linear-gradient(135deg,#ff6ec7,#7a0050)" onclick="selecionarAccentEdit(this)" title="Rosa"></div>
+            <div class="perfil-edit-tema-btn" data-accent="#e8d5a3" style="background:linear-gradient(135deg,#e8d5a3,#6a5010)" onclick="selecionarAccentEdit(this)" title="Pergaminho"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA: Conta -->
+      <div class="perfil-edit-painel" id="perfil-edit-painel-conta">
+        <div class="perfil-edit-conta-info" id="perfil-edit-conta-info">
+          <div class="perfil-edit-conta-linha">
+            <span class="perfil-edit-conta-chave">Usuário</span>
+            <span class="perfil-edit-conta-valor" id="conta-usuario-display">—</span>
+          </div>
+          <div class="perfil-edit-conta-linha">
+            <span class="perfil-edit-conta-chave">Membro desde</span>
+            <span class="perfil-edit-conta-valor" id="conta-membro-display">—</span>
+          </div>
+          <div class="perfil-edit-conta-linha">
+            <span class="perfil-edit-conta-chave">Fichas criadas</span>
+            <span class="perfil-edit-conta-valor" id="conta-fichas-display">—</span>
+          </div>
+          <div class="perfil-edit-conta-linha">
+            <span class="perfil-edit-conta-chave">Campanhas criadas</span>
+            <span class="perfil-edit-conta-valor" id="conta-campanha-display">—</span>
+          </div>
+        </div>
+        <button class="perfil-edit-danger-btn" onclick="event.stopPropagation();fecharEditPerfil();fazerLogout();">⚠ Sair da conta</button>
+      </div>
+
+    </div>
+
+    <div class="perfil-edit-footer">
       <button class="perfil-edit-btn-cancel" onclick="fecharEditPerfil()">Cancelar</button>
-      <button class="perfil-edit-btn-ok" onclick="salvarEditPerfil()">✔ Salvar</button>
+      <button class="perfil-edit-btn-ok" onclick="salvarEditPerfil()">✔ Salvar Alterações</button>
     </div>
   </div>
 </div>
