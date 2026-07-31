@@ -1590,6 +1590,94 @@
 .mod-item-salvar { background: var(--purple-dark); border: 1px solid var(--purple); color: white; }
 .mod-item-salvar:hover { background: var(--purple); }
 
+/* ══════════════════════════════════════════════
+   PAINEL DE MODIFICAÇÕES / MALDIÇÕES (INVENTÁRIO)
+   ══════════════════════════════════════════════ */
+.inv-mods-btn {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    background: #1a0033;
+    border: 1px solid var(--purple);
+    color: var(--purple-neon);
+}
+.inv-mods-btn:hover { background: var(--purple-dark); box-shadow: 0 0 8px var(--purple-glow); }
+.inv-mods-btn:active { transform: scale(0.94); }
+
+.inv-hb-melhoria-tag { display: inline-flex; align-items: center; gap: 4px; }
+.inv-hb-melhoria-tag .mel-tag-x {
+    cursor: pointer; color: #663388; font-weight: 700; line-height: 1;
+    padding: 0 2px; border-radius: 3px; transition: 0.15s;
+}
+.inv-hb-melhoria-tag .mel-tag-x:hover { color: #ff6666; }
+
+#modal-melhorias-item {
+    display: none; position: fixed; inset: 0; z-index: 10001;
+    background: rgba(0,0,0,0.75); align-items: flex-start; justify-content: center;
+    padding: 4vh 16px; overflow-y: auto;
+}
+#modal-melhorias-item.show { display: flex; }
+.mel-item-panel {
+    background: #0a0010; border: 1px solid var(--purple); border-radius: 10px;
+    width: 100%; max-width: 560px; padding: 18px 18px 22px;
+    box-shadow: 0 0 30px var(--purple-glow);
+}
+.mel-item-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+}
+.mel-item-titulo {
+    font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; font-size: 0.95rem; color: var(--purple-neon);
+}
+.mel-item-nome-arma {
+    font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--text-dim);
+    margin-bottom: 12px;
+}
+.mel-item-close {
+    background: none; border: none; color: var(--text-dim); font-size: 1.1rem;
+    cursor: pointer; line-height: 1;
+}
+.mel-item-close:hover { color: white; }
+.mel-item-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.mel-item-tab {
+    flex: 1; font-family: 'Oswald', sans-serif; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; padding: 7px 10px; border-radius: 6px;
+    cursor: pointer; transition: 0.2s; background: transparent; border: 1px solid var(--border);
+    color: var(--text-dim);
+}
+.mel-item-tab.active { background: var(--purple-dark); border-color: var(--purple); color: white; }
+.mel-item-lista { max-height: 48vh; overflow-y: auto; padding-right: 4px; }
+.mel-card {
+    background: #12001f; border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 8px; transition: 0.2s;
+}
+.mel-card.aplicada { border-color: var(--purple); background: #180029; }
+.mel-card-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.mel-card-nome { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 0.82rem; color: white; }
+.mel-card-desc { font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; color: var(--text-dim); line-height: 1.4; }
+.mel-card-btn {
+    font-family: 'Oswald', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.5px;
+    padding: 4px 10px; border-radius: 99px; cursor: pointer; white-space: nowrap; transition: 0.2s;
+    background: transparent; border: 1px solid var(--purple); color: var(--purple-neon);
+}
+.mel-card-btn:hover { background: var(--purple-dark); }
+.mel-card-btn.aplicada { background: var(--purple); border-color: var(--purple); color: white; }
+.mel-item-footer {
+    margin-top: 14px; display: flex; justify-content: flex-end;
+}
+.mel-item-fechar-btn {
+    background: var(--purple-dark); border: 1px solid var(--purple); color: white;
+    font-family: 'Oswald', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+}
+.mel-item-fechar-btn:hover { background: var(--purple); }
+
 /* ===== RESPONSIVIDADE MOBILE ===== */
 @media (max-width: 576px) {
     /* Navbar: logo menor */
@@ -5819,10 +5907,13 @@ function salvarNovoItem() {
     if (!nome) { mostrarToast('⚠ Informe o nome do item'); return; }
     if (!estado.inventario) estado.inventario = [];
     estado.inventario.push({ nome, cat, qtd, desc });
+    const novoIdx = estado.inventario.length - 1;
     salvarEstado();
     renderInventario();
     fecharModalNovoItem();
     mostrarToast('✦ ITEM ADICIONADO');
+    // Arma recém-adicionada: abre o painel de Modificações/Maldições automaticamente
+    if (cat === 'ARMA') abrirPainelMelhoriasItem(novoIdx);
 }
 
 // ── Remover item ────────────────────────────────────────────────
@@ -5890,10 +5981,13 @@ function renderInventario() {
                 ? `<div class="inv-hb-stats">${statItems.join('<span style="color:#222;font-size:0.6rem;">·</span>')}</div>`
                 : '';
 
-            // ── Tags de melhorias ──
-            const melhorias = s.melhorias?.length
-                ? `<div class="inv-hb-melhorias">${s.melhorias.map(m => `<span class="inv-hb-melhoria-tag">⬡ ${m}</span>`).join('')}</div>`
-                : '';
+            // ── Tags de melhorias (removíveis quando vieram do painel de modificações) ──
+            const melSel = s.melhoriasSel || [];
+            const melhorias = melSel.length
+                ? `<div class="inv-hb-melhorias">${melSel.map(m => `<span class="inv-hb-melhoria-tag">⬡ ${m.nome}<span class="mel-tag-x" title="Remover" onclick="event.stopPropagation();removerMelhoriaItem(${i},'${m.id}')">✕</span></span>`).join('')}</div>`
+                : (s.melhorias?.length
+                    ? `<div class="inv-hb-melhorias">${s.melhorias.map(m => `<span class="inv-hb-melhoria-tag">⬡ ${m}</span>`).join('')}</div>`
+                    : '');
 
             // ── Descrição colapsável ──
             const temDesc = item.desc && item.desc.trim();
@@ -5914,8 +6008,13 @@ function renderInventario() {
         const clonarBtn = cat === 'ARMA'
             ? `<button class="inv-clonar-btn" onclick="clonarItem(${i})" title="Criar uma cópia editável desta arma">📋 Clonar</button>`
             : '';
-        const modificarBtn = (cat === 'ARMA' && item.custom)
-            ? `<button class="inv-modificar-btn" onclick="abrirModalModificarItem(${i})" title="Editar dano, crítico, etc.">✏ Modificar</button>`
+        // Editar dano/crítico diretamente no item, sem precisar clonar
+        const modificarBtn = cat === 'ARMA'
+            ? `<button class="inv-modificar-btn" onclick="abrirModalModificarItem(${i})" title="Editar dano, crítico, etc. diretamente">✏ Editar Dano</button>`
+            : '';
+        // Painel dinâmico de Modificações/Maldições (puxado do Homebrew)
+        const modsBtn = cat === 'ARMA'
+            ? `<button class="inv-mods-btn" onclick="abrirPainelMelhoriasItem(${i})" title="Aplicar modificações e maldições">🛠 Mods${(item.hbStats?.melhoriasSel?.length) ? ' ('+item.hbStats.melhoriasSel.length+')' : ''}</button>`
             : '';
 
         return `
@@ -5924,7 +6023,7 @@ function renderInventario() {
                 <div class="inv-item-nome">${item.nome}${hbBadge}</div>
                 <span class="inv-item-cat inv-cat-${cat}">${catLbl}</span>
                 ${infoHtml}
-                <div style="display:flex;flex-wrap:wrap;gap:6px;">${atacarBtn}${clonarBtn}${modificarBtn}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">${atacarBtn}${modsBtn}${modificarBtn}${clonarBtn}</div>
             </div>
             <div class="inv-qtd-ctrl">
                 <button class="inv-qtd-btn" onclick="alterarQtdItem(${i},-1)">−</button>
@@ -5975,11 +6074,13 @@ function _parseCritInfo(critStr) {
 // extrair do texto da descrição (compatível com itens já salvos).
 function _getArmaRollStats(item) {
     let dano = null, crit = null, mult = null, tipoDano = '';
+    let ataqueBonus = 0;
     if (item.hbStats) {
         dano = item.hbStats.dano || dano;
         crit = item.hbStats.crit || crit;
         mult = item.hbStats.mult || mult;
         tipoDano = item.hbStats.tipo || tipoDano;
+        ataqueBonus = item.hbStats.ataqueBonus || 0;
     }
     if (item.armaStats) {
         dano = item.armaStats.dano || dano;
@@ -6011,7 +6112,7 @@ function _getArmaRollStats(item) {
     } else {
         critInfo = _parseCritInfo(crit);
     }
-    return { dano: danoPrincipal, tipoDano, crit: critInfo };
+    return { dano: danoPrincipal, tipoDano, crit: critInfo, ataqueBonus };
 }
 
 // Chamado pelo botão "🎲 Atacar" no card do item do inventário
@@ -6173,8 +6274,16 @@ function salvarModificacaoItem() {
             mostrarToast('⚠ Formato de dano inválido. Use ex: 8d8, 2d6+2 ou 1d6+1d4');
             return;
         }
-        item.hbStats = { dano, tipo, crit, mult: 'x' + mult.replace(/[^\d]/g,'') };
+        // Preserva modificações/maldições já aplicadas: os valores editados aqui
+        // viram a nova "base" e as melhorias são recalculadas em cima dela.
+        const melhoriasSel = item.hbStats?.melhoriasSel || [];
+        item.hbStats = {
+            dano, tipo, crit, mult: 'x' + mult.replace(/[^\d]/g,''),
+            danoBase: dano, critBase: crit, multBase: 'x' + mult.replace(/[^\d]/g,''),
+            melhoriasSel
+        };
         delete item.armaStats; // hbStats passa a ser a fonte única de verdade
+        if (melhoriasSel.length) _recalcularMelhoriasItem(item);
     } else {
         delete item.hbStats;
     }
@@ -6183,6 +6292,233 @@ function salvarModificacaoItem() {
     renderInventario();
     _fecharModalModificarItem();
     mostrarToast('✦ ITEM MODIFICADO');
+}
+
+// ══════════════════════════════════════════════
+// MODIFICAÇÕES E MALDIÇÕES DE ARMAS
+// (catálogo integrado do Homebrew — homebrew.html)
+// ══════════════════════════════════════════════
+
+const MELHORIAS_MODIFICACOES = [
+  { id:'alongada', nome:'Alongada', desc:'Com um cano mais longo, que aumenta a precisão dos disparos, a arma fornece +2 nos testes de ataque.', icone:null },
+  { id:'calibre_grosso', nome:'Calibre Grosso', desc:'A arma é modificada para disparar munição de maior calibre, aumentando seu dano em mais um dado do mesmo tipo. Armas com esta modificação precisam usar munição específica de calibre grosso.', icone:null },
+  { id:'certeira', nome:'Certeira', desc:'Fabricada para ser mais precisa e balanceada, a arma fornece +2 nos testes de ataque.', icone:null },
+  { id:'compensador', nome:'Compensador', desc:'Apenas para armas automáticas. Um sistema de amortecimento reduz o coice da arma, anulando a penalidade em testes de ataque por disparar rajadas.', icone:null },
+  { id:'cruel', nome:'Cruel', desc:'A arma foi feita para causar o máximo de dor. Aumenta o multiplicador de crítico em +1.', icone:null },
+  { id:'discreta', nome:'Discreta', desc:'A arma possui modificações para ocupar menos espaço e chamar menos atenção. Reduz o número de espaços ocupados em 1, fornece +5 em testes de Crime para ser ocultada.', icone:'⚙️' },
+  { id:'dum_dum', nome:'Dum Dum', desc:'Estas balas são feitas para se expandir durante o impacto. Só pode ser aplicada em balas curtas e longas e aumenta o multiplicador de crítico em +1.', icone:'⚙️' },
+  { id:'explosiva', nome:'Explosiva', desc:'Estas munições explodem ao atingir o alvo. Só pode ser aplicada em balas curtas e longas e aumenta o dano causado em +2d6.', icone:'⚙️' },
+  { id:'ferrolho_automatico', nome:'Ferrolho Automático', desc:'O mecanismo de ação da arma é modificado para disparar várias vezes em sequência. A arma se torna automática.', icone:null },
+  { id:'mira_laser', nome:'Mira Laser', desc:'Um laser interno ajuda a realizar disparos mais letais. Aumenta a margem de ameaça em +2.', icone:'⚙️' },
+  { id:'mira_telescopica', nome:'Mira Telescópica', desc:'A arma possui uma luneta ideal para disparos de longa distância. Aumenta o alcance da arma em uma categoria e permite Ataque Furtivo em qualquer alcance.', icone:'⚙️' },
+  { id:'perigosa', nome:'Perigosa', desc:'A arma possui lâmina afiada ou foi fabricada com materiais maciços. Aumenta a margem de ameaça em +2.', icone:'⚙️' },
+  { id:'silenciador', nome:'Silenciador', desc:'Um silenciador reduz em -2d20 a penalidade em Furtividade para se esconder no mesmo turno em que atacou com a arma de fogo.', icone:null },
+  { id:'tatica', nome:'Tática', desc:'A arma possui cabo texturizado, bandoleira e outros acessórios que facilitam seu manuseio. Você pode sacar a arma como uma ação livre.', icone:null },
+  { id:'visao_calor', nome:'Visão de Calor', desc:'A mira tem um sistema eletrônico que sobrepõe imagens visíveis e em infravermelho. Ao disparar com a arma, você ignora qualquer camuflagem do alvo.', icone:'⚙️' }
+];
+
+const MELHORIAS_MALDICOES = [
+  { id:'antielemento', nome:'Antielemento', desc:'A arma é letal contra criaturas de um elemento. Gastando 2 PE e acertando o ataque, causa +4d8 de dano.', icone:'🟠', elemento:'CONHECIMENTO' },
+  { id:'ritualistica', nome:'Ritualística', desc:'Você pode armazenar na arma um ritual, que é descarregado como ação livre ao acertar um ataque com a arma.', icone:'🟠', elemento:'CONHECIMENTO' },
+  { id:'senciente', nome:'Senciente', desc:'Gastando uma ação de movimento e 2 PE, a arma flutua ao seu lado e ataca sozinha uma vez por rodada.', icone:'🟠', elemento:'CONHECIMENTO' },
+  { id:'empuxo', nome:'Empuxo', desc:'A arma pode ser arremessada em alcance curto e causa mais um dado de dano do mesmo tipo quando usada assim, voltando voando para você. Só armas corpo a corpo.', icone:'🟣', elemento:'ENERGIA' },
+  { id:'energetica', nome:'Energética', desc:'Gastando 2 PE, a arma fornece +5 em testes de ataque, ignora resistência a dano e converte todo o dano causado para Energia.', icone:'🟣', elemento:'ENERGIA' },
+  { id:'vibrante', nome:'Vibrante', desc:'Você recebe a habilidade Ataque Extra da trilha operações especiais. Se já a possui, o custo diminui em –1 PE.', icone:'🟣', elemento:'ENERGIA' },
+  { id:'consumidora', nome:'Consumidora', desc:'Gastando 2 PE e acertando o ataque, o alvo fica imóvel por uma rodada.', icone:'⬜', elemento:'MORTE' },
+  { id:'erosiva', nome:'Erosiva', desc:'Causa +1d8 de dano de Morte. Gastando 2 PE e acertando, a vítima sofre 2d4 de dano de Morte no início dos turnos por duas rodadas.', icone:'⬜', elemento:'MORTE' },
+  { id:'repulsora', nome:'Repulsora', desc:'Gera uma aura que fornece +2 de Defesa enquanto empunhada. Ao bloquear, pode gastar 2 PE para +5 adicional em Defesa.', icone:'⬜', elemento:'MORTE' },
+  { id:'lancinante', nome:'Lancinante', desc:'Causa +1d8 de dano de Sangue. Este dado é multiplicado em acertos críticos.', icone:'🔴', elemento:'SANGUE' },
+  { id:'predadora', nome:'Predadora', desc:'Anula penalidades por camuflagem e cobertura. Se for à distância, aumenta o alcance em uma categoria. A margem de ameaça da arma duplica.', icone:'🔴', elemento:'SANGUE' },
+  { id:'sanguinaria', nome:'Sanguinária', desc:'O alvo atingido fica sangrando (2d6 por rodada, cumulativo). Em acerto crítico, drena 2d10 de PV temporários para você.', icone:'🔴', elemento:'SANGUE' }
+];
+
+// Efeitos numéricos conhecidos, aplicados automaticamente ao dano/crítico do
+// item quando a modificação/maldição é ativada no painel. Mods sem entrada
+// aqui continuam sendo aplicadas como tag descritiva (efeito narrativo/de
+// perícia que não altera diretamente a rolagem de dano/ataque).
+const MELHORIA_EFEITOS = {
+    alongada:       { ataque: 2 },
+    certeira:       { ataque: 2 },
+    cruel:          { mult: 1 },
+    dum_dum:        { mult: 1 },
+    mira_laser:     { critThreat: -2 },
+    perigosa:       { critThreat: -2 },
+    predadora:      { dobraAmeaca: true },
+    explosiva:      { danoExtra: '2d6' },
+    lancinante:     { danoExtra: '1d8' },
+    erosiva:        { danoExtra: '1d8' },
+    empuxo:         { danoExtraMesmoTipo: true },
+    calibre_grosso: { danoExtraMesmoTipo: true },
+};
+
+let _melhoriasItemIndexAtual = null;
+let _melhoriasTabAtual = 'mod';
+
+function _garantirModalMelhoriasItem() {
+    let modal = document.getElementById('modal-melhorias-item');
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'modal-melhorias-item';
+    modal.innerHTML = `
+        <div class="mel-item-panel">
+            <div class="mel-item-header">
+                <div class="mel-item-titulo">🛠 Modificações &amp; Maldições</div>
+                <button class="mel-item-close" onclick="fecharPainelMelhoriasItem()">✕</button>
+            </div>
+            <div class="mel-item-nome-arma" id="mel-item-nome">—</div>
+            <div class="mel-item-tabs">
+                <button class="mel-item-tab active" id="meltab-item-mod" onclick="trocarTabMelhoriasItem('mod')">Modificações</button>
+                <button class="mel-item-tab" id="meltab-item-mald" onclick="trocarTabMelhoriasItem('mald')">Maldições</button>
+            </div>
+            <div class="mel-item-lista" id="mel-item-lista"></div>
+            <div class="mel-item-footer">
+                <button class="mel-item-fechar-btn" onclick="fecharPainelMelhoriasItem()">Concluído</button>
+            </div>
+        </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) fecharPainelMelhoriasItem(); });
+    return modal;
+}
+
+// Abre o painel — chamado manualmente pelo botão "🛠 Mods" e automaticamente
+// assim que uma arma é adicionada ao inventário (catálogo, homebrew ou manual).
+function abrirPainelMelhoriasItem(i) {
+    const item = estado.inventario && estado.inventario[i];
+    if (!item || (item.cat || 'GERAL') !== 'ARMA') return;
+
+    _garantirModalMelhoriasItem();
+    _melhoriasItemIndexAtual = i;
+    _melhoriasTabAtual = 'mod';
+
+    // Garante que o item tenha stats estruturados (hbStats) para poder
+    // guardar a "base" e recalcular quando modificações forem aplicadas —
+    // funciona tanto para itens de catálogo (armaStats/desc) quanto homebrew.
+    if (!item.hbStats) item.hbStats = {};
+    if (item.hbStats.danoBase === undefined) {
+        const st = _getArmaRollStats(item);
+        item.hbStats.dano      = item.hbStats.dano || (st ? st.dano : '');
+        item.hbStats.tipo      = item.hbStats.tipo || (st ? st.tipoDano : '') || '';
+        item.hbStats.crit      = item.hbStats.crit || (st ? String(st.crit.threat) : '20');
+        item.hbStats.mult      = item.hbStats.mult || (st ? ('x' + st.crit.mult) : 'x2');
+        item.hbStats.danoBase  = item.hbStats.dano;
+        item.hbStats.critBase  = item.hbStats.crit;
+        item.hbStats.multBase  = item.hbStats.mult;
+    }
+    if (!item.hbStats.melhoriasSel) item.hbStats.melhoriasSel = [];
+    item.homebrew = true; // passa a exibir o card estruturado com stats/tags
+
+    document.getElementById('meltab-item-mod').classList.add('active');
+    document.getElementById('meltab-item-mald').classList.remove('active');
+    _renderPainelMelhoriasItem();
+
+    document.getElementById('modal-melhorias-item').classList.add('show');
+}
+
+function fecharPainelMelhoriasItem() {
+    document.getElementById('modal-melhorias-item')?.classList.remove('show');
+    _melhoriasItemIndexAtual = null;
+    salvarEstado();
+    renderInventario();
+}
+
+function trocarTabMelhoriasItem(tab) {
+    _melhoriasTabAtual = tab;
+    document.getElementById('meltab-item-mod').classList.toggle('active', tab === 'mod');
+    document.getElementById('meltab-item-mald').classList.toggle('active', tab === 'mald');
+    _renderPainelMelhoriasItem();
+}
+
+function _renderPainelMelhoriasItem() {
+    const item = estado.inventario[_melhoriasItemIndexAtual];
+    if (!item) return;
+    document.getElementById('mel-item-nome').textContent =
+        `${item.nome} · Dano atual: ${item.hbStats.dano || '—'} · Crít: ${item.hbStats.crit || 20}/${item.hbStats.mult || 'x2'}`;
+
+    const catalogo = _melhoriasTabAtual === 'mod' ? MELHORIAS_MODIFICACOES : MELHORIAS_MALDICOES;
+    const sel = item.hbStats.melhoriasSel || [];
+    const cont = document.getElementById('mel-item-lista');
+    cont.innerHTML = catalogo.map(m => {
+        const ativa = sel.some(s => s.id === m.id);
+        return `
+        <div class="mel-card ${ativa ? 'aplicada' : ''}">
+            <div class="mel-card-header">
+                <span class="mel-card-nome">${m.icone ? m.icone + ' ' : ''}${m.nome}</span>
+                <button class="mel-card-btn ${ativa ? 'aplicada' : ''}"
+                        onclick="toggleMelhoriaItem('${m.id}','${_melhoriasTabAtual}')">
+                    ${ativa ? '✓ Aplicada' : '+ Aplicar'}
+                </button>
+            </div>
+            <div class="mel-card-desc">${m.desc}</div>
+        </div>`;
+    }).join('');
+}
+
+// Aplica/remove uma modificação ou maldição no item atualmente aberto no painel
+function toggleMelhoriaItem(id, tipo) {
+    const item = estado.inventario[_melhoriasItemIndexAtual];
+    if (!item) return;
+    const catalogo = tipo === 'mod' ? MELHORIAS_MODIFICACOES : MELHORIAS_MALDICOES;
+    const m = catalogo.find(x => x.id === id);
+    if (!m) return;
+
+    if (!item.hbStats.melhoriasSel) item.hbStats.melhoriasSel = [];
+    const idx = item.hbStats.melhoriasSel.findIndex(s => s.id === id);
+    if (idx >= 0) item.hbStats.melhoriasSel.splice(idx, 1);
+    else item.hbStats.melhoriasSel.push({ id, nome: m.nome, tipo });
+
+    _recalcularMelhoriasItem(item);
+    _renderPainelMelhoriasItem();
+    salvarEstado();
+    renderInventario();
+}
+
+// Remove uma melhoria diretamente pela tag ✕ no card do inventário (sem abrir o painel)
+function removerMelhoriaItem(i, id) {
+    const item = estado.inventario[i];
+    if (!item || !item.hbStats || !item.hbStats.melhoriasSel) return;
+    item.hbStats.melhoriasSel = item.hbStats.melhoriasSel.filter(s => s.id !== id);
+    _recalcularMelhoriasItem(item);
+    salvarEstado();
+    renderInventario();
+}
+
+// Recalcula dano/crítico/multiplicador do item a partir da base
+// (danoBase/critBase/multBase) + todas as modificações/maldições aplicadas.
+function _recalcularMelhoriasItem(item) {
+    const s = item.hbStats;
+    if (!s) return;
+
+    let critThreat  = parseInt(s.critBase) || 20;
+    let mult        = parseInt(String(s.multBase || 'x2').replace(/[^\d]/g, '')) || 2;
+    let ataqueBonus = 0;
+    let dobraAmeaca = false;
+    const danoExtras = [];
+
+    (s.melhoriasSel || []).forEach(sel => {
+        const ef = MELHORIA_EFEITOS[sel.id];
+        if (!ef) return;
+        if (ef.ataque)      ataqueBonus += ef.ataque;
+        if (ef.mult)        mult += ef.mult;
+        if (ef.critThreat)  critThreat += ef.critThreat;
+        if (ef.dobraAmeaca) dobraAmeaca = true;
+        if (ef.danoExtra)   danoExtras.push(ef.danoExtra);
+        if (ef.danoExtraMesmoTipo) {
+            const md = String(s.danoBase || '').match(/(\d+)d(\d+)/i);
+            if (md) danoExtras.push(`1d${md[2]}`);
+        }
+    });
+
+    if (dobraAmeaca) {
+        const margem = 21 - critThreat;
+        critThreat = 21 - margem * 2;
+    }
+    critThreat = Math.max(2, Math.min(20, critThreat));
+
+    s.crit = String(critThreat);
+    s.mult = 'x' + mult;
+    s.dano = danoExtras.length ? `${s.danoBase}+${danoExtras.join('+')}` : s.danoBase;
+    if (ataqueBonus) s.ataqueBonus = ataqueBonus; else delete s.ataqueBonus;
+    s.melhorias = (s.melhoriasSel || []).map(x => x.nome); // compat. com renderização antiga
 }
 
 function _garantirModalRolagemItem() {
@@ -6246,8 +6582,11 @@ function _abrirModalRolagemItem(nomeArma, stats) {
         const isFalha = rollAtk === 1;
 
         atkNum.classList.remove('rolando');
-        atkNum.textContent = rollAtk;
-        atkDet.textContent = `d20 [${rollAtk}]`;
+        const bonus = stats.ataqueBonus || 0;
+        atkNum.textContent = bonus ? (rollAtk + bonus) : rollAtk;
+        atkDet.textContent = bonus
+            ? `d20 [${rollAtk}] + ${bonus} (modificações)`
+            : `d20 [${rollAtk}]`;
 
         let tipoAtaque = 'normal';
         if (isCrit) {
@@ -6454,9 +6793,15 @@ function adicionarItemHomebrew(indexFiltrado, buscaAtual, subFiltroAtual) {
 
     if (!estado.inventario) estado.inventario = [];
     estado.inventario.push({ nome: item.nome, cat: catInv, qtd: 1, desc: descTexto, hbStats, homebrew: true });
+    const novoIdx = estado.inventario.length - 1;
     salvarEstado();
     renderInventario();
     mostrarToast(`✦ ${item.nome} ADICIONADO AO INVENTÁRIO`);
+    // Arma recém-adicionada: fecha o seletor de Homebrew e abre o painel de Modificações/Maldições
+    if (catInv === 'ARMA') {
+        fecharModalHomebrew();
+        abrirPainelMelhoriasItem(novoIdx);
+    }
 }
 
 // ══════════════════════════════════════════════
@@ -7311,6 +7656,7 @@ function adicionarItemCatalogoOP(idx) {
         novoItem.armaStats = { dano: item.dano, crit: item.crit || null, tipoDano: item.tipoDano || '' };
     }
     estado.inventario.push(novoItem);
+    const novoIdx = estado.inventario.length - 1;
     salvarEstado();
     renderInventario();
 
@@ -7331,6 +7677,11 @@ function adicionarItemCatalogoOP(idx) {
     }
 
     mostrarToast(`✦ ${item.nome} ADICIONADO AO INVENTÁRIO`);
+    // Arma recém-adicionada: fecha o catálogo e abre o painel de Modificações/Maldições
+    if (catInv === 'ARMA') {
+        fecharModalCatalogoOP();
+        abrirPainelMelhoriasItem(novoIdx);
+    }
 }
 
 // ══════════════════════════════════════════════

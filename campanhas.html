@@ -586,6 +586,23 @@
             display: flex; align-items: center; justify-content: space-between; transition: 0.2s;
         }
         .jogador-row:hover { border-color: rgba(var(--tema-glow-rgb),0.3); }
+        .jogador-row-clicavel { cursor: pointer; }
+        .jogador-row-clicavel:hover { background: rgba(var(--tema-glow-rgb),0.05); }
+        .jogador-ver-perfil-btn {
+            background: rgba(var(--tema-glow-rgb),0.1);
+            border: 1px solid rgba(var(--tema-glow-rgb),0.4);
+            color: var(--tema-primary);
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 99px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .jogador-ver-perfil-btn:hover { background: rgba(var(--tema-glow-rgb),0.2); color: white; }
         .jogador-nome { font-size: 0.88rem; font-weight: 700; }
         .jogador-meta { font-size: 0.6rem; color: var(--text-dim); font-family: 'Share Tech Mono', monospace; margin-top: 2px; }
         .jogador-badge {
@@ -952,6 +969,42 @@
     }
     .cor-btn:hover { transform: scale(1.18); }
     .cor-btn.ativa { border-color: white; transform: scale(1.22); box-shadow: 0 0 0 3px rgba(255,255,255,0.12); }
+
+    /* ===== MODO SOMENTE-LEITURA (visualizando perfil de outro jogador) ===== */
+    .perfil-card.somente-leitura .perfil-top-actions .perfil-top-btn.primary,
+    .perfil-card.somente-leitura .perfil-top-actions .perfil-top-btn.danger,
+    .perfil-card.somente-leitura .perfil-banner-edit,
+    .perfil-card.somente-leitura .perfil-avatar-edit,
+    .perfil-card.somente-leitura .perfil-cor-row { display: none !important; }
+    .perfil-card.somente-leitura .perfil-banner,
+    .perfil-card.somente-leitura .perfil-avatar-wrap { cursor: default; }
+    .perfil-card.somente-leitura .perfil-status,
+    .perfil-card.somente-leitura .perfil-bio,
+    .perfil-card.somente-leitura .perfil-pronomes { cursor: default; }
+    .perfil-card.somente-leitura .perfil-status:hover,
+    .perfil-card.somente-leitura .perfil-bio:hover { background: inherit; color: inherit; }
+    .perfil-top-btn.fechar-leitura {
+        display: none;
+        background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.18); color: #ddd;
+    }
+    .perfil-top-btn.fechar-leitura:hover { background: rgba(0,0,0,0.85); color: white; }
+    .perfil-card.somente-leitura .perfil-top-btn.fechar-leitura { display: inline-flex; }
+
+    /* Seção "Fichas nesta campanha" — exibida só ao visualizar perfil de outro jogador */
+    .perfil-fichas-section { display: none; }
+    .perfil-card.somente-leitura .perfil-fichas-section { display: block; }
+    .perfil-fichas-lista { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+    .perfil-ficha-card {
+        display: flex; align-items: center; gap: 10px;
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 10px; padding: 8px 10px; text-decoration: none; transition: 0.15s;
+    }
+    .perfil-ficha-card:hover { background: rgba(var(--perfil-accent-glow, var(--tema-glow-rgb)),0.12); border-color: var(--perfil-accent, var(--tema-primary)); }
+    .perfil-ficha-foto { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: #1a1a1a; }
+    .perfil-ficha-info { flex: 1; min-width: 0; }
+    .perfil-ficha-nome { font-size: 0.78rem; font-weight: 700; color: #f0ecf5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .perfil-ficha-meta { font-size: 0.62rem; color: #9d93ac; font-family: 'Share Tech Mono', monospace; margin-top: 1px; }
+    .perfil-fichas-vazio { font-size: 0.72rem; color: #6b6478; font-style: italic; margin-top: 6px; }
 
     /* ===== MODAL DE EDIÇÃO DE PERFIL — GLASSMORPHISM ===== */
     @keyframes perfilEditOverlayIn {
@@ -2405,16 +2458,18 @@ function renderJogadores(jogadores, isMestre) {
     }
     el.innerHTML = jogadores.map(j => {
         const nomeEsc = (j.nome || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        const uidEsc  = (j.uid  || '').replace(/'/g, "\\'");
         const btnRemover = (isMestre && j.papel !== 'mestre')
-            ? `<button onclick="removerJogador('${j.uid}','${nomeEsc}')" style="background:none;border:none;color:#444;cursor:pointer;font-size:0.85rem;" title="Remover Player" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#444'">&#x1F5D1;</button>`
+            ? `<button onclick="event.stopPropagation();removerJogador('${j.uid}','${nomeEsc}')" style="background:none;border:none;color:#444;cursor:pointer;font-size:0.85rem;" title="Remover Player" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='#444'">&#x1F5D1;</button>`
             : '';
-        return `<div class="jogador-row">
+        return `<div class="jogador-row jogador-row-clicavel" onclick="abrirPerfilJogador('${nomeEsc}','${uidEsc}')" title="Ver perfil de ${nomeEsc}">
             <div>
                 <div class="jogador-nome">${j.nome || 'Agente Anônimo'}</div>
                 <div class="jogador-meta">Entrou: ${j.entradoEm?.toDate ? j.entradoEm.toDate().toLocaleDateString('pt-BR') : '—'}</div>
             </div>
             <div style="display:flex;align-items:center;gap:10px;">
                 <span class="jogador-badge ${j.papel || 'jogador'}">${j.papel === 'mestre' ? '★ MESTRE' : '◆ JOGADOR'}</span>
+                <button class="jogador-ver-perfil-btn" onclick="event.stopPropagation();abrirPerfilJogador('${nomeEsc}','${uidEsc}')" title="Ver perfil">👤 Perfil</button>
                 ${btnRemover}
             </div>
         </div>`;
@@ -3577,6 +3632,9 @@ async function carregarPerfilFirebase(usuario) {
 window.abrirPainelPerfil = async function(e) {
     if (e) e.stopPropagation();
     const usuario = getUsuarioLogado(); if (!usuario) return;
+    _perfilModoLeitura = false;
+    _perfilUidVisualizado = currentUser ? currentUser.uid : null;
+    document.getElementById('perfil-card').classList.remove('somente-leitura');
     document.getElementById('perfil-overlay').classList.add('show');
     // Sempre carrega do Firebase primeiro (fonte de verdade)
     const perfilFB = await carregarPerfilFirebase(usuario);
@@ -3587,17 +3645,45 @@ window.abrirPainelPerfil = async function(e) {
     } else {
         perfil = getPerfilLocal();
     }
-    renderPainelPerfil(usuario, perfil);
+    renderPainelPerfil(usuario, perfil, _perfilUidVisualizado);
 };
 
-async function renderPainelPerfil(usuario, perfil) {
+// ══ ABRIR PERFIL PÚBLICO DE OUTRO JOGADOR (a partir da aba "Jogadores" de uma campanha) ══
+// Recebe o "usuario" (nome/login usado como chave em perfis/{usuario} no RTDB) e o
+// uid de autenticação do jogador (usado para badges e para localizar as fichas dele).
+window.abrirPerfilJogador = async function(usuario, uid) {
+    if (!usuario) return;
+
+    // Se o próprio jogador clicar em si mesmo, abre o painel editável normal
+    if (usuario === getUsuarioLogado()) {
+        return window.abrirPainelPerfil();
+    }
+
+    _perfilModoLeitura = true;
+    _perfilUidVisualizado = uid || null;
+    document.getElementById('perfil-card').classList.add('somente-leitura');
+    document.getElementById('perfil-overlay').classList.add('show');
+
+    // Estado de carregamento simples enquanto busca no Firebase
+    document.getElementById('perfil-username').textContent = usuario;
+    document.getElementById('perfil-handle').textContent   = '@' + usuario;
+
+    const perfil = (await carregarPerfilFirebase(usuario)) || {};
+    renderPainelPerfil(usuario, perfil, uid);
+};
+
+async function renderPainelPerfil(usuario, perfil, uidAlvo) {
+    const souEu = usuario === getUsuarioLogado();
+
     document.getElementById('perfil-username').textContent = perfil.nickname || usuario;
     document.getElementById('perfil-handle').textContent   = '@' + usuario;
     const avatarEl    = document.getElementById('perfil-avatar-img');
     const fotoFirebase = perfil.foto || '';
-    const fotoLocal    = await _imgDB.get(getAvatarKey()) || '';
+    // Cache local (IndexedDB) só é lido/gravado para o PRÓPRIO usuário —
+    // ao ver o perfil de outro jogador usamos exclusivamente o que veio do Firebase.
+    const fotoLocal    = souEu ? (await _imgDB.get(getAvatarKey()) || '') : '';
     const fotoSalva    = fotoFirebase || fotoLocal;
-    if (fotoFirebase && fotoFirebase !== fotoLocal) {
+    if (souEu && fotoFirebase && fotoFirebase !== fotoLocal) {
         await _imgDB.set(getAvatarKey(), fotoFirebase);
     }
     const iniciais  = usuario.substring(0,2).toUpperCase();
@@ -3608,16 +3694,18 @@ async function renderPainelPerfil(usuario, perfil) {
     }
     const corBorda = perfil.corBorda || '';
     const wrap = document.getElementById('perfil-avatar-wrap');
+    wrap.classList.toggle('borda-ativa', !!corBorda);
     if (corBorda) {
-        wrap.classList.add('borda-ativa');
         wrap.style.setProperty('--perfil-borda', corBorda);
         document.querySelectorAll('.cor-btn').forEach(b => b.classList.toggle('ativa', b.dataset.cor === corBorda));
+    } else {
+        document.querySelectorAll('.cor-btn').forEach(b => b.classList.remove('ativa'));
     }
-    const bannerKey = getUsuarioLogado() + '_banner_perfil';
+    const bannerKey = usuario + '_banner_perfil';
     const bannerFirebase = perfil.banner || null;
-    const bannerLocal    = await _imgDB.get(bannerKey) || null;
+    const bannerLocal    = souEu ? (await _imgDB.get(bannerKey) || null) : null;
     const bannerData     = bannerFirebase || bannerLocal;
-    if (bannerFirebase && bannerFirebase !== bannerLocal) {
+    if (souEu && bannerFirebase && bannerFirebase !== bannerLocal) {
         await _imgDB.set(bannerKey, bannerFirebase);
     }
     if (bannerData) {
@@ -3632,13 +3720,13 @@ async function renderPainelPerfil(usuario, perfil) {
     }
     const statusEl = document.getElementById('perfil-status-display');
     if (perfil.status) { statusEl.textContent = '💬 ' + perfil.status; statusEl.classList.remove('vazio'); }
-    else { statusEl.textContent = 'Clique para adicionar um recado...'; statusEl.classList.add('vazio'); }
+    else { statusEl.textContent = souEu ? 'Clique para adicionar um recado...' : 'Nenhum recado no momento.'; statusEl.classList.add('vazio'); }
     const bioEl = document.getElementById('perfil-bio-display');
     if (perfil.bio) { bioEl.textContent = perfil.bio; bioEl.classList.remove('vazio'); }
-    else { bioEl.textContent = 'Nenhuma descrição ainda...'; bioEl.classList.add('vazio'); }
+    else { bioEl.textContent = souEu ? 'Nenhuma descrição ainda...' : 'Este jogador ainda não escreveu uma bio.'; bioEl.classList.add('vazio'); }
     document.getElementById('perfil-pronomes-display').textContent = perfil.pronomes || '';
     const dataEntrada = perfil.dataEntrada || new Date().toLocaleDateString('pt-BR');
-    if (!perfil.dataEntrada) { perfil.dataEntrada = dataEntrada; setPerfilLocal(perfil); }
+    if (souEu && !perfil.dataEntrada) { perfil.dataEntrada = dataEntrada; setPerfilLocal(perfil); }
     document.getElementById('perfil-membro-desde').textContent = '▸ Membro desde ' + dataEntrada;
 
     const cardEl = document.getElementById('perfil-card');
@@ -3650,7 +3738,8 @@ async function renderPainelPerfil(usuario, perfil) {
         cardEl.style.removeProperty('--perfil-accent-glow');
     }
 
-    await renderBadges(usuario);
+    await renderBadges(usuario, uidAlvo);
+    if (!souEu) await renderFichasPublicasJogador(usuario, uidAlvo);
 }
 
 // Converte #rrggbb para "r,g,b" (para usar em rgba())
@@ -3669,7 +3758,9 @@ function ehCriadorDoSite(usuario) {
     return !!usuario && usuario.toLowerCase() === USUARIO_CRIADOR_SITE;
 }
 
-async function renderBadges(usuario) {
+// uidAlvo: uid do jogador cujo perfil está sendo exibido — usado para checar
+// se ELE é mestre de alguma campanha (antes usava sempre o uid de quem está logado).
+async function renderBadges(usuario, uidAlvo) {
     const badgesEl = document.getElementById('perfil-badges');
     badgesEl.innerHTML = '';
 
@@ -3682,7 +3773,7 @@ async function renderBadges(usuario) {
 
     // badge Mestre — verifica campanhas que o usuário criou (já temos o db Firestore aqui)
     try {
-        const uid = currentUser ? currentUser.uid : (localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase'));
+        const uid = uidAlvo || (currentUser ? currentUser.uid : (localStorage.getItem('ficha_uid') || localStorage.getItem('ficha_uid_firebase')));
         if (uid && typeof db !== 'undefined') {
             const { query: q, collection: col, where: wh, getDocs: gd } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
             const snap = await gd(q(col(db, 'campanhas'), wh('mestreUid', '==', uid)));
@@ -3695,14 +3786,59 @@ async function renderBadges(usuario) {
     badgesEl.innerHTML += `<span class="perfil-badge badge-novato">🌑 Novato</span>`;
 }
 
+// Lista as fichas (agentes) que o jogador visualizado possui na campanha ATUAL,
+// com link para a visualização pública da ficha (ficha-view.html).
+async function renderFichasPublicasJogador(usuario, uidAlvo) {
+    const cont = document.getElementById('perfil-fichas-lista');
+    if (!cont) return;
+    cont.innerHTML = `<div class="perfil-fichas-vazio">Carregando…</div>`;
+
+    if (!campanhaAtual || typeof db === 'undefined') {
+        cont.innerHTML = `<div class="perfil-fichas-vazio">Nenhuma ficha encontrada.</div>`;
+        return;
+    }
+    try {
+        const { getDocs: gd, collection: col } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+        const snap = await gd(col(db, 'campanhas', campanhaAtual, 'agentes'));
+        const fichas = snap.docs
+            .map(d => ({ id: d.id, ...d.data() }))
+            .filter(a => (uidAlvo && a.playerUid === uidAlvo) || (!uidAlvo && a.playerNome === usuario));
+
+        if (fichas.length === 0) {
+            cont.innerHTML = `<div class="perfil-fichas-vazio">Nenhuma ficha nesta campanha ainda.</div>`;
+            return;
+        }
+        cont.innerHTML = fichas.map(a => `
+            <a class="perfil-ficha-card" href="ficha-view.html?fichaId=${a.fichaLocalId}&playerNome=${encodeURIComponent(a.playerNome || usuario)}&campanha=${campanhaAtual}">
+                <img class="perfil-ficha-foto" src="${a.foto || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(a.nome)}`}" alt="${a.nome}">
+                <div class="perfil-ficha-info">
+                    <div class="perfil-ficha-nome">${a.nome}${a.codinome ? ` "${a.codinome}"` : ''}</div>
+                    <div class="perfil-ficha-meta">${a.classe || '—'} • ${a.origem || '—'} • Nível ${a.nivel || 1}</div>
+                </div>
+            </a>`).join('');
+    } catch(e) {
+        console.warn('[PERFIL] Erro ao carregar fichas do jogador:', e);
+        cont.innerHTML = `<div class="perfil-fichas-vazio">Não foi possível carregar as fichas.</div>`;
+    }
+}
+
 window.fecharPainelPerfil = function(e) {
     if (e && e.target !== document.getElementById('perfil-overlay')) return;
     document.getElementById('perfil-overlay').classList.remove('show');
+    document.getElementById('perfil-card').classList.remove('somente-leitura');
+    _perfilModoLeitura = false;
+    _perfilUidVisualizado = null;
 };
+
+// Flags de estado do painel de perfil: quando true, estamos vendo o perfil
+// de OUTRO jogador (somente leitura) — não o nosso, que é editável.
+let _perfilModoLeitura = false;
+let _perfilUidVisualizado = null;
 
 let _perfilCampoAtual = null;
 
 window.abrirEditPerfil = function(campoFoco) {
+    if (_perfilModoLeitura) return; // não é possível editar o perfil de outro jogador
     const overlay  = document.getElementById('perfil-edit-overlay');
     const nickEl   = document.getElementById('perfil-edit-nickname');
     const statusEl = document.getElementById('perfil-edit-status');
@@ -3846,6 +3982,7 @@ window.salvarEditPerfil = async function() {
 
 /* ── Borda colorida ── */
 window.aplicarCorBorda = async function(el) {
+    if (_perfilModoLeitura) return;
     const cor    = el.dataset.cor;
     const perfil = getPerfilLocal();
     perfil.corBorda = cor;
@@ -3861,9 +3998,11 @@ window.aplicarCorBorda = async function(el) {
 };
 
 window.perfilClicarAvatar = function() {
+    if (_perfilModoLeitura) return;
     document.getElementById('input-foto-perfil').click();
 };
 window.perfilClicarBanner = function() {
+    if (_perfilModoLeitura) return;
     document.getElementById('input-banner-perfil').click();
 };
 
@@ -4022,6 +4161,7 @@ window.fazerLogout = async function() {
       <div class="perfil-top-actions">
         <button class="perfil-top-btn primary" onclick="event.stopPropagation();abrirEditPerfil('bio')">✎ Editar Perfil</button>
         <button class="perfil-top-btn danger" onclick="event.stopPropagation();fazerLogout()">✕ Sair</button>
+        <button class="perfil-top-btn fechar-leitura" onclick="event.stopPropagation();fecharPainelPerfil()">✕ Fechar</button>
       </div>
     </div>
 
@@ -4092,6 +4232,13 @@ window.fazerLogout = async function() {
         <div class="cor-btn" data-cor="#ff6ec7" style="background:#ff6ec7" onclick="aplicarCorBorda(this)" title="Rosa"></div>
         <div class="cor-btn" data-cor="#888888" style="background:#888888" onclick="aplicarCorBorda(this)" title="Cinza"></div>
         <div class="cor-btn" data-cor="#ffffff" style="background:#ffffff" onclick="aplicarCorBorda(this)" title="Branco"></div>
+      </div>
+
+      <!-- Fichas públicas na campanha atual (só aparece ao ver o perfil de outro jogador) -->
+      <hr class="perfil-divider perfil-fichas-section">
+      <div class="perfil-fichas-section">
+        <div class="perfil-bio-label">Fichas nesta campanha</div>
+        <div class="perfil-fichas-lista" id="perfil-fichas-lista"></div>
       </div>
     </div>
   </div>
