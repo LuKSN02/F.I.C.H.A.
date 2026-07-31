@@ -1338,6 +1338,31 @@ const db   = getFirestore(app);
 const rtdb = getDatabase(app);
 const auth = getAuth(app);
 
+// ═══ SEGURANÇA: escapa texto vindo de outros usuários (chat, nomes, cores)
+// antes de injetar em innerHTML, evitando XSS armazenado via Firebase.
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+// Para atributos que esperam uma cor CSS (style="background:${cor}"): só aceita
+// formatos válidos de cor (#hex, rgb(), nome simples) — qualquer outra coisa vira
+// a cor padrão, fechando a brecha de injeção via "background:${p.cor}".
+function safeColor(str, fallback = '#4a8fe8') {
+  const s = String(str || '').trim();
+  if (/^#[0-9a-fA-F]{3,8}$/.test(s)) return s;
+  if (/^rgb(a)?\([\d.,\s%]+\)$/.test(s)) return s;
+  if (/^[a-zA-Z]{3,20}$/.test(s)) return s;
+  return fallback;
+}
+// Para src de imagem: só permite http(s)/data URLs, bloqueando javascript: e afins.
+function safeImgSrc(str) {
+  const s = String(str || '').trim();
+  if (/^(https?:|data:image\/)/i.test(s)) return s;
+  return '';
+}
+
 // ═══ ESTADO GLOBAL ═══
 let campanhaId   = null;
 let currentUser  = null;
@@ -1550,12 +1575,15 @@ function iniciarPresenca() {
 function renderPlayers(players) {
   const list = document.getElementById('players-list');
   if (!list) return;
-  list.innerHTML = players.map(p=>`
+  list.innerHTML = players.map(p=>{
+    const cor = safeColor(p.cor);
+    return `
     <div class="player-row">
-      <div class="player-dot" style="background:${p.cor||'#4a8fe8'};box-shadow:0 0 5px ${p.cor||'#4a8fe8'};"></div>
-      <span class="player-name">${p.nome||'Agente'}</span>
-      <span class="player-badge ${p.role||'jogador'}">${p.role==='mestre'?'★ GM':'◆ JOG'}</span>
-    </div>`).join('');
+      <div class="player-dot" style="background:${cor};box-shadow:0 0 5px ${cor};"></div>
+      <span class="player-name">${escapeHtml(p.nome||'Agente')}</span>
+      <span class="player-badge ${p.role==='mestre'?'mestre':'jogador'}">${p.role==='mestre'?'★ GM':'◆ JOG'}</span>
+    </div>`;
+  }).join('');
 }
 
 // ═══ CANVAS ═══
@@ -2139,13 +2167,16 @@ async function _ntCarregarFichas() {
       return;
     }
     grid.innerHTML = _fichasCampanha.map((f,i) => {
-      const avatar = f.foto || f.fotoUrl || '';
-      const nome   = f.nome || f.personagem || 'Sem nome';
-      return `<div class="ficha-card" onclick="_ntSelecionarFicha(${i})" id="nt-fc-${i}">
+      const avatar = safeImgSrc(f.foto || f.fotoUrl || '');
+      const nome   = escapeHtml(f.nome || f.personagem || 'Sem nome');
+      return `<div class="ficha-card" data-ficha-idx="${i}" id="nt-fc-${i}">
         <div class="ficha-card-avatar">${avatar ? `<img src="${avatar}" alt="">` : `<span>🧙</span>`}</div>
         <div class="ficha-card-name">${nome}</div>
       </div>`;
     }).join('');
+    grid.querySelectorAll('.ficha-card').forEach(card => {
+      card.addEventListener('click', () => _ntSelecionarFicha(Number(card.dataset.fichaIdx)));
+    });
   } catch(err) {
     grid.innerHTML = '<div style="color:var(--red);font-size:11px;text-align:center;padding:12px;grid-column:1/-1;">Erro ao carregar fichas.</div>';
   }
@@ -2173,7 +2204,7 @@ window._ntSelecionarFicha = function(idx) {
   // Preview selecionada
   const preview = document.getElementById('nt-ficha-selected-preview');
   preview.style.display = 'flex';
-  const avatar = f.foto || f.fotoUrl || '';
+  const avatar = safeImgSrc(f.foto || f.fotoUrl || '');
   document.getElementById('nt-ficha-sel-avatar').innerHTML = avatar ? `<img src="${avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:7px;">` : '🧙';
   document.getElementById('nt-ficha-sel-nome').textContent = nome;
   document.getElementById('nt-ficha-sel-meta').textContent = [f.origem, f.classe, f.trilha].filter(Boolean).join(' · ') || f.nex || '';
@@ -2330,12 +2361,13 @@ function renderTokenList() {
     const pct = t.pvmax > 0 ? Math.max(0, Math.min(100, (t.pv / t.pvmax) * 100)) : 0;
     const hpColor = pct > 50 ? '#00b894' : pct > 25 ? '#fdcb6e' : '#e84040';
     const sel = id === selectedTokenId ? 'selected' : '';
+    const imgSrc = safeImgSrc(t.img);
     return `<div class="token-item ${sel}" data-token-id="${id}">
-      <div class="token-avatar" style="background:${(t.cor||'#4a8fe8')}22;">
-        ${t.img ? `<img src="${t.img}" alt="">` : `<span>${t.icon || getDefaultIcon(t.tipo)}</span>`}
+      <div class="token-avatar" style="background:${safeColor(t.cor)}22;">
+        ${imgSrc ? `<img src="${imgSrc}" alt="">` : `<span>${escapeHtml(t.icon) || getDefaultIcon(t.tipo)}</span>`}
       </div>
       <div class="token-info">
-        <div class="token-name">${t.nome || '?'}</div>
+        <div class="token-name">${escapeHtml(t.nome) || '?'}</div>
         <div class="token-hp-bar"><div class="token-hp-fill" style="width:${pct}%;background:${hpColor};"></div></div>
         <div class="token-sub">PV ${t.pv ?? '?'}/${t.pvmax ?? '?'}</div>
       </div>
@@ -2440,23 +2472,27 @@ function renderInitiative() {
 
   const cur = initList[currentTurn] || initList[0];
   if (cur) { banner.style.display = 'block'; banner.textContent = `⚔ Turno de ${cur.nome}`; document.getElementById('turn-name').textContent = cur.nome; document.getElementById('turn-indicator').classList.add('show'); setTimeout(()=>document.getElementById('turn-indicator').classList.remove('show'), 3000); }
+  // textContent acima já é seguro por natureza (não interpreta HTML).
 
   list.innerHTML = [...initList].sort((a,b)=>b.score-a.score).map((item, realIdx) => {
     const isCur = item.id === (initList[currentTurn]||{}).id;
     return `<div class="init-item ${isCur?'current-turn':''}">
       <div class="init-num">${item.score}</div>
       <div class="init-info">
-        <div class="init-name">${item.nome}</div>
+        <div class="init-name">${escapeHtml(item.nome)}</div>
         <div class="init-hp">HP: ${item.pv??'—'}/${item.pvmax??'—'}</div>
       </div>
-      <button class="init-remove" onclick="removerInit('${item.id}')">✕</button>
+      <button class="init-remove" data-remove-id="${item.id}">✕</button>
     </div>`;
   }).join('');
+  list.querySelectorAll('.init-remove').forEach(btn => {
+    btn.addEventListener('click', () => removerInit(btn.dataset.removeId));
+  });
 }
 
 function atualizarInitTokenSelect() {
   const sel = document.getElementById('init-token-sel');
-  sel.innerHTML = '<option value="">Selecione token...</option>' + Object.entries(tokens).map(([id,t])=>`<option value="${id}">${t.nome||'?'}</option>`).join('');
+  sel.innerHTML = '<option value="">Selecione token...</option>' + Object.entries(tokens).map(([id,t])=>`<option value="${id}">${escapeHtml(t.nome)||'?'}</option>`).join('');
 }
 
 window.nextTurn = async function() {
@@ -2491,10 +2527,10 @@ function renderChat(msgs) {
     if (m.tipo === 'dado') cls += ' roll';
     const time = m.ts ? new Date(m.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
     const content = m.tipo === 'dado'
-      ? `<span class="chat-roll-result">${m.resultado}</span><span style="font-size:10px;color:var(--text3);">${m.texto||''}</span>`
-      : (m.texto||'');
+      ? `<span class="chat-roll-result">${escapeHtml(m.resultado)}</span><span style="font-size:10px;color:var(--text3);">${escapeHtml(m.texto)}</span>`
+      : escapeHtml(m.texto);
     return `<div class="${cls}">
-      <div class="chat-author">${m.autor||'?'} · ${time}</div>
+      <div class="chat-author">${escapeHtml(m.autor)||'?'} · ${time}</div>
       <div>${content}</div>
     </div>`;
   }).join('');
