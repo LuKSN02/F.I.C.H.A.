@@ -6293,49 +6293,59 @@ function salvarModificacaoItem() {
     const item = estado.inventario[_modItemIndexAtual];
     if (!item) return;
 
-    const nome = document.getElementById('mod-item-nome').value.trim();
-    if (!nome) { mostrarToast('⚠ Informe o nome do item'); return; }
-    const cat  = document.getElementById('mod-item-cat').value;
-    const desc = document.getElementById('mod-item-desc').value.trim();
+    try {
+        const nome = document.getElementById('mod-item-nome').value.trim();
+        if (!nome) { mostrarToast('⚠ Informe o nome do item'); return; }
+        const cat  = document.getElementById('mod-item-cat').value;
+        const desc = document.getElementById('mod-item-desc').value.trim();
 
-    item.nome = nome;
-    item.cat  = cat;
-    item.desc = desc;
-    item.custom = true;
-    item.homebrew = true;
+        item.nome = nome;
+        item.cat  = cat;
+        item.desc = desc;
+        item.custom = true;
+        item.homebrew = true;
 
-    if (cat === 'ARMA') {
-        const dano = document.getElementById('mod-item-dano').value.trim();
-        const tipo = document.getElementById('mod-item-tipo').value;
-        const crit = document.getElementById('mod-item-crit').value.trim() || '20';
-        const mult = document.getElementById('mod-item-mult').value.trim() || '2';
-        if (!_isValidDanoExpr(dano.replace(/\s+/g, ''))) {
-            mostrarToast('⚠ Formato de dano inválido. Use ex: 8d8, 2d6+2 ou 1d6+1d4');
-            return;
+        if (cat === 'ARMA') {
+            const dano = document.getElementById('mod-item-dano').value.trim();
+            const tipo = document.getElementById('mod-item-tipo').value;
+            const crit = document.getElementById('mod-item-crit').value.trim() || '20';
+            const mult = document.getElementById('mod-item-mult').value.trim() || '2';
+            console.log('[salvarModificacaoItem] valores lidos do formulário:', { dano, tipo, crit, mult });
+            if (!_isValidDanoExpr(dano.replace(/\s+/g, ''))) {
+                console.warn('[salvarModificacaoItem] validação de dano FALHOU, nada foi salvo:', dano);
+                mostrarToast('⚠ Formato de dano inválido. Use ex: 8d8, 2d6+2 ou 1d6+1d4');
+                return;
+            }
+            // Preserva modificações/maldições já aplicadas: os valores editados aqui
+            // viram a nova "base" (danoBase/critBase/multBase) e as melhorias são
+            // SEMPRE recalculadas do zero em cima dela (nunca acumuladas sobre o
+            // valor final anterior) — isso é o que impede a taxa de crítico de
+            // cair e o multiplicador de subir a cada edição.
+            const melhoriasSel = item.hbStats?.melhoriasSel || [];
+            item.hbStats = {
+                tipo,
+                danoBase: dano, critBase: crit, multBase: 'x' + mult.replace(/[^\d]/g,''),
+                // dano/crit/mult finais são preenchidos abaixo por _recalcularMelhoriasItem
+                dano, crit, mult: 'x' + mult.replace(/[^\d]/g,''),
+                melhoriasSel
+            };
+            delete item.armaStats; // hbStats passa a ser a fonte única de verdade
+            _recalcularMelhoriasItem(item); // sempre recalcula do zero a partir da base
+            console.log('[salvarModificacaoItem] hbStats final após recálculo:', JSON.stringify(item.hbStats));
+        } else {
+            delete item.hbStats;
         }
-        // Preserva modificações/maldições já aplicadas: os valores editados aqui
-        // viram a nova "base" (danoBase/critBase/multBase) e as melhorias são
-        // SEMPRE recalculadas do zero em cima dela (nunca acumuladas sobre o
-        // valor final anterior) — isso é o que impede a taxa de crítico de
-        // cair e o multiplicador de subir a cada edição.
-        const melhoriasSel = item.hbStats?.melhoriasSel || [];
-        item.hbStats = {
-            tipo,
-            danoBase: dano, critBase: crit, multBase: 'x' + mult.replace(/[^\d]/g,''),
-            // dano/crit/mult finais são preenchidos abaixo por _recalcularMelhoriasItem
-            dano, crit, mult: 'x' + mult.replace(/[^\d]/g,''),
-            melhoriasSel
-        };
-        delete item.armaStats; // hbStats passa a ser a fonte única de verdade
-        _recalcularMelhoriasItem(item); // sempre recalcula do zero a partir da base
-    } else {
-        delete item.hbStats;
-    }
 
-    salvarEstado();
-    renderInventario();
-    _fecharModalModificarItem();
-    mostrarToast('✦ ITEM MODIFICADO');
+        salvarEstado();
+        renderInventario();
+        _fecharModalModificarItem();
+        mostrarToast('✦ ITEM MODIFICADO');
+    } catch (err) {
+        // Se algo quebrar aqui, antes ele falhava em silêncio e parecia
+        // que "nada acontece ao salvar". Agora o erro fica visível.
+        console.error('[salvarModificacaoItem] ERRO:', err);
+        mostrarToast('⚠ Erro ao salvar — veja o console (F12)');
+    }
 }
 
 // ══════════════════════════════════════════════
