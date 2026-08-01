@@ -953,6 +953,14 @@
         box-shadow: 0 0 14px rgba(155,48,217,0.5);
     }
 
+    /* Badges especiais — Ajudante e Marido do Criador */
+    .badge-ajudante {
+        background: rgba(46,230,214,0.15); border: 1px solid #2ee6d6; color: #7cf5e9;
+    }
+    .badge-marido-criador {
+        background: rgba(212,69,61,0.15); border: 1px solid #d4453d; color: #ff8a80;
+    }
+
     /* Cor de destaque (borda do avatar) */
     .perfil-cor-row {
         display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap;
@@ -3758,6 +3766,16 @@ function ehCriadorDoSite(usuario) {
     return !!usuario && usuario.toLowerCase() === USUARIO_CRIADOR_SITE;
 }
 
+// Cargos especiais atribuídos manualmente a usuários específicos (além dos
+// cargos automáticos de Membro/Mestre/Novato calculados abaixo).
+const CARGOS_ESPECIAIS = {
+    'gabbe': [
+        { classe: 'badge-criador',        label: '★ Criador' },
+        { classe: 'badge-ajudante',       label: '🛠️ Ajudante' },
+        { classe: 'badge-marido-criador', label: '💍 Marido do Criador' },
+    ],
+};
+
 // uidAlvo: uid do jogador cujo perfil está sendo exibido — usado para checar
 // se ELE é mestre de alguma campanha (antes usava sempre o uid de quem está logado).
 async function renderBadges(usuario, uidAlvo) {
@@ -3767,6 +3785,14 @@ async function renderBadges(usuario, uidAlvo) {
     // Badge especial de Criador do site (fixo, não depende de dados salvos)
     if (ehCriadorDoSite(usuario)) {
         badgesEl.innerHTML += `<span class="perfil-badge badge-criador">★ Criador</span>`;
+    }
+
+    // Cargos especiais atribuídos manualmente (ex.: gabbe → Criador, Ajudante, Marido do Criador)
+    const extras = CARGOS_ESPECIAIS[(usuario || '').toLowerCase()];
+    if (extras) {
+        extras.forEach(b => {
+            badgesEl.innerHTML += `<span class="perfil-badge ${b.classe}">${b.label}</span>`;
+        });
     }
 
     badgesEl.innerHTML += `<span class="perfil-badge badge-membro">⚡ Membro</span>`;
