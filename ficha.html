@@ -13,6 +13,7 @@
     <title>F.I.C.H.A. – Ficha do Agente</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/gif" href="ordem-paranormal-enigma-do-medo.gif">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
@@ -144,6 +145,331 @@
         --glass: rgba(255,255,255,0.015);
         --hairline: rgba(255,255,255,0.06);
     }
+
+    /* ===== TEMA: DOSSIÊ DE INVESTIGAÇÃO (Mural de Investigação) ===== */
+    :root[data-tema="dossie-investigacao"] {
+        --tema-primary:        #a32620;
+        --tema-primary-light:  #d4453d;
+        --tema-primary-dark:   #5a0000;
+        --tema-bg-body1:       #1d1712;
+        --tema-bg-body2:       #0c0a08;
+        --tema-glow-rgb:       163,38,32;
+        --tema-glow-light-rgb: 212,69,61;
+        --purple:      #a32620;
+        --purple-neon: #d4453d;
+        --purple-dark: #5a0000;
+        --purple-glow: rgba(163,38,32,0.45);
+        --bg:          #171310;
+        --card:        #1d1712;
+        --border:      rgba(163,38,32,0.22);
+        --text-dim:    #8a8272;
+        /* tokens exclusivos do tema */
+        --dossie-paper:    #e8dfc4;
+        --dossie-paper-2:  #ded2ac;
+        --dossie-ink:      #2b2620;
+        --dossie-ink-dim:  #6b6152;
+        --dossie-pin:      #b0aca4;
+        --dossie-text:     #d8d0bd;
+        --dossie-font-title: 'Special Elite', 'Oswald', sans-serif;
+        --dossie-font-body:  'Courier Prime', 'Share Tech Mono', monospace;
+    }
+
+    html[data-tema="dossie-investigacao"] body {
+        font-family: var(--dossie-font-body);
+        background:
+            repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px),
+            radial-gradient(ellipse 900px 500px at 50% -20%, rgba(0,0,0,0.3), transparent),
+            linear-gradient(135deg, var(--tema-bg-body1) 0%, var(--tema-bg-body2) 100%);
+        background-attachment: fixed;
+    }
+
+    /* ── títulos / rótulos ganham a "máquina de escrever" ── */
+    html[data-tema="dossie-investigacao"] .sec-title,
+    html[data-tema="dossie-investigacao"] .label-field,
+    html[data-tema="dossie-investigacao"] .aba-btn,
+    html[data-tema="dossie-investigacao"] .btn-temas,
+    html[data-tema="dossie-investigacao"] .temas-dropdown .td-header,
+    html[data-tema="dossie-investigacao"] .log-terminal-title,
+    html[data-tema="dossie-investigacao"] .nex-box .lbl,
+    html[data-tema="dossie-investigacao"] .atrib-label,
+    html[data-tema="dossie-investigacao"] .atrib-dado-btn .btn-label,
+    html[data-tema="dossie-investigacao"] .btn-dado {
+        font-family: var(--dossie-font-title) !important;
+    }
+    html[data-tema="dossie-investigacao"] .sec-title {
+        color: var(--tema-primary-light); opacity: 0.85;
+    }
+
+    /* ── painéis: aparência de quadro/cortiça ── */
+    html[data-tema="dossie-investigacao"] .card-combate,
+    html[data-tema="dossie-investigacao"] .card-atributos,
+    html[data-tema="dossie-investigacao"] .card-recursos,
+    html[data-tema="dossie-investigacao"] .card-defesa,
+    html[data-tema="dossie-investigacao"] .card-pericias,
+    html[data-tema="dossie-investigacao"] .abas {
+        border-radius: 8px;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+    }
+
+    /* ── card do personagem: vira a "ficha índice" de papel do dossiê ── */
+    html[data-tema="dossie-investigacao"] .card-personagem {
+        background: var(--dossie-paper);
+        border: none;
+        border-radius: 3px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.1) inset;
+        transform: rotate(-0.6deg);
+    }
+    html[data-tema="dossie-investigacao"] .card-personagem::before {
+        content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+        width: 16px; height: 16px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #d6d2c8, var(--dossie-pin) 60%, #6d6a63);
+        box-shadow: 0 3px 4px rgba(0,0,0,0.5);
+    }
+    html[data-tema="dossie-investigacao"] .card-personagem::after {
+        content: 'Confidencial'; position: absolute; top: 14px; right: 14px;
+        font-family: var(--dossie-font-title); font-size: 10px; letter-spacing: 1.5px;
+        color: var(--tema-primary); border: 2px solid var(--tema-primary); padding: 2px 7px;
+        transform: rotate(8deg); opacity: 0.75; text-transform: uppercase; pointer-events: none;
+    }
+    html[data-tema="dossie-investigacao"] .card-personagem .label-field { color: var(--dossie-ink-dim) !important; }
+    html[data-tema="dossie-investigacao"] .card-personagem .value-field {
+        color: var(--dossie-ink) !important; font-family: var(--dossie-font-title);
+        font-size: 0.85rem; border-bottom: 1px dashed rgba(43,38,32,0.35) !important;
+    }
+    html[data-tema="dossie-investigacao"] .card-personagem #display-criado { color: var(--dossie-ink-dim) !important; }
+    html[data-tema="dossie-investigacao"] .card-personagem #display-classe { color: var(--tema-primary) !important; }
+    html[data-tema="dossie-investigacao"] .card-personagem > div[style*="#444"] { color: var(--dossie-ink-dim) !important; }
+    html[data-tema="dossie-investigacao"] .card-personagem button[onclick*="abrirModalRenomear"] { color: var(--dossie-ink-dim) !important; }
+    html[data-tema="dossie-investigacao"] .card-personagem button[onclick*="abrirModalRenomear"]:hover { color: var(--tema-primary) !important; }
+
+    /* ── abas: viram "pastas" de arquivo ── */
+    html[data-tema="dossie-investigacao"] .aba-btn { letter-spacing: 1px; border-radius: 4px 4px 0 0; }
+    html[data-tema="dossie-investigacao"] .aba-btn.active { background: rgba(163,38,32,0.14); color: var(--tema-primary-light); }
+    html[data-tema="dossie-investigacao"] .aba-btn::after { background: var(--tema-primary); box-shadow: 0 0 8px var(--tema-primary); }
+
+    /* ── log de rolagens: vira "relatório de ocorrência" em papel ── */
+    html[data-tema="dossie-investigacao"] .log-terminal-bar { background: var(--dossie-paper-2); border-color: rgba(0,0,0,0.25); }
+    html[data-tema="dossie-investigacao"] .log-rolagens {
+        background: var(--dossie-paper);
+        box-shadow: inset 0 2px 10px rgba(0,0,0,0.18);
+    }
+    html[data-tema="dossie-investigacao"] .log-entrada { border-bottom: 1px dashed rgba(43,38,32,0.3); }
+    html[data-tema="dossie-investigacao"] .log-entrada:hover { background: rgba(163,38,32,0.07); }
+    html[data-tema="dossie-investigacao"] .log-entrada::before { content: '▸'; color: var(--tema-primary); opacity: 0.8; }
+    html[data-tema="dossie-investigacao"] .log-nome { color: var(--dossie-ink); font-family: var(--dossie-font-body); font-weight: 700; }
+    html[data-tema="dossie-investigacao"] .log-expr { color: var(--dossie-ink-dim); }
+    html[data-tema="dossie-investigacao"] .log-total.normal { color: var(--tema-primary); text-shadow: none; }
+    html[data-tema="dossie-investigacao"] .log-total.critico { color: #2f6b2f; text-shadow: none; }
+    html[data-tema="dossie-investigacao"] .log-total.falha { color: var(--tema-primary-dark); text-shadow: none; }
+    html[data-tema="dossie-investigacao"] .log-vazio { color: var(--dossie-ink-dim); }
+
+    /* ── botões de rolagem/ação: estilo carimbo ── */
+    html[data-tema="dossie-investigacao"] .btn-rolar,
+    html[data-tema="dossie-investigacao"] .btn-rolar-livre,
+    html[data-tema="dossie-investigacao"] .btn-rolar-pericia,
+    html[data-tema="dossie-investigacao"] .btn-add-item,
+    html[data-tema="dossie-investigacao"] .btn-add-poder,
+    html[data-tema="dossie-investigacao"] .ritual-btn-rolar {
+        font-family: var(--dossie-font-title); letter-spacing: 1px; text-transform: uppercase;
+    }
+    html[data-tema="dossie-investigacao"] .atrib-dado-btn:hover,
+    html[data-tema="dossie-investigacao"] .btn-recurso:hover,
+    html[data-tema="dossie-investigacao"] .pb-btn:hover {
+        background: var(--tema-primary); border-color: var(--tema-primary);
+    }
+
+    /* ── scrollbars e detalhes finos ── */
+    html[data-tema="dossie-investigacao"] .log-rolagens::-webkit-scrollbar-thumb { background: var(--tema-primary-dark); }
+    html[data-tema="dossie-investigacao"] .treinada-dot,
+    html[data-tema="dossie-investigacao"] .pericia-atrib-badge { background: var(--tema-primary-dark); }
+    html[data-tema="dossie-investigacao"] .pericia-atrib-badge { color: var(--tema-primary-light); }
+
+    /* ── botões secundários com fundo roxo fixo: viram acastanhado ── */
+    html[data-tema="dossie-investigacao"] .foto-gear-btn { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .barra-track { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .btn-recurso { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .btn-rolar-pericia { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .btn-rolar-livre { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .toast-msg { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .rbadge-CONHECIMENTO { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .ritual-preset-btn { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .res-tag.r-normal { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .atrib-spin-btn { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .recurso-spin-btn { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .inv-qtd-btn { background-color: #2a1410 !important; }
+    html[data-tema="dossie-investigacao"] .inv-mods-btn { background-color: #2a1410 !important; }
+
+    /* ══════════════════════════════════════════════════════════════
+       RÉPLICA ESTRUTURAL PIXEL-A-PIXEL DOS COMPONENTES QUE EXISTEM
+       NO MOCKUP ficha_dossie_investigacao.html (valores literais)
+       ══════════════════════════════════════════════════════════════ */
+
+    /* ── topbar → pasta/rótulo de dossiê ── */
+    html[data-tema="dossie-investigacao"] .custom-nav {
+        background: transparent !important;
+        border-bottom: 2px solid rgba(163,38,32,0.25) !important;
+        padding: 14px 0;
+    }
+    html[data-tema="dossie-investigacao"] .navbar-brand {
+        font-family: var(--dossie-font-title) !important; font-size: 20px !important; letter-spacing: 2px;
+        color: var(--dossie-text) !important; border: 2px solid var(--dossie-ink-dim); padding: 4px 12px;
+    }
+    html[data-tema="dossie-investigacao"] .nav-link {
+        font-family: var(--dossie-font-title) !important; font-size: 11px !important; letter-spacing: 1px;
+        color: var(--dossie-ink-dim) !important; background: var(--card); padding: 8px 16px 6px !important;
+        border-radius: 6px 6px 0 0; border: 1px solid rgba(163,38,32,0.15); border-bottom: none;
+        text-transform: uppercase; margin: 0 3px;
+    }
+    html[data-tema="dossie-investigacao"] .nav-link:hover { color: var(--dossie-paper) !important; background: rgba(163,38,32,0.12); }
+    html[data-tema="dossie-investigacao"] .btn-voltar {
+        font-family: var(--dossie-font-title) !important; font-size: 10.5px !important; letter-spacing: 1px;
+        background: transparent !important; border: 1.5px solid var(--dossie-ink-dim) !important;
+        padding: 8px 16px; text-transform: uppercase;
+    }
+
+    /* ── foto do agente → polaroid literal do mockup ── */
+    html[data-tema="dossie-investigacao"] .foto-wrapper {
+        background: #fff !important; padding: 5px 5px 16px; box-sizing: border-box;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important; transform: rotate(2deg);
+    }
+    html[data-tema="dossie-investigacao"] .foto-wrapper img { display: block; }
+
+    /* ── "Testar Atributo" → .btn-teste literal ── */
+    html[data-tema="dossie-investigacao"] .atrib-dado-btn {
+        background: rgba(232,223,196,0.05) !important; border: 1px solid rgba(163,38,32,0.2) !important;
+        padding: 12px 8px;
+    }
+    html[data-tema="dossie-investigacao"] .atrib-dado-btn:hover {
+        border-color: rgba(163,38,32,0.5) !important; background: rgba(163,38,32,0.08) !important;
+    }
+
+    /* ── "Rolar Dado" livre → .rolar-livre literal ── */
+    html[data-tema="dossie-investigacao"] .dado-select,
+    html[data-tema="dossie-investigacao"] .dado-expr-input {
+        background: rgba(232,223,196,0.04) !important; border: 1px solid rgba(163,38,32,0.25) !important;
+        font-family: var(--dossie-font-body) !important; padding: 11px 14px;
+    }
+    html[data-tema="dossie-investigacao"] .btn-rolar-livre {
+        font-family: var(--dossie-font-title) !important; font-size: 11.5px !important; letter-spacing: 1.5px;
+        background: var(--tema-primary) !important; border: none !important; color: var(--dossie-paper) !important;
+        padding: 12px 24px; text-transform: uppercase;
+    }
+    html[data-tema="dossie-investigacao"] .btn-rolar-livre:hover {
+        background: var(--tema-primary-light) !important; border-color: var(--tema-primary-light) !important;
+    }
+
+    /* ── lista de ataques → "Relatório" / .entrada literal ── */
+    html[data-tema="dossie-investigacao"] #lista-ataques { background: var(--dossie-paper); border-radius: 2px; overflow: hidden; }
+    html[data-tema="dossie-investigacao"] .ataque-row {
+        background: transparent !important; border: none !important; border-radius: 0 !important;
+        border-bottom: 1px dashed rgba(43,38,32,0.2) !important; padding: 16px 20px !important;
+    }
+    html[data-tema="dossie-investigacao"] .ataque-nome { color: var(--dossie-ink) !important; font-family: var(--dossie-font-body); }
+    html[data-tema="dossie-investigacao"] .ataque-dado { color: var(--dossie-ink-dim) !important; }
+    html[data-tema="dossie-investigacao"] .ataque-tipo { background: rgba(163,38,32,0.12) !important; color: var(--tema-primary) !important; }
+    html[data-tema="dossie-investigacao"] .btn-rolar { background: var(--tema-primary) !important; font-family: var(--dossie-font-title) !important; }
+    html[data-tema="dossie-investigacao"] .btn-rolar:hover { background: var(--tema-primary-light) !important; }
+
+    /* ── selo de crítico → carimbo de tinta literal (.selo-critico) ── */
+    html[data-tema="dossie-investigacao"] .log-tag.critico,
+    html[data-tema="dossie-investigacao"] .log-tag.falha {
+        background: transparent !important; border-radius: 0 !important; box-shadow: none !important;
+        padding: 2px 9px !important; transform: rotate(-9deg); opacity: 0.85;
+        font-family: var(--dossie-font-title) !important; text-transform: uppercase; letter-spacing: 1px;
+    }
+    html[data-tema="dossie-investigacao"] .log-tag.critico { border: 2px solid var(--tema-primary) !important; color: var(--tema-primary) !important; }
+    html[data-tema="dossie-investigacao"] .log-tag.falha { border: 2px solid var(--tema-primary-dark) !important; color: var(--tema-primary-dark) !important; }
+
+    /* ── radar de atributos: mantém o gráfico funcional, retinta pra vermelho ── */
+    html[data-tema="dossie-investigacao"] #radar-bg { fill: rgba(163,38,32,0.15) !important; stroke: #4a0f0c !important; }
+    html[data-tema="dossie-investigacao"] #radar-val { fill: rgba(212,69,61,0.25) !important; stroke: var(--tema-primary) !important; }
+    html[data-tema="dossie-investigacao"] #radar-axes { stroke: #4a0f0c !important; }
+    html[data-tema="dossie-investigacao"] #radar-svg circle[stroke="#2a0050"] { stroke: #4a0f0c !important; }
+    html[data-tema="dossie-investigacao"] #radar-svg circle[fill="#8a2be2"] { fill: var(--tema-primary) !important; }
+
+    /* ── escudo de defesa: mesmo retinte ── */
+    html[data-tema="dossie-investigacao"] .defesa-escudo svg path {
+        fill: #170f0a !important; stroke: var(--tema-primary) !important;
+    }
+
+    /* ── textos base (não-hover) que eram brancos fixos: viram tom pergaminho ── */
+    36
+    html[data-tema="dossie-investigacao"] .value-field { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .atrib-val { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .atrib-dado-btn .btn-val { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .nex-box .val { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .pericia-input { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .btn-novo-ataque { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .btn-rolar { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .dado-select { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .dado-expr-input { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .descricao-field textarea { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .inv-input { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .btn-add-item { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .anot-textarea { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .contato-input { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .rituais-input-busca { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .ritual-card-nome { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .ritual-dado-input { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .ritual-btn-rolar { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .hab-search-input { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .poder-nome { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .btn-add-poder { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .atrib-edit-val { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .recurso-edit-input { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .nex-edit-input { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .inv-stat-val { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .inv-stat-input { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .inv-stat-select { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .inv-stat-select option { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .inv-limit-box { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .inv-qtd-num { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .mri-dado-grande { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .mri-fechar { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .mod-item-field input, html[data-tema="dossie-investigacao"] .mod-item-field select, html[data-tema="dossie-investigacao"] .mod-item-field textarea { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .mod-item-salvar { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .mel-card-nome { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .mel-item-fechar-btn { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .inv-atacar-btn { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .inv-clonar-btn, html[data-tema="dossie-investigacao"] .inv-modificar-btn { color: var(--dossie-text) !important; }
+    html[data-tema="dossie-investigacao"] .atrib-dado-btn { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .atrib-resultado { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .nex-box { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .pericias-header { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .pericia-input { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .pb-btn { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .ataque-row { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .dado-select { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .dado-expr-input { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .habilidade-card { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .descricao-field textarea { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .inventario-item { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .inv-input { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .cond-chip { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .cic-box { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .anot-textarea { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .contato-input { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .rituais-input-busca { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .rbadge-src { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .ritual-dado-input { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .modal-atrib-box { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .modal-recurso-box { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .modal-nex-box { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .inv-stat-row { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .inv-stat-select option { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .inv-cat-btn { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .inv-item-card { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .modal-inv-box { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .mod-item-box { background-color: #170f0a !important; }
+    html[data-tema="dossie-investigacao"] .ritual-rolar-section { background-color: #120b06 !important; }
+    html[data-tema="dossie-investigacao"] .ritual-resultado { background-color: #120b06 !important; }
+    html[data-tema="dossie-investigacao"] .atrib-edit-item { background-color: #120b06 !important; }
+    html[data-tema="dossie-investigacao"] .recurso-edit-input { background-color: #120b06 !important; }
+    html[data-tema="dossie-investigacao"] .nex-edit-input { background-color: #120b06 !important; }
+    html[data-tema="dossie-investigacao"] .inv-limit-box { background-color: #120b06 !important; }
+    html[data-tema="dossie-investigacao"] .inv-qtd-num { background-color: #120b06 !important; }
+    html[data-tema="dossie-investigacao"] .mri-box { background-color: #120b06 !important; }
+
 
     .btn-temas {
         background: transparent;
@@ -1785,6 +2111,7 @@
               <button onclick="aplicarTema('morte');toggleNavbar()" style="background:rgba(136,136,136,0.15);border:1px solid #888;color:#ccc;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Morte</button>
               <button onclick="aplicarTema('conhecimento');toggleNavbar()" style="background:rgba(200,150,12,0.15);border:1px solid #c8960c;color:#f5c842;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Conhecimento</button>
               <button onclick="aplicarTema('energia');toggleNavbar()" style="background:rgba(155,48,217,0.15);border:1px solid #9b30d9;color:#d070ff;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Energia</button>
+              <button onclick="aplicarTema('dossie-investigacao');toggleNavbar()" style="background:rgba(163,38,32,0.15);border:1px solid #a32620;color:#d4453d;padding:6px 12px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">Dossiê</button>
           </div>
           <div style="border-top:1px solid #333;margin-bottom:12px;"></div>
           <button onclick="abrirModalCompartilhar();toggleNavbar()" style="display:block;width:100%;text-align:center;background:transparent;border:1px solid var(--green,#39d353);color:var(--green,#39d353);padding:10px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:0.9rem;font-weight:700;letter-spacing:1px;margin-bottom:8px;cursor:pointer;">🔗 Compartilhar Ficha</button>
@@ -1811,6 +2138,9 @@
                         </div>
                         <div class="td-item" onclick="aplicarTema('energia')" data-tema="energia">
                             <span class="td-swatch" style="background:#9b30d9;color:#9b30d9"></span> Energia
+                        </div>
+                        <div class="td-item" onclick="aplicarTema('dossie-investigacao')" data-tema="dossie-investigacao">
+                            <span class="td-swatch" style="background:#a32620;color:#a32620"></span> Dossiê de Investigação
                         </div>
                     </div>
                 </div>
