@@ -6212,23 +6212,27 @@ function _garantirModalModificarItem() {
             <div id="mod-item-arma-fields">
                 <div class="mod-item-row">
                     <div class="mod-item-field">
-                        <label>Dano</label>
-                        <input type="text" id="mod-item-dano" placeholder="ex: 8d8 ou 1d6+1d4">
+                        <label>Dano (base)</label>
+                        <input type="text" id="mod-item-dano" placeholder="ex: 8d8 ou 1d6+1d4" oninput="_atualizarPreviewModItem()">
                     </div>
                     <div class="mod-item-field">
                         <label>Tipo de dano</label>
-                        <select id="mod-item-tipo"></select>
+                        <select id="mod-item-tipo" onchange="_atualizarPreviewModItem()"></select>
                     </div>
                 </div>
                 <div class="mod-item-row">
                     <div class="mod-item-field">
-                        <label>Crítico (ameaça)</label>
-                        <input type="number" id="mod-item-crit" value="20" min="2" max="20">
+                        <label>Crítico (ameaça) — base</label>
+                        <input type="number" id="mod-item-crit" value="20" min="2" max="20" oninput="_atualizarPreviewModItem()">
                     </div>
                     <div class="mod-item-field">
-                        <label>Multiplicador</label>
-                        <input type="number" id="mod-item-mult" value="2" min="2" max="10">
+                        <label>Multiplicador — base</label>
+                        <input type="number" id="mod-item-mult" value="2" min="2" max="10" oninput="_atualizarPreviewModItem()">
                     </div>
+                </div>
+                <div class="mod-item-field" id="mod-item-preview-wrap">
+                    <label>Final (base + modificações/maldições aplicadas)</label>
+                    <div id="mod-item-preview" style="font-family:'Share Tech Mono',monospace;font-size:0.85rem;color:var(--accent,#f5c842);padding:6px 0;">—</div>
                 </div>
             </div>
             <div class="mod-item-field">
@@ -6251,6 +6255,36 @@ let _modItemIndexAtual = null;
 function _toggleModItemArmaFields() {
     const cat = document.getElementById('mod-item-cat').value;
     document.getElementById('mod-item-arma-fields').style.display = cat === 'ARMA' ? 'block' : 'none';
+}
+
+// Recalcula e mostra, ao vivo (sem salvar nada), qual seria o resultado final
+// (dano/crítico/multiplicador) se o usuário salvasse os valores-base atuais do
+// formulário — já somando os bônus das modificações/maldições aplicadas ao item.
+function _atualizarPreviewModItem() {
+    const wrap = document.getElementById('mod-item-preview');
+    if (!wrap || _modItemIndexAtual === null) return;
+    const item = estado.inventario && estado.inventario[_modItemIndexAtual];
+    if (!item) return;
+
+    const danoBase = document.getElementById('mod-item-dano').value.trim();
+    const critBase = document.getElementById('mod-item-crit').value.trim() || '20';
+    const multBase = document.getElementById('mod-item-mult').value.trim() || '2';
+    const melhoriasSel = item.hbStats?.melhoriasSel || [];
+
+    if (!_isValidDanoExpr(danoBase.replace(/\s+/g, ''))) {
+        wrap.textContent = '— (dano inválido)';
+        return;
+    }
+
+    const r = _calcularStatsFinais({
+        danoBase, critBase, multBase: 'x' + multBase.replace(/[^\d]/g, ''), melhoriasSel
+    });
+
+    if (melhoriasSel.length) {
+        wrap.textContent = `${r.dano} · Crít ${r.crit}/${r.mult}${r.ataqueBonus ? ` · +${r.ataqueBonus} ataque` : ''} (${melhoriasSel.length} mod./maldições aplicadas)`;
+    } else {
+        wrap.textContent = `${r.dano} · Crít ${r.crit}/${r.mult} (sem modificações/maldições)`;
+    }
 }
 
 function abrirModalModificarItem(i) {
@@ -6279,6 +6313,7 @@ function abrirModalModificarItem(i) {
         || (stats ? stats.crit.mult : 2);
 
     _toggleModItemArmaFields();
+    _atualizarPreviewModItem();
     document.getElementById('modal-modificar-item').classList.add('show');
 }
 
@@ -6538,10 +6573,10 @@ function removerMelhoriaItem(i, id) {
 
 // Recalcula dano/crítico/multiplicador do item a partir da base
 // (danoBase/critBase/multBase) + todas as modificações/maldições aplicadas.
-function _recalcularMelhoriasItem(item) {
-    const s = item.hbStats;
-    if (!s) return;
-
+// Versão pura: recebe { danoBase, critBase, multBase, melhoriasSel } e devolve
+// { dano, crit, mult, ataqueBonus } finais, SEM alterar nenhum estado. Usada tanto
+// por _recalcularMelhoriasItem quanto pelo preview ao vivo do modal "Editar Dano".
+function _calcularStatsFinais(s) {
     let critThreat  = parseInt(s.critBase) || 20;
     let mult        = parseInt(String(s.multBase || 'x2').replace(/[^\d]/g, '')) || 2;
     let ataqueBonus = 0;
@@ -6568,12 +6603,25 @@ function _recalcularMelhoriasItem(item) {
     }
     critThreat = Math.max(2, Math.min(20, critThreat));
 
-    s.crit = String(critThreat);
-    s.mult = 'x' + mult;
-    s.dano = danoExtras.length ? `${s.danoBase}+${danoExtras.join('+')}` : s.danoBase;
-    if (ataqueBonus) s.ataqueBonus = ataqueBonus; else delete s.ataqueBonus;
+    return {
+        crit: String(critThreat),
+        mult: 'x' + mult,
+        dano: danoExtras.length ? `${s.danoBase}+${danoExtras.join('+')}` : s.danoBase,
+        ataqueBonus
+    };
+}
+
+function _recalcularMelhoriasItem(item) {
+    const s = item.hbStats;
+    if (!s) return;
+    const r = _calcularStatsFinais(s);
+    s.crit = r.crit;
+    s.mult = r.mult;
+    s.dano = r.dano;
+    if (r.ataqueBonus) s.ataqueBonus = r.ataqueBonus; else delete s.ataqueBonus;
     s.melhorias = (s.melhoriasSel || []).map(x => x.nome); // compat. com renderização antiga
 }
+
 
 function _garantirModalRolagemItem() {
     let modal = document.getElementById('modal-rolagem-item');
