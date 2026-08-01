@@ -6100,17 +6100,23 @@ function _parseCritInfo(critStr) {
 function _getArmaRollStats(item) {
     let dano = null, crit = null, mult = null, tipoDano = '';
     let ataqueBonus = 0;
+    // armaStats = dados CRUS do catálogo (sem modificações/maldições) e serve
+    // apenas de fallback. hbStats é sempre a fonte de verdade quando existe,
+    // pois já contém dano/crítico recalculados com os bônus aplicados — por
+    // isso precisa ser lido POR ÚLTIMO, sobrescrevendo o valor cru do catálogo
+    // e não o contrário (essa ordem invertida era o motivo da rolagem ignorar
+    // os bônus de modificações/maldições).
+    if (item.armaStats) {
+        dano = item.armaStats.dano || dano;
+        crit = item.armaStats.crit || crit;
+        tipoDano = item.armaStats.tipoDano || tipoDano;
+    }
     if (item.hbStats) {
         dano = item.hbStats.dano || dano;
         crit = item.hbStats.crit || crit;
         mult = item.hbStats.mult || mult;
         tipoDano = item.hbStats.tipo || tipoDano;
         ataqueBonus = item.hbStats.ataqueBonus || 0;
-    }
-    if (item.armaStats) {
-        dano = item.armaStats.dano || dano;
-        crit = item.armaStats.crit || crit;
-        tipoDano = item.armaStats.tipoDano || tipoDano;
     }
     if (!dano && item.desc) {
         const md = item.desc.match(/Dano:\s*([^·]+)/i);
@@ -6259,10 +6265,18 @@ function abrirModalModificarItem(i) {
     document.getElementById('mod-item-desc').value = item.desc || '';
 
     const stats = _getArmaRollStats(item);
-    document.getElementById('mod-item-dano').value = (item.hbStats && item.hbStats.dano) || (stats ? stats.dano : '');
+    // IMPORTANTE: preenche com os valores BASE da arma (danoBase/critBase/multBase),
+    // e não com item.hbStats.dano/crit/mult — esses últimos já são o resultado final
+    // (base + bônus de modificações/maldições). Se preenchêssemos o modal com o valor
+    // final, salvar transformaria o valor-já-com-bônus na nova base, e o recálculo das
+    // melhorias aplicaria os bônus de novo em cima (crítico reduzindo e multiplicador
+    // subindo a cada edição). Editar aqui sempre mexe na base "crua" da arma.
+    document.getElementById('mod-item-dano').value = (item.hbStats && item.hbStats.danoBase) || (item.hbStats && item.hbStats.dano) || (stats ? stats.dano : '');
     document.getElementById('mod-item-tipo').value = (item.hbStats && item.hbStats.tipo) || (stats ? stats.tipoDano : '') || '';
-    document.getElementById('mod-item-crit').value = (item.hbStats && item.hbStats.crit) || (stats ? stats.crit.threat : 20);
-    document.getElementById('mod-item-mult').value = (item.hbStats && item.hbStats.mult ? String(item.hbStats.mult).replace(/[^\d]/g,'') : null) || (stats ? stats.crit.mult : 2);
+    document.getElementById('mod-item-crit').value = (item.hbStats && item.hbStats.critBase) || (item.hbStats && item.hbStats.crit) || (stats ? stats.crit.threat : 20);
+    document.getElementById('mod-item-mult').value = (item.hbStats && item.hbStats.multBase ? String(item.hbStats.multBase).replace(/[^\d]/g,'') : null)
+        || (item.hbStats && item.hbStats.mult ? String(item.hbStats.mult).replace(/[^\d]/g,'') : null)
+        || (stats ? stats.crit.mult : 2);
 
     _toggleModItemArmaFields();
     document.getElementById('modal-modificar-item').classList.add('show');
@@ -6300,15 +6314,20 @@ function salvarModificacaoItem() {
             return;
         }
         // Preserva modificações/maldições já aplicadas: os valores editados aqui
-        // viram a nova "base" e as melhorias são recalculadas em cima dela.
+        // viram a nova "base" (danoBase/critBase/multBase) e as melhorias são
+        // SEMPRE recalculadas do zero em cima dela (nunca acumuladas sobre o
+        // valor final anterior) — isso é o que impede a taxa de crítico de
+        // cair e o multiplicador de subir a cada edição.
         const melhoriasSel = item.hbStats?.melhoriasSel || [];
         item.hbStats = {
-            dano, tipo, crit, mult: 'x' + mult.replace(/[^\d]/g,''),
+            tipo,
             danoBase: dano, critBase: crit, multBase: 'x' + mult.replace(/[^\d]/g,''),
+            // dano/crit/mult finais são preenchidos abaixo por _recalcularMelhoriasItem
+            dano, crit, mult: 'x' + mult.replace(/[^\d]/g,''),
             melhoriasSel
         };
         delete item.armaStats; // hbStats passa a ser a fonte única de verdade
-        if (melhoriasSel.length) _recalcularMelhoriasItem(item);
+        _recalcularMelhoriasItem(item); // sempre recalcula do zero a partir da base
     } else {
         delete item.hbStats;
     }
