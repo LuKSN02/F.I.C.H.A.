@@ -470,45 +470,6 @@
     html[data-tema="dossie-investigacao"] .inv-qtd-num { background-color: #120b06 !important; }
     html[data-tema="dossie-investigacao"] .mri-box { background-color: #120b06 !important; }
 
-    /* ══════════════════════════════════════════════════════════════
-       ATRIBUTOS → "Quadro de Investigação" (corkboard + barbante),
-       extraído literalmente de ficha_dossie_investigacao.html.
-       Substitui apenas a aparência do radar; os mesmos elementos/IDs
-       (#b-FOR..VIG, #bv-FOR..VIG, #bd-FOR..VIG, #btn-FOR..VIG) seguem
-       recebendo os valores via JS normalmente — nada foi duplicado.
-       ══════════════════════════════════════════════════════════════ */
-    html[data-tema="dossie-investigacao"] #radar-svg,
-    html[data-tema="dossie-investigacao"] .bubble-center { display: none !important; }
-    html[data-tema="dossie-investigacao"] .dossie-string-svg {
-        display: block !important; position: absolute; top: 0; left: 0;
-        width: 100%; height: 100%; pointer-events: none;
-    }
-    html[data-tema="dossie-investigacao"] .dossie-string-svg line { stroke: var(--tema-primary); stroke-width: 1.2; opacity: 0.55; }
-    html[data-tema="dossie-investigacao"] .dossie-string-svg circle { fill: var(--tema-primary); }
-    html[data-tema="dossie-investigacao"] .atrib-bubble {
-        background: var(--dossie-paper) !important; width: 64px; padding: 8px 4px 10px !important;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.4) !important; border-radius: 0 !important;
-        text-align: center;
-    }
-    html[data-tema="dossie-investigacao"] .atrib-bubble::before {
-        content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
-        width: 10px; height: 10px; border-radius: 50%; background: var(--tema-primary);
-        box-shadow: 0 2px 3px rgba(0,0,0,0.5);
-    }
-    html[data-tema="dossie-investigacao"] .atrib-label {
-        font-family: var(--dossie-font-title) !important; font-size: 9px !important; letter-spacing: 1px;
-        color: var(--dossie-ink-dim) !important; text-transform: uppercase;
-    }
-    html[data-tema="dossie-investigacao"] .atrib-val {
-        font-family: var(--dossie-font-title) !important; font-size: 20px !important; color: var(--dossie-ink) !important;
-    }
-
-    /* ── "Testar Atributo" → grade de 2 colunas com VIG ocupando a linha (.testes-grid literal) ── */
-    html[data-tema="dossie-investigacao"] .atrib-dados-grid {
-        grid-template-columns: 1fr 1fr !important; gap: 10px !important;
-    }
-    html[data-tema="dossie-investigacao"] .atrib-dado-btn:nth-child(5) { grid-column: span 2; }
-
 
     .btn-temas {
         background: transparent;
@@ -2246,15 +2207,6 @@
       </div>
 
       <div class="radar-container">
-        <!-- PATCH tema Dossiê de Investigação: barbante do quadro de cortiça (extraído de ficha_dossie_investigacao.html); fica oculto nos demais temas -->
-        <svg class="dossie-string-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display:none;">
-          <line x1="50" y1="50" x2="50" y2="6"/>
-          <line x1="50" y1="50" x2="99" y2="50"/>
-          <line x1="50" y1="50" x2="72" y2="98"/>
-          <line x1="50" y1="50" x2="28" y2="98"/>
-          <line x1="50" y1="50" x2="2" y2="50"/>
-          <circle cx="50" cy="50" r="2"/>
-        </svg>
         <svg id="radar-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
           <polygon id="radar-bg"  points="" fill="rgba(58,0,99,0.15)" stroke="#2a0050" stroke-width="1"/>
           <polygon id="radar-val" points="" fill="rgba(138,43,226,0.25)" stroke="#8a2be2" stroke-width="1.5"/>
