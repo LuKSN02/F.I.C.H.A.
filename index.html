@@ -4240,6 +4240,7 @@ body { transition: background 0.6s ease; }
             const usuario = normUser(document.getElementById('login-usuario').value);
             const senha   = document.getElementById('login-senha').value;
             if (!usuario || !senha) { setErro('Preencha todos os campos.'); return; }
+            if (usuario.includes('@')) { setErro('Digite apenas o nome de usuário (sem @gmail.com ou domínio), não o e-mail.'); return; }
             if (usuario.length < 3) { setErro('Usuário muito curto.'); return; }
 
             setBtnLoading('btn-entrar', true);
