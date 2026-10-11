@@ -3490,6 +3490,319 @@ body { transition: background 0.6s ease; }
 
 </style>
 
+<!-- ═══════════════════════════════════════════════════════════
+     HOME REIMAGINADA — dossiê / arquivo confidencial
+     (tudo prefixado com hx- para não colidir com o resto do site)
+════════════════════════════════════════════════════════════ -->
+<style id="home-redesign">
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800;900&family=Special+Elite&family=Caveat:wght@500&display=swap');
+
+:root {
+    --hx-bg:        #070508;
+    --hx-red:       #d6212b;
+    --hx-red-hot:   #ff3b45;
+    --hx-red-deep:  #7d0a12;
+    --hx-cream:     #f1e8da;
+    --hx-muted:     #a89fa0;
+    --hx-violet:    #9d78ff;
+    --hx-violet-d:  #3b2470;
+    --hx-paper:     #120c1f;
+    --hx-serif:     'Playfair Display', 'Georgia', 'Times New Roman', serif;
+    --hx-type:      'Special Elite', 'Courier New', monospace;
+    --hx-mono:      'Share Tech Mono', 'Special Elite', 'Courier New', monospace;
+    --hx-hand:      'Caveat', 'Segoe Script', cursive;
+}
+
+/* ───── NAVBAR (todas as telas) ───── */
+.custom-nav {
+    background: linear-gradient(180deg, rgba(5,3,6,.97), rgba(8,5,9,.92)) !important;
+    border-bottom: 1px solid rgba(214,33,43,.28) !important;
+    box-shadow: 0 1px 0 rgba(0,0,0,.6), 0 8px 30px rgba(0,0,0,.5);
+    padding-top: .35rem; padding-bottom: .35rem;
+}
+.custom-nav .navbar-brand.hx-brand {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--hx-serif); font-weight: 600 !important;
+    font-size: 1.35rem !important; letter-spacing: .5em; color: var(--hx-cream);
+    padding: 0 26px 0 6px; margin-right: 0;
+    border-right: 1px solid rgba(255,255,255,.12);
+}
+.hx-brand-emblem { width: 52px; height: 52px; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(214,33,43,.55)); }
+.hx-brand-emblem * { fill: none; stroke: var(--hx-red); stroke-width: 2.2; stroke-linecap: round; }
+.hx-brand-emblem .fill { fill: var(--hx-red); stroke: none; }
+
+.custom-nav .navbar-nav .nav-link {
+    font-family: var(--hx-mono); font-weight: 400 !important;
+    font-size: .78rem; letter-spacing: .28em; text-transform: uppercase;
+    color: #cfc8c9 !important; padding: 1.15rem 1.35rem !important; position: relative;
+    transition: color .2s;
+}
+.custom-nav .navbar-nav .nav-link::after {
+    content: ''; position: absolute; left: 1.35rem; right: 1.35rem; bottom: .55rem; height: 2px;
+    background: var(--hx-red); transform: scaleX(0); transform-origin: left; transition: transform .25s;
+    box-shadow: 0 0 10px rgba(214,33,43,.8);
+}
+.custom-nav .navbar-nav .nav-link:hover { color: #fff !important; }
+.custom-nav .navbar-nav .nav-link.active, .custom-nav .navbar-nav .nav-link.hx-ativo { color: #fff !important; }
+.custom-nav .navbar-nav .nav-link.hx-ativo::after, .custom-nav .navbar-nav .nav-link:hover::after { transform: scaleX(1); }
+
+@media (min-width: 992px) {
+    /* links ao lado do logo (como na referência) em vez de centralizados */
+    #navbarNav { position: static !important; transform: none !important; flex-grow: 1 !important; width: auto; }
+    #navbarNav .navbar-nav { margin: 0 0 0 1rem !important; }
+}
+.hx-nav-search {
+    background: none; border: 0; color: #cfc8c9; width: 40px; height: 40px; margin-right: 18px;
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%;
+    transition: color .2s, background .2s;
+}
+.hx-nav-search:hover { color: #fff; background: rgba(255,255,255,.07); }
+.hx-nav-search svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.custom-nav .avatar-circle { border-color: rgba(214,33,43,.7) !important; box-shadow: 0 0 0 3px rgba(214,33,43,.15); }
+
+/* ───── HOME: base ───── */
+.hx { background: var(--hx-bg); position: relative; overflow-x: hidden; }
+.hx-hero { position: relative; overflow: hidden; padding: 52px 0 46px; min-height: 560px; }
+.hx-container { position: relative; z-index: 2; }
+
+.hx-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; background:
+    radial-gradient(ellipse 60% 70% at 78% 45%, rgba(80,30,110,.28), transparent 70%),
+    radial-gradient(ellipse 55% 80% at 12% 50%, rgba(120,12,20,.22), transparent 70%),
+    linear-gradient(180deg, #0b070c 0%, #070508 100%); }
+.hx-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.78) 100%); z-index: 3; pointer-events: none; }
+.hx-noise { position: absolute; inset: 0; opacity: .09; mix-blend-mode: screen; z-index: 2; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+.hx-strings { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; opacity: .5; }
+.hx-strings path { fill: none; stroke: #b3121c; stroke-width: 1.6; }
+
+.hx-polaroid { position: absolute; z-index: 1; width: 168px; padding: 9px 9px 30px; background: #b9afa0; box-shadow: 0 14px 30px rgba(0,0,0,.7); filter: brightness(.62) contrast(1.1) saturate(.8); }
+.hx-pol-a { left: -26px; top: 96px; transform: rotate(-7deg); }
+.hx-pol-b { right: -30px; top: 70px; transform: rotate(6deg); width: 190px; filter: brightness(.55) contrast(1.1); }
+.hx-pol-photo { height: 130px; background: #1a1418; position: relative; overflow: hidden; }
+.hx-pol-b .hx-pol-photo { height: 190px; }
+.hx-photo-casa { background:
+    linear-gradient(180deg, #2a2230 0%, #15101a 60%, #0a070c 100%); }
+.hx-photo-casa::before { content: ''; position: absolute; left: 22%; bottom: 0; width: 56%; height: 52%;
+    background: #08060a; clip-path: polygon(0 100%, 0 40%, 22% 40%, 22% 18%, 50% 0, 78% 18%, 78% 40%, 100% 40%, 100% 100%); }
+.hx-photo-casa::after { content: ''; position: absolute; right: 14%; top: 14%; width: 22px; height: 22px; border-radius: 50%; background: #d9d2c4; box-shadow: 0 0 18px 6px rgba(217,210,196,.35); }
+.hx-photo-figura { background: radial-gradient(ellipse at 50% 30%, #3a2c40, #0d0910 70%); }
+.hx-photo-figura::before { content: ''; position: absolute; left: 50%; top: 18%; width: 46px; height: 46px; margin-left: -23px; border-radius: 50%; background: #050306; }
+.hx-photo-figura::after { content: ''; position: absolute; left: 50%; top: 52%; width: 110px; height: 90px; margin-left: -55px; border-radius: 55px 55px 0 0; background: #050306; }
+.hx-pol-note { position: absolute; left: 0; right: 0; bottom: -58px; font-family: var(--hx-hand); font-size: 1.15rem; color: #b8aea0; transform: rotate(-9deg); line-height: 1.05; text-align: left; padding-left: 34px; filter: brightness(2.6); opacity: .9; }
+.hx-pin { position: absolute; top: -9px; left: 50%; width: 15px; height: 15px; margin-left: -7px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff6a6a, #a30d16 70%); box-shadow: 0 3px 6px rgba(0,0,0,.7); z-index: 2; }
+.hx-stamp-bg { position: absolute; right: 2.2%; top: 49%; z-index: 1; font-family: var(--hx-type); font-size: 1.5rem; letter-spacing: .12em; line-height: 1.15; text-align: center; color: rgba(214,33,43,.34); border: 3px solid rgba(214,33,43,.30); padding: 10px 16px; transform: rotate(-12deg); }
+.hx-sigil { position: absolute; left: 3%; bottom: 6%; width: 130px; z-index: 1; opacity: .22; }
+.hx-sigil * { fill: none; stroke: var(--hx-red); stroke-width: .8; }
+
+/* ───── HERO: coluna esquerda ───── */
+.hx-eyebrow { display: flex; align-items: center; gap: 14px; font-family: var(--hx-mono); font-size: .8rem; letter-spacing: .42em; text-transform: uppercase; color: #d9d0d1; margin-bottom: 26px; padding-bottom: 12px; position: relative; }
+.hx-eyebrow::after { content: ''; position: absolute; left: 0; bottom: 0; width: 360px; max-width: 100%; height: 1px; background: linear-gradient(90deg, rgba(214,33,43,.8), transparent); }
+.hx-eyebrow-icon { width: 16px; height: 16px; border: 2px solid var(--hx-red); border-radius: 50%; position: relative; flex-shrink: 0; box-shadow: 0 0 10px rgba(214,33,43,.7); }
+.hx-eyebrow-icon::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--hx-red); }
+
+.hx-title { position: relative; display: inline-block; margin: 0; line-height: .95; }
+.hx-title-text {
+    display: inline-block; font-family: var(--hx-serif); font-weight: 900;
+    font-size: clamp(3.6rem, 9vw, 8.2rem); letter-spacing: -.01em;
+    background: linear-gradient(180deg, #fbf3e6 0%, #e9ddc9 55%, #b9ab96 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+    filter: url(#hx-rough) drop-shadow(0 4px 18px rgba(0,0,0,.7));
+}
+.hx-reticle { position: absolute; top: 4%; right: -6%; width: clamp(34px, 5vw, 58px); }
+.hx-reticle * { fill: none; stroke: var(--hx-red); stroke-width: 1.8; stroke-linecap: round; }
+.hx-reticle .fill { fill: var(--hx-red); stroke: none; }
+.hx-reticle { filter: drop-shadow(0 0 8px rgba(214,33,43,.8)); animation: hxSpin 22s linear infinite; }
+@keyframes hxSpin { to { transform: rotate(360deg); } }
+
+.hx-tagline { font-family: var(--hx-serif); font-weight: 600; font-size: clamp(1.15rem, 2.1vw, 1.65rem); color: var(--hx-cream); margin: 18px 0 18px; letter-spacing: .01em; }
+.hx-tagline em { color: var(--hx-red-hot); font-style: normal; text-shadow: 0 0 18px rgba(214,33,43,.55); }
+.hx-rule { width: 380px; max-width: 80%; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,.28), transparent); margin-bottom: 24px; }
+.hx-desc { font-family: 'Montserrat', sans-serif; font-weight: 300; font-size: .95rem; line-height: 1.75; color: #c9c1c2; margin-bottom: 34px; max-width: 520px; }
+.hx-desc strong { color: var(--hx-red-hot); font-weight: 600; }
+
+.hx-ctas { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 40px; }
+.hx-btn { display: inline-flex; align-items: center; gap: 14px; height: 54px; padding: 0 34px; font-family: var(--hx-mono); font-size: .9rem; letter-spacing: .32em; text-transform: uppercase; text-decoration: none; transition: transform .2s, box-shadow .2s, background .2s, border-color .2s; }
+.hx-btn-primary { color: #fff; background: linear-gradient(180deg, #c3202a, #86101a); border: 1px solid #ee4650; box-shadow: 0 0 0 1px rgba(0,0,0,.6) inset, 0 0 26px rgba(214,33,43,.45); }
+.hx-btn-primary:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(0,0,0,.6) inset, 0 0 40px rgba(255,59,69,.7); }
+.hx-plus { font-size: 1.5rem; line-height: 1; font-family: 'Montserrat', sans-serif; font-weight: 300; }
+.hx-btn-ghost { color: #e6dfe0; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.55); font-size: .75rem; letter-spacing: .26em; }
+.hx-btn-ghost svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.hx-btn-ghost:hover { color: #fff; border-color: var(--hx-red-hot); background: rgba(214,33,43,.12); transform: translateY(-2px); }
+
+.hx-stats { display: flex; align-items: center; gap: 0; }
+.hx-stat { display: flex; flex-direction: column; padding: 0 34px; }
+.hx-stat:first-child { padding-left: 0; }
+.hx-stat-num { font-family: var(--hx-serif); font-weight: 600; font-variant-numeric: lining-nums; font-size: 2.4rem; line-height: 1; color: var(--hx-red-hot); text-shadow: 0 0 22px rgba(214,33,43,.5); }
+.hx-stat-num.hx-inf { font-size: 2.8rem; }
+.hx-stat-label { font-family: var(--hx-mono); font-size: .66rem; letter-spacing: .42em; text-transform: uppercase; color: #8d8586; margin-top: 8px; }
+.hx-stat-div { width: 1px; height: 50px; background: rgba(255,255,255,.14); }
+
+/* ───── HERO: dossiê ───── */
+.hx-dossie-wrap { perspective: 1400px; display: flex; justify-content: center; }
+.hx-dossie {
+    position: relative; width: 100%; max-width: 540px; padding: 22px 20px 16px;
+    background:
+        linear-gradient(135deg, rgba(255,255,255,.035), transparent 40%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 2px, transparent 2px 4px),
+        var(--hx-paper);
+    border: 1px solid #3f2a70; border-radius: 6px;
+    box-shadow: 0 0 0 6px rgba(20,12,34,.9), 0 0 0 7px rgba(110,80,190,.35), 0 40px 80px rgba(0,0,0,.8), 0 0 90px rgba(120,70,220,.18);
+    transform: rotateY(-4deg) rotateZ(1.2deg); transition: transform .5s;
+    font-family: var(--hx-mono); color: #d4cbe6;
+}
+.hx-dossie:hover { transform: rotateY(0) rotateZ(0); }
+.hx-clip { position: absolute; top: -24px; left: 26px; width: 18px; height: 56px; border: 3px solid #a9a3b8; border-radius: 9px; box-shadow: 0 3px 6px rgba(0,0,0,.6); }
+.hx-clip::after { content: ''; position: absolute; left: 3px; top: 12px; width: 6px; height: 36px; border: 2px solid #a9a3b8; border-radius: 4px; }
+
+.hx-d-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid rgba(157,120,255,.25); position: relative; }
+.hx-d-title { font-size: .62rem; letter-spacing: .38em; color: #9588b8; padding-top: 8px; }
+.hx-d-stamp { position: absolute; left: 50%; top: -10px; transform: translateX(-30%) rotate(-5deg); font-family: var(--hx-type); font-size: 1.1rem; letter-spacing: .08em; color: var(--hx-red-hot); border: 2px solid var(--hx-red-hot); padding: 3px 12px; opacity: .85; text-shadow: 0 0 10px rgba(214,33,43,.5); white-space: nowrap; }
+.hx-d-proto { font-size: .52rem; letter-spacing: .2em; color: #7f74a3; text-align: left; border: 1px solid rgba(157,120,255,.3); padding: 6px 10px; line-height: 1.5; }
+
+.hx-d-id { position: relative; display: grid; grid-template-columns: 112px 1fr; gap: 16px; padding: 8px; border: 1px solid rgba(157,120,255,.35); background: rgba(20,10,40,.55); margin-bottom: 10px; }
+.hx-d-photo { position: relative; aspect-ratio: 3 / 4; border: 2px solid #6b4bc0; background: radial-gradient(ellipse at 50% 35%, #3a2a58, #130b22); overflow: hidden; }
+.hx-d-photo svg { position: absolute; inset: 12% 8% 0; width: 84%; height: 88%; fill: rgba(157,120,255,.28); }
+.hx-d-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hx-d-agente { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(8,4,16,.82); font-size: .5rem; letter-spacing: .18em; padding: 4px 6px; color: #8d80b3; z-index: 2; }
+.hx-d-fields { display: flex; flex-direction: column; gap: 7px; min-width: 0; position: relative; }
+.hx-d-field { display: flex; flex-direction: column; border-bottom: 1px solid rgba(157,120,255,.2); padding-bottom: 6px; }
+.hx-d-label { font-size: .5rem; letter-spacing: .3em; color: #7f74a3; margin-bottom: 3px; }
+.hx-d-name { font-family: var(--hx-serif); font-weight: 600; font-size: 1.45rem; color: #fff; letter-spacing: .02em; line-height: 1.1; text-transform: uppercase; overflow-wrap: anywhere; }
+.hx-d-val { font-family: var(--hx-serif); font-weight: 600; font-size: 1.02rem; color: #f1ecfb; text-transform: uppercase; letter-spacing: .03em; }
+.hx-d-barcode { height: 12px; width: 78px; margin-top: auto; background: repeating-linear-gradient(90deg, #9d78ff 0 2px, transparent 2px 4px, #9d78ff 4px 5px, transparent 5px 8px); opacity: .7; }
+.hx-d-scrawl { position: absolute; right: 12px; bottom: 6px; font-family: var(--hx-hand); font-size: .95rem; line-height: 1; color: rgba(157,120,255,.5); transform: rotate(-9deg); text-align: right; pointer-events: none; }
+
+.hx-d-grid { display: grid; grid-template-columns: 1.02fr 1fr; gap: 10px; margin-bottom: 10px; }
+.hx-d-col { display: flex; flex-direction: column; gap: 10px; }
+.hx-d-panel { border: 1px solid rgba(157,120,255,.28); background: rgba(14,8,28,.6); padding: 8px 12px; }
+.hx-d-panel h3 { font-family: var(--hx-mono); font-weight: 400; font-size: .56rem; letter-spacing: .34em; color: #9a8fc2; margin: 0 0 8px; }
+.hx-d-panel h3 small { letter-spacing: .12em; font-size: .5rem; color: #6e6492; }
+.hx-radar { width: 100%; max-width: 210px; max-height: 175px; height: auto; display: block; margin: 0 auto; }
+.hx-d-list { list-style: none; padding: 0; margin: 0; font-size: .72rem; }
+.hx-d-skills li { display: flex; justify-content: space-between; padding: 3px 0; color: #cfc6e4; border-bottom: 1px dashed rgba(157,120,255,.1); }
+.hx-d-skills li b { color: var(--hx-violet); font-weight: 400; }
+.hx-d-equip li { padding: 2.5px 0 2.5px 14px; position: relative; color: #bfb5d8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hx-d-equip li::before { content: ''; position: absolute; left: 2px; top: 50%; width: 4px; height: 4px; margin-top: -2px; border-radius: 50%; background: var(--hx-violet); }
+
+.hx-d-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hx-bar { border: 1px solid rgba(157,120,255,.28); background: rgba(14,8,28,.6); padding: 8px 12px 10px; }
+.hx-bar-head { display: flex; justify-content: space-between; font-size: .58rem; letter-spacing: .3em; color: #b9aee0; margin-bottom: 7px; }
+.hx-bar-head span:last-child { letter-spacing: .1em; font-size: .7rem; }
+.hx-bar-track { height: 9px; background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.07); overflow: hidden; }
+.hx-bar-track i { display: block; height: 100%; transition: width .6s; }
+.hx-bar-vida .hx-bar-head { color: #ff8e94; }
+.hx-bar-vida i { background: linear-gradient(90deg, #8b0d16, #ff3b45); box-shadow: 0 0 12px rgba(255,59,69,.6); }
+.hx-bar-san i { background: linear-gradient(90deg, #4b2a96, #9d78ff); box-shadow: 0 0 12px rgba(157,120,255,.6); }
+
+.hx-d-nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 14px; padding-top: 10px; border-top: 1px dashed rgba(157,120,255,.25); font-size: .62rem; letter-spacing: .25em; color: #8b7fb0; }
+.hx-d-nav[hidden] { display: none; }
+.hx-d-nav button { background: none; border: 1px solid rgba(157,120,255,.4); color: #cbbdf5; width: 26px; height: 26px; line-height: 1; cursor: pointer; font-size: 1rem; }
+.hx-d-nav button:hover { background: rgba(157,120,255,.18); }
+.hx-d-nav a { margin-left: auto; color: var(--hx-red-hot); text-decoration: none; }
+.hx-d-nav a:hover { text-shadow: 0 0 10px rgba(255,59,69,.7); }
+
+/* ───── CENTRAL DE OPERAÇÕES ───── */
+.hx-ops { position: relative; padding: 36px 0 54px; background: linear-gradient(180deg, #0a0709, #060406); border-top: 1px solid rgba(214,33,43,.35); }
+.hx-ops-head { display: flex; align-items: center; gap: 28px; margin-bottom: 34px; }
+.hx-ops-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(214,33,43,.8)); }
+.hx-ops-line:last-child { background: linear-gradient(270deg, transparent, rgba(214,33,43,.8)); }
+.hx-ops-mid { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: -18px; }
+.hx-ops-mid svg { width: 26px; height: 26px; }
+.hx-ops-mid svg * { fill: none; stroke: var(--hx-red); stroke-width: 2.4; stroke-linecap: round; }
+.hx-ops-mid svg .fill { fill: var(--hx-red); stroke: none; }
+.hx-ops-mid h2 { margin: 0; font-family: var(--hx-serif); font-weight: 600; font-size: 1.15rem; letter-spacing: .5em; color: var(--hx-cream); padding-left: .5em; white-space: nowrap; }
+
+.hx-ops-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.hx-op { position: relative; display: flex; flex-direction: column; min-height: 172px; padding: 22px 22px 18px 26px; overflow: hidden; text-decoration: none; color: inherit;
+    background: #0d0a14; border: 1px solid rgba(255,255,255,.1); transition: transform .25s, border-color .25s, box-shadow .25s; }
+.hx-op:hover { transform: translateY(-5px); color: inherit; }
+.hx-op > * { position: relative; z-index: 2; }
+.hx-op-art { position: absolute !important; inset: 0; z-index: 1 !important; opacity: .9; pointer-events: none; }
+.hx-op-icon { width: 46px; height: 46px; margin-bottom: 14px; }
+.hx-op-icon svg { width: 100%; height: 100%; }
+.hx-op-icon svg * { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.hx-op-icon svg .fill { fill: currentColor; stroke: none; }
+.hx-op h3 { font-family: var(--hx-serif); font-weight: 600; font-size: 1.12rem; letter-spacing: .22em; color: #fff; margin: 0 0 9px; }
+.hx-op p { font-family: 'Montserrat', sans-serif; font-weight: 300; font-size: .8rem; line-height: 1.55; color: #cbc4cc; margin: 0 0 16px; max-width: 235px; }
+.hx-op-link { margin-top: auto; font-family: var(--hx-mono); font-size: .66rem; letter-spacing: .24em; }
+.hx-op-link b { font-weight: 400; margin-left: 6px; display: inline-block; transition: transform .2s; }
+.hx-op:hover .hx-op-link b { transform: translateX(5px); }
+
+/* variações por cartão */
+.hx-op-agentes { color: #ff4b55; }
+.hx-op-agentes:hover { border-color: rgba(255,75,85,.7); box-shadow: 0 10px 40px rgba(214,33,43,.25); }
+.hx-op-agentes .hx-op-art { background:
+    radial-gradient(ellipse 60px 120px at 82% 70%, rgba(150,15,25,.55), transparent 70%),
+    radial-gradient(ellipse 50px 110px at 94% 78%, rgba(110,10,18,.5), transparent 70%),
+    linear-gradient(90deg, #0d0a14 35%, rgba(40,6,10,.7)); }
+.hx-op-camp { color: #a98cff; }
+.hx-op-camp:hover { border-color: rgba(169,140,255,.7); box-shadow: 0 10px 40px rgba(120,80,220,.25); }
+.hx-op-camp .hx-op-art { background:
+    radial-gradient(circle 34px at 86% 24%, #0a0610 0 62%, rgba(150,110,255,.5) 64%, transparent 100%),
+    linear-gradient(180deg, transparent 55%, rgba(8,4,16,.9)),
+    linear-gradient(90deg, #0d0a14 38%, rgba(45,25,90,.65)); }
+.hx-op-home { color: #f4efe6; }
+.hx-op-home:hover { border-color: rgba(244,239,230,.55); box-shadow: 0 10px 40px rgba(180,160,120,.15); }
+.hx-op-home .hx-op-art { background:
+    repeating-radial-gradient(circle at 84% 62%, transparent 0 16px, rgba(200,180,140,.12) 16px 17px),
+    linear-gradient(90deg, #0d0a14 40%, rgba(70,55,35,.45)); }
+.hx-op-elem { color: #b58cff; }
+.hx-op-elem:hover { border-color: rgba(181,140,255,.7); box-shadow: 0 10px 40px rgba(140,90,240,.28); }
+.hx-op-elem .hx-op-art { background:
+    radial-gradient(ellipse 46px 26px at 84% 38%, rgba(190,150,255,.55), transparent 75%),
+    radial-gradient(circle 120px at 90% 40%, rgba(110,50,190,.45), transparent 70%),
+    linear-gradient(90deg, #0d0a14 40%, rgba(30,12,60,.6)); }
+.hx-op-agentes .hx-op-link { color: #ff4b55; }
+.hx-op-camp .hx-op-link { color: #a98cff; }
+.hx-op-home .hx-op-link { color: #f4efe6; }
+.hx-op-elem .hx-op-link { color: #b58cff; }
+
+/* ───── RODAPÉ ───── */
+.hx-footer { background: #050305 !important; border-top: 1px solid rgba(214,33,43,.25) !important; padding: 26px 0 22px !important; margin-top: 0 !important; }
+.hx-foot-line { display: flex; align-items: center; gap: 28px; font-family: var(--hx-mono); font-size: .66rem; letter-spacing: .3em; color: #8b8384; text-transform: uppercase; }
+.hx-foot-line::before, .hx-foot-line::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(214,33,43,.7)); }
+.hx-foot-line::after { background: linear-gradient(270deg, transparent, rgba(214,33,43,.7)); }
+.hx-foot-line span { white-space: nowrap; }
+.hx-foot-line i { color: var(--hx-red); font-style: normal; margin: 0 .9em; }
+.hx-foot-meta { text-align: center; margin: 14px 0 0; font-size: .7rem; color: #5f5859; font-family: 'Montserrat', sans-serif; }
+.hx-foot-meta a { color: #8b8384; text-decoration: none; margin: 0 .8em; }
+.hx-foot-meta a:hover { color: var(--hx-red-hot); }
+
+/* ───── RESPONSIVO ───── */
+@media (max-width: 1199px) {
+    .hx-ops-grid { grid-template-columns: repeat(2, 1fr); }
+    .hx-pol-b, .hx-stamp-bg { display: none; }
+}
+@media (max-width: 991px) {
+    .hx-hero { padding: 48px 0 56px; }
+    .hx-dossie { transform: none; }
+    .hx-pol-a { display: none; }
+    .custom-nav .navbar-brand.hx-brand { border-right: 0; letter-spacing: .3em; font-size: 1.1rem !important; }
+    .custom-nav .navbar-nav .nav-link { padding: .8rem 1rem !important; }
+    .custom-nav .navbar-nav .nav-link::after { display: none; }
+    .custom-nav .navbar-nav .nav-link.hx-ativo { color: var(--hx-red-hot) !important; }
+}
+@media (max-width: 575px) {
+    .hx-stat { padding: 0 16px; }
+    .hx-stat-num { font-size: 1.9rem; }
+    .hx-stat-label { letter-spacing: .25em; font-size: .56rem; }
+    .hx-btn { padding: 0 22px; letter-spacing: .2em; height: 50px; }
+    .hx-ops-grid { grid-template-columns: 1fr; }
+    .hx-ops-head { gap: 12px; }
+    .hx-ops-mid h2 { font-size: .85rem; letter-spacing: .26em; white-space: normal; text-align: center; }
+    .hx-ops-line { display: none; }
+    .hx-ops-head { justify-content: center; }
+    .hx-ops-mid { margin-top: 0; }
+    .hx-d-id { grid-template-columns: 104px 1fr; gap: 12px; }
+    .hx-d-grid, .hx-d-bars { grid-template-columns: 1fr; }
+    .hx-d-stamp { font-size: .85rem; }
+    .hx-foot-line { gap: 12px; letter-spacing: .15em; font-size: .55rem; }
+    .hx-foot-line span { white-space: normal; text-align: center; }
+}
+@media (prefers-reduced-motion: reduce) { .hx-reticle { animation: none; } .hx-dossie { transition: none; } }
+</style>
+
 <body>
 
 <!-- Wallpaper em vídeo personalizado (fica atrás das partículas e do conteúdo) -->
@@ -3682,8 +3995,11 @@ body { transition: background 0.6s ease; }
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar navbar-expand-lg custom-nav navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand fs-2" href="#" onclick="mostrarInicio()">
-                <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="72" height="72" class="d-inline-block align-text-center">
+            <a class="navbar-brand hx-brand" href="#" onclick="mostrarInicio(); return false;">
+                <svg class="hx-brand-emblem" viewBox="0 0 52 52" aria-hidden="true">
+                    <circle cx="26" cy="26" r="13"/><circle cx="26" cy="26" r="2.4" class="fill"/>
+                    <path d="M26 2v14M26 36v14M2 26h14M36 26h14"/><path d="M18 8l8 6 8-6M18 44l8-6 8 6" opacity=".6"/>
+                </svg>
                 F.I.C.H.A.
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -3691,8 +4007,8 @@ body { transition: background 0.6s ease; }
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav mx-auto">
-                    <a class="nav-link px-3" href="#" onclick="mostrarAgentes()">Agentes</a>
-                    <a class="nav-link px-3" href="#" onclick="mostrarSocial()">Social</a>
+                    <a class="nav-link px-3" data-nav="agentes" href="#" onclick="mostrarAgentes(); return false;">Agentes</a>
+                    <a class="nav-link px-3" data-nav="social" href="#" onclick="mostrarSocial(); return false;">Social</a>
                     <a class="nav-link px-3" href="campanhas.html">Campanhas</a>
                     <a class="nav-link px-3" href="homebrew.html">Homebrew</a>
                 </div>
@@ -3716,6 +4032,10 @@ body { transition: background 0.6s ease; }
 
             <!-- Avatar de perfil -->
             <div class="d-none d-lg-flex align-items-center flex-shrink-0" style="justify-content: flex-end; gap: 0;">
+
+                <button type="button" class="hx-nav-search" onclick="abrirBuscaAgentes()" title="Buscar agentes" aria-label="Buscar agentes">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+                </button>
 
                 <!-- Botão Temas -->
                 <div class="temas-wrapper" id="temas-wrapper">
@@ -3756,136 +4076,221 @@ body { transition: background 0.6s ease; }
         </div>
     </nav>
 
-    <!-- ===== HERO ===== -->
-    <main id="secao-inicio" class="text-white" style="flex:1;">
+    <!-- ===== HOME (reimaginada) ===== -->
+    <main id="secao-inicio" class="text-white hx" style="flex:1;">
 
-        <!-- HERO PRINCIPAL -->
-        <div class="hero-outer">
-            <div class="hero-grid-bg" aria-hidden="true"></div>
-            <div class="hero-scanlines" aria-hidden="true"></div>
+        <!-- filtro SVG para o aspecto "rasgado/desgastado" do título -->
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+            <filter id="hx-rough" x="-5%" y="-5%" width="110%" height="110%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.035 0.7" numOctaves="2" seed="7" result="t"/>
+                <feDisplacementMap in="SourceGraphic" in2="t" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+        </svg>
 
-            <div class="container hero-container">
+        <!-- ───────── HERO ───────── -->
+        <section class="hx-hero">
+            <div class="hx-bg" aria-hidden="true">
+                <div class="hx-vignette"></div>
+                <div class="hx-noise"></div>
+
+                <!-- fios vermelhos ligando as fotos -->
+                <svg class="hx-strings" viewBox="0 0 1600 640" preserveAspectRatio="none">
+                    <path d="M118 96 C 260 150, 380 40, 520 120" />
+                    <path d="M118 96 C 80 220, 40 300, 60 420" />
+                    <path d="M1500 120 C 1400 60, 1300 140, 1190 90" />
+                </svg>
+
+                <!-- polaroid esquerda -->
+                <div class="hx-polaroid hx-pol-a">
+                    <span class="hx-pin"></span>
+                    <div class="hx-pol-photo hx-photo-casa"></div>
+                    <span class="hx-pol-note">O Outro Lado<br>sempre observa.</span>
+                </div>
+                <!-- polaroid direita -->
+                <div class="hx-polaroid hx-pol-b">
+                    <span class="hx-pin"></span>
+                    <div class="hx-pol-photo hx-photo-figura"></div>
+                </div>
+                <div class="hx-stamp-bg">REALIDADE<br>É FLEXÍVEL</div>
+                <svg class="hx-sigil" viewBox="0 0 100 100" aria-hidden="true">
+                    <circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="30"/>
+                    <path d="M50 4 L50 96 M4 50 L96 50 M18 18 L82 82 M82 18 L18 82"/>
+                </svg>
+            </div>
+
+            <div class="container hx-container">
                 <div class="row align-items-center g-5">
 
-                    <div class="col-lg-6">
-                        <div class="hero-eyebrow anim-fade-up">
-                            <span class="eyebrow-dot"></span>
-                            SISTEMA DE AGENTES PARANORMAIS
+                    <!-- ESQUERDA -->
+                    <div class="col-lg-6 hx-left">
+                        <div class="hx-eyebrow anim-fade-up">
+                            <span class="hx-eyebrow-icon" aria-hidden="true"></span>
+                            Sistema de gestão de agentes
                         </div>
-                        <h1 class="hero-title anim-fade-up delay-1">
-                            <span class="glitch-wrap" data-text="F.I.C.H.A.">F.I.C.H.A.</span>
+
+                        <h1 class="hx-title anim-fade-up delay-1">
+                            <span class="hx-title-text">F.I.C.H.A.</span>
+                            <svg class="hx-reticle" viewBox="0 0 48 48" aria-hidden="true">
+                                <circle cx="24" cy="24" r="12"/><circle cx="24" cy="24" r="2.2" class="fill"/>
+                                <path d="M24 0v14M24 34v14M0 24h14M34 24h14"/>
+                            </svg>
                         </h1>
-                        <div class="hero-subtitle anim-fade-up delay-2">
-                            Fichas <span class="hero-subtitle-accent">Digitais</span>
-                        </div>
-                        <p class="hero-desc anim-fade-up delay-3">
-                            Gerencie seus agentes, rituais e habilidades em um sistema completo para
-                            <strong class="hero-desc-strong">Ordem Paranormal</strong>.
+
+                        <p class="hx-tagline anim-fade-up delay-2">
+                            Seu arquivo. Sua investigação. Seu <em>medo.</em>
+                        </p>
+                        <div class="hx-rule anim-fade-up delay-2"></div>
+
+                        <p class="hx-desc anim-fade-up delay-3">
+                            Gerencie seus agentes, rituais, habilidades e campanhas<br>
+                            em um sistema completo para <strong>Ordem Paranormal</strong>.<br>
                             Monte sua ficha, entre em campanha e enfrente o desconhecido.
                         </p>
-                        <div class="hero-ctas anim-fade-up delay-4">
-                            <a href="criar.html" class="btn-criar-ficha btn-cta-primary">
-                                <span class="cta-icon">✦</span> Criar Agente
+
+                        <div class="hx-ctas anim-fade-up delay-4">
+                            <a href="criar.html" class="hx-btn hx-btn-primary">
+                                <span class="hx-plus">+</span> Criar Agente
                             </a>
-                            <a href="#" onclick="mostrarAgentes()" class="btn-cta-secondary">
-                                Ver Agentes
+                            <a href="#" onclick="mostrarAgentes(); return false;" class="hx-btn hx-btn-ghost">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                                Acessar Arquivo
                             </a>
                         </div>
-                        <div class="hero-stats anim-fade-up delay-4">
-                            <div class="hstat">
-                                <span class="hstat-num" id="stat-agentes">—</span>
-                                <span class="hstat-label">Agentes</span>
+
+                        <div class="hx-stats anim-fade-up delay-4">
+                            <div class="hx-stat">
+                                <span class="hx-stat-num" id="stat-agentes">00</span>
+                                <span class="hx-stat-label">Agentes</span>
                             </div>
-                            <div class="hstat-divider"></div>
-                            <div class="hstat">
-                                <span class="hstat-num">5</span>
-                                <span class="hstat-label">Elementos</span>
+                            <span class="hx-stat-div"></span>
+                            <div class="hx-stat">
+                                <span class="hx-stat-num">05</span>
+                                <span class="hx-stat-label">Elementos</span>
                             </div>
-                            <div class="hstat-divider"></div>
-                            <div class="hstat">
-                                <span class="hstat-num">∞</span>
-                                <span class="hstat-label">Homebrew</span>
+                            <span class="hx-stat-div"></span>
+                            <div class="hx-stat">
+                                <span class="hx-stat-num hx-inf">∞</span>
+                                <span class="hx-stat-label">Possibilidades</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-lg-6 text-center anim-fade-up delay-2">
-                        <div class="hero-img-wrap">
-                            <div class="hero-img-glow" aria-hidden="true"></div>
-                            <div class="hero-img-corner tl" aria-hidden="true"></div>
-                            <div class="hero-img-corner tr" aria-hidden="true"></div>
-                            <div class="hero-img-corner bl" aria-hidden="true"></div>
-                            <div class="hero-img-corner br" aria-hidden="true"></div>
-                            <div class="scan-wrap">
-                                <img src="./image.png" alt="Ficha Digital" class="hero-img">
-                            </div>
-                            <div class="hero-badge" aria-hidden="true">
-                                <span class="hero-badge-dot"></span>
-                                SISTEMA ATIVO
-                            </div>
+                    <!-- DIREITA: dossiê do agente -->
+                    <div class="col-lg-6 anim-fade-up delay-2">
+                        <div class="hx-dossie-wrap">
+                            <article class="hx-dossie" id="hx-dossie" aria-label="Ficha de agente">
+                                <span class="hx-clip" aria-hidden="true"></span>
+                                <header class="hx-d-top">
+                                    <span class="hx-d-title">FICHA DE AGENTE</span>
+                                    <span class="hx-d-stamp" id="hx-d-stamp">CLASSIFICADO</span>
+                                    <span class="hx-d-proto">PROTOCOLO 7.14<br><span id="hx-d-ficha">FICHA: 0042-A</span></span>
+                                </header>
+
+                                <div class="hx-d-id">
+                                    <div class="hx-d-photo" id="hx-d-photo">
+                                        <svg viewBox="0 0 100 100" aria-hidden="true">
+                                            <circle cx="50" cy="38" r="17"/><path d="M14 100c2-24 18-36 36-36s34 12 36 36z"/>
+                                        </svg>
+                                        <span class="hx-d-agente" id="hx-d-agente">AGENTE Nº 0042-A</span>
+                                    </div>
+                                    <div class="hx-d-fields">
+                                        <div class="hx-d-field"><span class="hx-d-label">NOME</span><span class="hx-d-name" id="hx-d-nome">—</span></div>
+                                        <div class="hx-d-field"><span class="hx-d-label">ORIGEM</span><span class="hx-d-val" id="hx-d-origem">—</span></div>
+                                        <div class="hx-d-field"><span class="hx-d-label">CLASSE</span><span class="hx-d-val" id="hx-d-classe">—</span></div>
+                                        <span class="hx-d-barcode" aria-hidden="true"></span>
+                                    </div>
+                                    <span class="hx-d-scrawl" aria-hidden="true">Algumas cicatrizes<br>não são físicas.</span>
+                                </div>
+
+                                <div class="hx-d-grid">
+                                    <section class="hx-d-panel">
+                                        <h3>ATRIBUTOS</h3>
+                                        <svg class="hx-radar" id="hx-radar" viewBox="0 0 220 190" role="img" aria-label="Gráfico de atributos"></svg>
+                                    </section>
+                                    <div class="hx-d-col">
+                                        <section class="hx-d-panel">
+                                            <h3>PERÍCIAS <small>(PRINCIPAIS)</small></h3>
+                                            <ul class="hx-d-list hx-d-skills" id="hx-d-skills"></ul>
+                                        </section>
+                                        <section class="hx-d-panel">
+                                            <h3>EQUIPAMENTOS</h3>
+                                            <ul class="hx-d-list hx-d-equip" id="hx-d-equip"></ul>
+                                        </section>
+                                    </div>
+                                </div>
+
+                                <div class="hx-d-bars">
+                                    <div class="hx-bar hx-bar-vida">
+                                        <div class="hx-bar-head"><span>VIDA</span><span id="hx-vida-txt">21 / 21</span></div>
+                                        <div class="hx-bar-track"><i id="hx-vida-bar" style="width:100%"></i></div>
+                                    </div>
+                                    <div class="hx-bar hx-bar-san">
+                                        <div class="hx-bar-head"><span id="hx-san-label">SANIDADE</span><span id="hx-san-txt">28 / 28</span></div>
+                                        <div class="hx-bar-track"><i id="hx-san-bar" style="width:100%"></i></div>
+                                    </div>
+                                </div>
+
+                                <footer class="hx-d-nav" id="hx-d-nav" hidden>
+                                    <button type="button" id="hx-d-prev" aria-label="Agente anterior">‹</button>
+                                    <span id="hx-d-pos">1 / 1</span>
+                                    <button type="button" id="hx-d-next" aria-label="Próximo agente">›</button>
+                                    <a id="hx-d-open" href="#">ABRIR FICHA →</a>
+                                </footer>
+                            </article>
                         </div>
                     </div>
 
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- CARDS DE FEATURES -->
-        <div class="features-section">
+        <!-- ───────── CENTRAL DE OPERAÇÕES ───────── -->
+        <section class="hx-ops">
             <div class="container">
-                <div class="features-header anim-fade-up">
-                    <span class="features-line"></span>
-                    <span class="features-label">O QUE VOCÊ ENCONTRA</span>
-                    <span class="features-line"></span>
+                <div class="hx-ops-head">
+                    <span class="hx-ops-line"></span>
+                    <span class="hx-ops-mid">
+                        <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="9"/><circle cx="24" cy="24" r="1.8" class="fill"/><path d="M24 2v12M24 34v12M2 24h12M34 24h12"/></svg>
+                        <h2>CENTRAL DE OPERAÇÕES</h2>
+                    </span>
+                    <span class="hx-ops-line"></span>
                 </div>
-                <div class="row g-4 mt-2">
-                    <div class="col-md-6 col-lg-3 anim-fade-up delay-1">
-                        <div class="feat-card" onclick="mostrarAgentes()">
-                            <div class="feat-icon feat-icon-blue">⚔</div>
-                            <div class="feat-title">Agentes</div>
-                            <div class="feat-desc">Crie e gerencie fichas completas com atributos, habilidades, trilhas e poderes paranormais.</div>
-                            <div class="feat-arrow">→</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3 anim-fade-up delay-2">
-                        <a href="campanhas.html" class="feat-card-link">
-                            <div class="feat-card">
-                                <div class="feat-icon feat-icon-red">◈</div>
-                                <div class="feat-title">Campanhas</div>
-                                <div class="feat-desc">Organize sessões com mestre e jogadores, sincronizando estado em tempo real via Firebase.</div>
-                                <div class="feat-arrow">→</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-md-6 col-lg-3 anim-fade-up delay-3">
-                        <a href="homebrew.html" class="feat-card-link">
-                            <div class="feat-card">
-                                <div class="feat-icon feat-icon-green">🧪</div>
-                                <div class="feat-title">Homebrew</div>
-                                <div class="feat-desc">Crie ameaças, rituais, itens e habilidades personalizadas e compartilhe com a comunidade.</div>
-                                <div class="feat-arrow">→</div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-md-6 col-lg-3 anim-fade-up delay-4">
-                        <div class="feat-card">
-                            <div class="feat-icon feat-icon-gold">✦</div>
-                            <div class="feat-title">Temas</div>
-                            <div class="feat-desc">Cinco elementos paranormais — Medo, Sangue, Morte, Conhecimento e Energia — cada um com sua estética.</div>
-                            <div class="feat-arrow">→</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- FAIXA DE ALERTA -->
-        <div class="alert-strip">
-            <div class="alert-strip-track">
-                <span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span>
-                <span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span><span class="alert-strip-icon">⬡</span><span class="alert-strip-text">O MEDO É REAL. PREPARE SEU AGENTE.</span><span class="alert-strip-sep">◆</span><span class="alert-strip-text">ORDEM PARANORMAL — ENIGMA DO MEDO</span><span class="alert-strip-sep">◆</span>
+                <div class="hx-ops-grid">
+                    <a class="hx-op hx-op-agentes" href="#" onclick="mostrarAgentes(); return false;">
+                        <span class="hx-op-art" aria-hidden="true"></span>
+                        <span class="hx-op-icon"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="21"/><circle cx="24" cy="19" r="6"/><path d="M11 37c1.5-8 7-11 13-11s11.500 3 13 11"/></svg></span>
+                        <h3>AGENTES</h3>
+                        <p>Crie e gerencie fichas completas com atributos, habilidades, traumas e equipamentos.</p>
+                        <span class="hx-op-link">GERENCIAR AGENTES <b>→</b></span>
+                    </a>
+
+                    <a class="hx-op hx-op-camp" href="campanhas.html">
+                        <span class="hx-op-art" aria-hidden="true"></span>
+                        <span class="hx-op-icon"><svg viewBox="0 0 48 48"><path d="M24 3 L45 24 L24 45 L3 24 Z"/><path d="M24 12 L33 24 L24 36 L15 24 Z"/><circle cx="24" cy="24" r="2" class="fill"/></svg></span>
+                        <h3>CAMPANHAS</h3>
+                        <p>Organize sessões, acompanhe o progresso e mantenha tudo sob controle.</p>
+                        <span class="hx-op-link">VER CAMPANHAS <b>→</b></span>
+                    </a>
+
+                    <a class="hx-op hx-op-home" href="homebrew.html">
+                        <span class="hx-op-art" aria-hidden="true"></span>
+                        <span class="hx-op-icon"><svg viewBox="0 0 48 48"><path d="M24 12c-4-4-12-5-19-3v28c7-2 15-1 19 3 4-4 12-5 19-3V9c-7-2-15-1-19 3z"/><path d="M24 12v28"/></svg></span>
+                        <h3>HOMEBREW</h3>
+                        <p>Crie conteúdos personalizados, rituais, itens e habilidades para sua campanha.</p>
+                        <span class="hx-op-link">CRIAR CONTEÚDO <b>→</b></span>
+                    </a>
+
+                    <a class="hx-op hx-op-elem" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'}); toggleTemas(event); return false;">
+                        <span class="hx-op-art" aria-hidden="true"></span>
+                        <span class="hx-op-icon"><svg viewBox="0 0 48 48"><path d="M2 24c6-10 14-15 22-15s16 5 22 15c-6 10-14 15-22 15S8 34 2 24z"/><circle cx="24" cy="24" r="7"/><circle cx="24" cy="24" r="2.400" class="fill"/></svg></span>
+                        <h3>ELEMENTOS</h3>
+                        <p>Escolha entre os cinco elementos paranormais — Medo, Sangue, Morte, Conhecimento e Energia — e mude a estética do site.</p>
+                        <span class="hx-op-link">ESCOLHER ELEMENTO <b>→</b></span>
+                    </a>
+                </div>
             </div>
-        </div>
+        </section>
 
     </main>
 
@@ -4075,32 +4480,12 @@ body { transition: background 0.6s ease; }
         </div>
     </div>
 
-    <footer class="custom-footer mt-5 py-5" style="background:black;border-top:2px solid #333;">
+    <footer class="custom-footer hx-footer">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-4 text-center text-md-start">
-                    <a class="navbar-brand fs-3 text-white fw-bold" href="#" onclick="mostrarInicio()">
-                        <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="50" height="50" class="d-inline-block align-text-center me-2">
-                        F.I.C.H.A.
-                    </a>
-                    <p class="text-secondary mt-3">Sistema de auxílio para agentes de elite em missões paranormais.</p>
-                </div>
-                <div class="col-md-4 text-center">
-                    <h5 class="text-purple-neon mb-3">Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="footer-link" onclick="mostrarAgentes()">Agentes</a></li>
-                        <li><a href="#" class="footer-link" onclick="mostrarInicio()">Início</a></li>
-                        <li><a href="campanhas.html" class="footer-link">Campanhas</a></li>
-                        <li><a href="#" class="footer-link">Suporte</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 text-center text-md-end">
-                    <p class="text-secondary small">© 2026 F.I.C.H.A. – Inspirado no universo de Ordem Paranormal.</p>
-                    <div class="mt-2"><span class="text-purple-neon fw-bold">O MEDO É REAL.</span></div>
-                </div>
-            </div>
-            <hr class="border-secondary mt-4">
-            <p class="text-center text-secondary small mb-0">Desenvolvido por luka_00000.</p>
+            <div class="hx-foot-line"><span>Ordem Paranormal<i>•</i>F.I.C.H.A.<i>•</i>Investigação é só o começo</span></div>
+            <p class="hx-foot-meta">
+                © 2026 F.I.C.H.A. – Inspirado no universo de Ordem Paranormal. · Desenvolvido por luka_00000
+            </p>
         </div>
     </footer>
     
@@ -4355,6 +4740,7 @@ body { transition: background 0.6s ease; }
             document.getElementById('secao-inicio').classList.add('d-none');
             document.getElementById('secao-social').classList.add('d-none');
             document.getElementById('secao-agentes').classList.remove('d-none');
+            if (window._navAtivo) _navAtivo('agentes');
             mostrarSubAbaAgentes('agentes');
         }
 
@@ -4362,6 +4748,7 @@ body { transition: background 0.6s ease; }
             document.getElementById('secao-agentes').classList.add('d-none');
             document.getElementById('secao-social').classList.add('d-none');
             document.getElementById('secao-inicio').classList.remove('d-none');
+            if (window._navAtivo) _navAtivo('');
         }
 
         function mostrarSocial() {
@@ -4369,6 +4756,7 @@ body { transition: background 0.6s ease; }
             document.getElementById('secao-inicio').classList.add('d-none');
             document.getElementById('secao-agentes').classList.add('d-none');
             document.getElementById('secao-social').classList.remove('d-none');
+            if (window._navAtivo) _navAtivo('social');
             iniciarChatSocial();
         }
 
@@ -5473,7 +5861,9 @@ body { transition: background 0.6s ease; }
             contador.textContent = agentes.length;
             // Atualiza stat na hero
             const statEl = document.getElementById('stat-agentes');
-            if (statEl) statEl.textContent = agentes.length || '0';
+            if (statEl) statEl.textContent = String(agentes.length || 0).padStart(2, '0');
+            // Atualiza o dossiê da home com o agente real
+            if (window._atualizarDossieHome) window._atualizarDossieHome(agentes);
 
             if (agentes.length === 0) {
                 lista.innerHTML = `
@@ -7965,6 +8355,201 @@ window.fecharGifLightbox = fecharGifLightbox;
 </script>
 
 
+
+<script id="home-redesign-js">
+/* ═══════════════════════════════════════════════
+   HOME — dossiê do agente + navegação
+   Usa window._agentesAtuais (preenchido por _renderAgentes) e,
+   sem agente, mostra uma ficha-modelo.
+═══════════════════════════════════════════════ */
+(function () {
+    'use strict';
+
+    const DEMO = {
+        modelo: true,
+        nome: 'Júlia "Ju"', origem: 'Experimento', classe: 'Sobrevivente',
+        atributos: { FOR: 2, AGI: 2, INT: 3, PRE: 3, VIG: 1 },
+        pericias: [['Percepção', 5], ['Furtividade', 4], ['Sobrevivência', 4], ['Investigação', 3], ['Atletismo', 3]],
+        equip: ['Pistola 9mm', 'Lanterna tática', 'Kit médico', 'Diário de campo'],
+        vida: [21, 21], san: [28, 28], sanLabel: 'SANIDADE', fichaId: '0042-A', foto: null
+    };
+
+    // PV/SAN iniciais (só usado quando a ficha ainda não tem estado salvo)
+    const FORMULA = {
+        Combatente:   { pv: 20, pvi: 5, san: 12, sani: 3 },
+        Especialista: { pv: 16, pvi: 3, san: 16, sani: 4 },
+        Ocultista:    { pv: 12, pvi: 2, san: 20, sani: 5 },
+        Mundano:      { pv: 12, pvi: 2, san: 14, sani: 3 }
+    };
+
+    const $ = id => document.getElementById(id);
+    const num = (v, d = 0) => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : d; };
+
+    // aceita apenas imagens embutidas / https / blob (nada de javascript:)
+    function fotoSegura(src) {
+        return (typeof src === 'string' && /^(data:image\/|https:\/\/|blob:)/i.test(src)) ? src : null;
+    }
+
+    function lerEstado(ag) {
+        try {
+            const pref = (typeof getPrefix === 'function') ? getPrefix() : '';
+            return JSON.parse(localStorage.getItem(pref + 'estado_ficha_' + ag.id)) || null;
+        } catch (e) { return null; }
+    }
+
+    // converte um agente salvo no formato usado pela home
+    function agenteParaView(ag) {
+        const est = lerEstado(ag) || {};
+        const a = ag.atributos || {};
+        const attr = { FOR: num(a.FOR, 1), AGI: num(a.AGI, 1), INT: num(a.INT, 1), PRE: num(a.PRE, 1), VIG: num(a.VIG, 1) };
+
+        // perícias: valores da ficha (estado) se existirem; senão as treinadas na criação
+        let pericias = [];
+        if (est.pericias && typeof est.pericias === 'object') {
+            pericias = Object.entries(est.pericias)
+                .filter(([, v]) => v && (v.treinada || num(v.bonus) > 0))
+                .map(([n, v]) => [n, Math.max(num(v.bonus), v.treinada ? 5 : 0) + num(v.outros)]);
+        }
+        if (!pericias.length && Array.isArray(ag.pericias)) pericias = ag.pericias.map(n => [n, 5]);
+        pericias.sort((x, y) => y[1] - x[1]);
+
+        const equip = Array.isArray(est.inventario) ? est.inventario.map(i => i && i.nome).filter(Boolean).slice(0, 4) : [];
+
+        const classe = ag.classe || '—';
+        const sobrev = classe === 'Sobrevivente';
+        const f = FORMULA[classe];
+        const passos = Math.max(0, (num(ag.nivel, 1) - 1));
+        let vida, san, sanLabel = 'SANIDADE';
+        if (est.vida && num(est.vida.max) > 0) vida = [num(est.vida.atual), num(est.vida.max)];
+        else vida = sobrev ? [8 + attr.VIG, 8 + attr.VIG] : f ? [f.pv + attr.VIG + passos * (f.pvi + attr.VIG), f.pv + attr.VIG + passos * (f.pvi + attr.VIG)] : [10, 10];
+        if (sobrev) { sanLabel = 'DETERMINAÇÃO'; const pd = 4 + attr.PRE; san = [pd, pd]; }
+        else if (est.san && num(est.san.max) > 0) san = [num(est.san.atual), num(est.san.max)];
+        else san = f ? [f.san + passos * f.sani, f.san + passos * f.sani] : [10, 10];
+
+        const nome = (ag.nome || 'Sem nome') + (ag.codinome ? ` "${ag.codinome}"` : '');
+        return {
+            modelo: false, nome, origem: ag.origem || '—', classe, atributos: attr,
+            pericias: pericias.slice(0, 5), equip,
+            vida, san, sanLabel,
+            fichaId: String(ag.id || '').slice(-4).padStart(4, '0') + '-A',
+            foto: fotoSegura(ag.fotoCostum || localStorage.getItem((typeof getPrefix === 'function' ? getPrefix() : '') + 'foto_ficha_' + ag.id))
+        };
+    }
+
+    /* ── radar de atributos (SVG gerado via DOM, sem innerHTML) ── */
+    function svg(tag, attrs, parent) {
+        const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+        for (const k in attrs) el.setAttribute(k, attrs[k]);
+        if (parent) parent.appendChild(el);
+        return el;
+    }
+    function desenharRadar(attr) {
+        const root = $('hx-radar'); if (!root) return;
+        while (root.firstChild) root.removeChild(root.firstChild);
+        const cx = 110, cy = 96, R = 62, max = 5;
+        const eixos = [['FOR', 'FOR'], ['AGI', 'AGI'], ['INT', 'INT'], ['VIG', 'VIG'], ['PRE', 'PRE']];
+        const ang = i => -Math.PI / 2 + i * (2 * Math.PI / eixos.length);
+        const pt = (i, r) => [cx + Math.cos(ang(i)) * r, cy + Math.sin(ang(i)) * r];
+        for (let n = 1; n <= max; n++) {                                  // anéis
+            const pts = eixos.map((_, i) => pt(i, R * n / max).join(',')).join(' ');
+            svg('polygon', { points: pts, fill: 'none', stroke: 'rgba(157,120,255,' + (n === max ? .5 : .2) + ')', 'stroke-width': 1 }, root);
+        }
+        eixos.forEach((_, i) => { const [x, y] = pt(i, R); svg('line', { x1: cx, y1: cy, x2: x, y2: y, stroke: 'rgba(157,120,255,.25)', 'stroke-width': 1 }, root); });
+        const dados = eixos.map(([k], i) => pt(i, R * Math.min(attr[k] || 0, max) / max));
+        svg('polygon', { points: dados.map(p => p.join(',')).join(' '), fill: 'rgba(157,120,255,.28)', stroke: '#b99cff', 'stroke-width': 1.6 }, root);
+        dados.forEach(([x, y]) => svg('circle', { cx: x, cy: y, r: 2.8, fill: '#d9c9ff' }, root));
+        eixos.forEach(([k, rot], i) => {                                  // rótulos + valor
+            const [x, y] = pt(i, R + 20);
+            const t = svg('text', { x, y: y - 2, 'text-anchor': 'middle', 'font-size': 8, fill: '#8b7fb0', 'font-family': 'monospace', 'letter-spacing': 1 }, root);
+            t.textContent = rot;
+            const v = svg('text', { x, y: y + 12, 'text-anchor': 'middle', 'font-size': 15, fill: '#fff', 'font-family': 'Playfair Display, Georgia, serif', 'font-weight': 600 }, root);
+            v.textContent = attr[k] != null ? attr[k] : 0;
+        });
+    }
+
+    function preencherLista(id, itens, render) {
+        const ul = $(id); if (!ul) return;
+        while (ul.firstChild) ul.removeChild(ul.firstChild);
+        itens.forEach(it => ul.appendChild(render(it)));
+    }
+
+    function pintar(v) {
+        $('hx-d-nome').textContent = v.nome;
+        $('hx-d-origem').textContent = v.origem;
+        $('hx-d-classe').textContent = v.classe;
+        $('hx-d-ficha').textContent = 'FICHA: ' + v.fichaId;
+        $('hx-d-agente').textContent = 'AGENTE Nº ' + v.fichaId;
+        $('hx-d-stamp').textContent = v.modelo ? 'MODELO' : 'CLASSIFICADO';
+
+        const foto = $('hx-d-photo');
+        const antiga = foto.querySelector('img'); if (antiga) antiga.remove();
+        if (v.foto) {
+            const img = document.createElement('img');
+            img.alt = v.nome; img.referrerPolicy = 'no-referrer'; img.src = v.foto;
+            foto.insertBefore(img, foto.firstChild);
+        }
+
+        desenharRadar(v.atributos);
+
+        const pers = v.pericias.length ? v.pericias : [['Nenhuma treinada', 0]];
+        preencherLista('hx-d-skills', pers, ([n, b]) => {
+            const li = document.createElement('li');
+            const s = document.createElement('span'); s.textContent = n;
+            const bb = document.createElement('b'); bb.textContent = b > 0 ? '+' + b : '—';
+            li.append(s, bb); return li;
+        });
+        const eq = v.equip.length ? v.equip : ['Nenhum item no inventário'];
+        preencherLista('hx-d-equip', eq, t => { const li = document.createElement('li'); li.textContent = t; return li; });
+
+        const pct = ([a, m]) => (m > 0 ? Math.max(0, Math.min(100, a / m * 100)) : 0) + '%';
+        $('hx-vida-txt').textContent = v.vida[0] + ' / ' + v.vida[1];
+        $('hx-vida-bar').style.width = pct(v.vida);
+        $('hx-san-label').textContent = v.sanLabel;
+        $('hx-san-txt').textContent = v.san[0] + ' / ' + v.san[1];
+        $('hx-san-bar').style.width = pct(v.san);
+    }
+
+    /* ── ciclo entre agentes ── */
+    let lista = [], idx = 0;
+    function mostrar() {
+        const nav = $('hx-d-nav');
+        if (!lista.length) { pintar(DEMO); nav.hidden = true; return; }
+        const ag = lista[idx];
+        pintar(agenteParaView(ag));
+        nav.hidden = false;
+        $('hx-d-pos').textContent = (idx + 1) + ' / ' + lista.length;
+        $('hx-d-prev').style.visibility = $('hx-d-next').style.visibility = lista.length > 1 ? 'visible' : 'hidden';
+        const usuario = (typeof getUsuarioLogado === 'function') ? getUsuarioLogado() : '';
+        $('hx-d-open').href = 'ficha.html?id=' + encodeURIComponent(ag.id) + (usuario ? '&usuario=' + encodeURIComponent(usuario) : '');
+    }
+
+    window._atualizarDossieHome = function (agentes) {
+        const novo = Array.isArray(agentes) ? agentes.filter(a => a && a.id != null) : [];
+        const idAtual = lista[idx] && lista[idx].id;
+        lista = novo;
+        const pos = novo.findIndex(a => String(a.id) === String(idAtual));
+        idx = pos >= 0 ? pos : Math.max(0, novo.length - 1);   // começa pelo agente mais recente
+        mostrar();
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        $('hx-d-prev').addEventListener('click', () => { idx = (idx - 1 + lista.length) % lista.length; mostrar(); });
+        $('hx-d-next').addEventListener('click', () => { idx = (idx + 1) % lista.length; mostrar(); });
+        if (Array.isArray(window._agentesAtuais) && window._agentesAtuais.length) window._atualizarDossieHome(window._agentesAtuais);
+        else mostrar();
+    });
+
+    /* ── navegação: link ativo + busca ── */
+    window._navAtivo = function (nome) {
+        document.querySelectorAll('.custom-nav [data-nav]').forEach(a => a.classList.toggle('hx-ativo', a.dataset.nav === nome));
+    };
+    window.abrirBuscaAgentes = function () {
+        if (typeof getUsuarioLogado === 'function' && !getUsuarioLogado()) return;
+        if (typeof mostrarAgentes === 'function') mostrarAgentes();
+        setTimeout(() => { const i = $('busca-agentes'); if (i) i.focus(); }, 60);
+    };
+})();
+</script>
 
 </body>
 </html>
