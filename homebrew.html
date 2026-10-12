@@ -1927,6 +1927,8 @@ body { transition: background 0.5s ease; }
     // Não redireciona aqui — o window.load já cuida disso
   });
 </script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ficha-design.css">
 </head>
 <body>
 
@@ -1978,8 +1980,8 @@ body { transition: background 0.5s ease; }
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg custom-nav navbar-dark">
   <div class="container-fluid">
-    <a class="navbar-brand fs-2" href="index.html">
-      <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="72" height="72" class="d-inline-block align-text-center">
+    <a class="navbar-brand hx-brand" href="index.html">
+      <img class="hx-brand-logo" src="./ordem-paranormal-enigma-do-medo.gif" alt="F.I.C.H.A." width="58" height="58">
       F.I.C.H.A.
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -2010,6 +2012,9 @@ body { transition: background 0.5s ease; }
       </div>
     </div>
     <div class="d-none d-lg-flex align-items-center flex-shrink-0" style="justify-content:flex-end;">
+      <a class="hx-nav-search" href="index.html?view=agentes" title="Buscar agentes" aria-label="Buscar agentes">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      </a>
       <div class="temas-wrapper" id="temas-wrapper">
         <button class="btn-temas" onclick="toggleTemas(event)">⬡ Temas</button>
         <div class="temas-dropdown" id="temas-dropdown">
@@ -2031,6 +2036,21 @@ body { transition: background 0.5s ease; }
     </div>
   </div>
 </nav>
+
+<!-- CABEÇALHO DO ARQUIVO -->
+<header class="hx-page-head">
+  <div class="hx-page-head-in">
+    <div>
+      <div class="hx-eyebrow"><span class="hx-eyebrow-icon"></span>Arquivo paranormal</div>
+      <h1 class="hx-page-title">Homebrew</h1>
+      <p class="hx-page-sub">Ameaças, habilidades, rituais e itens criados por você e pela comunidade.</p>
+    </div>
+    <div class="hx-page-head-side">
+      <span class="hx-proto">PROTOCOLO 7.14<br>CONTEÚDO CUSTOMIZADO</span>
+      <span class="hx-stamp">ARQUIVO</span>
+    </div>
+  </div>
+</header>
 
 <!-- MAIN TABS -->
 <div class="main-tabs">

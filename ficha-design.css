@@ -1,0 +1,271 @@
+/* ═══════════════════════════════════════════════════════════════
+   F.I.C.H.A. — DESIGN COMPARTILHADO ("arquivo confidencial")
+   Carregado por criar / campanhas / homebrew / ficha.
+   Usa as variáveis de tema do site (--tema-*), então o botão
+   "Temas" continua funcionando. Não altera o tema "Dossiê de
+   Investigação" da ficha (cada regra é prefixada para excluí-lo).
+═══════════════════════════════════════════════════════════════ */
+:root {
+    --hx-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --hx-type:  'Special Elite', 'Courier New', monospace;
+    --hx-mono:  'Share Tech Mono', 'Courier New', monospace;
+    --hx-cream: #f1e8da;
+    --hx-violet: #9d78ff;
+    --hx-panel: linear-gradient(135deg, rgba(255,255,255,.035), transparent 45%), #0e0814;
+    --hx-line:  rgba(157,120,255,.28);
+}
+html:not([data-tema="dossie-investigacao"]) body { position: relative; }
+html:not([data-tema="dossie-investigacao"]) body::before {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+        radial-gradient(ellipse 55% 60% at 90% 10%, rgba(80,30,110,.20), transparent 70%),
+        radial-gradient(ellipse 50% 70% at 5% 90%, rgba(var(--tema-glow-rgb, 204,17,17), .14), transparent 70%),
+        radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.55) 100%);
+}
+html:not([data-tema="dossie-investigacao"]) body::after {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .07; mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+html:not([data-tema="dossie-investigacao"]) .custom-nav {
+    background: linear-gradient(180deg, rgba(5,3,6,.97), rgba(8,5,9,.93)) !important;
+    border-bottom: 1px solid rgba(var(--tema-glow-rgb, 214,33,43), .35) !important;
+    box-shadow: 0 1px 0 rgba(0,0,0,.6), 0 8px 30px rgba(0,0,0,.5);
+    padding-top: .35rem; padding-bottom: .35rem;
+}
+html:not([data-tema="dossie-investigacao"]) .custom-nav .navbar-brand.hx-brand {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--hx-serif); font-weight: 600 !important;
+    font-size: 1.35rem !important; letter-spacing: .5em; color: var(--hx-cream);
+    padding: 0 26px 0 6px; margin-right: 0;
+    border-right: 1px solid rgba(255,255,255,.12);
+}
+html:not([data-tema="dossie-investigacao"]) .hx-brand-emblem { width: 52px !important; height: 52px !important; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(var(--tema-glow-rgb, 214,33,43), .6)); }
+html:not([data-tema="dossie-investigacao"]) .hx-brand-emblem * { fill: none; stroke: var(--tema-primary-light, #ff4b55); stroke-width: 2.2; stroke-linecap: round; }
+html:not([data-tema="dossie-investigacao"]) .hx-brand-emblem .fill { fill: var(--tema-primary-light, #ff4b55); stroke: none; }
+html:not([data-tema="dossie-investigacao"]) .custom-nav .navbar-nav .nav-link {
+    font-family: var(--hx-mono); font-weight: 400 !important;
+    font-size: .78rem; letter-spacing: .28em; text-transform: uppercase;
+    color: #cfc8c9 !important; padding: 1.15rem 1.35rem !important; position: relative; transition: color .2s;
+}
+html:not([data-tema="dossie-investigacao"]) .custom-nav .navbar-nav .nav-link::after {
+    content: ''; position: absolute; left: 1.35rem; right: 1.35rem; bottom: .55rem; height: 2px;
+    background: var(--tema-primary-light, #ff4b55); transform: scaleX(0); transform-origin: left; transition: transform .25s;
+    box-shadow: 0 0 10px rgba(var(--tema-glow-rgb, 214,33,43), .9);
+}
+html:not([data-tema="dossie-investigacao"]) .custom-nav .navbar-nav .nav-link:hover { color: #fff !important; }
+html:not([data-tema="dossie-investigacao"]) .custom-nav .navbar-nav .nav-link.active { color: #fff !important; }
+html:not([data-tema="dossie-investigacao"]) .custom-nav .navbar-nav .nav-link.active::after,
+html:not([data-tema="dossie-investigacao"]) .custom-nav .navbar-nav .nav-link:hover::after { transform: scaleX(1); }
+@media (min-width: 992px) {
+html:not([data-tema="dossie-investigacao"]) #navbarNav { position: static !important; transform: none !important; flex-grow: 1 !important; width: auto; }
+html:not([data-tema="dossie-investigacao"]) #navbarNav .navbar-nav { margin: 0 0 0 1rem !important; }
+}
+html:not([data-tema="dossie-investigacao"]) .hx-nav-search {
+    color: #cfc8c9; width: 40px; height: 40px; margin-right: 14px; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%; transition: color .2s, background .2s; text-decoration: none;
+}
+html:not([data-tema="dossie-investigacao"]) .hx-nav-search:hover { color: #fff; background: rgba(255,255,255,.07); }
+html:not([data-tema="dossie-investigacao"]) .hx-nav-search svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+html:not([data-tema="dossie-investigacao"]) .btn-temas {
+    font-family: var(--hx-mono) !important; font-weight: 400 !important; letter-spacing: .2em !important;
+    text-transform: uppercase; font-size: .72rem !important; border-radius: 2px !important;
+    border: 1px solid rgba(var(--tema-glow-rgb, 214,33,43), .7) !important; background: rgba(0,0,0,.35) !important;
+}
+html:not([data-tema="dossie-investigacao"]) .temas-dropdown {
+    background: #0b0710 !important; border: 1px solid var(--hx-line) !important; border-radius: 3px !important;
+    box-shadow: 0 18px 40px rgba(0,0,0,.8), 0 0 0 4px rgba(20,12,34,.8) !important;
+}
+html:not([data-tema="dossie-investigacao"]) .temas-dropdown .td-header { font-family: var(--hx-mono) !important; letter-spacing: .3em !important; color: #7f74a3 !important; }
+html:not([data-tema="dossie-investigacao"]) .temas-dropdown .td-item { font-family: var(--hx-mono) !important; font-weight: 400 !important; letter-spacing: .12em !important; font-size: .78rem !important; }
+html:not([data-tema="dossie-investigacao"]) .avatar-circle { border-color: rgba(var(--tema-glow-rgb, 214,33,43), .75) !important; box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb, 214,33,43), .15) !important; }
+html:not([data-tema="dossie-investigacao"]) .btn-voltar {
+    font-family: var(--hx-mono) !important; font-weight: 400 !important; letter-spacing: .18em !important;
+    text-transform: uppercase; font-size: .7rem !important; border-radius: 2px !important; background: rgba(0,0,0,.35) !important;
+}
+html:not([data-tema="dossie-investigacao"]) h1,
+html:not([data-tema="dossie-investigacao"]) h2 { font-family: var(--hx-serif); }
+html:not([data-tema="dossie-investigacao"]) .form-hero h1,
+html:not([data-tema="dossie-investigacao"]) .camp-header-nome,
+html:not([data-tema="dossie-investigacao"]) .page-title { font-family: var(--hx-serif) !important; font-weight: 800 !important; letter-spacing: .06em !important; color: var(--hx-cream); text-shadow: 0 4px 24px rgba(0,0,0,.7); }
+html:not([data-tema="dossie-investigacao"]) .form-hero h1 span { color: var(--tema-primary-light) !important; text-shadow: 0 0 22px rgba(var(--tema-glow-rgb), .55) !important; }
+html:not([data-tema="dossie-investigacao"]) .form-hero { background: radial-gradient(ellipse 60% 120% at 50% 0%, rgba(var(--tema-glow-rgb), .16), transparent 70%); border-bottom: 1px solid var(--hx-line) !important; }
+html:not([data-tema="dossie-investigacao"]) .form-hero p { font-family: var(--hx-mono) !important; letter-spacing: .3em !important; }
+html:not([data-tema="dossie-investigacao"]) .section-title,
+html:not([data-tema="dossie-investigacao"]) .sec-title,
+html:not([data-tema="dossie-investigacao"]) .modal-title {
+    font-family: var(--hx-serif) !important; font-weight: 700 !important; letter-spacing: .14em !important;
+}
+html:not([data-tema="dossie-investigacao"]) .form-label,
+html:not([data-tema="dossie-investigacao"]) .field-label,
+html:not([data-tema="dossie-investigacao"]) .label-field,
+html:not([data-tema="dossie-investigacao"]) .atributo-nome,
+html:not([data-tema="dossie-investigacao"]) .step-label {
+    font-family: var(--hx-mono) !important; font-weight: 400 !important; letter-spacing: .22em !important;
+}
+html:not([data-tema="dossie-investigacao"]) .btn-nav,
+html:not([data-tema="dossie-investigacao"]) .btn-primary-purple,
+html:not([data-tema="dossie-investigacao"]) .btn-adicionar,
+html:not([data-tema="dossie-investigacao"]) .btn-salvar,
+html:not([data-tema="dossie-investigacao"]) .btn-modal,
+html:not([data-tema="dossie-investigacao"]) .btn-novo-ataque,
+html:not([data-tema="dossie-investigacao"]) .btn-importar,
+html:not([data-tema="dossie-investigacao"]) .btn-buscar-codigo {
+    font-family: var(--hx-mono) !important; font-weight: 400 !important; letter-spacing: .2em !important;
+    text-transform: uppercase; border-radius: 2px !important;
+    background: linear-gradient(180deg, var(--tema-primary), var(--tema-primary-dark)) !important;
+    border: 1px solid var(--tema-primary-light) !important; color: #fff !important;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.55) inset, 0 0 18px rgba(var(--tema-glow-rgb), .35);
+    transition: transform .2s, box-shadow .2s;
+}
+html:not([data-tema="dossie-investigacao"]) .btn-nav:hover,
+html:not([data-tema="dossie-investigacao"]) .btn-primary-purple:hover,
+html:not([data-tema="dossie-investigacao"]) .btn-adicionar:hover,
+html:not([data-tema="dossie-investigacao"]) .btn-salvar:hover,
+html:not([data-tema="dossie-investigacao"]) .btn-modal:hover,
+html:not([data-tema="dossie-investigacao"]) .btn-novo-ataque:hover,
+html:not([data-tema="dossie-investigacao"]) .btn-importar:hover,
+html:not([data-tema="dossie-investigacao"]) .btn-buscar-codigo:hover {
+    transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(0,0,0,.55) inset, 0 0 28px rgba(var(--tema-glow-rgb), .65);
+}
+html:not([data-tema="dossie-investigacao"]) .btn-ghost,
+html:not([data-tema="dossie-investigacao"]) .btn-cancel {
+    font-family: var(--hx-mono) !important; letter-spacing: .18em !important; text-transform: uppercase; border-radius: 2px !important;
+}
+html:not([data-tema="dossie-investigacao"]) .classe-card,
+html:not([data-tema="dossie-investigacao"]) .atributo-box,
+html:not([data-tema="dossie-investigacao"]) .pericia-item,
+html:not([data-tema="dossie-investigacao"]) .habilidade-item,
+html:not([data-tema="dossie-investigacao"]) .classe-info-panel,
+html:not([data-tema="dossie-investigacao"]) .pontos-display,
+html:not([data-tema="dossie-investigacao"]) .pericias-resumo,
+html:not([data-tema="dossie-investigacao"]) .camp-card,
+html:not([data-tema="dossie-investigacao"]) .perfil-card,
+html:not([data-tema="dossie-investigacao"]) .modal-box,
+html:not([data-tema="dossie-investigacao"]) .item-card,
+html:not([data-tema="dossie-investigacao"]) .community-item-card,
+html:not([data-tema="dossie-investigacao"]) .melhoria-card,
+html:not([data-tema="dossie-investigacao"]) .card-personagem,
+html:not([data-tema="dossie-investigacao"]) .card-atributos,
+html:not([data-tema="dossie-investigacao"]) .card-pericias,
+html:not([data-tema="dossie-investigacao"]) .card-combate,
+html:not([data-tema="dossie-investigacao"]) .card-recursos,
+html:not([data-tema="dossie-investigacao"]) .card-defesa,
+html:not([data-tema="dossie-investigacao"]) .card-condicoes,
+html:not([data-tema="dossie-investigacao"]) .card-cicatrizes,
+html:not([data-tema="dossie-investigacao"]) .poder-card,
+html:not([data-tema="dossie-investigacao"]) .habilidade-card,
+html:not([data-tema="dossie-investigacao"]) .inv-item-card,
+html:not([data-tema="dossie-investigacao"]) .escudo-painel,
+html:not([data-tema="dossie-investigacao"]) .invite-box {
+    background: var(--hx-panel) !important;
+    border-color: var(--hx-line) !important;
+    border-radius: 4px !important;
+}
+html:not([data-tema="dossie-investigacao"]) .card-personagem,
+html:not([data-tema="dossie-investigacao"]) .card-atributos,
+html:not([data-tema="dossie-investigacao"]) .card-pericias,
+html:not([data-tema="dossie-investigacao"]) .card-combate,
+html:not([data-tema="dossie-investigacao"]) .card-recursos,
+html:not([data-tema="dossie-investigacao"]) .card-defesa,
+html:not([data-tema="dossie-investigacao"]) .card-condicoes,
+html:not([data-tema="dossie-investigacao"]) .card-cicatrizes,
+html:not([data-tema="dossie-investigacao"]) .camp-card,
+html:not([data-tema="dossie-investigacao"]) .item-card,
+html:not([data-tema="dossie-investigacao"]) .modal-box {
+    box-shadow: 0 0 0 4px rgba(18,10,30,.85), 0 0 0 5px rgba(110,80,190,.22), 0 22px 50px rgba(0,0,0,.6) !important;
+}
+html:not([data-tema="dossie-investigacao"]) .classe-card:hover,
+html:not([data-tema="dossie-investigacao"]) .camp-card:hover,
+html:not([data-tema="dossie-investigacao"]) .item-card:hover { border-color: var(--tema-primary-light) !important; }
+html:not([data-tema="dossie-investigacao"]) .classe-card.selected,
+html:not([data-tema="dossie-investigacao"]) .pericia-item.selected { border-color: var(--tema-primary-light) !important; }
+html:not([data-tema="dossie-investigacao"]) .stepper::before { background: var(--hx-line) !important; }
+html:not([data-tema="dossie-investigacao"]) .step-circle { background: #120a1f !important; border-color: var(--hx-line) !important; font-family: var(--hx-serif); }
+html:not([data-tema="dossie-investigacao"]) .step-item.active .step-circle { background: var(--tema-primary) !important; border-color: var(--tema-primary-light) !important; }
+html:not([data-tema="dossie-investigacao"]) .camp-card-banner { filter: saturate(.9) contrast(1.05); }
+html:not([data-tema="dossie-investigacao"]) .main-tabs { background: rgba(8,5,12,.85) !important; border-bottom: 1px solid var(--hx-line) !important; }
+html:not([data-tema="dossie-investigacao"]) .main-tab,
+html:not([data-tema="dossie-investigacao"]) .aba-btn,
+html:not([data-tema="dossie-investigacao"]) .sub-tab,
+html:not([data-tema="dossie-investigacao"]) .community-tab,
+html:not([data-tema="dossie-investigacao"]) .mrit-tab {
+    font-family: var(--hx-mono) !important; font-weight: 400 !important; letter-spacing: .24em !important; text-transform: uppercase;
+}
+html:not([data-tema="dossie-investigacao"]) .main-tab.active,
+html:not([data-tema="dossie-investigacao"]) .aba-btn.active { color: #fff !important; }
+html:not([data-tema="dossie-investigacao"]) .abas { background: var(--hx-panel) !important; border-color: var(--hx-line) !important; border-radius: 4px !important; }
+html:not([data-tema="dossie-investigacao"]) .form-control,
+html:not([data-tema="dossie-investigacao"]) .form-select,
+html:not([data-tema="dossie-investigacao"]) textarea,
+html:not([data-tema="dossie-investigacao"]) .field-input,
+html:not([data-tema="dossie-investigacao"]) .field-select,
+html:not([data-tema="dossie-investigacao"]) .field-textarea,
+html:not([data-tema="dossie-investigacao"]) .form-input,
+html:not([data-tema="dossie-investigacao"]) .form-textarea {
+    border-radius: 2px !important; border-color: var(--hx-line) !important; background-color: #0a0612 !important;
+}
+html:not([data-tema="dossie-investigacao"]) .form-control:focus,
+html:not([data-tema="dossie-investigacao"]) .form-select:focus,
+html:not([data-tema="dossie-investigacao"]) textarea:focus,
+html:not([data-tema="dossie-investigacao"]) .field-input:focus,
+html:not([data-tema="dossie-investigacao"]) .field-select:focus,
+html:not([data-tema="dossie-investigacao"]) .form-input:focus {
+    border-color: var(--tema-primary-light) !important; box-shadow: 0 0 0 1px rgba(var(--tema-glow-rgb), .5), 0 0 14px rgba(var(--tema-glow-rgb), .3) !important;
+}
+html:not([data-tema="dossie-investigacao"]) .barra-track { border-radius: 1px !important; }
+html:not([data-tema="dossie-investigacao"]) .hx-ok { color: var(--tema-primary-light); }
+@media (max-width: 991px) {
+html:not([data-tema="dossie-investigacao"]) .custom-nav .navbar-brand.hx-brand { border-right: 0; letter-spacing: .3em; font-size: 1.1rem !important; padding-right: 8px; }
+html:not([data-tema="dossie-investigacao"]) .hx-brand-emblem { width: 42px !important; height: 42px !important; }
+html:not([data-tema="dossie-investigacao"]) .custom-nav .navbar-nav .nav-link { padding: .8rem 1rem !important; }
+html:not([data-tema="dossie-investigacao"]) .custom-nav .navbar-nav .nav-link::after { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+html:not([data-tema="dossie-investigacao"]) .btn-nav,
+html:not([data-tema="dossie-investigacao"]) .btn-adicionar { transition: none; }
+}
+html:not([data-tema="dossie-investigacao"]) .hx-brand-logo { width: 58px; height: 58px; object-fit: contain; image-rendering: pixelated; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(var(--tema-glow-rgb, 214,33,43), .5)); }
+@media (max-width: 991px) {
+html:not([data-tema="dossie-investigacao"]) .hx-brand-logo { width: 46px; height: 46px; }
+}
+html:not([data-tema="dossie-investigacao"]) .hx-eyebrow { display: flex; align-items: center; gap: 12px; font-family: var(--hx-mono); font-size: .7rem; letter-spacing: .38em; text-transform: uppercase; color: #d9d0d1; margin-bottom: 8px; }
+html:not([data-tema="dossie-investigacao"]) .hx-eyebrow-icon { width: 14px; height: 14px; border: 2px solid var(--tema-primary-light); border-radius: 50%; position: relative; flex-shrink: 0; box-shadow: 0 0 10px rgba(var(--tema-glow-rgb), .7); }
+html:not([data-tema="dossie-investigacao"]) .hx-eyebrow-icon::after { content: ''; position: absolute; inset: 2px; border-radius: 50%; background: var(--tema-primary-light); }
+html:not([data-tema="dossie-investigacao"]) .hx-page-title { font-family: var(--hx-serif); font-weight: 800; letter-spacing: .05em; color: var(--hx-cream); font-size: 2.4rem; margin: 0; text-shadow: 0 4px 24px rgba(0,0,0,.7); }
+html:not([data-tema="dossie-investigacao"]) .hx-page-sub { font-family: var(--hx-mono); font-size: .78rem; letter-spacing: .12em; color: #8d8586; margin: 8px 0 0; }
+html:not([data-tema="dossie-investigacao"]) .hx-rule { width: 320px; max-width: 70%; height: 1px; margin-top: 12px; background: linear-gradient(90deg, rgba(var(--tema-glow-rgb), .85), transparent); }
+html:not([data-tema="dossie-investigacao"]) .hx-stamp { display: inline-block; font-family: var(--hx-type); font-size: 1rem; letter-spacing: .08em; white-space: nowrap; color: var(--tema-primary-light); border: 2px solid var(--tema-primary-light); padding: 3px 12px; transform: rotate(-5deg); opacity: .85; text-shadow: 0 0 10px rgba(var(--tema-glow-rgb), .5); pointer-events: none; }
+html:not([data-tema="dossie-investigacao"]) .hx-proto { font-family: var(--hx-mono); font-size: .55rem; letter-spacing: .2em; color: #7f74a3; border: 1px solid var(--hx-line); padding: 6px 10px; line-height: 1.55; white-space: nowrap; }
+html:not([data-tema="dossie-investigacao"]) .form-hero { position: relative; }
+html:not([data-tema="dossie-investigacao"]) .form-hero .hx-stamp { position: absolute; top: 34px; right: 9%; }
+html:not([data-tema="dossie-investigacao"]) .form-hero .hx-proto { position: absolute; top: 34px; left: 9%; }
+html:not([data-tema="dossie-investigacao"]) .hx-page-head { border-bottom: 1px solid var(--hx-line); background: radial-gradient(ellipse 60% 140% at 20% 0%, rgba(var(--tema-glow-rgb), .13), transparent 70%); }
+html:not([data-tema="dossie-investigacao"]) .hx-page-head-in { max-width: 1100px; margin: 0 auto; padding: 26px 24px 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+html:not([data-tema="dossie-investigacao"]) .hx-page-head-side { display: flex; align-items: center; gap: 22px; }
+html:not([data-tema="dossie-investigacao"]) .hx-ficha-strip { max-width: 1340px; margin: 20px auto -8px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+html:not([data-tema="dossie-investigacao"]) .hx-ficha-label { font-family: var(--hx-mono); font-size: .66rem; letter-spacing: .4em; color: #9588b8; padding-bottom: 8px; border-bottom: 1px solid var(--hx-line); flex: 1; }
+html:not([data-tema="dossie-investigacao"]) .hx-ficha-strip .hx-stamp { font-size: .9rem; }
+html:not([data-tema="dossie-investigacao"]) .card-personagem { position: relative; }
+html:not([data-tema="dossie-investigacao"]) .card-personagem::after { content: ''; position: absolute; right: 16px; bottom: 9px; width: 70px; height: 11px; opacity: .45; pointer-events: none;
+    background: repeating-linear-gradient(90deg, var(--hx-violet) 0 2px, transparent 2px 4px, var(--hx-violet) 4px 5px, transparent 5px 8px); }
+html:not([data-tema="dossie-investigacao"]) .empty-msg,
+html:not([data-tema="dossie-investigacao"]) .empty-state,
+html:not([data-tema="dossie-investigacao"]) .community-empty,
+html:not([data-tema="dossie-investigacao"]) .melhorias-empty,
+html:not([data-tema="dossie-investigacao"]) .hab-vazio,
+html:not([data-tema="dossie-investigacao"]) .mrit-vazio,
+html:not([data-tema="dossie-investigacao"]) .log-vazio {
+    font-family: var(--hx-mono) !important; letter-spacing: .16em; text-transform: uppercase;
+}
+html:not([data-tema="dossie-investigacao"]) .empty-msg { font-size: .8rem !important; margin: 48px auto 0 !important; max-width: 520px; padding: 34px 20px; border: 1px dashed var(--hx-line); background: rgba(10,6,18,.5); }
+html:not([data-tema="dossie-investigacao"]) .empty-msg::before { content: '▸ '; color: var(--tema-primary-light); }
+@media (max-width: 991px) {
+html:not([data-tema="dossie-investigacao"]) .form-hero .hx-stamp,
+html:not([data-tema="dossie-investigacao"]) .form-hero .hx-proto { display: none; }
+html:not([data-tema="dossie-investigacao"]) .hx-page-head-side .hx-proto { display: none; }
+html:not([data-tema="dossie-investigacao"]) .hx-ficha-strip .hx-proto { display: none; }
+}
+@media (max-width: 575px) {
+html:not([data-tema="dossie-investigacao"]) .hx-page-title { font-size: 1.9rem; }
+html:not([data-tema="dossie-investigacao"]) .hx-page-head-in { flex-wrap: wrap; }
+}

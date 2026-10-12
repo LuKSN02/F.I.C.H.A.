@@ -1798,6 +1798,8 @@ body { transition: background 0.5s ease; }
 }
 
     </style>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ficha-design.css">
 </head>
 <body>
 
@@ -1853,10 +1855,10 @@ body { transition: background 0.5s ease; }
 
 <nav class="navbar navbar-expand-lg custom-nav navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand fs-2" href="index.html">
-            <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="72" height="72" class="d-inline-block align-text-center">
-            F.I.C.H.A.
-        </a>
+        <a class="navbar-brand hx-brand" href="index.html">
+      <img class="hx-brand-logo" src="./ordem-paranormal-enigma-do-medo.gif" alt="F.I.C.H.A." width="58" height="58">
+      F.I.C.H.A.
+    </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -1887,6 +1889,9 @@ body { transition: background 0.5s ease; }
 
         <!-- Avatar de perfil -->
         <div class="d-none d-lg-flex align-items-center flex-shrink-0" style="justify-content: flex-end;">
+      <a class="hx-nav-search" href="index.html?view=agentes" title="Buscar agentes" aria-label="Buscar agentes">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      </a>
 
             <!-- Botão Temas -->
             <div class="temas-wrapper" id="temas-wrapper">
@@ -1937,8 +1942,9 @@ body { transition: background 0.5s ease; }
     <div id="view-lista">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px;">
             <div>
-                <div style="font-size:0.6rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">F.I.C.H.A.</div>
-                <h2 style="font-size:2rem;font-weight:700;">Campanhas</h2>
+                <div class="hx-eyebrow"><span class="hx-eyebrow-icon"></span>Arquivo de campanhas</div>
+                <h2 class="hx-page-title">Campanhas</h2>
+                <div class="hx-rule"></div>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
                 <button class="btn-ghost" onclick="abrirModalEntrar()">🔗 Entrar com convite</button>
