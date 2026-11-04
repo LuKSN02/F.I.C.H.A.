@@ -7995,6 +7995,12 @@ async function gerarCompartilhamento() {
         }
         const estadoSemFoto = { ...estado };
         delete estadoSemFoto.fotoCostum;
+        delete estadoSemFoto.fotosCondicao;
+        // Inclui a aba Descrição (aparência, personalidade, história etc.), salva à parte no localStorage
+        try {
+            const descSalva = JSON.parse(localStorage.getItem(getPrefix() + 'descricao_' + ficha.id) || '{}');
+            estadoSemFoto.descricao = { ...(estadoSemFoto.descricao || {}), ...descSalva };
+        } catch(e) {}
 
         const dadosCompartilhados = {
             ficha: ficha,
@@ -8124,6 +8130,7 @@ async function aceitarFichaCompartilhada() {
     const novoEstado = { ..._fichaRecebidaPendente.estado };
     try {
         localStorage.setItem(getPrefix() + `estado_ficha_${novoId}`, JSON.stringify(novoEstado));
+        if (novoEstado.descricao) localStorage.setItem(getPrefix() + `descricao_${novoId}`, JSON.stringify(novoEstado.descricao));
     } catch(e) { console.warn('Erro ao salvar estado da ficha recebida:', e); }
 
     if (window._firebaseDB && usuario) {

@@ -9705,28 +9705,40 @@ function atualizarOrigemDisplay(valor) {
 
 // Salvar descrição (auto-debounced)
 let _descSaveTimer = null;
+// Lê os campos da aba Descrição direto da tela
+function coletarDescricaoAtual() {
+    return {
+        origem:       document.getElementById('desc-origem')?.value        || '',
+        aparencia:    document.getElementById('desc-aparencia')?.value     || '',
+        personalidade:document.getElementById('desc-personalidade')?.value || '',
+        ideal:        document.getElementById('desc-ideal')?.value         || '',
+        vinculo:      document.getElementById('desc-vinculo')?.value       || '',
+        fraqueza:     document.getElementById('desc-fraqueza')?.value      || '',
+        historia:     document.getElementById('desc-historia')?.value      || '',
+        elemento:     document.querySelector('.desc-elem-btn[style*="opacity: 1"]')?.dataset.elem || '',
+        classe:       document.getElementById('desc-classe-display')?.value || '',
+    };
+}
 function salvarDescricao() {
     clearTimeout(_descSaveTimer);
     _descSaveTimer = setTimeout(() => {
-        const dados = {
-            origem:       document.getElementById('desc-origem')?.value        || '',
-            aparencia:    document.getElementById('desc-aparencia')?.value     || '',
-            personalidade:document.getElementById('desc-personalidade')?.value || '',
-            ideal:        document.getElementById('desc-ideal')?.value         || '',
-            vinculo:      document.getElementById('desc-vinculo')?.value       || '',
-            fraqueza:     document.getElementById('desc-fraqueza')?.value      || '',
-            historia:     document.getElementById('desc-historia')?.value      || '',
-            elemento:     document.querySelector('.desc-elem-btn[style*="opacity: 1"]')?.dataset.elem || '',
-            classe:       document.getElementById('desc-classe-display')?.value || '',
-        };
+        const dados = coletarDescricaoAtual();
         const chave = getPrefix() + `descricao_${ficha?.id}`;
         try { localStorage.setItem(chave, JSON.stringify(dados)); } catch(e) {}
+        // Também grava dentro do estado da ficha, para sincronizar com o Firebase
+        // e ir junto no link de compartilhamento.
+        if (ficha) {
+            estado.descricao = { ...(estado.descricao || {}), ...dados };
+            salvarEstado();
+        }
     }, 600);
 }
 function carregarDescricao() {
     const chave = getPrefix() + `descricao_${ficha?.id}`;
     try {
-        const saved = JSON.parse(localStorage.getItem(chave) || '{}');
+        let saved = JSON.parse(localStorage.getItem(chave) || '{}');
+        // Sem cache local (outro navegador/dispositivo ou ficha compartilhada): usa o que veio no estado
+        if (!saved || Object.keys(saved).length === 0) saved = estado.descricao || {};
         ['origem','aparencia','personalidade','ideal','vinculo','fraqueza','historia'].forEach(k => {
             const el = document.getElementById(`desc-${k}`);
             if (el && saved[k]) el.value = saved[k];
@@ -10073,6 +10085,10 @@ async function gerarCompartilhamento() {
         const estadoSemFoto = { ...estado };
         // Evita estourar o tamanho do registro com fotos base64 grandes
         delete estadoSemFoto.fotoCostum;
+        delete estadoSemFoto.fotosCondicao;
+        // Inclui a aba Descrição (aparência, personalidade, história etc.), que fica
+        // fora do estado principal — lida direto da tela para pegar o que acabou de ser digitado.
+        estadoSemFoto.descricao = { ...(estado.descricao || {}), ...coletarDescricaoAtual() };
 
         const dadosCompartilhados = {
             ficha: ficha,
@@ -10214,6 +10230,7 @@ async function aceitarFichaCompartilhada() {
     const novoEstado = { ..._fichaRecebidaPendente.estado };
     try {
         localStorage.setItem(getPrefix() + `estado_ficha_${novoId}`, JSON.stringify(novoEstado));
+        if (novoEstado.descricao) localStorage.setItem(getPrefix() + `descricao_${novoId}`, JSON.stringify(novoEstado.descricao));
     } catch(e) { console.warn('Erro ao salvar estado da ficha recebida:', e); }
 
     // Sincroniza com Firebase, se disponível
