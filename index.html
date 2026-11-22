@@ -18,7 +18,7 @@
 </head>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Montserrat:wght@300..700&family=Syne:wght@600..800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Montserrat:wght@300..700&family=Syne:wght@600..800&family=JetBrains+Mono:wght@400;500&display=swap');
 
     /* ===== SISTEMA DE TEMAS - ORDEM PARANORMAL ===== */
     :root {
@@ -159,227 +159,534 @@
     .footer-link { color: #888; text-decoration: none; display: block; margin-bottom: 4px; }
     .footer-link:hover { color: var(--tema-primary-light); }
 
-    /* ===== LOGIN STYLES ===== */
+    /* ===== LOGIN STYLES — "Terminal da Ordem" ===== */
     #modal-login-overlay {
+        --lg-line: rgba(var(--tema-glow-rgb), 0.28);
+        --lg-ink: #eceef5;
+        --lg-mute: #8a90a3;
         position: fixed; inset: 0;
-        background: rgba(0,0,0,0.92);
-        backdrop-filter: blur(10px);
         z-index: 9999;
-        display: flex; align-items: center; justify-content: center;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(400px, 560px);
+        background: #030307;
+        color: var(--lg-ink);
+        font-family: 'Montserrat', sans-serif;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
     #modal-login-overlay.d-none { display: none !important; }
+    #modal-login-overlay *, #modal-login-overlay *::before, #modal-login-overlay *::after { box-sizing: border-box; }
 
     @keyframes loginFadeIn {
-        from { opacity: 0; transform: translateY(24px) scale(0.97); }
-        to   { opacity: 1; transform: translateY(0) scale(1); }
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
     }
-    @keyframes cornerPulse {
-        0%, 100% { opacity: 0.4; }
-        50% { opacity: 1; }
-    }
-
-    .login-box {
-        background: #0a0a0a;
-        border: 1px solid rgba(var(--tema-glow-rgb), 0.25);
-        border-radius: 4px;
-        padding: 44px 40px 36px;
-        width: 100%;
-        max-width: 440px;
-        margin: 16px;
-        animation: loginFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-        position: relative;
+    @keyframes lgSpin     { to { transform: rotate(360deg); } }
+    @keyframes lgSpinRev  { to { transform: rotate(-360deg); } }
+    @keyframes lgBlink    { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+    @keyframes lgScanBar  { from { transform: translateY(-20vh); } to { transform: translateY(120vh); } }
+    @keyframes lgFormIn   { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+    @keyframes lgGlitch {
+        0%, 92%, 100% { clip-path: inset(0 0 100% 0); transform: none; }
+        93% { clip-path: inset(10% 0 62% 0); transform: translate(-5px, 0); }
+        95% { clip-path: inset(56% 0 14% 0); transform: translate(5px, 0); }
+        97% { clip-path: inset(30% 0 40% 0); transform: translate(-3px, 0); }
     }
 
-    /* Corner decorators */
-    .login-box::after {
-        content: '';
+    /* ---------- Atmosfera ---------- */
+    .lg-bg {
+        position: fixed; inset: 0;
+        pointer-events: none; overflow: hidden;
+        background:
+            radial-gradient(60% 75% at 26% 48%, rgba(var(--tema-glow-rgb), 0.22), transparent 70%),
+            radial-gradient(45% 55% at 100% 100%, rgba(var(--tema-glow-rgb), 0.12), transparent 70%),
+            linear-gradient(180deg, #06060c, #020204);
+    }
+    .lg-sigil {
         position: absolute;
-        inset: 0;
-        border-radius: 4px;
-        box-shadow:
-            inset 0 0 60px rgba(var(--tema-glow-rgb), 0.04),
-            0 0 80px rgba(var(--tema-glow-rgb), 0.12),
-            0 0 160px rgba(var(--tema-glow-rgb), 0.05);
-        pointer-events: none;
-    }
-
-    .login-corners {
-        position: absolute;
-        inset: -1px;
-        pointer-events: none;
-        border-radius: 4px;
-    }
-    .login-corners::before, .login-corners::after {
-        content: '';
-        position: absolute;
-        width: 18px; height: 18px;
-        border-color: var(--tema-primary-light);
-        border-style: solid;
-        opacity: 0.7;
-        animation: cornerPulse 3s ease-in-out infinite;
-    }
-    .login-corners::before {
-        top: -1px; left: -1px;
-        border-width: 2px 0 0 2px;
-        border-radius: 4px 0 0 0;
-    }
-    .login-corners::after {
-        bottom: -1px; right: -1px;
-        border-width: 0 2px 2px 0;
-        border-radius: 0 0 4px 0;
-        animation-delay: 1.5s;
-    }
-
-    .login-logo-wrap {
-        text-align: center;
-        margin-bottom: 6px;
-    }
-    .login-logo-hex {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 4px;
-    }
-    .login-hex-icon {
-        width: 32px; height: 32px;
-        border: 2px solid var(--tema-primary);
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 0 12px rgba(var(--tema-glow-rgb), 0.5);
-        flex-shrink: 0;
-    }
-    .login-hex-icon::after {
-        content: '';
-        width: 8px; height: 8px;
-        background: var(--tema-primary-light);
-        border-radius: 50%;
-        box-shadow: 0 0 8px rgba(var(--tema-glow-light-rgb), 0.8);
-    }
-    .login-box h2 {
-        font-size: 2rem;
-        font-weight: 700;
+        left: 26%; top: 50%;
+        width: min(98vh, 940px); aspect-ratio: 1;
+        transform: translate(-50%, -50%);
         color: var(--tema-primary-light);
-        letter-spacing: 4px;
-        margin: 0;
-        text-shadow: 0 0 20px rgba(var(--tema-glow-light-rgb), 0.4);
+        opacity: 0.2;
     }
-    .login-box .subtitle {
-        text-align: center;
-        color: #444;
-        font-size: 0.7rem;
-        margin-bottom: 32px;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        margin-top: 10px;
+    .lg-sigil g { transform-origin: 300px 300px; }
+    .lg-r1 { animation: lgSpin 120s linear infinite; }
+    .lg-r2 { animation: lgSpinRev 80s linear infinite; }
+    .lg-r3 { animation: lgSpin 50s linear infinite; }
+    /* Tema Conhecimento: runas no lugar do sigilo */
+    .lg-runes { display: none; }
+    :root[data-tema="conhecimento"] .lg-sigil { display: none; }
+    :root[data-tema="conhecimento"] .lg-runes {
+        display: block;
+        position: absolute;
+        left: 26%; top: 50%;
+        width: min(98vh, 940px); aspect-ratio: 1;
+        margin: calc(min(98vh, 940px) / -2) 0 0 calc(min(98vh, 940px) / -2);
+        background: var(--tema-primary-light);
+        -webkit-mask: url("conhecimento-runas.png") center / contain no-repeat;
+                mask: url("conhecimento-runas.png") center / contain no-repeat;
+        opacity: 0.2;
+        filter: drop-shadow(0 0 10px rgba(var(--tema-glow-light-rgb), 0.5));
+        animation: lgSpin 160s linear infinite;
+    }
+    /* Tema Medo: ritual no lugar do sigilo + símbolo fantasma atrás do formulário */
+    :root:not([data-tema]), :root[data-tema="medo"] {
+        --lg-ritual-img: url("medo-ritual.png"); --lg-sym-img: url("medo-simbolo.png");
+    }
+    :root[data-tema="sangue"] {
+        --lg-ritual-img: url("sangue-ritual.png"); --lg-sym-img: url("sangue-simbolo.png");
+    }
+    :root[data-tema="morte"] {
+        --lg-ritual-img: url("morte-ritual.png"); --lg-sym-img: url("morte-simbolo.png");
+    }
+    :root[data-tema="conhecimento"] { --lg-sym-img: url("conhecimento-figuras.png"); }
+    :root[data-tema="energia"] {
+        --lg-ritual-img: url("energia-ritual.png"); --lg-sym-img: url("energia-simbolo.png");
+    }
+    .lg-ritual, .lg-medo-sym { display: none; }
+    :root:not([data-tema]) .lg-sigil, :root[data-tema="medo"] .lg-sigil, :root[data-tema="sangue"] .lg-sigil, :root[data-tema="morte"] .lg-sigil, :root[data-tema="energia"] .lg-sigil { display: none; }
+    :root:not([data-tema]) .lg-ritual, :root[data-tema="medo"] .lg-ritual, :root[data-tema="sangue"] .lg-ritual, :root[data-tema="morte"] .lg-ritual, :root[data-tema="energia"] .lg-ritual {
+        display: block;
+        position: absolute;
+        left: 26%; top: 50%;
+        width: min(98vh, 940px); aspect-ratio: 1;
+        margin: calc(min(98vh, 940px) / -2) 0 0 calc(min(98vh, 940px) / -2);
+        background: var(--tema-primary-light);
+        -webkit-mask: var(--lg-ritual-img) center / contain no-repeat;
+                mask: var(--lg-ritual-img) center / contain no-repeat;
+        opacity: 0.2;
+        filter: drop-shadow(0 0 12px rgba(var(--tema-glow-light-rgb), 0.45));
+        animation: lgBreath 10s ease-in-out infinite;
+    }
+    :root:not([data-tema]) .lg-medo-sym, :root[data-tema="medo"] .lg-medo-sym, :root[data-tema="sangue"] .lg-medo-sym, :root[data-tema="morte"] .lg-medo-sym, :root[data-tema="energia"] .lg-medo-sym, :root[data-tema="conhecimento"] .lg-medo-sym {
+        display: block;
+        position: absolute; left: 50%; top: 50%;
+        width: min(120%, 760px); aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        background: var(--tema-primary-light);
+        -webkit-mask: var(--lg-sym-img) center / contain no-repeat;
+                mask: var(--lg-sym-img) center / contain no-repeat;
+        opacity: 0.08;
+        filter: blur(0.6px) drop-shadow(0 0 18px rgba(var(--tema-glow-light-rgb), 0.6));
+        pointer-events: none;
+        animation: lgWhisper 7s ease-in-out infinite;
+    }
+    /* Sangue: o símbolo pulsa como um coração */
+    :root[data-tema="sangue"] .lg-medo-sym { animation: lgHeart 5s ease-in-out infinite; }
+    /* Morte: espiral eterna girando + símbolo que some e volta devagar */
+    :root[data-tema="morte"] .lg-ritual {
+        opacity: 0.2;
+        animation: lgSpin 90s linear infinite;
+    }
+    :root[data-tema="morte"] .lg-medo-sym { animation: lgFade 12s ease-in-out infinite; }
+    @keyframes lgFade {
+        0%, 100% { opacity: 0.03; transform: translate(-50%, -50%) scale(1); }
+        50%      { opacity: 0.12; transform: translate(-50%, -51%) scale(1.02); }
+    }
+    @keyframes lgHeart {
+        0%, 40%, 100% { opacity: 0.06; transform: translate(-50%, -50%) scale(1); }
+        8%  { opacity: 0.17; transform: translate(-50%, -50%) scale(1.035); }
+        14% { opacity: 0.07; transform: translate(-50%, -50%) scale(1.005); }
+        22% { opacity: 0.14; transform: translate(-50%, -50%) scale(1.025); }
+        32% { opacity: 0.06; transform: translate(-50%, -50%) scale(1); }
+    }
+    /* Energia: interferência / glitch na tela de login */
+    .lg-tear { display: none; }
+    :root[data-tema="energia"] .lg-tear { display: block; position: absolute; inset: 0; overflow: hidden; z-index: 5; mix-blend-mode: screen; }
+    .lg-tear i {
+        position: absolute; left: 0; right: 0; top: var(--y); height: 6px; opacity: 0;
+        background: linear-gradient(90deg, transparent, rgba(var(--tema-glow-light-rgb), 0.55) 15%, rgba(255,255,255,0.4) 50%, rgba(0,240,255,0.35) 85%, transparent);
+    }
+    .lg-tear i:nth-child(1) { --y: 22%; animation: lgTear 4.3s steps(1) infinite; }
+    .lg-tear i:nth-child(2) { --y: 61%; animation: lgTear 6.7s steps(1) infinite 1.2s; }
+    .lg-tear i:nth-child(3) { --y: 84%; animation: lgTear 8.9s steps(1) infinite 3.1s; }
+    @keyframes lgTear {
+        0%, 90%, 100% { opacity: 0; }
+        91% { opacity: 1; height: 14px; translate: -40px 0; }
+        92% { opacity: 1; height: 3px;  translate: 60px 38px; }
+        94% { opacity: 1; height: 9px;  translate: -20px -26px; }
+        96% { opacity: 0; }
+    }
+    :root[data-tema="energia"] .lg-ritual {
+        animation: lgBreath 10s ease-in-out infinite, lgGlitchBg 5.2s steps(1) infinite;
+    }
+    :root[data-tema="energia"] .lg-medo-sym {
+        animation: lgWhisper 7s ease-in-out infinite, lgGlitchBg 3.9s steps(1) infinite 1s;
+    }
+    :root[data-tema="energia"] .lg-grain { animation: lgNoiseBurst 4.6s steps(1) infinite; }
+    :root[data-tema="energia"] .lg-scan { animation: lgFlicker 0.18s steps(2) infinite; }
+    :root[data-tema="energia"] .lg-hero-main { animation: loginFadeIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both, lgJitter 6.1s steps(1) infinite 1s; }
+    :root[data-tema="energia"] .lg-title::before { animation: lgGlitch 3.1s infinite; }
+    :root[data-tema="energia"] .lg-title::after  { animation: lgGlitch 3.1s infinite 0.1s; color: #00f0ff; }
+    :root[data-tema="energia"] .lg-form-title { animation: lgTextSplit 4.7s steps(1) infinite 0.6s; }
+    :root[data-tema="energia"] .login-box {
+        animation: loginFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both, lgBoxGlitch 5.5s steps(1) infinite 1.5s;
+    }
+    @keyframes lgGlitchBg {
+        0%, 90%, 100% { translate: 0 0; filter: drop-shadow(0 0 12px rgba(var(--tema-glow-light-rgb), 0.45)); }
+        91% { translate: -14px 0; filter: hue-rotate(60deg) drop-shadow(6px 0 rgba(0,240,255,0.8)) drop-shadow(-6px 0 rgba(255,0,200,0.8)); }
+        93% { translate: 18px 4px; filter: hue-rotate(-40deg) drop-shadow(-5px 0 rgba(0,240,255,0.8)) drop-shadow(5px 0 rgba(255,0,200,0.8)); }
+        95% { translate: -6px -3px; filter: brightness(1.8); }
+    }
+    @keyframes lgNoiseBurst { 0%, 89%, 100% { opacity: 0.09; } 90%, 92% { opacity: 0.4; } 91% { opacity: 0.15; } 95% { opacity: 0.3; } 96% { opacity: 0.09; } }
+    @keyframes lgFlicker { 0% { opacity: 1; } 50% { opacity: 0.8; } }
+    @keyframes lgJitter {
+        0%, 93%, 100% { translate: 0 0; }
+        94% { translate: -4px 0; }
+        95% { translate: 5px 1px; }
+        96% { translate: -2px 0; }
+    }
+    @keyframes lgTextSplit {
+        0%, 91%, 100% { text-shadow: none; translate: 0 0; }
+        92% { text-shadow: 3px 0 #00f0ff, -3px 0 #ff2bd6; translate: -3px 0; }
+        94% { text-shadow: -4px 0 #00f0ff, 4px 0 #ff2bd6; translate: 3px 0; }
+        96% { text-shadow: 2px 0 #00f0ff, -2px 0 #ff2bd6; translate: 0 0; }
+    }
+    @keyframes lgBoxGlitch {
+        0%, 92%, 100% { translate: 0 0; filter: none; }
+        93% { translate: -6px 0; filter: drop-shadow(4px 0 rgba(0,240,255,0.75)) drop-shadow(-4px 0 rgba(255,43,214,0.75)); }
+        94% { translate: 8px 1px; filter: drop-shadow(-4px 0 rgba(0,240,255,0.75)) drop-shadow(4px 0 rgba(255,43,214,0.75)) brightness(1.4); }
+        95% { translate: -3px 0; filter: drop-shadow(2px 0 rgba(0,240,255,0.6)); }
+        96% { translate: 0 0; filter: none; }
+    }
+    /* Conhecimento: figuras (arte colorida) surgem e somem bem devagar atrás do formulário */
+    :root[data-tema="conhecimento"] .lg-medo-sym {
+        height: 92%; width: auto; aspect-ratio: 779 / 1035;
+        background: var(--lg-sym-img) center bottom / contain no-repeat;
+        -webkit-mask: none; mask: none;
+        -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+                mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+        filter: sepia(0.35) saturate(0.85) brightness(0.9) drop-shadow(0 0 28px rgba(var(--tema-glow-rgb), 0.35));
+        opacity: 0;
+        animation: lgApparition 22s ease-in-out infinite;
+    }
+    @keyframes lgApparition {
+        0%, 100% { opacity: 0;    transform: translate(-50%, -48%) scale(0.98); }
+        40%, 60% { opacity: 0.22; transform: translate(-50%, -50%) scale(1.02); }
+    }
+    .lg-panel { overflow: hidden; }
+    .login-box { position: relative; z-index: 1; }
+    @keyframes lgBreath {
+        0%, 100% { transform: scale(1) rotate(-1.5deg); opacity: 0.17; }
+        50%      { transform: scale(1.035) rotate(1.5deg); opacity: 0.26; }
+    }
+    @keyframes lgWhisper {
+        0%, 100% { opacity: 0.06; transform: translate(-50%, -50%) scale(1); }
+        45%      { opacity: 0.09; }
+        50%      { opacity: 0.17; transform: translate(-50%, -52%) scale(1.02); }
+        53%      { opacity: 0.07; }
+        60%      { opacity: 0.12; }
+        70%      { opacity: 0.08; }
+    }
+    .lg-grain {
+        position: absolute; inset: 0;
+        opacity: 0.09; mix-blend-mode: overlay;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .lg-scan {
+        position: absolute; inset: 0;
+        background: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 4px);
+    }
+    .lg-scan::after {
+        content: ''; position: absolute; left: 0; right: 0; top: 0; height: 18vh;
+        background: linear-gradient(180deg, transparent, rgba(var(--tema-glow-light-rgb), 0.05), transparent);
+        animation: lgScanBar 9s linear infinite;
+    }
+    .lg-vignette {
+        position: absolute; inset: 0;
+        background: radial-gradient(120% 100% at 40% 50%, transparent 45%, rgba(0,0,0,0.75));
     }
 
-    .login-divider {
-        border: none;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(var(--tema-glow-rgb), 0.3), transparent);
-        margin-bottom: 28px;
+    /* ---------- Lado esquerdo ---------- */
+    .lg-hero {
+        position: relative; z-index: 1;
+        display: flex; flex-direction: column; justify-content: space-between;
+        gap: 32px;
+        padding: clamp(24px, 4vw, 52px) clamp(24px, 6vw, 96px);
+        min-height: 100%;
     }
+    .lg-topbar, .lg-log, .lg-feats span, .lg-label, .lg-kicker, .lg-meter b {
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+    }
+    .lg-topbar {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--lg-mute);
+    }
+    .lg-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--green); box-shadow: 0 0 10px var(--green);
+        animation: lgBlink 2.4s ease-in-out infinite;
+    }
+    .lg-hero-main { animation: loginFadeIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .lg-kicker {
+        margin: 0 0 14px;
+        font-size: 0.78rem; letter-spacing: 0.3em; text-transform: uppercase;
+        color: var(--tema-primary-light);
+    }
+    .lg-kicker::before { content: '// '; opacity: 0.6; }
+    .lg-title {
+        position: relative;
+        margin: 0;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        font-size: clamp(3.6rem, 10vw, 9rem);
+        line-height: 0.92;
+        letter-spacing: 0.04em;
+        color: #fff;
+        text-shadow: 0 0 40px rgba(var(--tema-glow-rgb), 0.55);
+    }
+    .lg-title b { color: var(--tema-primary-light); font-weight: 700; }
+    .lg-title::before, .lg-title::after {
+        content: attr(data-text);
+        position: absolute; inset: 0;
+        clip-path: inset(0 0 100% 0);
+        pointer-events: none;
+    }
+    .lg-title::before { color: var(--red);                animation: lgGlitch 7s infinite; }
+    .lg-title::after  { color: var(--tema-primary-light); animation: lgGlitch 7s infinite 0.12s; }
+    .lg-tagline {
+        display: flex; align-items: center; gap: 16px;
+        margin: 22px 0 0;
+        font-family: 'Oswald', sans-serif; font-weight: 300;
+        font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+        letter-spacing: 0.42em; text-transform: uppercase;
+        color: var(--lg-mute);
+    }
+    .lg-tagline::before {
+        content: ''; width: 56px; height: 2px; flex-shrink: 0;
+        background: var(--tema-primary);
+        box-shadow: 0 0 12px rgba(var(--tema-glow-rgb), 0.9);
+    }
+
+    .lg-feats {
+        list-style: none; margin: clamp(28px, 5vh, 56px) 0 0; padding: 0;
+        display: grid; grid-template-columns: repeat(2, minmax(0, 260px)); gap: 12px 40px;
+    }
+    .lg-feats li {
+        display: grid; grid-template-columns: auto 1fr; column-gap: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.09);
+    }
+    .lg-feats span { grid-row: span 2; font-size: 0.7rem; color: var(--tema-primary-light); padding-top: 4px; }
+    .lg-feats strong {
+        font-family: 'Oswald', sans-serif; font-weight: 600;
+        font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; color: #fff;
+    }
+    .lg-feats em { font-style: normal; font-size: 0.78rem; line-height: 1.5; color: var(--lg-mute); }
+
+    .lg-log { font-size: 0.74rem; line-height: 1.9; color: var(--lg-mute); letter-spacing: 0.04em; }
+    .lg-log p { margin: 0; }
+    .lg-caret {
+        display: inline-block; width: 8px; height: 14px; margin-left: 4px;
+        background: var(--tema-primary-light); vertical-align: -2px;
+        animation: lgBlink 1s steps(1) infinite;
+    }
+
+    /* ---------- Painel do formulário ---------- */
+    .lg-panel {
+        position: relative; z-index: 1;
+        display: flex; align-items: center; justify-content: center;
+        padding: clamp(24px, 4vw, 56px);
+        background: linear-gradient(180deg, rgba(5, 5, 10, 0.78), rgba(3, 3, 7, 0.94));
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-left: 1px solid var(--lg-line);
+    }
+    .lg-panel::before {
+        content: ''; position: absolute; left: -1px; top: 0; width: 1px; height: 34%;
+        background: linear-gradient(180deg, var(--tema-primary-light), transparent);
+        box-shadow: 0 0 14px rgba(var(--tema-glow-light-rgb), 0.8);
+    }
+    .login-box {
+        width: 100%; max-width: 420px;
+        animation: loginFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+    }
+    .lg-mark {
+        display: none;
+        align-items: center; gap: 10px; margin-bottom: 20px;
+        font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.2em;
+        color: var(--tema-primary-light);
+    }
+    .lg-mark-ring {
+        width: 18px; height: 18px; border-radius: 50%;
+        border: 2px solid var(--tema-primary);
+        box-shadow: 0 0 10px rgba(var(--tema-glow-rgb), 0.6);
+        display: grid; place-items: center;
+    }
+    .lg-mark-ring::after { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--tema-primary-light); }
+
+    .lg-form-title {
+        margin: 0;
+        font-family: 'Oswald', sans-serif; font-weight: 600;
+        font-size: 2.1rem; letter-spacing: 0.08em; text-transform: uppercase;
+        color: #fff;
+    }
+    .lg-form-sub { margin: 6px 0 28px; font-size: 0.88rem; color: var(--lg-mute); }
 
     .login-tabs {
-        display: flex;
-        gap: 2px;
-        margin-bottom: 28px;
-        background: #111;
-        border-radius: 4px;
-        padding: 3px;
-        border: 1px solid #1e1e1e;
-    }
-    .login-tab {
-        flex: 1; text-align: center; padding: 9px 12px;
-        cursor: pointer; color: #555; font-weight: 600;
-        font-size: 0.85rem; letter-spacing: 2px;
-        text-transform: uppercase;
-        border-radius: 3px;
-        transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .login-tab.active {
-        color: var(--tema-primary-light);
-        background: rgba(var(--tema-glow-rgb), 0.12);
-        box-shadow: inset 0 0 0 1px rgba(var(--tema-glow-rgb), 0.2);
-        text-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb), 0.4);
-    }
-    .login-tab:not(.active):hover { color: #888; background: rgba(255,255,255,0.03); }
-
-    .login-field-wrap {
         position: relative;
-        margin-bottom: 12px;
+        display: grid; grid-template-columns: 1fr 1fr;
+        margin-bottom: 26px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
+    .login-tabs::after {
+        content: ''; position: absolute; left: 0; bottom: -1px; width: 50%; height: 2px;
+        background: var(--tema-primary-light);
+        box-shadow: 0 0 12px rgba(var(--tema-glow-light-rgb), 0.9);
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .login-tabs[data-aba="cadastrar"]::after { transform: translateX(100%); }
+    .login-tab {
+        background: none; border: 0; cursor: pointer;
+        padding: 12px 2px; text-align: left;
+        font-family: 'Oswald', sans-serif; font-weight: 600;
+        font-size: 0.9rem; letter-spacing: 0.24em; text-transform: uppercase;
+        color: var(--lg-mute);
+        transition: color 0.2s;
+    }
+    .login-tab:hover { color: #cfd3e0; }
+    .login-tab.active { color: #fff; }
+    .login-tab:focus-visible { outline: 2px solid var(--tema-primary-light); outline-offset: 2px; }
+
+    #form-entrar, #form-cadastrar { animation: lgFormIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+    .lg-field { display: block; margin-bottom: 18px; }
+    .lg-label {
+        display: block; margin-bottom: 8px;
+        font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
+        color: var(--lg-mute);
+        transition: color 0.2s;
+    }
+    .lg-field:focus-within .lg-label { color: var(--tema-primary-light); }
+    .lg-hint { display: block; margin-top: 7px; font-size: 0.72rem; color: #6c7285; }
+
+    .login-field-wrap { position: relative; display: block; }
+    .login-field-wrap::before {
+        content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+        background: var(--tema-primary-light);
+        box-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb), 0.9);
+        transform: scaleY(0); transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        z-index: 1;
+    }
+    .login-field-wrap:focus-within::before { transform: scaleY(1); }
     .login-field-icon {
-        position: absolute;
-        left: 14px; top: 50%;
-        transform: translateY(-50%);
-        width: 16px; height: 16px;
-        opacity: 0.3;
-        pointer-events: none;
-        transition: opacity 0.2s;
+        position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+        width: 16px; height: 16px; opacity: 0.4; pointer-events: none;
+        transition: opacity 0.2s, color 0.2s;
     }
-    .login-field-wrap:focus-within .login-field-icon { opacity: 0.7; }
+    .login-field-wrap:focus-within .login-field-icon { opacity: 1; color: var(--tema-primary-light); }
     .login-field {
-        background: #111;
-        border: 1px solid #222;
-        border-radius: 4px;
-        color: #e8e8e8;
-        padding: 12px 14px 12px 42px;
-        width: 100%;
-        font-family: 'Oswald', sans-serif;
-        font-size: 0.95rem;
-        letter-spacing: 1px;
-        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        display: block; width: 100%;
+        padding: 14px 16px 14px 44px;
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        color: #fff;
+        font-family: 'Montserrat', sans-serif; font-size: 0.95rem; letter-spacing: 0.02em;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
-    .login-field::placeholder { color: #333; letter-spacing: 1px; }
+    .login-field.has-eye { padding-right: 48px; }
+    .login-field::placeholder { color: #565c70; }
+    .login-field:hover { border-color: rgba(255, 255, 255, 0.2); }
     .login-field:focus {
         outline: none;
-        border-color: rgba(var(--tema-glow-rgb), 0.5);
-        background: #131313;
-        box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb), 0.07), inset 0 0 12px rgba(var(--tema-glow-rgb), 0.03);
+        background: rgba(var(--tema-glow-rgb), 0.08);
+        border-color: rgba(var(--tema-glow-light-rgb), 0.6);
+        box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb), 0.14);
     }
+    .login-field:-webkit-autofill {
+        -webkit-text-fill-color: #fff;
+        -webkit-box-shadow: 0 0 0 100px #12121c inset;
+        caret-color: #fff;
+    }
+
+    .lg-eye {
+        position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+        width: 40px; height: 40px;
+        display: grid; place-items: center;
+        background: none; border: 0; cursor: pointer; color: var(--lg-mute);
+        border-radius: 2px;
+        transition: color 0.2s;
+    }
+    .lg-eye:hover { color: #fff; }
+    .lg-eye:focus-visible { outline: 2px solid var(--tema-primary-light); outline-offset: -2px; }
+    .lg-eye svg { width: 18px; height: 18px; }
+    .lg-eye .i-hide { display: none; }
+    .lg-eye[aria-pressed="true"] .i-hide { display: block; }
+    .lg-eye[aria-pressed="true"] .i-show { display: none; }
+
+    /* medidor de força da senha */
+    .lg-meter { display: flex; align-items: center; gap: 5px; margin-top: 10px; min-height: 14px; }
+    .lg-meter i { flex: 1; max-width: 56px; height: 3px; background: rgba(255, 255, 255, 0.1); transition: background 0.25s, box-shadow 0.25s; }
+    .lg-meter b { margin-left: 8px; font-size: 0.66rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--lg-mute); }
+    .lg-meter[data-n="1"] i:nth-child(-n+1) { background: var(--red); }
+    .lg-meter[data-n="2"] i:nth-child(-n+2) { background: #e8a23a; }
+    .lg-meter[data-n="3"] i:nth-child(-n+3) { background: var(--tema-primary-light); }
+    .lg-meter[data-n="4"] i:nth-child(-n+4) { background: var(--green); box-shadow: 0 0 8px rgba(57, 211, 83, 0.6); }
 
     .btn-login {
-        width: 100%; padding: 13px;
-        background: transparent;
-        border: 1px solid rgba(var(--tema-glow-rgb), 0.5);
-        border-radius: 4px;
-        color: var(--tema-primary-light);
-        font-family: 'Oswald', sans-serif;
-        font-size: 0.9rem; font-weight: 700;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-        margin-top: 8px;
-        position: relative;
-        overflow: hidden;
+        position: relative; overflow: hidden;
+        display: flex; align-items: center; justify-content: center; gap: 12px;
+        width: 100%; margin-top: 26px; padding: 16px;
+        background: linear-gradient(90deg, rgba(var(--tema-glow-rgb), 0.42), rgba(var(--tema-glow-rgb), 0.16));
+        border: 1px solid var(--tema-primary-light);
+        color: #fff; cursor: pointer;
+        font-family: 'Oswald', sans-serif; font-weight: 700;
+        font-size: 1rem; letter-spacing: 0.3em; text-transform: uppercase;
+        clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+        transition: filter 0.2s, transform 0.15s, letter-spacing 0.25s;
     }
     .btn-login::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: rgba(var(--tema-glow-rgb), 0.08);
-        opacity: 0;
-        transition: opacity 0.2s;
+        content: ''; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%;
+        background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+        transform: skewX(-20deg);
+        transition: left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .btn-login:hover {
-        border-color: var(--tema-primary-light);
-        color: var(--texto-custom, white);
-        box-shadow: 0 0 20px rgba(var(--tema-glow-rgb), 0.25), inset 0 0 20px rgba(var(--tema-glow-rgb), 0.08);
-        text-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb), 0.6);
-    }
-    .btn-login:hover::before { opacity: 1; }
+    .btn-login::after { content: '→'; font-family: 'Montserrat', sans-serif; letter-spacing: 0; transition: transform 0.25s; }
+    .btn-login:hover { filter: brightness(1.25); letter-spacing: 0.34em; }
+    .btn-login:hover::before { left: 120%; }
+    .btn-login:hover::after { transform: translateX(4px); }
     .btn-login:active { transform: scale(0.99); }
+    .btn-login:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+    .btn-login:disabled { cursor: progress; filter: saturate(0.4) brightness(0.8); }
+    .btn-login:disabled::after { content: ''; }
 
     .login-error {
-        color: #ff5555;
-        font-size: 0.78rem;
-        text-align: center;
-        margin-top: 14px;
-        min-height: 18px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
+        margin: 16px 0 0; padding: 10px 14px;
+        border-left: 2px solid #ff5a5a;
+        background: rgba(255, 90, 90, 0.08);
+        font-size: 0.8rem; line-height: 1.45; color: #ff8c8c;
+    }
+    .login-error:empty { display: none; }
+
+    /* ---------- Responsivo ---------- */
+    @media (max-width: 960px) {
+        #modal-login-overlay { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+        .lg-sigil { left: 50%; top: 150px; width: min(120vw, 620px); }
+        :root:not([data-tema]) .lg-ritual, :root[data-tema="medo"] .lg-ritual, :root[data-tema="sangue"] .lg-ritual, :root[data-tema="morte"] .lg-ritual, :root[data-tema="energia"] .lg-ritual { left: 50%; top: 150px; width: min(120vw, 620px); margin: calc(min(120vw, 620px) / -2) 0 0 calc(min(120vw, 620px) / -2); }
+        :root:not([data-tema]) .lg-medo-sym, :root[data-tema="medo"] .lg-medo-sym, :root[data-tema="sangue"] .lg-medo-sym, :root[data-tema="morte"] .lg-medo-sym, :root[data-tema="energia"] .lg-medo-sym { width: 130%; }
+        :root[data-tema="conhecimento"] .lg-medo-sym { height: 78%; width: auto; }
+        :root[data-tema="conhecimento"] .lg-runes { left: 50%; top: 150px; width: min(120vw, 620px); margin: calc(min(120vw, 620px) / -2) 0 0 calc(min(120vw, 620px) / -2); }
+        .lg-hero { min-height: 0; padding: 24px 24px 8px; gap: 18px; }
+        .lg-feats, .lg-log, .lg-kicker { display: none; }
+        .lg-title { font-size: clamp(3.2rem, 17vw, 5rem); }
+        .lg-tagline { margin-top: 14px; letter-spacing: 0.28em; font-size: 0.75rem; }
+        .lg-tagline::before { width: 28px; }
+        .lg-panel { align-items: flex-start; border-left: 0; border-top: 1px solid var(--lg-line); padding: 28px 24px 40px; }
+        .lg-panel::before { display: none; }
+        .lg-form-title { font-size: 1.7rem; }
+    }
+    @media (max-width: 420px) {
+        .lg-hero { padding: 20px 18px 4px; }
+        .lg-panel { padding: 24px 18px 36px; }
+        .lg-tagline { letter-spacing: 0.18em; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        #modal-login-overlay *, #modal-login-overlay *::before, #modal-login-overlay *::after {
+            animation: none !important; transition: none !important;
+        }
     }
 
     /* ===== MODAL CONFIRM LOGOUT ===== */
@@ -3703,7 +4010,25 @@ body { transition: background 0.6s ease; }
 .hx-d-nav a:hover { text-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb),.7); }
 
 /* ───── CENTRAL DE OPERAÇÕES ───── */
-.hx-ops { position: relative; padding: 36px 0 54px; background: linear-gradient(180deg, #0a0709, #060406); border-top: 1px solid rgba(var(--tema-glow-rgb),.35); }
+.hx-ops { position: relative; overflow: hidden; padding: 36px 0 54px; background: linear-gradient(180deg, #0a0709, #060406); border-top: 1px solid rgba(var(--tema-glow-rgb),.35); }
+.hx-ops .container { position: relative; z-index: 1; }
+/* aparições aleatórias dos símbolos dos elementos */
+.hx-ghosts { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; mix-blend-mode: screen; }
+.hx-ghost {
+    position: absolute; left: var(--x); top: var(--y);
+    width: var(--s); aspect-ratio: 1; margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+    background: var(--c);
+    -webkit-mask: var(--img) center / contain no-repeat; mask: var(--img) center / contain no-repeat;
+    filter: blur(.4px) drop-shadow(0 0 14px var(--c));
+    opacity: 0; transform: rotate(var(--r));
+    animation: hxGhost var(--d) ease-in-out forwards;
+}
+@keyframes hxGhost {
+    0%   { opacity: 0;        transform: rotate(var(--r)) scale(.94); }
+    30%, 62% { opacity: var(--o); }
+    100% { opacity: 0;        transform: rotate(calc(var(--r) + 7deg)) scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) { .hx-ghosts { display: none; } }
 .hx-ops-head { display: flex; align-items: center; gap: 28px; margin-bottom: 34px; }
 .hx-ops-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(var(--tema-glow-rgb),.8)); }
 .hx-ops-line:last-child { background: linear-gradient(270deg, transparent, rgba(var(--tema-glow-rgb),.8)); }
@@ -3814,57 +4139,132 @@ body { transition: background 0.6s ease; }
 <canvas id="particle-canvas"></canvas>
 
     <!-- ===== MODAL DE LOGIN ===== -->
-    <div id="modal-login-overlay">
-        <div class="login-box">
-            <div class="login-corners"></div>
+    <div id="modal-login-overlay" role="dialog" aria-modal="true" aria-labelledby="lg-title">
 
-            <div class="login-logo-wrap">
-                <div class="login-logo-hex">
-                    <div class="login-hex-icon"></div>
-                    <h2>F.I.C.H.A.</h2>
-                </div>
-                <p class="subtitle">SISTEMA DE AGENTES PARANORMAIS</p>
-            </div>
-
-            <hr class="login-divider">
-
-            <div class="login-tabs">
-                <div class="login-tab active" id="tab-entrar" onclick="trocarAba('entrar')">Entrar</div>
-                <div class="login-tab" id="tab-cadastrar" onclick="trocarAba('cadastrar')">Cadastrar</div>
-            </div>
-
-            <!-- Formulário Entrar -->
-            <div id="form-entrar">
-                <div class="login-field-wrap">
-                    <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <input class="login-field" id="login-usuario" type="text" placeholder="Nome de usuário" autocomplete="username">
-                </div>
-                <div class="login-field-wrap">
-                    <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    <input class="login-field" id="login-senha" type="password" placeholder="Senha" autocomplete="current-password">
-                </div>
-                <button class="btn-login" id="btn-entrar" onclick="fazerLogin()">Entrar</button>
-            </div>
-
-            <!-- Formulário Cadastrar -->
-            <div id="form-cadastrar" style="display:none">
-                <div class="login-field-wrap">
-                    <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <input class="login-field" id="cad-usuario" type="text" placeholder="Nome de usuário" autocomplete="username">
-                </div>
-                <div class="login-field-wrap">
-                    <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    <input class="login-field" id="cad-senha" type="password" placeholder="Senha" autocomplete="new-password">
-                </div>
-                <div class="login-field-wrap">
-                    <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                    <input class="login-field" id="cad-senha2" type="password" placeholder="Confirmar senha" autocomplete="new-password">
-                </div>
-                <button class="btn-login" id="btn-cadastrar" onclick="fazerCadastro()">Criar conta</button>
-            </div>
-
-            <p class="login-error" id="login-erro"></p>
+        <!-- Atmosfera: sigilo ritualístico, grão e scanlines -->
+        <div class="lg-bg" aria-hidden="true">
+            <svg class="lg-sigil" viewBox="0 0 600 600" fill="none" stroke="currentColor">
+                <g class="lg-r1">
+                    <circle cx="300" cy="300" r="292" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                    <circle cx="300" cy="300" r="278" stroke-width="1" stroke-dasharray="2 9" vector-effect="non-scaling-stroke"/>
+                    <circle cx="300" cy="300" r="250" stroke-width="12" stroke-dasharray="1.2 18.4" vector-effect="non-scaling-stroke"/>
+                </g>
+                <g class="lg-r2">
+                    <circle cx="300" cy="300" r="222" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                    <polygon points="300,78 492.2,411 107.8,411" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+                    <polygon points="300,522 107.8,189 492.2,189" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+                </g>
+                <g class="lg-r3">
+                    <circle cx="300" cy="300" r="111" stroke-width="1" stroke-dasharray="14 6" vector-effect="non-scaling-stroke"/>
+                    <circle cx="300" cy="300" r="64" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                    <path d="M236 300 Q300 236 364 300 Q300 364 236 300Z" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+                    <circle cx="300" cy="300" r="14" fill="currentColor" stroke="none"/>
+                </g>
+            </svg>
+            <div class="lg-runes"></div>
+            <div class="lg-ritual"></div>
+            <div class="lg-grain"></div>
+            <div class="lg-scan"></div>
+            <div class="lg-vignette"></div>
+            <div class="lg-tear"><i></i><i></i><i></i></div>
         </div>
+
+        <!-- Lado esquerdo: identidade -->
+        <section class="lg-hero">
+            <div class="lg-topbar"><span class="lg-dot"></span>Canal seguro · Ordem</div>
+
+            <div class="lg-hero-main">
+                <p class="lg-kicker">Acesso à rede</p>
+                <h1 class="lg-title" id="lg-title" data-text="F.I.C.H.A.">F<b>.</b>I<b>.</b>C<b>.</b>H<b>.</b>A<b>.</b></h1>
+                <p class="lg-tagline">Sistema de Agentes Paranormais</p>
+
+                <ul class="lg-feats">
+                    <li><span>01</span><strong>Fichas de agente</strong><em>Crie e gerencie seus agentes e NPCs.</em></li>
+                    <li><span>02</span><strong>Campanhas</strong><em>Organize suas missões e sua mesa.</em></li>
+                    <li><span>03</span><strong>Mesa virtual</strong><em>Jogue em um tabuleiro 2D ou 3D.</em></li>
+                    <li><span>04</span><strong>Homebrew</strong><em>Monte suas próprias regras e conteúdos.</em></li>
+                </ul>
+            </div>
+
+            <div class="lg-log" aria-hidden="true">
+                <p>&gt; conexão segura estabelecida</p>
+                <p>&gt; aguardando credenciais<i class="lg-caret"></i></p>
+            </div>
+        </section>
+
+        <!-- Lado direito: formulário -->
+        <section class="lg-panel">
+            <div class="lg-medo-sym" aria-hidden="true"></div>
+            <div class="login-box">
+                <div class="lg-mark" aria-hidden="true"><span class="lg-mark-ring"></span>F.I.C.H.A.</div>
+
+                <h2 class="lg-form-title" id="lg-form-title">Acesso restrito</h2>
+                <p class="lg-form-sub" id="lg-form-sub">Identifique-se, agente.</p>
+
+                <div class="login-tabs" id="login-tabs" data-aba="entrar" role="tablist">
+                    <button type="button" class="login-tab active" id="tab-entrar" role="tab" aria-selected="true" onclick="trocarAba('entrar')">Entrar</button>
+                    <button type="button" class="login-tab" id="tab-cadastrar" role="tab" aria-selected="false" onclick="trocarAba('cadastrar')">Cadastrar</button>
+                </div>
+
+                <!-- Formulário Entrar -->
+                <form id="form-entrar" novalidate onsubmit="event.preventDefault(); fazerLogin();">
+                    <label class="lg-field">
+                        <span class="lg-label">Usuário</span>
+                        <span class="login-field-wrap">
+                            <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <input class="login-field" id="login-usuario" type="text" placeholder="seu_usuario" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+                        </span>
+                        <span class="lg-hint">Apenas o nome de usuário, sem e-mail.</span>
+                    </label>
+                    <label class="lg-field">
+                        <span class="lg-label">Senha</span>
+                        <span class="login-field-wrap">
+                            <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input class="login-field has-eye" id="login-senha" type="password" placeholder="••••••••" autocomplete="current-password">
+                            <button type="button" class="lg-eye" onclick="lgToggleSenha(this)" aria-label="Mostrar senha" aria-pressed="false">
+                                <svg class="i-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="i-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
+                        </span>
+                    </label>
+                    <button class="btn-login" id="btn-entrar" type="submit">Entrar</button>
+                </form>
+
+                <!-- Formulário Cadastrar -->
+                <form id="form-cadastrar" style="display:none" novalidate onsubmit="event.preventDefault(); fazerCadastro();">
+                    <label class="lg-field">
+                        <span class="lg-label">Usuário</span>
+                        <span class="login-field-wrap">
+                            <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <input class="login-field" id="cad-usuario" type="text" placeholder="seu_usuario" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+                        </span>
+                        <span class="lg-hint">Letras, números e _ · mínimo de 3 caracteres.</span>
+                    </label>
+                    <label class="lg-field">
+                        <span class="lg-label">Senha</span>
+                        <span class="login-field-wrap">
+                            <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input class="login-field has-eye" id="cad-senha" type="password" placeholder="mínimo 6 caracteres" autocomplete="new-password" oninput="lgForcaSenha(this.value)">
+                            <button type="button" class="lg-eye" onclick="lgToggleSenha(this)" aria-label="Mostrar senha" aria-pressed="false">
+                                <svg class="i-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="i-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
+                        </span>
+                        <span class="lg-meter" id="cad-meter" data-n="0" aria-hidden="true"><i></i><i></i><i></i><i></i><b id="cad-meter-txt"></b></span>
+                    </label>
+                    <label class="lg-field">
+                        <span class="lg-label">Confirmar senha</span>
+                        <span class="login-field-wrap">
+                            <svg class="login-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                            <input class="login-field" id="cad-senha2" type="password" placeholder="repita a senha" autocomplete="new-password">
+                        </span>
+                    </label>
+                    <button class="btn-login" id="btn-cadastrar" type="submit">Criar conta</button>
+                </form>
+
+                <p class="login-error" id="login-erro" role="alert" aria-live="polite"></p>
+            </div>
+        </section>
     </div>
         <!-- ===== MODAL CONFIRM LOGOUT ===== -->
     <div id="confirm-logout-overlay">
@@ -4245,6 +4645,7 @@ body { transition: background 0.6s ease; }
 
         <!-- ───────── CENTRAL DE OPERAÇÕES ───────── -->
         <section class="hx-ops">
+            <div class="hx-ghosts" aria-hidden="true"></div>
             <div class="container">
                 <div class="hx-ops-head">
                     <span class="hx-ops-line"></span>
@@ -4290,6 +4691,46 @@ body { transition: background 0.6s ease; }
                 </div>
             </div>
         </section>
+        <script>
+        /* Símbolos dos elementos surgindo de forma aleatória na Central de Operações */
+        (function () {
+            const sec = document.querySelector('.hx-ops');
+            const layer = sec && sec.querySelector('.hx-ghosts');
+            if (!layer || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const SIMBOLOS = [
+                { img: 'sangue-simbolo.png',       cor: '#ff4b55' },   // Sangue
+                { img: 'morte-simbolo.png',        cor: '#c3c6d1' },   // Morte
+                { img: 'energia-simbolo.png',      cor: '#c070ff' },   // Energia
+                { img: 'conhecimento-runas.png',   cor: '#f5c842' }    // Conhecimento
+            ];
+            const MAX = 3;
+            let visivel = false, ultimo = -1, timer = null;
+            const rnd = (a, b) => a + Math.random() * (b - a);
+
+            function surgir() {
+                if (visivel && !document.hidden && layer.children.length < MAX) {
+                    let i; do { i = Math.floor(Math.random() * SIMBOLOS.length); } while (i === ultimo);
+                    ultimo = i;
+                    const sm = SIMBOLOS[i], el = document.createElement('span');
+                    el.className = 'hx-ghost';
+                    const alturaBase = Math.min(sec.clientHeight, 420);
+                    el.style.cssText =
+                        `--img:url("${sm.img}");--c:${sm.cor};` +
+                        `--x:${rnd(6, 94).toFixed(1)}%;--y:${rnd(12, 88).toFixed(1)}%;` +
+                        `--s:${Math.round(rnd(0.5, 0.95) * alturaBase)}px;` +
+                        `--r:${rnd(-25, 25).toFixed(1)}deg;--o:${rnd(0.14, 0.24).toFixed(2)};` +
+                        `--d:${rnd(7, 11).toFixed(1)}s;`;
+                    el.addEventListener('animationend', () => el.remove());
+                    layer.appendChild(el);
+                }
+                timer = setTimeout(surgir, rnd(1800, 3800));
+            }
+            if ('IntersectionObserver' in window) {
+                new IntersectionObserver(es => { visivel = es[0].isIntersecting; }).observe(sec);
+            } else { visivel = true; }
+            surgir();
+        })();
+        </script>
 
     </main>
 
@@ -4606,7 +5047,34 @@ body { transition: background 0.6s ease; }
             document.getElementById('form-cadastrar').style.display = aba === 'cadastrar' ? '' : 'none';
             document.getElementById('tab-entrar').classList.toggle('active', aba === 'entrar');
             document.getElementById('tab-cadastrar').classList.toggle('active', aba === 'cadastrar');
+            document.getElementById('tab-entrar').setAttribute('aria-selected', aba === 'entrar');
+            document.getElementById('tab-cadastrar').setAttribute('aria-selected', aba === 'cadastrar');
+            document.getElementById('login-tabs').dataset.aba = aba;
+            document.getElementById('lg-form-title').textContent = aba === 'entrar' ? 'Acesso restrito' : 'Novo agente';
+            document.getElementById('lg-form-sub').textContent   = aba === 'entrar' ? 'Identifique-se, agente.' : 'Crie sua conta para entrar na Ordem.';
             document.getElementById('login-erro').textContent = '';
+            const foco = document.getElementById(aba === 'entrar' ? 'login-usuario' : 'cad-usuario');
+            if (foco && document.activeElement && document.activeElement.classList.contains('login-tab')) foco.focus();
+        }
+
+        function lgToggleSenha(btn) {
+            const input = btn.parentElement.querySelector('input');
+            const mostrar = input.type === 'password';
+            input.type = mostrar ? 'text' : 'password';
+            btn.setAttribute('aria-pressed', mostrar);
+            btn.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+        }
+
+        function lgForcaSenha(v) {
+            let n = 0;
+            if (v.length >= 6) n++;
+            if (v.length >= 10) n++;
+            if (/[a-z]/i.test(v) && /\d/.test(v)) n++;
+            if (/[^A-Za-z0-9]/.test(v) || (/[a-z]/.test(v) && /[A-Z]/.test(v))) n++;
+            if (!v) n = 0;
+            const m = document.getElementById('cad-meter');
+            m.dataset.n = n;
+            document.getElementById('cad-meter-txt').textContent = ['', 'Fraca', 'Razoável', 'Boa', 'Forte'][n];
         }
 
         function setErro(msg) {
