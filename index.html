@@ -365,6 +365,9 @@
         0%, 100% { opacity: 0;    transform: translate(-50%, -48%) scale(0.98); }
         40%, 60% { opacity: 0.22; transform: translate(-50%, -50%) scale(1.02); }
     }
+    .lg-selo { display: flex; align-items: center; gap: 14px; margin-top: 34px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .lg-selo img { width: 72px; height: auto; flex-shrink: 0; opacity: 0.6; }
+    .lg-selo p { margin: 0; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.66rem; letter-spacing: 0.16em; line-height: 1.7; text-transform: uppercase; color: var(--lg-mute); }
     .lg-panel { overflow: hidden; }
     .login-box { position: relative; z-index: 1; }
     @keyframes lgBreath {
@@ -4010,25 +4013,20 @@ body { transition: background 0.6s ease; }
 .hx-d-nav a:hover { text-shadow: 0 0 10px rgba(var(--tema-glow-light-rgb),.7); }
 
 /* ───── CENTRAL DE OPERAÇÕES ───── */
-.hx-ops { position: relative; overflow: hidden; padding: 36px 0 54px; background: linear-gradient(180deg, #0a0709, #060406); border-top: 1px solid rgba(var(--tema-glow-rgb),.35); }
-.hx-ops .container { position: relative; z-index: 1; }
-/* aparições aleatórias dos símbolos dos elementos */
-.hx-ghosts { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; mix-blend-mode: screen; }
-.hx-ghost {
-    position: absolute; left: var(--x); top: var(--y);
-    width: var(--s); aspect-ratio: 1; margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
-    background: var(--c);
+.hx-ops { position: relative; padding: 36px 0 54px; background: linear-gradient(180deg, #0a0709, #060406); border-top: 1px solid rgba(var(--tema-glow-rgb),.35); }
+/* símbolo de elemento em cada card (sorteado a cada carregamento) */
+.hx-op .hx-op-sym {
+    position: absolute !important; z-index: 1 !important; pointer-events: none;
+    right: -26px; top: 50%; width: 235px; aspect-ratio: 1;
+    transform: translateY(-50%) rotate(var(--r, 0deg));
+    background: var(--c, transparent);
     -webkit-mask: var(--img) center / contain no-repeat; mask: var(--img) center / contain no-repeat;
-    filter: blur(.4px) drop-shadow(0 0 14px var(--c));
-    opacity: 0; transform: rotate(var(--r));
-    animation: hxGhost var(--d) ease-in-out forwards;
+    opacity: 0; filter: drop-shadow(0 0 12px var(--c, transparent));
+    transition: opacity .6s ease, transform .5s ease;
 }
-@keyframes hxGhost {
-    0%   { opacity: 0;        transform: rotate(var(--r)) scale(.94); }
-    30%, 62% { opacity: var(--o); }
-    100% { opacity: 0;        transform: rotate(calc(var(--r) + 7deg)) scale(1.05); }
-}
-@media (prefers-reduced-motion: reduce) { .hx-ghosts { display: none; } }
+.hx-op .hx-op-sym.on { opacity: .34; }
+.hx-op:hover .hx-op-sym.on { opacity: .5; transform: translateY(-50%) rotate(var(--r, 0deg)) scale(1.06); }
+@media (max-width: 575px) { .hx-op .hx-op-sym { width: 190px; right: -30px; } }
 .hx-ops-head { display: flex; align-items: center; gap: 28px; margin-bottom: 34px; }
 .hx-ops-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(var(--tema-glow-rgb),.8)); }
 .hx-ops-line:last-child { background: linear-gradient(270deg, transparent, rgba(var(--tema-glow-rgb),.8)); }
@@ -4064,13 +4062,11 @@ body { transition: background 0.6s ease; }
 .hx-op-camp { color: #a98cff; }
 .hx-op-camp:hover { border-color: rgba(169,140,255,.7); box-shadow: 0 10px 40px rgba(120,80,220,.25); }
 .hx-op-camp .hx-op-art { background:
-    radial-gradient(circle 34px at 86% 24%, #0a0610 0 62%, rgba(150,110,255,.5) 64%, transparent 100%),
     linear-gradient(180deg, transparent 55%, rgba(8,4,16,.9)),
     linear-gradient(90deg, #0d0a14 38%, rgba(45,25,90,.65)); }
 .hx-op-home { color: #f4efe6; }
 .hx-op-home:hover { border-color: rgba(244,239,230,.55); box-shadow: 0 10px 40px rgba(180,160,120,.15); }
 .hx-op-home .hx-op-art { background:
-    repeating-radial-gradient(circle at 84% 62%, transparent 0 16px, rgba(200,180,140,.12) 16px 17px),
     linear-gradient(90deg, #0d0a14 40%, rgba(70,55,35,.45)); }
 .hx-op-elem { color: #b58cff; }
 .hx-op-elem:hover { border-color: rgba(181,140,255,.7); box-shadow: 0 10px 40px rgba(140,90,240,.28); }
@@ -4090,6 +4086,8 @@ body { transition: background 0.6s ease; }
 .hx-foot-line::after { background: linear-gradient(270deg, transparent, rgba(var(--tema-glow-rgb),.7)); }
 .hx-foot-line span { white-space: nowrap; }
 .hx-foot-line i { color: var(--hx-red); font-style: normal; margin: 0 .9em; }
+.hx-selo { display: block; width: 88px; height: auto; margin: 18px auto 0; opacity: .72; transition: opacity .3s; }
+.hx-selo:hover { opacity: 1; }
 .hx-foot-meta { text-align: center; margin: 14px 0 0; font-size: .7rem; color: #5f5859; font-family: 'Montserrat', sans-serif; }
 .hx-foot-meta a { color: #8b8384; text-decoration: none; margin: 0 .8em; }
 .hx-foot-meta a:hover { color: var(--hx-red-hot); }
@@ -4263,6 +4261,11 @@ body { transition: background 0.6s ease; }
                 </form>
 
                 <p class="login-error" id="login-erro" role="alert" aria-live="polite"></p>
+
+                <div class="lg-selo">
+                    <img src="selo-nao-oficial.png" alt="Selo: Ordem Paranormal Comunidade — não-oficial, não-canônico" width="72" height="71">
+                    <p>Projeto de fãs · não-oficial e não-canônico</p>
+                </div>
             </div>
         </section>
     </div>
@@ -4645,7 +4648,6 @@ body { transition: background 0.6s ease; }
 
         <!-- ───────── CENTRAL DE OPERAÇÕES ───────── -->
         <section class="hx-ops">
-            <div class="hx-ghosts" aria-hidden="true"></div>
             <div class="container">
                 <div class="hx-ops-head">
                     <span class="hx-ops-line"></span>
@@ -4667,7 +4669,7 @@ body { transition: background 0.6s ease; }
 
                     <a class="hx-op hx-op-camp" href="campanhas.html">
                         <span class="hx-op-art" aria-hidden="true"></span>
-                        <span class="hx-op-icon"><svg viewBox="0 0 48 48"><path d="M24 3 L45 24 L24 45 L3 24 Z"/><path d="M24 12 L33 24 L24 36 L15 24 Z"/><circle cx="24" cy="24" r="2" class="fill"/></svg></span>
+                        <span class="hx-op-icon"><svg viewBox="0 0 48 48"><path d="M3 11 L17 5 L31 11 L45 5 V37 L31 43 L17 37 L3 43 Z"/><path d="M17 5 V37 M31 11 V43"/><circle cx="24" cy="22" r="4.5"/><circle cx="24" cy="22" r="1.5" class="fill"/></svg></span>
                         <h3>CAMPANHAS</h3>
                         <p>Organize sessões, acompanhe o progresso e mantenha tudo sob controle.</p>
                         <span class="hx-op-link">VER CAMPANHAS <b>→</b></span>
@@ -4692,43 +4694,39 @@ body { transition: background 0.6s ease; }
             </div>
         </section>
         <script>
-        /* Símbolos dos elementos surgindo de forma aleatória na Central de Operações */
+        /* Cada card recebe um símbolo de elemento diferente — a distribuição é sorteada a cada carregamento */
         (function () {
-            const sec = document.querySelector('.hx-ops');
-            const layer = sec && sec.querySelector('.hx-ghosts');
-            if (!layer || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const cards = document.querySelectorAll('.hx-ops-grid .hx-op');
             const SIMBOLOS = [
-                { img: 'sangue-simbolo.png',       cor: '#ff4b55' },   // Sangue
-                { img: 'morte-simbolo.png',        cor: '#c3c6d1' },   // Morte
-                { img: 'energia-simbolo.png',      cor: '#c070ff' },   // Energia
-                { img: 'conhecimento-runas.png',   cor: '#f5c842' }    // Conhecimento
+                { img: 'sangue-simbolo.png',     cor: '#ff4b55' },  // Sangue
+                { img: 'morte-simbolo.png',      cor: '#c3c6d1' },  // Morte
+                { img: 'energia-simbolo.png',    cor: '#c070ff' },  // Energia
+                { img: 'conhecimento-runas.png', cor: '#f5c842' }   // Conhecimento
             ];
-            const MAX = 3;
-            let visivel = false, ultimo = -1, timer = null;
-            const rnd = (a, b) => a + Math.random() * (b - a);
-
-            function surgir() {
-                if (visivel && !document.hidden && layer.children.length < MAX) {
-                    let i; do { i = Math.floor(Math.random() * SIMBOLOS.length); } while (i === ultimo);
-                    ultimo = i;
-                    const sm = SIMBOLOS[i], el = document.createElement('span');
-                    el.className = 'hx-ghost';
-                    const alturaBase = Math.min(sec.clientHeight, 420);
-                    el.style.cssText =
-                        `--img:url("${sm.img}");--c:${sm.cor};` +
-                        `--x:${rnd(6, 94).toFixed(1)}%;--y:${rnd(12, 88).toFixed(1)}%;` +
-                        `--s:${Math.round(rnd(0.5, 0.95) * alturaBase)}px;` +
-                        `--r:${rnd(-25, 25).toFixed(1)}deg;--o:${rnd(0.14, 0.24).toFixed(2)};` +
-                        `--d:${rnd(7, 11).toFixed(1)}s;`;
-                    el.addEventListener('animationend', () => el.remove());
-                    layer.appendChild(el);
-                }
-                timer = setTimeout(surgir, rnd(1800, 3800));
+            function embaralhar(a) {
+                const r = a.slice();
+                for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
+                return r;
             }
-            if ('IntersectionObserver' in window) {
-                new IntersectionObserver(es => { visivel = es[0].isIntersecting; }).observe(sec);
-            } else { visivel = true; }
-            surgir();
+            let ordem, anterior = null;
+            try { anterior = sessionStorage.getItem('hx_ops_ordem'); } catch (e) {}
+            let tentativas = 0;
+            do { ordem = embaralhar(SIMBOLOS); tentativas++; }
+            while (tentativas < 10 && anterior && ordem.map(o => o.img).join() === anterior);
+            try { sessionStorage.setItem('hx_ops_ordem', ordem.map(o => o.img).join()); } catch (e) {}
+
+            cards.forEach((card, i) => {
+                const sm = ordem[i % ordem.length];
+                const el = document.createElement('span');
+                el.className = 'hx-op-sym';
+                el.setAttribute('aria-hidden', 'true');
+                el.style.setProperty('--img', `url("${sm.img}")`);
+                el.style.setProperty('--c', sm.cor);
+                el.style.setProperty('--r', (Math.random() * 20 - 10).toFixed(1) + 'deg');
+                const art = card.querySelector('.hx-op-art');
+                (art ? art.after(el) : card.prepend(el));
+                requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('on')));
+            });
         })();
         </script>
 
@@ -4923,6 +4921,7 @@ body { transition: background 0.6s ease; }
     <footer class="custom-footer hx-footer">
         <div class="container">
             <div class="hx-foot-line"><span>Ordem Paranormal<i>•</i>F.I.C.H.A.<i>•</i>Investigação é só o começo</span></div>
+            <img class="hx-selo" src="selo-nao-oficial.png" alt="Selo: Ordem Paranormal Comunidade — não-oficial, não-canônico" width="88" height="87">
             <p class="hx-foot-meta">
                 © 2026 F.I.C.H.A. – Inspirado no universo de Ordem Paranormal. · Desenvolvido por luka_00000
             </p>
