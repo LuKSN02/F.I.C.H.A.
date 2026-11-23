@@ -13,7 +13,7 @@
     <title>F.I.C.H.A. – Criar Agente</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
+    <link rel="icon" type="gif/gif" href="assets/img/ui/ordem-paranormal-enigma-do-medo.gif">
 
     <!-- Firebase -->
     <script type="module">
@@ -579,14 +579,15 @@
 }
     </style>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Special+Elite&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="ficha-design.css">
+<link rel="stylesheet" href="css/ficha-design.css">
+<link rel="stylesheet" href="css/criar-design.css">
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg custom-nav navbar-dark">
   <div class="container-fluid">
     <a class="navbar-brand hx-brand" href="index.html">
-      <img class="hx-brand-logo" src="./ordem-paranormal-enigma-do-medo.gif" alt="F.I.C.H.A." width="58" height="58">
+      <img class="hx-brand-logo" src="assets/img/ui/ordem-paranormal-enigma-do-medo.gif" alt="F.I.C.H.A." width="58" height="58">
       F.I.C.H.A.
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -641,10 +642,10 @@
   </div>
 </nav>
 
-<div class="form-hero">
+<div class="form-hero cr-hero">
+    <div class="cr-hero-art" aria-hidden="true"></div>
     <span class="hx-proto">PROTOCOLO 7.14<br>REGISTRO NOVO</span>
-    <span class="hx-stamp">CLASSIFICADO</span>
-    <p style="font-family:'Share Tech Mono',monospace;letter-spacing:4px;color:var(--purple-neon);font-size:0.8rem;margin-bottom:8px;">// PROTOCOLO DE REGISTRO //</p>
+    <p class="cr-eyebrow">PROTOCOLO DE REGISTRO</p>
     <h1 id="criacao-h1">Criar <span>Agente</span></h1>
     <p id="criacao-sub">PREENCHA AS INFORMAÇÕES DO NOVO AGENTE COM CUIDADO. O MEDO É REAL.</p>
 </div>
@@ -670,7 +671,14 @@
 
 <div class="rascunho-toast" id="rascunho-toast">✓ PROGRESSO SALVO</div>
 
-<div class="container" style="max-width:860px;padding-bottom:80px;">
+<div class="container cr-wrap">
+<div class="cr-card">
+    <div class="cr-card-head">
+        <span class="cr-card-step" id="etapa-contador">ETAPA 01 / 04</span>
+        <span class="cr-card-name" id="etapa-nome">Identidade</span>
+        <span class="hx-stamp">CLASSIFICADO</span>
+    </div>
+    <div class="cr-card-body">
 
 <!-- ETAPA 1: IDENTIDADE -->
 <div class="etapa-panel active" id="etapa-0">
@@ -755,28 +763,28 @@
 
     <hr class="purple my-4">
     <h2 class="section-title">Classe <span>do Agente</span></h2>
-    <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:20px;letter-spacing:1px;">
+    <p class="cr-hint">
         ▸ ESCOLHA A CLASSE QUE DEFINE O PERFIL DO SEU AGENTE.
     </p>
 
     <div class="classe-grid" id="classe-grid">
         <div class="classe-card" data-classe="Combatente" onclick="selecionarClasse(this)">
-            <div class="classe-icon">⚔️</div>
+            <div class="classe-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="M5 14l4 4"/><path d="M7 17l-3 3"/><path d="M3 19l2 2"/></svg></div>
             <div class="classe-nome">Combatente</div>
             <div class="classe-desc">Especialista em conflitos físicos e sobrevivência.</div>
         </div>
         <div class="classe-card" data-classe="Especialista" onclick="selecionarClasse(this)">
-            <div class="classe-icon">🔍</div>
+            <div class="classe-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M21 21l-5.2-5.2"/><path d="M7.5 10.5h6"/></svg></div>
             <div class="classe-nome">Especialista</div>
             <div class="classe-desc">Mestre em habilidades técnicas e perícias específicas.</div>
         </div>
         <div class="classe-card" data-classe="Ocultista" onclick="selecionarClasse(this)">
-            <div class="classe-icon">🔮</div>
+            <div class="classe-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 22 20H2z"/><circle cx="12" cy="14.2" r="2.6"/><path class="fill" d="M12 13.2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg></div>
             <div class="classe-nome">Ocultista</div>
             <div class="classe-desc">Conhecedor do Outro Lado e de rituais paranormais.</div>
         </div>
         <div class="classe-card" data-classe="Sobrevivente" onclick="selecionarClasse(this)">
-            <div class="classe-icon">🧍</div>
+            <div class="classe-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5.5" r="2.8"/><path d="M12 8.5V16"/><path d="M7.5 11.5h9"/><path d="M9 21l3-5 3 5"/></svg></div>
             <div class="classe-nome">Sobrevivente</div>
             <div class="classe-desc">Pessoa comum sem treinamento. Fuja, improvise, sobreviva.</div>
         </div>
@@ -809,7 +817,7 @@
         <h2 class="section-title mb-0">Atributos <span>Base</span></h2>
         <div class="pontos-display">PONTOS RESTANTES: <span id="pontos-restantes">4</span></div>
     </div>
-    <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:8px;letter-spacing:1px;">
+    <p class="cr-hint">
         ▸ CADA ATRIBUTO COMEÇA EM 0. VOCÊ TEM 4 PONTOS PARA DISTRIBUIR.<br>
         ▸ CADA PONTO AUMENTA UM ATRIBUTO EM 1. MÁXIMO DE 3 POR ATRIBUTO.
     </p>
@@ -824,7 +832,7 @@
         <h2 class="section-title mb-0">Perícias <span>Treinadas</span></h2>
         <div class="pontos-display">ESCOLHAS: <span id="pericias-count">0</span> / <span id="pericias-max">0</span></div>
     </div>
-    <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:12px;letter-spacing:1px;">
+    <p class="cr-hint">
         ▸ PERÍCIAS TREINADAS ADICIONAM +5 AO RESULTADO.<br>
         ▸ AS PERÍCIAS OBRIGATÓRIAS DA CLASSE E DA ORIGEM JÁ VÊM MARCADAS (🔒).
     </p>
@@ -834,7 +842,7 @@
     <hr class="purple my-4">
     <h2 class="section-title">Habilidades <span>da Classe</span></h2>
     <ul class="habilidades-list" id="habilidades-list">
-        <p style="color:#555;font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ SELECIONE UMA CLASSE NA ETAPA 1 PARA VER AS HABILIDADES.</p>
+        <p class="cr-vazio">▸ SELECIONE UMA CLASSE NA ETAPA 1 PARA VER AS HABILIDADES.</p>
     </ul>
 </div>
 
@@ -867,64 +875,51 @@
 
     <hr class="purple my-4">
     <h2 class="section-title">Resumo <span>do Agente</span></h2>
-    <div id="resumo-final" style="background:#0d0010;border:1px solid #2a0050;border-radius:8px;padding:24px;">
-        <p style="color:#555;font-size:0.8rem;font-family:'Share Tech Mono',monospace;">▸ PREENCHA AS ETAPAS ANTERIORES PARA VER O RESUMO.</p>
+    <div id="resumo-final" class="cr-resumo">
+        <p class="cr-vazio">▸ PREENCHA AS ETAPAS ANTERIORES PARA VER O RESUMO.</p>
     </div>
 </div>
 
 <!-- NAVEGAÇÃO -->
-<div class="d-flex justify-content-between mt-5">
+<div class="cr-nav">
     <button class="btn-nav" id="btn-anterior" onclick="etapaAnterior()" style="display:none">← ANTERIOR</button>
     <div></div>
     <button class="btn-nav" id="btn-proximo" onclick="proximaEtapa()">PRÓXIMO →</button>
     <button class="btn-nav btn-finalizar" id="btn-finalizar" onclick="finalizarFicha()" style="display:none">✦ REGISTRAR AGENTE</button>
 </div>
 
+    </div><!-- /cr-card-body -->
+</div><!-- /cr-card -->
 </div>
 
 <!-- MODAL SUCESSO -->
 <div class="modal-overlay" id="modal-sucesso">
     <div class="modal-box">
-        <div class="modal-icon">👁️</div>
+        <div class="modal-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><path class="fill" d="M12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg></div>
         <div class="modal-title" id="modal-titulo-sucesso">Agente Registrado</div>
         <div class="modal-agente-nome" id="modal-nome">—</div>
         <div class="modal-agente-classe" id="modal-classe">—</div>
-        <p style="color:#666;font-size:0.8rem;font-family:'Share Tech Mono',monospace;margin-bottom:24px;">
-            FICHA SALVA COM SUCESSO NO SISTEMA F.I.C.H.A.
-        </p>
+        <p class="cr-hint" style="margin-bottom:24px;">FICHA SALVA COM SUCESSO NO SISTEMA F.I.C.H.A.</p>
         <div>
             <button class="btn-modal" id="btn-ver-ficha" onclick="irParaFicha()">VER FICHA</button>
-            <button class="btn-modal" id="btn-ver-agentes" onclick="irParaAgentes()" style="background:#2a0050;">VER AGENTES</button>
+            <button class="btn-modal" id="btn-ver-agentes" onclick="irParaAgentes()">VER AGENTES</button>
             <button class="btn-modal secondary" onclick="criarNovo()">CRIAR OUTRO</button>
         </div>
     </div>
 </div>
 
-<footer class="custom-footer mt-5 py-5">
+<footer class="custom-footer cr-footer">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-4 text-center text-md-start">
-                <a class="navbar-brand fs-3 text-white fw-bold" href="index.html">
-                    <img src="./ordem-paranormal-enigma-do-medo.gif" alt="Logo" width="50" height="50" class="d-inline-block align-text-center me-2">
-                    F.I.C.H.A.
-                </a>
-                <p class="text-secondary mt-3">Sistema de auxílio para agentes de elite em missões paranormais.</p>
-            </div>
-            <div class="col-md-4 text-center">
-                <h5 style="color:var(--purple-neon)" class="mb-3">Links</h5>
-                <ul class="list-unstyled">
-                    <li><a href="index.html?view=agentes" class="footer-link">Agentes</a></li>
-                    <li><a href="index.html" class="footer-link">Início</a></li>
-                    <li><a href="#" class="footer-link">Sobre o Sistema</a></li>
-                </ul>
-            </div>
-            <div class="col-md-4 text-center text-md-end">
-                <p class="text-secondary small">© 2026 F.I.C.H.A. – Inspirado no universo de Ordem Paranormal.</p>
-                <div class="mt-2"><span style="color:var(--purple-neon)" class="fw-bold">O MEDO É REAL.</span></div>
-            </div>
-        </div>
-        <hr class="border-secondary mt-4">
-        <p class="text-center text-secondary small mb-0">Desenvolvido por luka_00000.</p>
+        <div class="cr-foot-line"><span>F.I.C.H.A.<i>◆</i>Sistema de agentes paranormais</span></div>
+        <img class="cr-foot-selo" src="assets/img/ui/selo-nao-oficial.png" alt="Selo: projeto não oficial" width="92" height="92">
+        <p class="cr-foot-aviso">Projeto de fãs · não oficial</p>
+        <nav class="cr-foot-links" aria-label="Rodapé">
+            <a href="index.html">Início</a>
+            <a href="index.html?view=agentes">Agentes</a>
+            <a href="campanhas.html">Campanhas</a>
+            <a href="homebrew.html">Homebrew</a>
+        </nav>
+        <p class="cr-foot-meta">© 2026 F.I.C.H.A. – Inspirado no universo de Ordem Paranormal. · Desenvolvido por luka_00000.</p>
     </div>
 </footer>
 
@@ -1477,7 +1472,11 @@ function debounce(fn, delay) {
 // ══════════════════════════════════════════════
 // STEPPER
 // ══════════════════════════════════════════════
+const NOMES_ETAPAS = ['Identidade', 'Atributos', 'Perícias', 'Antecedente'];
 function atualizarStepper() {
+    const ctr = document.getElementById('etapa-contador'), nm = document.getElementById('etapa-nome');
+    if (ctr) ctr.textContent = `ETAPA ${String(etapaAtual + 1).padStart(2, '0')} / ${String(totalEtapas).padStart(2, '0')}`;
+    if (nm)  nm.textContent  = NOMES_ETAPAS[etapaAtual] || '';
     document.querySelectorAll('.step-item').forEach((s, i) => {
         s.classList.remove('active', 'done');
         if (etapasVisitadas.has(i) && i !== etapaAtual) s.classList.add('done');
@@ -1669,12 +1668,14 @@ function renderAtributos() {
         const podeDescer = v > MIN_ATRIB;
         grid.innerHTML += `
         <div class="atributo-box">
+            <div class="atributo-abrev">${a.abrev}</div>
             <div class="atributo-nome">${a.nome}</div>
             <div class="atributo-controles">
                 <button class="atributo-btn" onclick="ajustarAtributo('${a.id}', -1)" ${podeDescer ? '' : 'disabled'}>−</button>
                 <div class="atributo-valor" id="val-${a.id}">${v}</div>
                 <button class="atributo-btn" onclick="ajustarAtributo('${a.id}', 1)" ${podeSubir ? '' : 'disabled'}>+</button>
             </div>
+            <div class="atributo-pips" aria-hidden="true">${Array.from({length: MAX_ATRIB}, (_, i) => `<i class="${i < v ? 'on' : ''}"></i>`).join('')}</div>
         </div>`;
     });
 }
@@ -1820,33 +1821,24 @@ function renderResumo() {
     const origem     = document.getElementById('input-origem').value;
     const classeCard = document.querySelector('.classe-card.selected');
     const classe     = classeCard ? classeCard.dataset.classe : '—';
-    const classeIcon = classeCard ? classeCard.querySelector('.classe-icon').textContent : '';
+    const classeIcon = classeCard ? classeCard.querySelector('.classe-icon').innerHTML : '';
 
-    const atribHtml = ATRIBUTOS.map(a => {
-        const v = atributosValores[a.id];
-        return `<div style="text-align:center">
-            <div style="font-size:0.7rem;letter-spacing:2px;color:#666;text-transform:uppercase">${a.abrev}</div>
-            <div style="font-size:1.4rem;font-weight:700">${v}</div>
-        </div>`;
-    }).join('');
+    const atribHtml = ATRIBUTOS.map(a =>
+        `<div class="res-atrib"><small>${a.abrev}</small><b>${atributosValores[a.id]}</b></div>`).join('');
 
-    const periciasHtml = periciasFinais().map(p =>
-        `<span style="background:#2a0050;color:var(--purple-neon);border-radius:4px;padding:3px 10px;font-size:0.8rem;font-family:'Share Tech Mono',monospace;letter-spacing:1px;">${p}</span>`
-    ).join(' ');
+    const periciasHtml = periciasFinais().map(p => `<span class="res-chip">${p}</span>`).join('');
 
     document.getElementById('resumo-final').innerHTML = `
-        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
-            <div style="font-size:3rem">${classeIcon}</div>
+        <div class="res-head">
+            <div class="res-icon">${classeIcon}</div>
             <div>
-                <div style="font-size:1.8rem;font-weight:700">${nome}${codinome ? ` <span style="color:#555;font-size:1rem">"${codinome}"</span>` : ''}</div>
-                <div style="color:var(--purple-neon);font-family:'Share Tech Mono',monospace;letter-spacing:2px;font-size:0.85rem">${classe} ▸ NÍVEL ${nivel} ▸ ${origem}</div>
+                <div class="res-nome">${nome}${codinome ? ` <span class="res-cod">"${codinome}"</span>` : ''}</div>
+                <div class="res-meta">${classe} ▸ Nível ${nivel} ▸ ${origem}</div>
             </div>
         </div>
-        <hr style="border-color:#2a0050;margin:16px 0;">
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;">${atribHtml}</div>
-        <hr style="border-color:#2a0050;margin:16px 0;">
-        <div style="font-size:0.75rem;letter-spacing:2px;color:#666;text-transform:uppercase;margin-bottom:10px;">Perícias Treinadas</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">${periciasHtml || '<span style="color:#444;font-size:0.8rem;font-family:monospace">Nenhuma selecionada</span>'}</div>
+        <div class="res-atribs">${atribHtml}</div>
+        <div class="res-label">Perícias Treinadas</div>
+        <div class="res-chips">${periciasHtml || '<span class="res-vazio">Nenhuma selecionada</span>'}</div>
     `;
 }
 

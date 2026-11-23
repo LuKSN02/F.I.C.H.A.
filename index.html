@@ -12,7 +12,7 @@
     <meta name="theme-color" content="#050d1a">
     <title>F.I.C.H.A.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="gif/gif" href="ordem-paranormal-enigma-do-medo.gif">
+    <link rel="icon" type="gif/gif" href="assets/img/ui/ordem-paranormal-enigma-do-medo.gif">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 </head>
@@ -224,25 +224,25 @@
         width: min(98vh, 940px); aspect-ratio: 1;
         margin: calc(min(98vh, 940px) / -2) 0 0 calc(min(98vh, 940px) / -2);
         background: var(--tema-primary-light);
-        -webkit-mask: url("conhecimento-runas.png") center / contain no-repeat;
-                mask: url("conhecimento-runas.png") center / contain no-repeat;
+        -webkit-mask: url("assets/img/rituais/conhecimento-runas.png") center / contain no-repeat;
+                mask: url("assets/img/rituais/conhecimento-runas.png") center / contain no-repeat;
         opacity: 0.2;
         filter: drop-shadow(0 0 10px rgba(var(--tema-glow-light-rgb), 0.5));
         animation: lgSpin 160s linear infinite;
     }
     /* Tema Medo: ritual no lugar do sigilo + símbolo fantasma atrás do formulário */
     :root:not([data-tema]), :root[data-tema="medo"] {
-        --lg-ritual-img: url("medo-ritual.png"); --lg-sym-img: url("medo-simbolo.png");
+        --lg-ritual-img: url("assets/img/rituais/medo-ritual.png"); --lg-sym-img: url("assets/img/rituais/medo-simbolo.png");
     }
     :root[data-tema="sangue"] {
-        --lg-ritual-img: url("sangue-ritual.png"); --lg-sym-img: url("sangue-simbolo.png");
+        --lg-ritual-img: url("assets/img/rituais/sangue-ritual.png"); --lg-sym-img: url("assets/img/rituais/sangue-simbolo.png");
     }
     :root[data-tema="morte"] {
-        --lg-ritual-img: url("morte-ritual.png"); --lg-sym-img: url("morte-simbolo.png");
+        --lg-ritual-img: url("assets/img/rituais/morte-ritual.png"); --lg-sym-img: url("assets/img/rituais/morte-simbolo.png");
     }
-    :root[data-tema="conhecimento"] { --lg-sym-img: url("conhecimento-figuras.png"); }
+    :root[data-tema="conhecimento"] { --lg-sym-img: url("assets/img/rituais/conhecimento-figuras.png"); }
     :root[data-tema="energia"] {
-        --lg-ritual-img: url("energia-ritual.png"); --lg-sym-img: url("energia-simbolo.png");
+        --lg-ritual-img: url("assets/img/rituais/energia-ritual.png"); --lg-sym-img: url("assets/img/rituais/energia-simbolo.png");
     }
     .lg-ritual, .lg-medo-sym { display: none; }
     :root:not([data-tema]) .lg-sigil, :root[data-tema="medo"] .lg-sigil, :root[data-tema="sangue"] .lg-sigil, :root[data-tema="morte"] .lg-sigil, :root[data-tema="energia"] .lg-sigil { display: none; }
@@ -4263,7 +4263,7 @@ body { transition: background 0.6s ease; }
                 <p class="login-error" id="login-erro" role="alert" aria-live="polite"></p>
 
                 <div class="lg-selo">
-                    <img src="selo-nao-oficial.png" alt="Selo: Ordem Paranormal Comunidade — não-oficial, não-canônico" width="72" height="71">
+                    <img src="assets/img/ui/selo-nao-oficial.png" alt="Selo: Ordem Paranormal Comunidade — não-oficial, não-canônico" width="72" height="71">
                     <p>Projeto de fãs · não-oficial e não-canônico</p>
                 </div>
             </div>
@@ -4401,7 +4401,7 @@ body { transition: background 0.6s ease; }
     <nav class="navbar navbar-expand-lg custom-nav navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand hx-brand" href="#" onclick="mostrarInicio(); return false;">
-                <img class="hx-brand-logo" src="./ordem-paranormal-enigma-do-medo.gif" alt="F.I.C.H.A." width="58" height="58">
+                <img class="hx-brand-logo" src="assets/img/ui/ordem-paranormal-enigma-do-medo.gif" alt="F.I.C.H.A." width="58" height="58">
                 F.I.C.H.A.
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -4698,10 +4698,10 @@ body { transition: background 0.6s ease; }
         (function () {
             const cards = document.querySelectorAll('.hx-ops-grid .hx-op');
             const SIMBOLOS = [
-                { img: 'sangue-simbolo.png',     cor: '#ff4b55' },  // Sangue
-                { img: 'morte-simbolo.png',      cor: '#c3c6d1' },  // Morte
-                { img: 'energia-simbolo.png',    cor: '#c070ff' },  // Energia
-                { img: 'conhecimento-runas.png', cor: '#f5c842' }   // Conhecimento
+                { img: 'assets/img/rituais/sangue-simbolo.png',     cor: '#ff4b55' },  // Sangue
+                { img: 'assets/img/rituais/morte-simbolo.png',      cor: '#c3c6d1' },  // Morte
+                { img: 'assets/img/rituais/energia-simbolo.png',    cor: '#c070ff' },  // Energia
+                { img: 'assets/img/rituais/conhecimento-runas.png', cor: '#f5c842' }   // Conhecimento
             ];
             function embaralhar(a) {
                 const r = a.slice();
@@ -4921,7 +4921,7 @@ body { transition: background 0.6s ease; }
     <footer class="custom-footer hx-footer">
         <div class="container">
             <div class="hx-foot-line"><span>Ordem Paranormal<i>•</i>F.I.C.H.A.<i>•</i>Investigação é só o começo</span></div>
-            <img class="hx-selo" src="selo-nao-oficial.png" alt="Selo: Ordem Paranormal Comunidade — não-oficial, não-canônico" width="88" height="87">
+            <img class="hx-selo" src="assets/img/ui/selo-nao-oficial.png" alt="Selo: Ordem Paranormal Comunidade — não-oficial, não-canônico" width="88" height="87">
             <p class="hx-foot-meta">
                 © 2026 F.I.C.H.A. – Inspirado no universo de Ordem Paranormal. · Desenvolvido por luka_00000
             </p>

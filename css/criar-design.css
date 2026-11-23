@@ -1,0 +1,284 @@
+/* ═══════════════════════════════════════════════════════════════
+   F.I.C.H.A. — CRIAR AGENTE · redesign "Dossiê de Recrutamento"
+   Carregado DEPOIS de ficha-design.css, só em criar.html.
+   Segue os temas (--tema-*) e usa os mesmos símbolos do login.
+═══════════════════════════════════════════════════════════════ */
+:root {
+    --cr-ritual: url("../assets/img/rituais/medo-ritual.png");
+    --cr-mute: #8d86a3;
+    --cr-ink: #ece8f2;
+}
+:root[data-tema="sangue"]       { --cr-ritual: url("../assets/img/rituais/sangue-ritual.png"); }
+:root[data-tema="morte"]        { --cr-ritual: url("../assets/img/rituais/morte-ritual.png"); }
+:root[data-tema="conhecimento"] { --cr-ritual: url("../assets/img/rituais/conhecimento-runas.png"); }
+:root[data-tema="energia"]      { --cr-ritual: url("../assets/img/rituais/energia-ritual.png"); }
+
+@keyframes crSpin   { to { transform: rotate(360deg); } }
+@keyframes crBreath { 0%,100% { transform: scale(1) rotate(-1.5deg); opacity: .08; } 50% { transform: scale(1.04) rotate(1.5deg); opacity: .14; } }
+@keyframes crIn     { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes crPulse  { 0%,100% { box-shadow: 0 0 0 0 rgba(var(--tema-glow-rgb), .55); } 50% { box-shadow: 0 0 0 9px rgba(var(--tema-glow-rgb), 0); } }
+
+/* ───────── HERO ───────── */
+html:not([data-tema="dossie-investigacao"]) .cr-hero { position: relative; overflow: hidden; padding: 58px 0 46px; border-bottom: 1px solid var(--hx-line) !important;
+    background: radial-gradient(ellipse 60% 120% at 50% 0%, rgba(var(--tema-glow-rgb), .18), transparent 70%) !important; }
+.cr-hero-art {
+    position: absolute; left: 50%; top: 50%; width: min(780px, 120vw); aspect-ratio: 1;
+    margin: calc(min(780px, 120vw) / -2) 0 0 calc(min(780px, 120vw) / -2);
+    background: var(--tema-primary-light);
+    -webkit-mask: var(--cr-ritual) center / contain no-repeat; mask: var(--cr-ritual) center / contain no-repeat;
+    opacity: .1; pointer-events: none;
+    animation: crBreath 11s ease-in-out infinite;
+}
+:root[data-tema="morte"] .cr-hero-art, :root[data-tema="conhecimento"] .cr-hero-art { animation: crSpin 200s linear infinite; opacity: .09; }
+.cr-hero > h1, .cr-hero > p { position: relative; z-index: 1; }
+.step-item { position: relative; }
+html:not([data-tema="dossie-investigacao"]) .cr-hero .cr-eyebrow {
+    display: flex; align-items: center; justify-content: center; gap: 18px; margin: 0 0 14px;
+    font-family: var(--hx-mono) !important; font-size: .74rem; letter-spacing: .42em !important; color: var(--tema-primary-light) !important;
+}
+.cr-eyebrow::before, .cr-eyebrow::after { content: ''; width: 54px; height: 1px; background: linear-gradient(90deg, transparent, var(--tema-primary-light)); }
+.cr-eyebrow::after { transform: scaleX(-1); }
+html:not([data-tema="dossie-investigacao"]) .cr-hero h1 { font-size: clamp(2.5rem, 6.2vw, 4.4rem) !important; line-height: 1; margin: 0 0 16px; }
+html:not([data-tema="dossie-investigacao"]) .cr-hero #criacao-sub { max-width: 760px; margin: 0 auto; padding: 0 20px; font-size: .78rem; line-height: 1.9; color: var(--cr-mute) !important; }
+html:not([data-tema="dossie-investigacao"]) .form-hero .hx-proto { top: 30px; left: 8%; }
+.cr-selo { position: absolute !important; top: 24px; right: 8%; width: 96px; height: auto; opacity: .86; transform: rotate(-6deg); transition: opacity .3s, transform .4s; }
+.cr-selo:hover { opacity: 1; transform: rotate(0) scale(1.05); }
+
+/* ───────── STEPPER ───────── */
+html:not([data-tema="dossie-investigacao"]) .stepper { max-width: 780px; margin: 38px auto 30px; padding: 0 16px; }
+html:not([data-tema="dossie-investigacao"]) .stepper::before { display: none !important; }
+.step-item { padding: 0 4px; }
+.step-item:not(:last-child)::after {
+    content: ''; position: absolute; top: 21px; left: calc(50% + 32px); right: calc(-50% + 32px); height: 2px;
+    background: var(--hx-line); transition: background .4s, box-shadow .4s;
+}
+.step-item.done:not(:last-child)::after { background: var(--tema-primary-light); box-shadow: 0 0 10px rgba(var(--tema-glow-rgb), .8); }
+html:not([data-tema="dossie-investigacao"]) .step-circle { position: relative; width: 44px; height: 44px; font-family: var(--hx-serif); font-size: 1.05rem;
+    background: #0c0814 !important; border: 1px solid var(--hx-line) !important; color: #6f6885 !important; }
+html:not([data-tema="dossie-investigacao"]) .step-item:hover .step-circle { border-color: var(--tema-primary-light) !important; color: #fff !important; }
+html:not([data-tema="dossie-investigacao"]) .step-item.active .step-circle { background: linear-gradient(160deg, var(--tema-primary), var(--tema-primary-dark)) !important; border-color: var(--tema-primary-light) !important; color: #fff !important; animation: crPulse 2.6s ease-out infinite; }
+.step-item.active .step-circle::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 1px dashed var(--tema-primary-light); opacity: .65; animation: crSpin 16s linear infinite; }
+html:not([data-tema="dossie-investigacao"]) .step-item.done .step-circle { background: rgba(var(--tema-glow-rgb), .16) !important; border-color: var(--tema-primary-light) !important; color: var(--tema-primary-light) !important; }
+.step-item.done .step-circle { font-size: 0; }
+.step-item.done .step-circle::before { content: '✓'; font-size: 1.05rem; font-family: var(--hx-mono); }
+html:not([data-tema="dossie-investigacao"]) .step-label { margin-top: 12px; font-size: .62rem; color: #6f6885; }
+html:not([data-tema="dossie-investigacao"]) .step-item.active .step-label { color: var(--tema-primary-light); }
+html:not([data-tema="dossie-investigacao"]) .step-item.done .step-label { color: #b9b2cc; }
+
+/* ───────── CARTÃO DO DOSSIÊ ───────── */
+.cr-wrap { max-width: 980px !important; padding: 0 16px 90px !important; }
+.cr-card {
+    position: relative; background: var(--hx-panel); border: 1px solid var(--hx-line);
+    box-shadow: 0 30px 70px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.cr-card::before, .cr-card::after { content: ''; position: absolute; width: 22px; height: 22px; pointer-events: none; border: 2px solid var(--tema-primary-light); }
+.cr-card::before { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+.cr-card::after  { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+.cr-card-head { display: flex; align-items: center; gap: 16px; padding: 16px 40px; border-bottom: 1px solid var(--hx-line); background: rgba(0,0,0,.25); }
+.cr-card-step { font-family: var(--hx-mono); font-size: .7rem; letter-spacing: .3em; color: var(--tema-primary-light); }
+.cr-card-name { font-family: var(--hx-mono); font-size: .7rem; letter-spacing: .3em; text-transform: uppercase; color: var(--cr-mute); padding-left: 16px; border-left: 1px solid var(--hx-line); }
+.cr-card-head .hx-stamp { margin-left: auto; position: relative; top: 2px; font-size: .8rem; padding: 2px 10px; }
+.cr-card-body { padding: 38px 44px 10px; }
+.etapa-panel.active { animation: crIn .45s cubic-bezier(.22,1,.36,1) both; }
+
+html:not([data-tema="dossie-investigacao"]) .section-title { display: flex; align-items: center; gap: 14px; border-left: 0 !important; padding-left: 0 !important; font-size: 1.3rem; margin-bottom: 26px; color: var(--cr-ink); }
+.section-title::before { content: ''; width: 9px; height: 9px; flex-shrink: 0; transform: rotate(45deg); background: var(--tema-primary-light); box-shadow: 0 0 10px rgba(var(--tema-glow-rgb), .9); }
+.section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--hx-line), transparent); }
+.d-flex > .section-title { flex: 1; min-width: 220px; }
+html:not([data-tema="dossie-investigacao"]) .section-title span { color: var(--tema-primary-light) !important; }
+html:not([data-tema="dossie-investigacao"]) hr.purple { border: 0; height: 1px; opacity: 1; margin: 34px 0 !important; background: linear-gradient(90deg, transparent, var(--hx-line), transparent); }
+
+.cr-hint { margin: 0 0 20px; font-family: var(--hx-mono); font-size: .74rem; line-height: 1.9; letter-spacing: .1em; color: var(--cr-mute); }
+.cr-vazio { margin: 0; font-family: var(--hx-mono); font-size: .76rem; letter-spacing: .1em; color: #6c6683; }
+
+/* ───────── CAMPOS ───────── */
+html:not([data-tema="dossie-investigacao"]) .form-label { font-size: .66rem; color: var(--cr-mute) !important; margin-bottom: 8px; transition: color .2s; }
+.col-md-6:focus-within > .form-label, .col-md-4:focus-within > .form-label, .col-12:focus-within > .form-label { color: var(--tema-primary-light) !important; }
+html:not([data-tema="dossie-investigacao"]) .form-control, P .form-select, P textarea {
+    background-color: #08060f !important; border: 1px solid rgba(255,255,255,.1) !important; border-left: 2px solid rgba(var(--tema-glow-rgb), .45) !important;
+    border-radius: 2px !important; padding: .72rem .9rem; font-size: .98rem; letter-spacing: .02em; color: var(--cr-ink) !important;
+}
+html:not([data-tema="dossie-investigacao"]) .form-control:hover, P .form-select:hover, P textarea:hover { border-color: rgba(255,255,255,.2) !important; border-left-color: var(--tema-primary-light) !important; }
+html:not([data-tema="dossie-investigacao"]) .form-control:focus, P .form-select:focus, P textarea:focus {
+    border-color: rgba(var(--tema-glow-light-rgb), .6) !important; border-left-color: var(--tema-primary-light) !important;
+    background-color: rgba(var(--tema-glow-rgb), .07) !important; box-shadow: 0 0 0 3px rgba(var(--tema-glow-rgb), .15) !important;
+}
+.form-control::placeholder, textarea::placeholder { color: #50496a !important; }
+.form-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23bdb6d4' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E") !important; }
+.form-select option, .form-select optgroup { background: #0d0916; color: #e6e1f0; }
+.alerta-campo, #alerta-classe { letter-spacing: .08em; }
+
+/* ───────── CLASSES ───────── */
+.classe-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 14px !important; justify-content: stretch !important; }
+html:not([data-tema="dossie-investigacao"]) .classe-card { position: relative; padding: 28px 12px 22px; background: rgba(8,6,15,.85) !important; border: 1px solid rgba(255,255,255,.1) !important; border-radius: 2px !important; overflow: hidden;
+    transition: transform .25s, border-color .25s, background .25s, box-shadow .25s; }
+.classe-card::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--tema-primary-light); transform: scaleX(0); transition: transform .35s; box-shadow: 0 0 12px rgba(var(--tema-glow-rgb), .9); }
+.classe-card:hover { transform: translateY(-4px); }
+.classe-card:hover::before { transform: scaleX(1); }
+html:not([data-tema="dossie-investigacao"]) .classe-card.selected { background: linear-gradient(180deg, rgba(var(--tema-glow-rgb), .2), rgba(8,6,15,.9)) !important; border-color: var(--tema-primary-light) !important;
+    box-shadow: 0 0 0 1px rgba(var(--tema-glow-rgb), .5), 0 14px 40px rgba(var(--tema-glow-rgb), .22) !important; }
+.classe-card.selected::before { transform: scaleX(1); }
+.classe-card.selected::after { content: '✓'; position: absolute; top: 8px; right: 9px; width: 20px; height: 20px; display: grid; place-items: center; font-size: .72rem; color: #000; background: var(--tema-primary-light); border-radius: 50%; }
+.classe-card .classe-icon { display: grid; place-items: center; height: 54px; margin-bottom: 12px; font-size: 0; color: var(--tema-primary-light); opacity: .85; transition: transform .3s, opacity .3s, filter .3s; }
+.classe-card:hover .classe-icon, .classe-card.selected .classe-icon { opacity: 1; transform: scale(1.08); filter: drop-shadow(0 0 10px rgba(var(--tema-glow-rgb), .8)); }
+.classe-icon svg { width: 46px; height: 46px; }
+.classe-icon svg * { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.classe-icon svg .fill { fill: currentColor; stroke: none; }
+.classe-card .classe-nome { font-size: .92rem; letter-spacing: .22em; color: #d8d3e4; }
+.classe-card .classe-desc { font-size: .68rem; line-height: 1.6; color: #7d769a; margin-top: 8px; }
+.classe-card.selected .classe-desc { color: #b4adca; }
+
+html:not([data-tema="dossie-investigacao"]) .classe-info-panel { margin-top: 26px; padding: 22px 24px; background: rgba(5,3,10,.7) !important; border-left: 3px solid var(--tema-primary-light) !important; border-radius: 2px !important; }
+html:not([data-tema="dossie-investigacao"]) .classe-info-title { font-family: var(--hx-mono); font-size: .78rem; letter-spacing: .32em; color: var(--tema-primary-light); border-bottom: 1px solid var(--hx-line); }
+.ci-row { border-bottom: 1px dashed rgba(255,255,255,.08); }
+.ci-label { font-family: var(--hx-mono); font-weight: 400; font-size: .72rem; color: #b9b2cc; }
+.ci-value { color: var(--tema-primary-light); }
+.ci-tag { background: rgba(var(--tema-glow-rgb), .12); border: 1px solid rgba(var(--tema-glow-rgb), .4); border-radius: 2px; color: var(--tema-primary-light); }
+.nex-table th { background: rgba(var(--tema-glow-rgb), .14); color: var(--tema-primary-light); border-bottom: 1px solid var(--tema-primary); }
+.nex-table tr:nth-child(even) td { background: rgba(255,255,255,.025); }
+.nex-table td:first-child { color: var(--tema-primary-light); }
+.nex-toggle { border: 1px solid var(--hx-line); border-radius: 2px; font-family: var(--hx-mono); letter-spacing: .14em; color: var(--tema-primary-light); }
+.nex-toggle:hover { background: rgba(var(--tema-glow-rgb), .18); }
+
+/* ───────── ATRIBUTOS ───────── */
+html:not([data-tema="dossie-investigacao"]) .pontos-display { margin: 0 !important; padding: 10px 18px; background: rgba(0,0,0,.4) !important; border: 1px solid var(--tema-primary-light) !important; border-radius: 2px !important;
+    font-size: .78rem; letter-spacing: .24em; color: var(--cr-mute); box-shadow: 0 0 18px rgba(var(--tema-glow-rgb), .18); }
+html:not([data-tema="dossie-investigacao"]) .pontos-display span { font-family: var(--hx-serif); font-size: 1.5rem; color: var(--tema-primary-light); text-shadow: 0 0 14px rgba(var(--tema-glow-rgb), .7); margin-left: 6px; vertical-align: -2px; }
+.atributos-grid { display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 14px !important; }
+html:not([data-tema="dossie-investigacao"]) .atributo-box { position: relative; padding: 20px 8px 18px; overflow: hidden; background: rgba(8,6,15,.85) !important; border: 1px solid rgba(255,255,255,.1) !important; border-radius: 2px !important; transition: border-color .25s, transform .25s, box-shadow .25s; }
+html:not([data-tema="dossie-investigacao"]) .atributo-box:hover { border-color: var(--tema-primary-light) !important; transform: translateY(-3px); box-shadow: 0 12px 30px rgba(var(--tema-glow-rgb), .18); }
+.atributo-abrev { position: absolute; top: 6px; right: 8px; font-family: var(--hx-mono); font-size: .62rem; letter-spacing: .2em; color: rgba(var(--tema-glow-light-rgb), .5); }
+html:not([data-tema="dossie-investigacao"]) .atributo-nome { margin-bottom: 12px; font-size: .62rem; letter-spacing: .28em !important; color: #b9b2cc; }
+.atributo-valor { font-family: var(--hx-serif); font-size: 2.6rem !important; line-height: 1; min-width: 44px !important; color: #fff; text-shadow: 0 0 22px rgba(var(--tema-glow-rgb), .7); }
+.atributo-controles { gap: 10px !important; }
+html:not([data-tema="dossie-investigacao"]) .atributo-btn { width: 32px; height: 32px; background: rgba(var(--tema-glow-rgb), .1) !important; border: 1px solid rgba(var(--tema-glow-rgb), .6) !important; color: var(--tema-primary-light) !important; border-radius: 50%; font-size: 1.15rem; }
+html:not([data-tema="dossie-investigacao"]) .atributo-btn:hover:not(:disabled) { background: var(--tema-primary) !important; border-color: var(--tema-primary-light) !important; color: #fff !important; box-shadow: 0 0 14px rgba(var(--tema-glow-rgb), .6); }
+.atributo-pips { display: flex; justify-content: center; gap: 5px; margin-top: 14px; }
+.atributo-pips i { width: 16px; height: 4px; background: rgba(255,255,255,.1); transition: background .25s, box-shadow .25s; }
+.atributo-pips i.on { background: var(--tema-primary-light); box-shadow: 0 0 8px rgba(var(--tema-glow-rgb), .9); }
+html:not([data-tema="dossie-investigacao"]) .sem-pontos { font-family: var(--hx-mono); }
+
+/* ───────── PERÍCIAS ───────── */
+html:not([data-tema="dossie-investigacao"]) .pericias-resumo { padding: 14px 18px; border-left: 3px solid var(--tema-primary-light) !important; background: rgba(5,3,10,.7) !important; border-radius: 2px !important; color: #b4adca; }
+.pericias-resumo b { color: var(--tema-primary-light); }
+.pericias-grid { grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)) !important; gap: 10px !important; }
+html:not([data-tema="dossie-investigacao"]) .pericia-item { position: relative; padding: 12px 14px; background: rgba(8,6,15,.85) !important; border: 1px solid rgba(255,255,255,.1) !important; border-radius: 2px !important; transition: border-color .2s, background .2s, transform .2s; }
+html:not([data-tema="dossie-investigacao"]) .pericia-item:hover:not(.disabled):not(.fixa) { border-color: var(--tema-primary-light) !important; transform: translateX(3px); }
+html:not([data-tema="dossie-investigacao"]) .pericia-item.selected { background: linear-gradient(90deg, rgba(var(--tema-glow-rgb), .2), rgba(8,6,15,.9)) !important; border-color: var(--tema-primary-light) !important; }
+html:not([data-tema="dossie-investigacao"]) .pericia-item.fixa { background: linear-gradient(90deg, rgba(var(--tema-glow-rgb), .28), rgba(8,6,15,.9)) !important; }
+html:not([data-tema="dossie-investigacao"]) .pericia-item.grupo-pendente { border-color: #e0a020 !important; }
+.pericia-check { border: 1px solid rgba(255,255,255,.3); border-radius: 2px; }
+.pericia-item.selected .pericia-check { background: var(--tema-primary-light); border-color: var(--tema-primary-light); }
+.pericia-check::after { color: #000; font-weight: 700; }
+.pericia-nome { font-size: .86rem; letter-spacing: .08em; color: #ddd8e9; }
+.pericia-atrib { background: rgba(var(--tema-glow-rgb), .18); color: var(--tema-primary-light); border-radius: 2px; letter-spacing: .1em; }
+.pericia-tag.fixa-tag { color: var(--tema-primary-light); border-color: rgba(var(--tema-glow-rgb), .5); }
+html:not([data-tema="dossie-investigacao"]) .habilidade-item { border-left: 3px solid var(--tema-primary-light) !important; border-radius: 2px !important; padding: 16px 18px; transition: transform .2s; }
+html:not([data-tema="dossie-investigacao"]) .habilidade-item:hover { transform: translateX(4px); }
+.habilidade-nome { font-family: var(--hx-serif); font-size: 1rem; letter-spacing: .1em; color: var(--tema-primary-light); }
+.habilidade-desc { color: #a29bb9; line-height: 1.7; }
+
+/* ───────── RESUMO ───────── */
+.cr-resumo { position: relative; padding: 28px; background: rgba(5,3,10,.75); border: 1px solid var(--tema-primary-light); box-shadow: 0 0 40px rgba(var(--tema-glow-rgb), .15), inset 0 0 60px rgba(var(--tema-glow-rgb), .05); }
+.cr-resumo::after { content: 'FICHA PRELIMINAR'; position: absolute; top: 10px; right: 14px; font-family: var(--hx-mono); font-size: .56rem; letter-spacing: .3em; color: rgba(var(--tema-glow-light-rgb), .55); }
+.res-head { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding-bottom: 22px; margin-bottom: 22px; border-bottom: 1px solid var(--hx-line); }
+.res-icon { width: 70px; height: 70px; display: grid; place-items: center; flex-shrink: 0; border: 1px solid var(--tema-primary-light); border-radius: 50%; color: var(--tema-primary-light); background: rgba(var(--tema-glow-rgb), .12); box-shadow: 0 0 24px rgba(var(--tema-glow-rgb), .35); }
+.res-icon svg { width: 38px; height: 38px; }
+.res-icon svg * { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.res-icon svg .fill { fill: currentColor; stroke: none; }
+.res-nome { font-family: var(--hx-serif); font-size: 1.9rem; font-weight: 700; line-height: 1.15; color: #fff; }
+.res-cod { font-family: var(--hx-type); font-size: 1rem; font-weight: 400; color: var(--cr-mute); margin-left: 8px; }
+.res-meta { margin-top: 6px; font-family: var(--hx-mono); font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; color: var(--tema-primary-light); }
+.res-atribs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 24px; }
+.res-atrib { padding: 14px 6px 12px; text-align: center; background: rgba(var(--tema-glow-rgb), .08); border: 1px solid rgba(var(--tema-glow-rgb), .35); }
+.res-atrib small { display: block; font-family: var(--hx-mono); font-size: .66rem; letter-spacing: .28em; color: var(--cr-mute); }
+.res-atrib b { display: block; margin-top: 4px; font-family: var(--hx-serif); font-size: 1.9rem; line-height: 1; color: #fff; text-shadow: 0 0 16px rgba(var(--tema-glow-rgb), .7); }
+.res-label { margin-bottom: 12px; font-family: var(--hx-mono); font-size: .68rem; letter-spacing: .3em; text-transform: uppercase; color: var(--cr-mute); }
+.res-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.res-chip { padding: 4px 11px; font-family: var(--hx-mono); font-size: .76rem; letter-spacing: .08em; color: var(--tema-primary-light); background: rgba(var(--tema-glow-rgb), .14); border: 1px solid rgba(var(--tema-glow-rgb), .4); border-radius: 2px; }
+.res-vazio { font-family: var(--hx-mono); font-size: .78rem; color: #6c6683; }
+
+/* ───────── NAVEGAÇÃO ───────── */
+.cr-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 38px -44px 0; padding: 22px 44px; border-top: 1px solid var(--hx-line); background: rgba(0,0,0,.25); }
+html:not([data-tema="dossie-investigacao"]) .btn-nav {
+    padding: 14px 34px !important; font-size: .82rem !important; letter-spacing: .26em !important;
+    background: linear-gradient(90deg, rgba(var(--tema-glow-rgb), .5), rgba(var(--tema-glow-rgb), .18)) !important;
+    border: 1px solid var(--tema-primary-light) !important; color: #fff !important; border-radius: 0 !important; box-shadow: none !important;
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+    transition: filter .2s, transform .15s, letter-spacing .25s !important;
+}
+html:not([data-tema="dossie-investigacao"]) .btn-nav:hover { transform: none !important; filter: brightness(1.3); letter-spacing: .3em !important; box-shadow: none !important; }
+html:not([data-tema="dossie-investigacao"]) #btn-anterior { background: transparent !important; border-color: var(--hx-line) !important; color: #c9c3d6 !important; }
+html:not([data-tema="dossie-investigacao"]) #btn-anterior:hover { border-color: var(--tema-primary-light) !important; color: #fff !important; }
+html:not([data-tema="dossie-investigacao"]) .btn-nav.btn-finalizar { background: linear-gradient(90deg, var(--tema-primary), var(--tema-primary-dark)) !important; box-shadow: 0 0 26px rgba(var(--tema-glow-rgb), .5) !important; animation: crPulse 2.6s ease-out infinite; }
+html:not([data-tema="dossie-investigacao"]) .btn-nav:focus-visible { outline: 2px solid #fff !important; outline-offset: 3px; }
+
+/* ───────── TOAST / MODAL ───────── */
+.rascunho-toast { background: #0b0812 !important; border: 1px solid var(--hx-line) !important; border-left: 3px solid var(--tema-primary-light) !important; border-radius: 2px !important; color: var(--tema-primary-light) !important; letter-spacing: .18em !important; }
+.modal-overlay { backdrop-filter: blur(6px); background: rgba(2,1,6,.85) !important; }
+html:not([data-tema="dossie-investigacao"]) .modal-box { position: relative; padding: 46px 40px 34px; border: 1px solid var(--tema-primary-light) !important; box-shadow: 0 0 60px rgba(var(--tema-glow-rgb), .35), 0 30px 80px rgba(0,0,0,.7) !important; }
+.modal-icon { display: grid; place-items: center; width: 84px; height: 84px; margin: 0 auto 18px; font-size: 0 !important; color: var(--tema-primary-light); border: 1px solid var(--tema-primary-light); border-radius: 50%; background: rgba(var(--tema-glow-rgb), .12); box-shadow: 0 0 30px rgba(var(--tema-glow-rgb), .45); }
+.modal-icon svg { width: 44px; height: 44px; }
+.modal-icon svg * { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.modal-icon svg .fill { fill: currentColor; stroke: none; }
+html:not([data-tema="dossie-investigacao"]) .modal-title { color: var(--cr-ink); text-shadow: 0 0 24px rgba(var(--tema-glow-rgb), .6); }
+.modal-agente-nome { font-family: var(--hx-serif); }
+.modal-agente-classe { color: var(--tema-primary-light) !important; }
+.modal-box .cr-modal-selo { display: block; width: 54px; margin: 26px auto 0; opacity: .5; }
+html:not([data-tema="dossie-investigacao"]) .btn-modal { padding: 12px 26px; font-size: .74rem; }
+html:not([data-tema="dossie-investigacao"]) .btn-modal.secondary { background: transparent !important; border: 1px solid var(--hx-line) !important; color: #b9b2cc !important; box-shadow: none; }
+
+/* ───────── RODAPÉ ───────── */
+.cr-footer { margin-top: 0 !important; padding: 30px 0 26px !important; background: #050305 !important; border-top: 1px solid rgba(var(--tema-glow-rgb), .3) !important; }
+.cr-foot-line { display: flex; align-items: center; gap: 28px; font-family: var(--hx-mono); font-size: .66rem; letter-spacing: .3em; color: #8b8384; text-transform: uppercase; }
+.cr-foot-line::before, .cr-foot-line::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(var(--tema-glow-rgb), .7)); }
+.cr-foot-line::after { transform: scaleX(-1); }
+.cr-foot-line span { white-space: nowrap; }
+.cr-foot-line i { color: var(--tema-primary-light); font-style: normal; margin: 0 .9em; }
+.cr-foot-selo { display: block; width: 92px; height: auto; margin: 22px auto 0; opacity: .72; transition: opacity .3s; }
+.cr-foot-selo:hover { opacity: 1; }
+.cr-foot-aviso { margin: 10px 0 0; text-align: center; font-family: var(--hx-mono); font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; color: #756d82; }
+.cr-foot-links { display: flex; justify-content: center; gap: 30px; margin-top: 18px; }
+.cr-foot-links a { font-family: var(--hx-mono); font-size: .7rem; letter-spacing: .22em; text-transform: uppercase; color: #8b8384; text-decoration: none; transition: color .2s; }
+.cr-foot-links a:hover { color: var(--tema-primary-light); }
+.cr-foot-meta { margin: 16px 0 0; text-align: center; font-family: 'Montserrat', sans-serif; font-size: .7rem; color: #5f5859; }
+
+/* ───────── RESPONSIVO ───────── */
+@media (max-width: 991px) {
+    .cr-selo { position: static !important; display: block; width: 74px; margin: 0 auto 16px; transform: rotate(-6deg); }
+    .cr-hero { padding-top: 34px; }
+    .cr-card-head { padding: 14px 24px; }
+    .cr-card-head .hx-stamp { display: inline-block !important; }
+    .cr-card-body { padding: 30px 24px 6px; }
+    .cr-nav { margin: 34px -24px 0; padding: 18px 24px; }
+}
+@media (max-width: 768px) {
+    .classe-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .atributos-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    .res-atribs { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .cr-foot-line { gap: 14px; letter-spacing: .16em; font-size: .56rem; }
+    .cr-foot-line span { white-space: normal; text-align: center; }
+}
+@media (max-width: 576px) {
+    .cr-wrap { padding: 0 10px 70px !important; }
+    .cr-card-head { gap: 10px; padding: 12px 16px; }
+    .cr-card-name { padding-left: 10px; letter-spacing: .18em; }
+    .cr-card-head .hx-stamp { display: none !important; }
+    .cr-card-body { padding: 24px 16px 4px; }
+    .cr-nav { margin: 28px -16px 0; padding: 16px; }
+    P .btn-nav { padding: 12px 18px !important; letter-spacing: .16em !important; font-size: .74rem !important; }
+    .atributos-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .atributo-valor { font-size: 2.2rem !important; }
+    .res-atribs { grid-template-columns: repeat(3, 1fr); }
+    .res-nome { font-size: 1.5rem; }
+    .cr-eyebrow::before, .cr-eyebrow::after { width: 22px; }
+    .cr-eyebrow { letter-spacing: .24em !important; font-size: .64rem; }
+    .cr-hero { padding-bottom: 32px; }
+    .step-item:not(:last-child)::after { top: 16px; left: calc(50% + 22px); right: calc(-50% + 22px); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cr-hero-art, .step-item.active .step-circle, .step-item.active .step-circle::after, .btn-finalizar, .etapa-panel.active { animation: none !important; }
+}
+
+/* select: seta única */
+html:not([data-tema="dossie-investigacao"]) .form-select { background-repeat: no-repeat !important; background-position: right .9rem center !important; background-size: 14px 14px !important; padding-right: 2.4rem; }
