@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ficha · Vigília — F.I.C.H.A.</title>
+<link rel="icon" type="gif/gif" href="assets/img/ui/ordem-paranormal-enigma-do-medo.gif">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;600&family=Share+Tech+Mono&family=Uncial+Antiqua&family=Rubik+Dirt&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/vigilia-shared.css">
+<link rel="stylesheet" href="css/ficha-vigilia.css">
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    const app = initializeApp({
+        apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws", authDomain: "ficha-op-c9df8.firebaseapp.com",
+        databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com", projectId: "ficha-op-c9df8",
+        storageBucket: "ficha-op-c9df8.firebasestorage.app", messagingSenderId: "5463680704", appId: "1:5463680704:web:3d6296c296699f4d41af25"
+    });
+    window._firebaseDB = getDatabase(app); window._firebaseRef = ref; window._firebaseSet = set; window._firebaseGet = get;
+</script>
+</head>
+<body>
+
+<header class="vg-top">
+    <a class="back" href="index.html?view=agentes" id="lnk-voltar">← AGENTES</a>
+    <span class="brand">F.I.C.H.A.</span>
+    <span class="sp"></span>
+    <button class="vg-btn ghost" id="btn-portrait">Portrait (Vigilante)</button>
+    <button class="vg-btn" id="btn-tablet">Visualizar ficha (Tablet)</button>
+</header>
+
+<main class="vg-sheet" id="sheet" aria-live="polite">
+    <p class="empty" style="grid-column:1/-1">Carregando ficha…</p>
+</main>
+
+<footer class="vg-foot">
+    <img src="assets/img/ui/selo-nao-oficial.png" alt="Selo: Ordem Paranormal Comunidade — não-oficial, não-canônico" width="88" height="87">
+    <p>Projeto de fãs · não oficial</p>
+    <p style="color:#4f666a">© 2026 F.I.C.H.A. · Vigília (Ordem Paranormal RPG 2 · Playtest Alpha)</p>
+</footer>
+
+<input type="file" id="foto-input" accept="image/*,.gif" style="display:none">
+<div class="roll" id="roll"></div>
+
+<div class="modal-hab" id="modal-hab">
+    <div class="box">
+        <strong style="font-family:'Cinzel',serif;letter-spacing:.1em" id="mh-titulo">Habilidade</strong>
+        <input id="mh-nome" placeholder="Nome">
+        <select id="mh-tipo"><option>Ação</option><option>Passiva</option><option>Reação</option></select>
+        <textarea id="mh-desc" rows="4" placeholder="Descrição"></textarea>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="vg-btn ghost" id="mh-cancel">Cancelar</button><button class="vg-btn" id="mh-ok">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-hab" id="modal-portrait">
+    <div class="box">
+        <strong style="font-family:'Cinzel',serif;letter-spacing:.1em">Portrait · Vigilante</strong>
+        <p style="font-size:.78rem;line-height:1.7;color:var(--vg-mute)">Overlay com fundo transparente: PV e PD atualizam ao vivo. No OBS, adicione uma <b>Fonte de Navegador</b> (640 × 400) com este link:</p>
+        <input id="mp-url" readonly onclick="this.select()">
+        <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+            <button class="vg-btn ghost" id="mp-fechar">Fechar</button><button class="vg-btn ghost" id="mp-copiar">Copiar link</button><button class="vg-btn" id="mp-abrir">Abrir portrait</button>
+        </div>
+    </div>
+</div>
+
+<!-- Visão Tablet -->
+<div class="tb" id="tb" role="dialog" aria-modal="true" aria-label="Ficha em modo tablet">
+    <div class="tb-x"><button id="tb-full">TELA CHEIA</button><button id="tb-close">FECHAR ✕</button></div>
+    <div class="tb-stage" id="tb-stage"></div>
+</div>
+
+<script src="js/vigilia-shared.js"></script>
+<script src="js/ficha-vigilia.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+/* Selos de dado (d4 ▲ · d6 ■ · d8 ◆ · d10 ⬢ · d12 ●) — usados na criação, ficha e visão Tablet */
+.vg-die { --s: 1.9em; display: inline-grid; place-items: center; width: var(--s); height: var(--s); flex-shrink: 0;
+    background: var(--vg-die-bg, #fff); color: var(--vg-die-fg, #101417); font-family: 'Share Tech Mono', monospace; font-weight: 700; line-height: 1; vertical-align: middle; }
+.vg-die b { font: inherit; font-size: .74em; }
+.vg-die.d4  { clip-path: polygon(50% 4%, 98% 94%, 2% 94%); padding-top: .38em; }
+.vg-die.d6  { border-radius: .32em; }
+.vg-die.d8  { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.vg-die.d10 { clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%); }
+.vg-die.d12 { border-radius: 50%; }

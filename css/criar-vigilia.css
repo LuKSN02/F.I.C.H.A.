@@ -1,0 +1,39 @@
+/* Criar — seletor de sistema e etapas da Vigília */
+.sis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.sis-card { position: relative; text-align: left; padding: 38px 34px 30px; color: var(--cr-ink); cursor: pointer;
+    background: var(--hx-panel); border: 1px solid var(--hx-line); transition: transform .25s, border-color .25s, box-shadow .25s; }
+.sis-card::before, .sis-card::after { content: ''; position: absolute; width: 20px; height: 20px; border: 2px solid var(--tema-primary-light); }
+.sis-card::before { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+.sis-card::after  { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+.sis-card:hover { transform: translateY(-5px); border-color: var(--tema-primary-light); box-shadow: 0 18px 50px rgba(var(--tema-glow-rgb), .25); }
+.sis-card strong { display: block; margin: 16px 0 10px; font-family: var(--hx-serif); font-size: 2rem; letter-spacing: .04em; }
+.sis-card em { display: block; font-style: normal; min-height: 4.2em; font-family: var(--hx-mono); font-size: .78rem; line-height: 1.8; color: var(--cr-mute); }
+.sis-tag { font-family: var(--hx-mono); font-size: .66rem; letter-spacing: .3em; color: var(--tema-primary-light); }
+.sis-go { display: block; margin-top: 22px; font-family: var(--hx-mono); font-size: .76rem; letter-spacing: .26em; color: var(--tema-primary-light); }
+.sis-card.vg { --vg-c: #2fd0c4; border-color: rgba(47,208,196,.4); }
+.sis-card.vg::before, .sis-card.vg::after { border-color: #2fd0c4; }
+.sis-card.vg .sis-tag, .sis-card.vg .sis-go { color: #2fd0c4; }
+.sis-card.vg:hover { border-color: #2fd0c4; box-shadow: 0 18px 50px rgba(47,208,196,.22); }
+
+#vg-app { --vg-die-bg: var(--tema-primary-light); --vg-die-fg: #0a0610; }
+.vg-perfis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.vg-perfil { padding: 24px 14px 20px !important; text-align: center; cursor: pointer; }
+.vg-attrs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.vg-attr { text-align: center; }
+.vg-attr-die { font-size: 2.2rem; margin: 6px 0 14px; }
+.vg-attr-desc { margin: 14px 0 0; font-family: var(--hx-mono); font-size: .68rem; line-height: 1.7; color: var(--cr-mute); }
+.vg-pericias { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.vg-per { display: flex !important; align-items: center; gap: 10px; }
+.vg-per .pericia-nome { flex: 1; }
+.vg-per-ctl, .vg-dado-ctl { display: flex; align-items: center; gap: 8px; font-size: 1rem; }
+.vg-per .atributo-btn { width: 26px; height: 26px; font-size: 1rem; }
+.vg-apt-add { display: flex; gap: 10px; align-items: center; grid-column: 1 / -1; padding: 10px 14px; background: rgba(8,6,15,.6); }
+.vg-apt-add .form-select { max-width: 220px; }
+.vg-avatar-row { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+.vg-avatar { width: 130px; height: 160px; display: grid; place-items: center; text-align: center; background: #08060f center / cover no-repeat; border: 1px dashed var(--hx-line); font-family: var(--hx-mono); font-size: .62rem; letter-spacing: .2em; color: #5a5470; }
+.vg-avatar.has span { display: none; }
+@media (max-width: 768px) {
+    .sis-grid, .vg-perfis, .vg-attrs, .vg-pericias { grid-template-columns: 1fr; }
+}
+.vg-esc{display:block;font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.06em;opacity:.7;text-transform:uppercase;margin-top:2px}
+.vg-pericias .vg-esc{display:inline-block;margin:0 10px}

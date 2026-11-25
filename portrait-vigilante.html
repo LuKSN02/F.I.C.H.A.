@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portrait Vigilante — F.I.C.H.A.</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+@font-face { font-family: 'VGRuna'; src: url('assets/fonts/new-rocker-latin-400-normal.woff2') format('woff2'); font-display: block; }
+/* Para letras estilo uncial (mais "grego"), troque por assets/fonts/uncial-antiqua-latin-400-normal.woff2 */
+/* Portrait "Vigilante" — overlay transparente (OBS). Fonte de dados: ficha do sistema Vigília. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: transparent; overflow: hidden; }
+body { width: 640px; height: 400px; font-family: 'VGRuna', 'Uncial Antiqua', serif; color: #fff; }
+.pv { position: relative; width: 640px; height: 400px; opacity: 0; transition: opacity .8s; }
+.pv.on { opacity: 1; }
+
+.foto { position: absolute; left: 0; top: 0; width: 330px; height: 340px; background: center top / cover no-repeat;
+    -webkit-mask: linear-gradient(to bottom, #000 62%, transparent 98%), linear-gradient(to right, #000 86%, transparent); -webkit-mask-composite: source-in;
+    mask: linear-gradient(to bottom, #000 62%, transparent 98%) intersect, linear-gradient(to right, #000 86%, transparent); mask-composite: intersect; }
+.foto.vazio { background-image: none; }
+.fumaca { position: absolute; left: -40px; bottom: -10px; width: 560px; height: 243px; background: url("assets/img/ui/vigilia-fumaca.png") center / 100% 100% no-repeat; mix-blend-mode: screen; pointer-events: none; }
+.fumaca.a { animation: derivaA 11s ease-in-out infinite alternate; opacity: .9; }
+.fumaca.b { left: 20px; bottom: -24px; transform: scaleX(-1); opacity: .55; animation: derivaB 15s ease-in-out infinite alternate; }
+@keyframes derivaA { from { transform: translate(0, 4px) scale(1); } to { transform: translate(18px, -6px) scale(1.06); } }
+@keyframes derivaB { from { transform: scaleX(-1) translate(0, 0) scale(1.04); } to { transform: scaleX(-1) translate(-22px, -8px) scale(.98); } }
+
+.t { position: absolute; line-height: 1; letter-spacing: .02em; white-space: nowrap; text-transform: uppercase; }
+.nome { left: 292px; top: 108px; font-size: 62px; color: #fff; text-shadow: 0 0 16px rgba(190,230,255,.55), 0 0 36px rgba(120,200,255,.3), 2px 3px 0 rgba(0,0,0,.55); transform: rotate(-1.5deg); transform-origin: left center; }
+.vida { left: 286px; top: 188px; font-size: 64px; text-shadow: 0 0 14px rgba(255,60,60,.95), 0 0 34px rgba(255,40,40,.65), 2px 3px 0 rgba(0,0,0,.5); transform: rotate(-2.5deg); }
+.det  { left: 26px; bottom: 50px; font-size: 80px; color: #eafff0; text-shadow: 0 0 12px rgba(60,255,120,1), 0 0 30px rgba(40,255,100,.75), 2px 3px 0 rgba(0,0,0,.5); transform: rotate(-4deg); }
+.t.dano { animation: dano .5s steps(2) both; }
+.t.cura { animation: cura .7s ease both; }
+.t.baixo { animation: baixo 1.3s ease-in-out infinite; }
+@keyframes dano { 0% { transform: translateX(-6px) rotate(-2.5deg); filter: brightness(2.2); } 50% { transform: translateX(6px) rotate(-2.5deg); } 100% { transform: rotate(-2.5deg); } }
+@keyframes cura { 0% { filter: brightness(2.4) saturate(1.5); } 100% { filter: none; } }
+@keyframes baixo { 50% { opacity: .45; } }
+.morto .foto { filter: grayscale(1) brightness(.35); transition: filter 2s; }
+.aviso { position: absolute; left: 12px; top: 12px; font: 12px 'Share Tech Mono', monospace; color: #8aa; letter-spacing: .12em; background: rgba(0,0,0,.6); padding: 6px 10px; display: none; }
+@media (prefers-reduced-motion: reduce) { .fumaca, .t { animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="pv" id="pv">
+    <div class="foto vazio" id="foto"></div>
+    <div class="fumaca a"></div><div class="fumaca b"></div>
+    <div class="t nome" id="nome">—</div>
+    <div class="t vida" id="vida">0/0</div>
+    <div class="t det" id="det">0</div>
+    <div class="aviso" id="aviso"></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    const app = initializeApp({
+        apiKey: "AIzaSyBziPlsUPMpNleC0vezR1UfNXqbjiC9Rws", authDomain: "ficha-op-c9df8.firebaseapp.com",
+        databaseURL: "https://ficha-op-c9df8-default-rtdb.firebaseio.com", projectId: "ficha-op-c9df8",
+        storageBucket: "ficha-op-c9df8.firebasestorage.app", messagingSenderId: "5463680704", appId: "1:5463680704:web:3d6296c296699f4d41af25"
+    });
+    window._fb = { db: getDatabase(app), ref, onValue };
+    window.dispatchEvent(new Event('fb-pronto'));
+</script>
+<script>
+(function () {
+    const $ = id => document.getElementById(id);
+    const q = new URLSearchParams(location.search);
+    const id = q.get('id') || localStorage.getItem('portrait_agente_ativo');
+    const usuario = q.get('usuario') || localStorage.getItem('ficha_user_ativo') || sessionStorage.getItem('ficha_user') || localStorage.getItem('portrait_usuario') || '';
+    const nodes = q.get('tipo') === 'npc' ? ['npcs', 'agentes'] : ['agentes', 'npcs'];
+    let ant = null, ouvindo = false;
+
+    function aplicar(f) {
+        if (!f) return;
+        const pv = f.pv || { atual: 0, max: 0 }, pd = f.pd || { atual: 0, max: 0 };
+        const foto = f.fotoCostum || f.avatar || '';
+        $('foto').style.backgroundImage = foto ? `url("${foto}")` : '';
+        $('foto').classList.toggle('vazio', !foto);
+        $('nome').textContent = f.codinome || f.nome || '—';
+        $('nome').style.fontSize = (($('nome').textContent.length > 9) ? 44 : 62) + 'px';
+        $('vida').textContent = `${pv.atual}/${pv.max}`;
+        $('det').textContent = pd.atual;
+        $('vida').classList.toggle('baixo', pv.max > 0 && pv.atual / pv.max <= .25 && pv.atual > 0);
+        $('pv').classList.toggle('morto', pv.atual <= 0 && pv.max > 0);
+        if (ant) {
+            [['vida', pv.atual, ant.pv], ['det', pd.atual, ant.pd]].forEach(([el, novo, velho]) => {
+                if (novo === velho) return; const e = $(el); e.classList.remove('dano', 'cura'); void e.offsetWidth; e.classList.add(novo < velho ? 'dano' : 'cura');
+            });
+        }
+        ant = { pv: pv.atual, pd: pd.atual };
+        $('pv').classList.add('on');
+    }
+    function local() {
+        const chaves = [usuario ? usuario + '_lista_agentes' : 'lista_agentes', usuario ? usuario + '_lista_npcs' : 'lista_npcs'];
+        for (const c of chaves) { try { const f = JSON.parse(localStorage.getItem(c) || '[]').find(a => String(a.id) === String(id)); if (f) return f; } catch (e) {} }
+        return null;
+    }
+    function ouvir() {
+        if (ouvindo || !window._fb || !id) return; ouvindo = true;
+        const paths = [];
+        if (usuario) nodes.forEach(n => paths.push(`${n}/${usuario}/${id}`));
+        nodes.forEach(n => paths.push(`${n}/${id}`));
+        const live = [];
+        paths.forEach(p => window._fb.onValue(window._fb.ref(window._fb.db, p), s => { if (s.exists() && s.val() && s.val().nome) aplicar(s.val()); }));
+    }
+    window.addEventListener('fb-pronto', ouvir); if (window._fb) ouvir();
+    window.addEventListener('storage', () => aplicar(local()));
+    const l = local(); if (l) aplicar(l);
+    else if (!id) { $('aviso').style.display = 'block'; $('aviso').textContent = 'Abra pela ficha: portrait-vigilante.html?id=SEU_ID&usuario=SEU_USUARIO'; $('pv').classList.add('on'); }
+})();
+</script>
+</body>
+</html>

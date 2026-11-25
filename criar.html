@@ -581,6 +581,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=Special+Elite&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/ficha-design.css">
 <link rel="stylesheet" href="css/criar-design.css">
+<link rel="stylesheet" href="css/vigilia-shared.css">
+<link rel="stylesheet" href="css/criar-vigilia.css">
 </head>
 <body>
 
@@ -650,6 +652,25 @@
     <p id="criacao-sub">PREENCHA AS INFORMAÇÕES DO NOVO AGENTE COM CUIDADO. O MEDO É REAL.</p>
 </div>
 
+<!-- ══ SELETOR DE SISTEMA ══ -->
+<div class="container cr-wrap" id="sis-select" style="display:none">
+    <p class="cr-hint" style="text-align:center;margin-bottom:26px;">ESCOLHA O SISTEMA DA FICHA</p>
+    <div class="sis-grid">
+        <button type="button" class="sis-card" data-sis="op">
+            <span class="sis-tag">1ª EDIÇÃO</span>
+            <strong>Ordem Paranormal</strong>
+            <em>Cinco atributos, classes Combatente / Especialista / Ocultista e NEX.</em>
+            <span class="sis-go">CRIAR AGENTE →</span>
+        </button>
+        <button type="button" class="sis-card vg" data-sis="vigilia">
+            <span class="sis-tag">PLAYTEST ALPHA</span>
+            <strong>Vigília</strong>
+            <em>Ordem Paranormal RPG 2: três atributos em dados (d4–d12), perfis Executor / Analista / Vigilante e PD.</em>
+            <span class="sis-go">CRIAR AGENTE →</span>
+        </button>
+    </div>
+</div>
+
 <div class="stepper" id="stepper">
     <div class="step-item active" onclick="irParaEtapa(0)">
         <div class="step-circle">1</div>
@@ -671,7 +692,7 @@
 
 <div class="rascunho-toast" id="rascunho-toast">✓ PROGRESSO SALVO</div>
 
-<div class="container cr-wrap">
+<div class="container cr-wrap" id="op-app">
 <div class="cr-card">
     <div class="cr-card-head">
         <span class="cr-card-step" id="etapa-contador">ETAPA 01 / 04</span>
@@ -890,6 +911,94 @@
 
     </div><!-- /cr-card-body -->
 </div><!-- /cr-card -->
+</div>
+
+<!-- ══ CRIAÇÃO VIGÍLIA ══ -->
+<div class="stepper" id="vg-stepper" style="display:none">
+    <div class="step-item active" data-vg="0"><div class="step-circle">1</div><div class="step-label">Identidade</div></div>
+    <div class="step-item" data-vg="1"><div class="step-circle">2</div><div class="step-label">Atributos</div></div>
+    <div class="step-item" data-vg="2"><div class="step-circle">3</div><div class="step-label">Perícias</div></div>
+    <div class="step-item" data-vg="3"><div class="step-circle">4</div><div class="step-label">Habilidades</div></div>
+</div>
+<div class="container cr-wrap" id="vg-app" style="display:none">
+<div class="cr-card">
+    <div class="cr-card-head">
+        <span class="cr-card-step" id="vg-contador">ETAPA 01 / 04</span>
+        <span class="cr-card-name" id="vg-nome-etapa">Identidade</span>
+        <span class="hx-stamp">VIGÍLIA</span>
+    </div>
+    <div class="cr-card-body">
+
+    <div class="etapa-panel active" id="vg-0">
+        <h2 class="section-title">Identidade do <span>Agente</span></h2>
+        <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">NOME *</label><input class="form-control" id="vg-nome" maxlength="40" placeholder="Nome do agente"></div>
+            <div class="col-md-6"><label class="form-label">CODINOME</label><input class="form-control" id="vg-codinome" maxlength="30" placeholder="Opcional"></div>
+            <div class="col-md-4"><label class="form-label">IDADE</label><input class="form-control" id="vg-idade" type="number" min="1" max="120" placeholder="—"></div>
+            <div class="col-md-4"><label class="form-label">NÍVEL (1–10)</label><select class="form-select" id="vg-nivel"></select></div>
+            <div class="col-md-4"><label class="form-label">OCUPAÇÃO</label><input class="form-control" id="vg-ocupacao" maxlength="40" placeholder="Ex.: Cientista"></div>
+        </div>
+        <hr class="purple">
+        <h2 class="section-title">Perfil</h2>
+        <p class="cr-hint">NO LUGAR DAS CLASSES, O PERFIL DEFINE COMO O AGENTE ATUA E DÁ UMA HABILIDADE. A OCUPAÇÃO DÁ A OUTRA (COMEÇA-SE COM DUAS).</p>
+        <div class="vg-perfis" id="vg-perfis"></div>
+        <p class="alerta-campo" id="vg-alerta-perfil" style="display:none;color:#ff5577;font-family:'Share Tech Mono',monospace;font-size:.75rem;margin-top:10px;">▸ ESCOLHA UM PERFIL</p>
+        <hr class="purple">
+        <h2 class="section-title">Retrato</h2>
+        <div class="vg-avatar-row">
+            <div class="vg-avatar" id="vg-avatar-prev"><span>SEM RETRATO</span></div>
+            <div>
+                <p class="cr-hint" style="margin-bottom:12px;">OPCIONAL. APARECE NA FICHA E NA VISÃO TABLET.</p>
+                <input type="file" id="vg-avatar-file" accept="image/*" style="display:none">
+                <button type="button" class="btn-nav" style="padding:10px 22px !important" onclick="document.getElementById('vg-avatar-file').click()">ESCOLHER IMAGEM</button>
+                <button type="button" class="btn-nav" id="vg-avatar-rm" style="padding:10px 22px !important;display:none" onclick="VGC.limparAvatar()">REMOVER</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="etapa-panel" id="vg-1">
+        <h2 class="section-title">Atributos <span>em dados</span></h2>
+        <p class="cr-hint">d4 ABAIXO DA MÉDIA · d6 MÉDIA HUMANA · d8 ACIMA DA MÉDIA · d10 MUITO ACIMA · d12 ÁPICE HUMANO. TESTE = DADO DO ATRIBUTO + DADO DA PERÍCIA CONTRA DT (PADRÃO 7).</p>
+        <div class="vg-attrs" id="vg-attrs"></div>
+    </div>
+
+    <div class="etapa-panel" id="vg-2">
+        <h2 class="section-title">Perícias</h2>
+        <p class="cr-hint">d4 DESTREINADO · d6 TREINADO · d8 ESPECIALISTA · d10 MESTRE · d12 GRÃO-MESTRE. APTIDÃO TEM ESPECIALIDADES (ARTES, ATUALIDADES, BUROCRACIA, EXATAS, HUMANAS, TÁTICA).</p>
+        <div class="vg-pericias" id="vg-pericias"></div>
+    </div>
+
+    <div class="etapa-panel" id="vg-3">
+        <h2 class="section-title">Vida e <span>Determinação</span></h2>
+        <div class="row g-3">
+            <div class="col-6 col-md-3"><label class="form-label">PV MÁXIMO</label><input class="form-control" id="vg-pv" type="number" min="1" value="10"></div>
+            <div class="col-6 col-md-3"><label class="form-label">PD MÁXIMO</label><input class="form-control" id="vg-pd" type="number" min="1" value="16"></div>
+            <div class="col-6 col-md-3"><label class="form-label">PONTOS DE ARMADURA</label><input class="form-control" id="vg-arm" type="number" min="0" value="0"></div>
+        </div>
+        <hr class="purple">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h2 class="section-title" style="margin:0">Habilidades</h2>
+            <button type="button" class="btn-nav" style="padding:10px 20px !important" onclick="VGC.addHab()">+ HABILIDADE</button>
+        </div>
+        <div id="vg-habs" style="margin-top:20px"></div>
+        <hr class="purple">
+        <h2 class="section-title">Equipamentos e <span>Antecedente</span></h2>
+        <div class="row g-3">
+            <div class="col-12"><label class="form-label">EQUIPAMENTOS</label><textarea class="form-control" id="vg-equip" rows="3" placeholder="Um item por linha"></textarea></div>
+            <div class="col-md-6"><label class="form-label">PERSONALIDADE</label><input class="form-control" id="vg-personalidade"></div>
+            <div class="col-md-6"><label class="form-label">VÍNCULO</label><input class="form-control" id="vg-vinculo"></div>
+            <div class="col-12"><label class="form-label">HISTÓRIA</label><textarea class="form-control" id="vg-historia" rows="4"></textarea></div>
+        </div>
+    </div>
+
+    <div class="cr-nav">
+        <button class="btn-nav" id="vg-anterior" style="display:none">← ANTERIOR</button>
+        <div></div>
+        <button class="btn-nav" id="vg-proximo">PRÓXIMO →</button>
+        <button class="btn-nav btn-finalizar" id="vg-finalizar" style="display:none">✦ REGISTRAR AGENTE</button>
+    </div>
+    </div>
+</div>
 </div>
 
 <!-- MODAL SUCESSO -->
@@ -1477,7 +1586,7 @@ function atualizarStepper() {
     const ctr = document.getElementById('etapa-contador'), nm = document.getElementById('etapa-nome');
     if (ctr) ctr.textContent = `ETAPA ${String(etapaAtual + 1).padStart(2, '0')} / ${String(totalEtapas).padStart(2, '0')}`;
     if (nm)  nm.textContent  = NOMES_ETAPAS[etapaAtual] || '';
-    document.querySelectorAll('.step-item').forEach((s, i) => {
+    document.querySelectorAll('#stepper .step-item').forEach((s, i) => {
         s.classList.remove('active', 'done');
         if (etapasVisitadas.has(i) && i !== etapaAtual) s.classList.add('done');
         if (i === etapaAtual) s.classList.add('active');
@@ -1925,9 +2034,10 @@ async function finalizarFicha() {
 function irParaFicha() {
     const usuario  = sessionStorage.getItem('ficha_user') || localStorage.getItem('ficha_user_ativo') || '';
     const tipoParm = isFichaNpc() ? '&tipo=npc' : '';
+    const pagina = window._vgSistema ? 'ficha-vigilia.html' : 'ficha.html';
     const url = usuario
-        ? `ficha.html?id=${fichaIdCriada}&usuario=${encodeURIComponent(usuario)}${tipoParm}`
-        : `ficha.html?id=${fichaIdCriada}${tipoParm}`;
+        ? `${pagina}?id=${fichaIdCriada}&usuario=${encodeURIComponent(usuario)}${tipoParm}`
+        : `${pagina}?id=${fichaIdCriada}${tipoParm}`;
     window.location.href = url;
 }
 function irParaAgentes()  { window.location.href = isFichaNpc() ? 'index.html?view=agentes&sub=npcs' : 'index.html?view=agentes'; }
@@ -1980,5 +2090,7 @@ function criarNovo()      { window.location.href = isFichaNpc() ? 'criar.html?ti
     });
   }
 </script>
+<script src="js/vigilia-shared.js"></script>
+<script src="js/criar-vigilia.js"></script>
 </body>
 </html>

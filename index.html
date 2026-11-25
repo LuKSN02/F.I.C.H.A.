@@ -3782,6 +3782,10 @@ body { transition: background 0.6s ease; }
     font-size: 0.78rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
     padding: 9px 20px; border-radius: 99px; cursor: pointer; transition: all 0.2s;
 }
+.sis-filtro { margin-top: 14px; }
+.sis-filtro .dossie-subtab { padding: 6px 16px; font-size: .7rem; }
+.sis-n { opacity: .7; margin-left: 4px; }
+.dossie-sis-tag { display:inline-block; font-family:'Share Tech Mono',monospace; font-size:.62rem; letter-spacing:.12em; padding:2px 8px; border:1px solid rgba(var(--tema-glow-rgb),.4); border-radius:3px; color:var(--tema-primary-light); margin-bottom:6px; }
 .dossie-subtab:hover { color: #fff; border-color: var(--tema-primary); }
 .dossie-subtab.active {
     background: var(--tema-primary); border-color: var(--tema-primary);
@@ -4732,6 +4736,63 @@ body { transition: background 0.6s ease; }
 
     </main>
 
+<style id="ag-redesign">
+/* ── Aba Agentes · visual limpo ── */
+#secao-agentes { max-width: 1320px; }
+#secao-agentes .dossie-header { border: 0; padding: 0; margin-bottom: 28px; }
+#secao-agentes .dossie-eyebrow { font-size: .62rem; opacity: .75; }
+#secao-agentes .dossie-title { font-size: clamp(2rem, 4vw, 2.8rem); letter-spacing: 3px; margin: 4px 0 2px; }
+#secao-agentes .dossie-sub { font-size: .9rem; opacity: .55; margin: 0; }
+#secao-agentes .dossie-actions .btn-novo-agente { border-radius: 10px; padding: 12px 22px; background: var(--tema-primary); border-color: var(--tema-primary); color: #fff; box-shadow: 0 6px 22px rgba(var(--tema-glow-rgb),.3); }
+#secao-agentes .btn-criar-npc { background: transparent; }
+.ag-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 26px; padding: 10px; border-radius: 14px; background: rgba(255,255,255,.03); border: 1px solid rgba(var(--tema-glow-rgb),.16); }
+.ag-seg { display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: rgba(0,0,0,.35); }
+.ag-seg .dossie-subtab { border: 0; border-radius: 8px; padding: 8px 16px; font-size: .72rem; letter-spacing: 1.5px; color: rgba(255,255,255,.5); background: transparent; box-shadow: none; }
+.ag-seg .dossie-subtab:hover { color: #fff; }
+.ag-seg .dossie-subtab.active { background: var(--tema-primary); color: #fff; box-shadow: 0 2px 12px rgba(var(--tema-glow-rgb),.35); }
+.ag-bar .dossie-toolbar { margin: 0; flex: 1; min-width: 180px; }
+.ag-bar .dossie-search input { border-radius: 10px; background: rgba(0,0,0,.35); border-color: transparent; padding-top: 11px; padding-bottom: 11px; font-family: inherit; letter-spacing: .3px; }
+.sis-n { opacity: .6; font-weight: 400; margin-left: 3px; }
+
+#secao-agentes .dossie-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; }
+#secao-agentes .dossie-card { border-radius: 16px; background: #0c1016; border: 1px solid rgba(255,255,255,.07); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+#secao-agentes .dossie-card:hover { transform: translateY(-4px); border-color: rgba(var(--tema-glow-rgb),.5); box-shadow: 0 16px 36px rgba(0,0,0,.5), 0 0 30px rgba(var(--tema-glow-rgb),.14); }
+#secao-agentes .dossie-media { aspect-ratio: 4/5; }
+#secao-agentes .dossie-media::after { background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(8,10,14,.95) 100%); }
+#secao-agentes .dossie-tag { display: none; }
+#secao-agentes .dossie-level { top: 12px; right: 12px; padding: 4px 10px; font-size: .62rem; letter-spacing: 1.5px; background: rgba(0,0,0,.6); border-color: rgba(255,255,255,.14); color: #fff; }
+#secao-agentes .dossie-media::before { content: 'ORDEM 1'; position: absolute; top: 12px; left: 12px; z-index: 2; padding: 4px 10px; border-radius: 99px; font: 700 .58rem 'Share Tech Mono', monospace; letter-spacing: 1.5px; color: rgba(255,255,255,.75); background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.14); }
+#secao-agentes .dossie-card[data-sis="o2"] .dossie-media::before { content: 'ORDEM 2'; color: #fff; background: rgba(217,70,31,.85); border-color: transparent; }
+#secao-agentes .dossie-name-wrap { left: 16px; right: 16px; bottom: 14px; }
+#secao-agentes .dossie-name { font-size: 1.3rem; letter-spacing: .5px; }
+#secao-agentes .dossie-codename { font-size: .72rem; opacity: .85; }
+#secao-agentes .dossie-body { padding: 12px 14px 14px; gap: 12px; }
+#secao-agentes .dossie-meta { gap: 0; font-size: .74rem; color: rgba(255,255,255,.55); flex-wrap: nowrap; overflow: hidden; }
+#secao-agentes .dossie-chip { background: none; border: 0; padding: 0; letter-spacing: 1px; font-size: .7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgba(255,255,255,.55); text-transform: uppercase; }
+#secao-agentes .dossie-chip-accent { color: var(--tema-primary-light); flex-shrink: 0; }
+#secao-agentes .dossie-chip + .dossie-chip::before { content: '·'; margin: 0 8px; opacity: .5; }
+#secao-agentes .dossie-actions-row { gap: 8px; }
+#secao-agentes .btn-dossie-acessar { border-radius: 10px; padding: 10px 8px; font-size: .68rem; letter-spacing: 1px; white-space: nowrap; text-align: center; }
+#secao-agentes .dossie-sub { opacity: .7; }
+#secao-agentes .dossie-icon-btn { border-radius: 10px; width: 38px; height: 38px; opacity: .7; }
+#secao-agentes .dossie-icon-btn:hover { opacity: 1; }
+#secao-agentes .dossie-body { flex: 1; }
+.ag-bar .ag-seg, .ag-bar .sis-filtro { margin: 0 !important; height: 44px; align-items: stretch; }
+.ag-bar .ag-seg .dossie-subtab { display: flex; align-items: center; margin: 0; padding-top: 0; padding-bottom: 0; }
+.ag-bar .dossie-search input { height: 44px; padding-top: 0; padding-bottom: 0; }
+#secao-agentes .dossie-actions-row { margin-top: auto; flex-wrap: wrap; }
+#secao-agentes .dossie-meta { min-height: 1.2em; }
+#secao-agentes .dossie-card { min-width: 0; }
+@media (max-width: 640px) {
+  #secao-agentes .dossie-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  #secao-agentes .btn-dossie-acessar { grid-column: 1 / -1; width: 100%; }
+  #secao-agentes .dossie-icon-btn { width: 100%; height: 38px; opacity: 1; }
+  #secao-agentes .dossie-body { padding: 10px; }
+  #secao-agentes .dossie-media::before, #secao-agentes .dossie-level { top: 8px; font-size: .55rem; padding: 3px 8px; }
+  #secao-agentes .dossie-media::before { left: 8px; } #secao-agentes .dossie-level { right: 8px; }
+}
+@media (max-width: 640px) { #secao-agentes .dossie-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } .ag-bar { padding: 8px; } #secao-agentes .dossie-name { font-size: 1.05rem; } }
+</style>
     <!-- SEÇÃO AGENTES -->
     <section id="secao-agentes" class="container my-5 d-none">
         <div class="dossie-header">
@@ -4756,21 +4817,27 @@ body { transition: background 0.6s ease; }
                 </div>
             </div>
 
-            <div class="dossie-subtabs">
-                <button type="button" class="dossie-subtab active" id="subtab-agentes" onclick="mostrarSubAbaAgentes('agentes')">Meus Agentes</button>
-                <button type="button" class="dossie-subtab" id="subtab-npcs" onclick="mostrarSubAbaAgentes('npcs')">NPCs de Campanha</button>
-            </div>
-
-            <div class="dossie-toolbar" id="toolbar-agentes">
-                <div class="dossie-search">
-                    <span class="dossie-search-icon">🔍</span>
-                    <input type="text" id="busca-agentes" placeholder="Buscar por nome, codinome, classe ou origem..." oninput="filtrarAgentes(this.value)">
+            <div class="ag-bar">
+                <div class="ag-seg" role="tablist">
+                    <button type="button" class="dossie-subtab active" id="subtab-agentes" onclick="mostrarSubAbaAgentes('agentes')">Agentes</button>
+                    <button type="button" class="dossie-subtab" id="subtab-npcs" onclick="mostrarSubAbaAgentes('npcs')">NPCs</button>
                 </div>
-            </div>
-            <div class="dossie-toolbar d-none" id="toolbar-npcs">
-                <div class="dossie-search">
-                    <span class="dossie-search-icon">🔍</span>
-                    <input type="text" id="busca-npcs" placeholder="Buscar por nome, classe, origem ou campanha..." oninput="filtrarNpcs(this.value)">
+                <div class="ag-seg sis-filtro" id="sis-filtro">
+                    <button type="button" class="dossie-subtab active" data-sis="todos">Todas <span class="sis-n" id="sis-n-todos"></span></button>
+                    <button type="button" class="dossie-subtab" data-sis="o1">Ordem 1 <span class="sis-n" id="sis-n-o1"></span></button>
+                    <button type="button" class="dossie-subtab" data-sis="o2">Ordem 2 <span class="sis-n" id="sis-n-o2"></span></button>
+                </div>
+                <div class="dossie-toolbar" id="toolbar-agentes">
+                    <div class="dossie-search">
+                        <span class="dossie-search-icon">🔍</span>
+                        <input type="text" id="busca-agentes" placeholder="Buscar agente…" oninput="filtrarAgentes(this.value)">
+                    </div>
+                </div>
+                <div class="dossie-toolbar d-none" id="toolbar-npcs">
+                    <div class="dossie-search">
+                        <span class="dossie-search-icon">🔍</span>
+                        <input type="text" id="busca-npcs" placeholder="Buscar NPC…" oninput="filtrarNpcs(this.value)">
+                    </div>
                 </div>
             </div>
         </div>
@@ -6368,7 +6435,7 @@ body { transition: background 0.6s ease; }
                 const buscaTermo = `${agente.nome||''} ${agente.codinome||''} ${agente.classe||''} ${agente.origem||''}`.toLowerCase();
 
                 lista.innerHTML += `
-                    <div class="dossie-card" data-busca="${buscaTermo.replace(/"/g,'')}">
+                    <div class="dossie-card" data-sis="${agente.sistema==='vigilia'?'o2':'o1'}" data-busca="${buscaTermo.replace(/"/g,'')}">
                         <div class="dossie-media">
                             <img src="${fotoSrc}" alt="${agente.nome}" loading="lazy">
                             <div class="dossie-tag"><span class="dossie-tag-dot"></span> FILE Nº ${numeroArquivo}</div>
@@ -6393,12 +6460,38 @@ body { transition: background 0.6s ease; }
             });
         }
 
+        let _filtroSis = 'todos';
+        function aplicarFiltroSis() {
+            ['lista-agentes', 'lista-npcs'].forEach(id => {
+                const cards = document.querySelectorAll('#' + id + ' .dossie-card');
+                cards.forEach(c => { c.dataset.sisOculto = (_filtroSis !== 'todos' && c.dataset.sis !== _filtroSis) ? '1' : ''; });
+            });
+            const ativo = document.getElementById(document.getElementById('lista-npcs').classList.contains('d-none') ? 'lista-agentes' : 'lista-npcs');
+            const cs = [...ativo.querySelectorAll('.dossie-card')];
+            const n = k => cs.filter(c => c.dataset.sis === k).length;
+            document.getElementById('sis-n-todos').textContent = cs.length;
+            document.getElementById('sis-n-o1').textContent = n('o1');
+            document.getElementById('sis-n-o2').textContent = n('o2');
+            cs.forEach(c => { c.style.display = c.dataset.sisOculto ? 'none' : ''; });
+            const b = document.getElementById(ativo.id === 'lista-agentes' ? 'busca-agentes' : 'busca-npcs');
+            if (b && b.value) (ativo.id === 'lista-agentes' ? filtrarAgentes : filtrarNpcs)(b.value);
+        }
+        document.addEventListener('click', e => {
+            const b = e.target.closest('#sis-filtro [data-sis]'); if (!b) return;
+            _filtroSis = b.dataset.sis;
+            document.querySelectorAll('#sis-filtro .dossie-subtab').forEach(x => x.classList.toggle('active', x === b));
+            aplicarFiltroSis();
+        });
+        ['lista-agentes', 'lista-npcs'].forEach(id => {
+            new MutationObserver(() => { clearTimeout(window._sisT); window._sisT = setTimeout(aplicarFiltroSis, 30); })
+                .observe(document.getElementById(id), { childList: true });
+        });
         function filtrarAgentes(termo) {
             const t = (termo || '').toLowerCase().trim();
             const cards = document.querySelectorAll('#lista-agentes .dossie-card');
             let visiveis = 0;
             cards.forEach(card => {
-                const match = !t || (card.dataset.busca || '').includes(t);
+                const match = (!t || (card.dataset.busca || '').includes(t)) && !card.dataset.sisOculto;
                 card.style.display = match ? '' : 'none';
                 if (match) visiveis++;
             });
@@ -6534,7 +6627,7 @@ body { transition: background 0.6s ease; }
                 const buscaTermo = `${npc.nome || ''} ${npc.classe || ''} ${npc.origem || ''} ${npc.campanhaNome || ''} ${npc.papel || ''}`.toLowerCase();
 
                 lista.innerHTML += `
-                    <div class="dossie-card" data-busca="${buscaTermo.replace(/"/g, '')}">
+                    <div class="dossie-card" data-sis="${(typeof npc!=='undefined' && npc.sistema==='vigilia')?'o2':'o1'}" data-busca="${buscaTermo.replace(/"/g, '')}">
                         <div class="dossie-media">
                             <img src="${fotoSrc}" alt="${npc.nome}" loading="lazy">
                             <div class="dossie-tag"><span class="dossie-tag-dot"></span> NPC</div>
@@ -6564,7 +6657,7 @@ body { transition: background 0.6s ease; }
             const cards = document.querySelectorAll('#lista-npcs .dossie-card');
             let visiveis = 0;
             cards.forEach(card => {
-                const match = !t || (card.dataset.busca || '').includes(t);
+                const match = (!t || (card.dataset.busca || '').includes(t)) && !card.dataset.sisOculto;
                 card.style.display = match ? '' : 'none';
                 if (match) visiveis++;
             });

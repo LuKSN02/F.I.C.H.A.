@@ -5515,6 +5515,13 @@ async function carregarFicha() {
 
     if (!ficha) { document.getElementById('display-nome').textContent = 'Agente não encontrado'; return; }
 
+    // Fichas do sistema Vigília (Ordem Paranormal RPG 2) usam outra página
+    if (ficha.sistema === 'vigilia') {
+        const q = new URLSearchParams(window.location.search); q.set('id', ficha.id);
+        window.location.replace('ficha-vigilia.html?' + q.toString());
+        return;
+    }
+
     // 3) Tenta carregar estado do localStorage (cache)
     const estadoSalvo = localStorage.getItem(getPrefix() + `estado_ficha_${ficha.id}`);
 
